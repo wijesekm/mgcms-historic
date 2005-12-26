@@ -6,9 +6,11 @@
 **********************************************************/
 
 //
-//change this only if you do not use .php to run php scripts
+//change php_ex only if you do not use .php to identify php scripts
+//change tpl_ex only if you do not use .tpl to identify tpl files
 //
 
 $php_ex = "php";
+$tpl_ex = "tpl";
 
 ?>
