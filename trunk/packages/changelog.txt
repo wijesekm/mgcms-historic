@@ -1,2 +1,2 @@
-0.1
+p_content 0.1
 Basic preformatted content generation script done (admin not finished yet)
