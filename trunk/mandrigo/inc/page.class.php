@@ -55,44 +55,66 @@ class page{
                     ,"USER_NAME",$GLOBALS["USER_DATA"]["NAME"]
                     ,"CURRENT_PAGE",$GLOBALS["PAGE_DATA"]["NAME"]
                 );
-        $this->page_parse_vars=array_merge_recursive($this->page_parse_vars,$GLOBALS["PAGE_DATA"]["VARS"]);
+        if(count($GLOBALS["PAGE_DATA"]["VARS"])%2==0){
+            $this->page_parse_vars=array_merge_recursive($this->page_parse_vars,$GLOBALS["PAGE_DATA"]["VARS"]);
+        }
     }
     function display(){
         $tpl="";
         if($GLOBALS["USER_DATA"]["AUTHENTICATED"]){
             if(!$tpl=new template($GLOBALS["MANDRIGO_CONFIG"]["TEMPLATE_PATH"].TPL_AUTH_SITE)){
                 if(!$tpl=new template($GLOBALS["MANDRIGO_CONFIG"]["TEMPLATE_PATH"].TPL_MAIN_SITE)){
-                    $this->error_logger->add_error(30,"script");
+                    if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
+                        $this->page_error_logger->add_error(30,"script");
+                    }
                 }
             }
         }
         else{
             if(!$tpl=new template($GLOBALS["MANDRIGO_CONFIG"]["TEMPLATE_PATH"].TPL_MAIN_SITE)){
-                $this->error_logger->add_error(30,"script");
+                if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
+                    $this->page_error_logger->add_error(30,"script");
+                }
             }
         }
         if($GLOBALS["PAGE_DATA"]["PAGE_STATUS"]||$GLOBALS["HTTP_GET"]["KEY"]==$GLOBALS["SITE_DATA"]["BYPASS_CODE"]){
             $content=$this->gen_content();
             if(!$content){
-                $this->error_logger->add_error(2,"display");
+                if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
+                    $this->page_error_logger->add_error(2,"display");
+                }
             }
-            if($this->page_error_logger->get_status()==2){
-                die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANG"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
-                    $this->page_error_logger->generate_report().$GLOBALS["HTML"]["EEND"]);
-                return false;
-            }
-            else if($this->page_error_logger->get_status()==1){
-                $this->page_parse_vars=array_merge_recursive($this->page_parse_vars,array("CONTENT",$this->page_error_logger->generate_report(),"PAGE_TITLE",$GLOBALS["LANG"]["ETITLE2"]));
+            if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
+                if($this->page_error_logger->get_status()==2){
+                    die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANG"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
+                        $this->page_error_logger->generate_report().$GLOBALS["HTML"]["EEND"]);
+                    return false;
+                }
+                else if($this->page_error_logger->get_status()==1){
+                    $this->page_parse_vars=array_merge_recursive($this->page_parse_vars,array("CONTENT",$this->page_error_logger->generate_report(),"PAGE_TITLE",$GLOBALS["LANG"]["ETITLE2"]));
+                }
+                else{
+                    $this->page_parse_vars=array_merge_recursive($this->page_parse_vars,array("CONTENT",$content,"PAGE_TITLE",$GLOBALS["PAGE_DATA"]["TITLE"]));
+                }
             }
             else{
+                $content=$this->gen_content();
                 $this->page_parse_vars=array_merge_recursive($this->page_parse_vars,array("CONTENT",$content,"PAGE_TITLE",$GLOBALS["PAGE_DATA"]["TITLE"]));
             }
+
         }
         else{
-            if($error_log->get_status()==2){
-                die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANG"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
-                    $this->page_error_logger->generate_report().$GLOBALS["HTML"]["EEND"]);
-                return false;
+            if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
+                if($error_log->get_status()==2){
+                    die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANG"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
+                        $this->page_error_logger->generate_report().$GLOBALS["HTML"]["EEND"]);
+                    return false;
+                }
+                else{
+                    $tmp_tpl=new template($GLOBALS["MANDRIGO_CONFIG"]["TEMPLATE_PATH"].TPL_OFF_PAGE);
+                    $content=$tmp_tpl->return_template();
+                    $this->page_parse_vars=array_merge_recursive($this->page_parse_vars,array("CONTENT",$content,"PAGE_TITLE",$GLOBALS["LANG"]["OPTITLE"]));
+                }
             }
             else{
                 $tmp_tpl=new template($GLOBALS["MANDRIGO_CONFIG"]["TEMPLATE_PATH"].TPL_OFF_PAGE);
@@ -128,7 +150,9 @@ class page{
         $string="$"."content=$"."hookc->".$hook.HOOK_DISPLAY;
         eval($string);
         $string="$"."vars=$"."hookc->".$hook.HOOK_VARS;
-        $this->page_parse_vars=array_merge_recursive($this->page_parse_vars,$vars);
+        if(count($vars)%2==0){
+            $this->page_parse_vars=array_merge_recursive($this->page_parse_vars,$vars);
+        }
         return $content;
     }
 }
