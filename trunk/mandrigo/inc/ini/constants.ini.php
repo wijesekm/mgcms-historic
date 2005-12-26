@@ -52,12 +52,12 @@ define("TABLE_SITE_STATS","site_stats");
 //
 //Templates
 //
-define("TPL_EXT",".tpl")
-define("TPL_ERROR_LOG","error_log".TPL_EXT);
-define("TPL_OFF_SITE","off_site".TPL_EXT);
-define("TPL_AUTH_SITE","auth_site".TPL_EXT);
-define("TPL_MAIN_SITE","main_site".TPL_EXT);
-define("TPL_OFF_PAGE","off_page".TPL_EXT);
+define("TPL_EXT",$tpl_ex);
+define("TPL_ERROR_LOG","error_log.".TPL_EXT);
+define("TPL_OFF_SITE","off_site.".TPL_EXT);
+define("TPL_AUTH_SITE","auth_site.".TPL_EXT);
+define("TPL_MAIN_SITE","main_site.".TPL_EXT);
+define("TPL_OFF_PAGE","off_page.".TPL_EXT);
 
 //
 //Hooks
