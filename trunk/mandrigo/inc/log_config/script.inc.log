@@ -1,0 +1,21 @@
+0&split; <h3 style="margin: 0px;">Script Errors</h3>
+&split;1&split;Could not load the initialization script.  File may be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue.
+&split;2&split;Could not load the database package.  File may be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue.
+&split;3&split;Could not load the constants package.  File may be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue.
+&split;4&split;Could not load the varable cleaning functions package.  File may be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue.
+&split;5&split;Could not load the server time package.  File may be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue.
+&split;6&split;Could not load the basic functions package.  File may be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue.
+&split;7&split;Could not load the main site data from the database.  Script may be missing or in the wrong directory or the database may be set up incorrectly.  Please contact the webmaster to alert them of this issue.
+&split;8&split;Could not load the server data.  Script may be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue.
+&split;9&split;Could not load the user data.  Script may be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue.
+&split;10&split;Could not load the page data.  Script may be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue.
+&split;11&split;Could not load the package initialization script.  Script may be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue.
+&split;12&split;Could not load the template class.  Script may be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue.
+&split;13&split;Could not load the page class.  Script may be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue.
+&split;14&split;Could not load the word filter class.  Script may be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue.
+&split;15&split;Could not load the stats script.  Script may be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue.
+&split;20&split;Could not set the session cookie.  Please contact the webmaster to alert them of this issue.
+&split;21&split;Could not set the user id cookie.  Please contact the webmaster to alert them of this issue.
+&split;30&split;Could not load the main page template.  The file could be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue
+&split;100&split;Could not load files associated with the preformatted content generation script.  The files could be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue
+
