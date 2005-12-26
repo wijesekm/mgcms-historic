@@ -1,8 +1,9 @@
 <?php
 /**********************************************************
     admin.pkg.php
+    p_content ver 1.0
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 12/14/05
+	Date Last Edited: 12/24/05
 
 	Copyright (C) 2005  Kevin Wijesekera
 
