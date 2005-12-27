@@ -1,5 +1,8 @@
 example
 Just an example of how to format packages
 
+title 0.1
+Title generation done (admin not finished yet)
+
 p_content 0.1
 Basic preformatted content generation script done (admin not finished yet)
