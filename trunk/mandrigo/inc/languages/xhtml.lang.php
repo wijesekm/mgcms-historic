@@ -51,6 +51,20 @@ $GLOBALS["HTML"]["TITLE!"]="</title>\n";
 
 //Body Tags
 $GLOBALS["HTML"]["BR"]="<br/>";
+
+//Link Tags
+$GLOBALS["HTML"]["A"]="<a {ATTRIB}>";
+$GLOBALS["HTML"]["A!"]="</a>";
+
+//H Tags
+$GLOBALS["HTML"]["H"]="<h{SIZE} {ATTRIB}>";
+$GLOBALS["HTML"]["H!"]="</h{SIZE}>";
+
+//HR TAG
+$GLOBALS["HTML"]["HR"]="<hr {ATTRIB}/>";
+
+//IMG Tag
+$GLOBALS["HTML"]["IMG"]="<img {ATTRIB} />";
 //
 //Tag Groups
 //
