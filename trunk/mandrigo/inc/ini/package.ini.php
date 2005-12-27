@@ -51,7 +51,17 @@ for($i=0;$i<count($GLOBALS["PAGE_DATA"]["HOOKS"]);$i++){
             include_once($GLOBALS["MANDRIGO_CONFIG"]["PLUGIN_PATH"].$sql_result["package_name"]."/globals.pkg.$php_ex");
         }
         else{
-            if(!@include_once($GLOBALS["MANDRIGO_CONFIG"]["PLUGIN_PATH"].$sql_result["package_name"]."/hooks.pkg.$php_ex")||@include_once($GLOBALS["MANDRIGO_CONFIG"]["PLUGIN_PATH"].$sql_result["package_name"]."/display.pkg.$php_ex")||@include_once($GLOBALS["MANDRIGO_CONFIG"]["PLUGIN_PATH"].$sql_result["package_name"]."/globals.pkg.$php_ex")){
+            if(!@include_once($GLOBALS["MANDRIGO_CONFIG"]["PLUGIN_PATH"].$sql_result["package_name"]."/hooks.pkg.$php_ex")){
+                $error_log->add_error($sql_result["package_noload_error"],"script");
+                die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANG"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
+                    $error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
+            }
+            if(!@include_once($GLOBALS["MANDRIGO_CONFIG"]["PLUGIN_PATH"].$sql_result["package_name"]."/display.pkg.$php_ex")){
+                $error_log->add_error($sql_result["package_noload_error"],"script");
+                die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANG"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
+                    $error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
+            }
+            if(!@include_once($GLOBALS["MANDRIGO_CONFIG"]["PLUGIN_PATH"].$sql_result["package_name"]."/globals.pkg.$php_ex")){
                 $error_log->add_error($sql_result["package_noload_error"],"script");
                 die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANG"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
                     $error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
@@ -60,4 +70,5 @@ for($i=0;$i<count($GLOBALS["PAGE_DATA"]["HOOKS"]);$i++){
         $GLOBALS["PAGE_DATA"]["DISPLAY_HOOK"]=$sql_result["package_name"].".display_hook();";
     }
 }
+
 ?>
