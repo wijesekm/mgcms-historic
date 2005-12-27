@@ -108,7 +108,10 @@ class error_logger{
             $len=count($this->log[$this->type[$i]]);
             if($len!=1){
                 for($j=0;$j<$len;$j++){
-                    $report.=$log_inc[$this->type[$i]][$this->log[$this->type[$i]][$j]].$GLOBALS["HTML"]["BR"].$GLOBALS["HTML"]["BR"];
+                    $report.=$log_inc[$this->type[$i]]["l_".$this->log[$this->type[$i]][$j]];
+                    if($this->log[$this->type[$i]][$j]!=0){
+                        $report.=$GLOBALS["HTML"]["BR"].$GLOBALS["HTML"]["BR"];
+                    }
                 }
             }
         }
@@ -153,7 +156,7 @@ class error_logger{
         }
 		fclose($f);
         $raw_data = explode($deliminator,$file);
-        $data = array("nan"=>"nan");
+        $data = array();
         $raw_data_length=count($raw_data);
         if($raw_data_length%2){
             return false;
@@ -165,8 +168,8 @@ class error_logger{
     }
     //simple function to add two arrays
     function add_array($array, $key, $val){
-        $tmp = array("$key"=>"$val");
-        $array = array_merge_recursive($array, $tmp);
+        $tmp = array("l_$key"=>"$val");
+        $array = array_merge($array, $tmp);
         return $array;
     }
     //logs the error report to a file

@@ -56,7 +56,7 @@ class page{
                     ,"CURRENT_PAGE",$GLOBALS["PAGE_DATA"]["NAME"]
                 );
         if(count($GLOBALS["PAGE_DATA"]["VARS"])%2==0){
-            $this->page_parse_vars=array_merge_recursive($this->page_parse_vars,$GLOBALS["PAGE_DATA"]["VARS"]);
+            $this->page_parse_vars=array_merge_recursive($GLOBALS["PAGE_DATA"]["VARS"],$this->page_parse_vars);
         }
     }
     function display(){
@@ -66,6 +66,8 @@ class page{
                 if(!$tpl=new template($GLOBALS["MANDRIGO_CONFIG"]["TEMPLATE_PATH"].TPL_MAIN_SITE)){
                     if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
                         $this->page_error_logger->add_error(30,"script");
+                        die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANG"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
+                            $this->page_error_logger->generate_report().$GLOBALS["HTML"]["EEND"]);
                     }
                 }
             }
@@ -85,21 +87,16 @@ class page{
                 }
             }
             if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-                if($this->page_error_logger->get_status()==2){
-                    die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANG"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
-                        $this->page_error_logger->generate_report().$GLOBALS["HTML"]["EEND"]);
-                    return false;
-                }
-                else if($this->page_error_logger->get_status()==1){
-                    $this->page_parse_vars=array_merge_recursive($this->page_parse_vars,array("CONTENT",$this->page_error_logger->generate_report(),"PAGE_TITLE",$GLOBALS["LANG"]["ETITLE2"]));
+                if($this->page_error_logger->get_status()!=0){
+                    $this->page_parse_vars=array_merge_recursive(array("CONTENT",$this->page_error_logger->generate_report(),"PAGE_TITLE",$GLOBALS["LANG"]["ETITLE2"]),$this->page_parse_vars);
                 }
                 else{
-                    $this->page_parse_vars=array_merge_recursive($this->page_parse_vars,array("CONTENT",$content,"PAGE_TITLE",$GLOBALS["PAGE_DATA"]["TITLE"]));
+                    $this->page_parse_vars=array_merge_recursive(array("CONTENT",$content,"PAGE_TITLE",$GLOBALS["PAGE_DATA"]["TITLE"]),$this->page_parse_vars);
                 }
             }
             else{
                 $content=$this->gen_content();
-                $this->page_parse_vars=array_merge_recursive($this->page_parse_vars,array("CONTENT",$content,"PAGE_TITLE",$GLOBALS["PAGE_DATA"]["TITLE"]));
+                $this->page_parse_vars=array_merge_recursive(array("CONTENT",$content,"PAGE_TITLE",$GLOBALS["PAGE_DATA"]["TITLE"]),$this->page_parse_vars);
             }
 
         }
@@ -113,13 +110,13 @@ class page{
                 else{
                     $tmp_tpl=new template($GLOBALS["MANDRIGO_CONFIG"]["TEMPLATE_PATH"].TPL_OFF_PAGE);
                     $content=$tmp_tpl->return_template();
-                    $this->page_parse_vars=array_merge_recursive($this->page_parse_vars,array("CONTENT",$content,"PAGE_TITLE",$GLOBALS["LANG"]["OPTITLE"]));
+                    $this->page_parse_vars=array_merge_recursive(array("CONTENT",$content,"PAGE_TITLE",$GLOBALS["LANG"]["OPTITLE"]),$this->page_parse_vars);
                 }
             }
             else{
                 $tmp_tpl=new template($GLOBALS["MANDRIGO_CONFIG"]["TEMPLATE_PATH"].TPL_OFF_PAGE);
                 $content=$tmp_tpl->return_template();
-                $this->page_parse_vars=array_merge_recursive($this->page_parse_vars,array("CONTENT",$content,"PAGE_TITLE",$GLOBALS["LANG"]["OPTITLE"]));
+                $this->page_parse_vars=array_merge_recursive(array("CONTENT",$content,"PAGE_TITLE",$GLOBALS["LANG"]["OPTITLE"]),$this->page_parse_vars);
             }
         }
         $tpl->pparse($this->page_parse_vars);
@@ -151,7 +148,7 @@ class page{
         eval($string);
         $string="$"."vars=$"."hookc->".$hook.HOOK_VARS;
         if(count($vars)%2==0){
-            $this->page_parse_vars=array_merge_recursive($this->page_parse_vars,$vars);
+            $this->page_parse_vars=array_merge_recursive($vars,$this->page_parse_vars);
         }
         return $content;
     }

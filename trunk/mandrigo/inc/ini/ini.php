@@ -124,7 +124,9 @@ if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
     $sql_db->connect($sql_config["SQL_HOST"],$sql_config["SQL_USER"],$sql_config["SQL_PASSWORD"],$sql_config["SQL_DATABASE"],$sql_config["SQL_PORT"]);
 }
 else{
-    $error_log->add_error(1,"sql");
+    if(!$sql_db->connect($sql_config["SQL_HOST"],$sql_config["SQL_USER"],$sql_config["SQL_PASSWORD"],$sql_config["SQL_DATABASE"],$sql_config["SQL_PORT"])){
+        $error_log->add_error(1,"sql");
+    }
 }
 
 //
@@ -154,7 +156,6 @@ else{
            $error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
     }
 }
-
 //
 //Gets rid of unneeded config vars
 //
@@ -218,6 +219,7 @@ else{
            $error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
     }
 }
+
 //
 //Stats and Banning
 //

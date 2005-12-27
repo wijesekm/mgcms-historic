@@ -40,19 +40,19 @@ if(!defined("START_MANDRIGO")){
 //Function checks the sessionid saved on the server with the one provided
 //by the user.  Also checks username validity.
 //
-function user_is_logged_in($cookie_sesid,$cookie_uid,&$sql_db){
-    if(!$cookie_sesid||!$cookie_uid){
-        return false;
+    function user_is_logged_in($cookie_sesid,$cookie_uid,&$sql_db){
+        if(!$cookie_sesid||!$cookie_uid){
+            return false;
+        }
+        if($cookie_uid===1){
+            return false;
+        }
+        $sql_result = $sql_db->fetch_array("SELECT * FROM `".TABLE_PREFIX.TABLE_USER_DATA."` WHERE `user_id`='$cookie_uid';");
+        if($sql_result["user_session"]!=$cookie_sesid){
+            return false;
+        }
+        return true;
     }
-    if($cookie_uid===1){
-        return false;
-    }
-    $sql_result = $sql_db->fetch_array("SELECT * FROM `".TABLE_PREFIX.TABLE_USER_DATA."` WHERE `user_id`='$cookie_uid';");
-    if($sql_result["user_session"]!=$cookie_sesid){
-        return false;
-    }
-    return true;
-}
     //forms an associative array based on the error log file
     //ex array("error_number","error_message")
     function open_array_assoc($file_name,$deliminator,$text=""){
