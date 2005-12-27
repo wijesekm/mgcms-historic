@@ -1,2 +1,5 @@
+example
+Just an example of how to format packages
+
 p_content 0.1
 Basic preformatted content generation script done (admin not finished yet)
