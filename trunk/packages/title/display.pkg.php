@@ -52,22 +52,22 @@ class title{
                 $h=ereg_replace("{SIZE}",$this->config["h_size"],$GLOBALS["HTML"]["H"]);
                 $h=ereg_replace("{ATTRIB}",$this->config["h_attrib"],$h);
                 $endh=ereg_replace("{SIZE}",$this->config["h_size"],$GLOBALS["HTML"]["H!"]);
-                $data=$h.$GLOBALS["PAGE_DATA"]["TITLE"].$endh;
+                $data=$h.$this->config["title"].$endh;
             break;
             case 1:
                 $h=ereg_replace("{SIZE}",$this->config["h_size"],$GLOBALS["HTML"]["H"]);
                 $h=ereg_replace("{ATTRIB}",$this->config["h_attrib"],$h);
                 $endh=ereg_replace("{SIZE}",$this->config["h_size"],$GLOBALS["HTML"]["H!"]);
                 $hr=ereg_replace("{ATTRIB}",$this->config["hr_attrib"],$GLOBALS["HTML"]["HR"]);
-                $data=$h.$GLOBALS["PAGE_DATA"]["TITLE"].$endh.$hr;
+                $data=$h.$this->config["title"].$endh.$hr;
             break;
             case 2:
-                $attrib="src=\"".$this->config["i_url"]."\" border=\"0\" alt=\"".$GLOBALS["PAGE_DATA"]["TITLE"]."\"";
+                $attrib="src=\"".$this->config["i_url"]."\" border=\"0\" alt=\"".$this->config["title"]."\"";
                 $img=ereg_replace("{ATTRIB}",$attrib,$GLOBALS["HTML"]["IMG"]);
                 $data=$img;
             break;
             case 3:
-                $attrib="src=\"".$this->config["i_url"]."\" border=\"0\" alt=\"".$GLOBALS["PAGE_DATA"]["TITLE"]."\"";
+                $attrib="src=\"".$this->config["i_url"]."\" border=\"0\" alt=\"".$this->config["title"]."\"";
                 $img=ereg_replace("{ATTRIB}",$attrib,$GLOBALS["HTML"]["IMG"]);
                 $hr=ereg_replace("{ATTRIB}",$this->config["hr_attrib"],$GLOBALS["HTML"]["HR"]);
                 $data=$img.$hr;
@@ -79,6 +79,7 @@ class title{
         if(!$sql_result=$this->db->fetch_array("SELECT * FROM `".TABLE_PREFIX.TABLE_TITLE_DATA."` WHERE `page_id`='".$GLOBALS["PAGE_DATA"]["ID"]."' AND `part_id`='$i';")){
             return false;
         }
+        $this->config["title"]=isset($sql_result{"title"})?$sql_result{"title"}:$GLOBALS["PAGE_DATA"]["RNAME"];
         $this->config["t_type"]=$sql_result["title_type"];
         $this->config["h_size"]=$sql_result["h_size"];
         $this->config["h_attrib"]=$sql_result["h_attrib"];

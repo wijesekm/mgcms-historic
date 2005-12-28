@@ -38,7 +38,8 @@ if(!defined("START_MANDRIGO")){
 }
 class p_content_hook{
     function p_content_display_hook(&$sql,&$error_log,$i){
-        $tpl=new template($GLOBALS["MANDRIGO_CONFIG"]["TEMPLATE_PATH"].$GLOBALS["PAGE_DATA"]["DATAPATH"].$i."_".$GLOBALS["PAGE_DATA"]["ID"].".".TPL_EXT);
+        $tpl=new template();
+        $tpl->load($GLOBALS["MANDRIGO_CONFIG"]["TEMPLATE_PATH"].$GLOBALS["PAGE_DATA"]["DATAPATH"].$GLOBALS["PAGE_DATA"]["ID"]."_".$i.".".TPL_EXT);
         return $tpl->return_template();
     }
     function p_content_vars_hook(&$sql,&$error_log,$i){
