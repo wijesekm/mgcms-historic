@@ -81,8 +81,7 @@ class error_logger{
     function generate_report(){
         //loads error log inc from file
         if(!$log_inc=$this->error_log_init()){
-            die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANG"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
-                $GLOBALS["LANG"]["EONE"].$GLOBALS["HTML"]["EEND"]);
+            return $GLOBALS["LANGUAGE"]["EONE"];
         }
         //loads template to the $tpl var
         if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
@@ -90,8 +89,7 @@ class error_logger{
         }
         else{
             if(!(@$f=fopen($GLOBALS["MANDRIGO_CONFIG"]["TEMPLATE_PATH"]."error_log.tpl","r"))){
-                die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANG"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
-                    $GLOBALS["LANG"]["ETWO"].$GLOBALS["HTML"]["EEND"]);
+                return $GLOBALS["LANGUAGE"]["ETWO"];
             }
         }
         $tpl="";
@@ -183,9 +181,9 @@ class error_logger{
         }
         else{
             if(!(@$f=fopen($GLOBALS["MANDRIGO_CONFIG"]["LOG_PATH"]."log_".date($this->format).".log","x"))){
-                if(!(@$f=fopen($GLOBALS["MANDRIGO_CONFIG"]["LOG_PATH"]."log_".date($this->format).".log","a"))){
-                    die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANG"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
-                        $GLOBALS["LANG"]["ETHREE"].$GLOBALS["HTML"]["EEND"]);
+                if(!($f=fopen($GLOBALS["MANDRIGO_CONFIG"]["LOG_PATH"]."log_".date($this->format).".log","a"))){
+                    die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
+                        $GLOBALS["LANGUAGE"]["ETHREE"].$GLOBALS["HTML"]["EEND"]);
                 }
             }
         }
