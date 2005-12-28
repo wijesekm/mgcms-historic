@@ -40,7 +40,7 @@ class template{
 
     var $tpl;
     
-    function template($path,$file="",$deliminator=""){
+    function load($path,$file="",$deliminator=""){
         if(!$path){
             if(!$deliminator){
                 $this->tpl[0]=$file;
@@ -70,6 +70,7 @@ class template{
                 $this->tpl=explode($deliminator,$tmp);
             }
         }
+        return true;
     }
     function pparse($vars=array()){
         $sot=count($this->tpl);
