@@ -44,16 +44,18 @@ header("Content-type: text/html; charset=utf-8");
 //
 // LANG Array
 //
-$GLOBALS["LANG"]["ENCODING"]="iso-8859-1";
+$GLOBALS["LANGUAGE"]["ENCODING"]="iso-8859-1";
 
 //Error Logger
-$GLOBALS["LANG"]["ETITLE"]="Fatal Error";
-$GLOBALS["LANG"]["ETITLE2"]="Error Log";
-$GLOBALS["LANG"]["EZERO"]="Fatal Error #0: The error logging script is either missing or in the wrong directory.  Please contact the webmaster to alert him/her of this issue";
-$GLOBALS["LANG"]["EONE"]="Fatal Error #1: The error logging script could not load the correct log ini files.  Please contact the webmaster to alert him/her of this issue";
-$GLOBALS["LANG"]["ETWO"]="Fatal Error #3: The error logging script could not load the template file";
-$GLOBALS["LANG"]["ETHREE"]="Fatal Error #1: The Error Log could not write the errors to the log.  Please contact the webmaster to alert him/her of this issue";
-
+$GLOBALS["LANGUAGE"]["ETITLE"]="Fatal Error";
+$GLOBALS["LANGUAGE"]["ETITLE2"]="Error Log";
+$GLOBALS["LANGUAGE"]["EZERO"]="Fatal Error #0: The error logging script is either missing or in the wrong directory.  Please contact the webmaster to alert him/her of this issue";
+$GLOBALS["LANGUAGE"]["EONE"]="Fatal Error #1: The error logging script could not load the correct log ini files.  Please contact the webmaster to alert him/her of this issue";
+$GLOBALS["LANGUAGE"]["ETWO"]="Fatal Error #3: The error logging script could not load the template file";
+$GLOBALS["LANGUAGE"]["ETHREE"]="Fatal Error #1: The Error Log could not write the errors to the log.  Please contact the webmaster to alert him/her of this issue";
+$GLOBALS["LANGUAGE"]["PERMISSION"]="You are not authorized to view this page.";
 //Off Page
-$GLOBALS["LANG"]["OPTITLE"]="Page Under Maintainance";
+$GLOBALS["LANGUAGE"]["OPTITLE"]="Page Under Maintainance";
+
+
 ?>
