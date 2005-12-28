@@ -47,7 +47,7 @@ if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
 else{
     if(!$page_data = $sql_db->fetch_array("SELECT * FROM `".TABLE_PREFIX.TABLE_PAGE_DATA."` WHERE `".$page_input_type."`='".$GLOBALS["HTTP_GET"]["PAGE"]."';")){
         $error_log->add_error(12,"sql");
-        die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANG"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
+        die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
             $error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
     }
 }
@@ -69,7 +69,7 @@ for($i=0;$i<count($GLOBALS["USER_DATA"]["GROUPS"]);$i++){
     if(!$sql_result=$sql_db->fetch_array("SELECT * FROM `".TABLE_PREFIX.TABLE_GROUP_PERMISSIONS."` WHERE `group_id`='".$GLOBALS["USER_DATA"]["GROUPS"]["$i"]."' AND `page_id`='".$GLOBALS["PAGE_DATA"]["ID"]."';")){
         if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
             $error_log->add_error(13,"sql");
-            die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANG"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
+            die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
                 $error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
         }
     }
@@ -95,6 +95,8 @@ for($i=0;$i<count($GLOBALS["USER_DATA"]["GROUPS"]);$i++){
     }
 }
 if(!($r_page_data = $sql_db->fetch_array("SELECT * FROM `".TABLE_PREFIX.TABLE_RESTRICTED_PAGE_DATA."` WHERE `page_id`='".$GLOBALS["PAGE_DATA"]["ID"]."';"))||!$GLOBALS["USER_DATA"]["PERMISSIONS"]["READ_RESTRICTED"]){
+    $GLOBALS["PAGE_DATA"]["AUTH_PAGE"]=false;
+    $GLOBALS["PAGE_DATA"]["RNAME"]=$page_data["page_rname"];
     $GLOBALS["PAGE_DATA"]["TITLE"]=$page_data["page_title"];
     $GLOBALS["PAGE_DATA"]["VARS"]=explode(";",$page_data["page_vars"]);
     $GLOBALS["PAGE_DATA"]["HOOKS"]=explode(";",$page_data["page_hooks"]);
@@ -104,7 +106,9 @@ if(!($r_page_data = $sql_db->fetch_array("SELECT * FROM `".TABLE_PREFIX.TABLE_RE
     $GLOBALS["PAGE_DATA"]["DATAPATH"]=$page_data["page_datapath"];
     $GLOBALS["PAGE_DATA"]["PAGE_STATUS"]=$page_data["page_status"];
 }
-else{
+else if($GLOBALS["USER_DATA"]["PERMISSIONS"]["READ"]){
+    $GLOBALS["PAGE_DATA"]["AUTH_PAGE"]=true;
+    $GLOBALS["PAGE_DATA"]["RNAME"]=$r_page_data["page_rname"];
     $GLOBALS["PAGE_DATA"]["TITLE"]=$r_page_data["page_title"];
     $GLOBALS["PAGE_DATA"]["VARS"]=explode(";",$r_page_data["page_vars"]);
     $GLOBALS["PAGE_DATA"]["HOOKS"]=explode(";",$r_page_data["page_hooks"]);
