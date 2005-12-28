@@ -114,7 +114,7 @@ if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
 else{
     if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."sql/".$sql_config["SQL_TYPE"].".class.$php_ex"))){
         $error_log->add_error(2,"script");
-        die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANG"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
+        die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
            $error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
     }
 }
@@ -126,6 +126,7 @@ if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
 else{
     if(!$sql_db->connect($sql_config["SQL_HOST"],$sql_config["SQL_USER"],$sql_config["SQL_PASSWORD"],$sql_config["SQL_DATABASE"],$sql_config["SQL_PORT"])){
         $error_log->add_error(1,"sql");
+        die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].$error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
     }
 }
 
@@ -152,7 +153,7 @@ else{
         $error_log->add_error(6,"script");
     }
     if($error_log->get_status()==2){
-        die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANG"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
+        die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
            $error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
     }
 }
@@ -187,7 +188,7 @@ else{
         $error_log->add_error(7,"script");
     }
     if($error_log->get_status()==2){
-        die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANG"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
+        die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
            $error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
     }
 }
@@ -215,7 +216,7 @@ else{
         $error_log->add_error(14,"script");
     }
     if($error_log->get_status()==2){
-        die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANG"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
+        die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
            $error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
     }
 }
@@ -232,7 +233,7 @@ else{
         $error_log->add_error(15,"script");
     }
     if($error_log->get_status()==2){
-        die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANG"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
+        die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
            $error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
     }
 }

@@ -40,7 +40,7 @@ for($i=0;$i<count($GLOBALS["PAGE_DATA"]["HOOKS"]);$i++){
     if(!($sql_result=$sql_db->fetch_array("SELECT * FROM `".TABLE_PREFIX.TABLE_PACKAGE_DATA."` WHERE `package_id`='".$GLOBALS["PAGE_DATA"]["HOOKS"][$i]."';"))){
         if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
             $error_log->add_error(14,"sql");
-            die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANG"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
+            die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
                 $error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
         }
     }
@@ -53,17 +53,17 @@ for($i=0;$i<count($GLOBALS["PAGE_DATA"]["HOOKS"]);$i++){
         else{
             if(!@include_once($GLOBALS["MANDRIGO_CONFIG"]["PLUGIN_PATH"].$sql_result["package_name"]."/hooks.pkg.$php_ex")){
                 $error_log->add_error($sql_result["package_noload_error"],"script");
-                die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANG"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
+                die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
                     $error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
             }
             if(!@include_once($GLOBALS["MANDRIGO_CONFIG"]["PLUGIN_PATH"].$sql_result["package_name"]."/display.pkg.$php_ex")){
                 $error_log->add_error($sql_result["package_noload_error"],"script");
-                die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANG"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
+                die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
                     $error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
             }
             if(!@include_once($GLOBALS["MANDRIGO_CONFIG"]["PLUGIN_PATH"].$sql_result["package_name"]."/globals.pkg.$php_ex")){
                 $error_log->add_error($sql_result["package_noload_error"],"script");
-                die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANG"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
+                die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
                     $error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
             }
         }
