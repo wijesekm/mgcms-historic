@@ -47,8 +47,8 @@ if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
 }
 else{
     if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."error_logger.class.$php_ex"))){
-	   die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANG"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
-           $GLOBALS["LANG"]["EZERO"].$GLOBALS["HTML"]["EEND"]);
+	   die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
+           $GLOBALS["LANGUAGE"]["EZERO"].$GLOBALS["HTML"]["EEND"]);
     }
 }
 $error_log = & new error_logger($log_config["LOG_LEVEL_1"],$log_config["LOG_LEVEL_2"],$log_config["ARCHIVE"]);
@@ -62,7 +62,7 @@ if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
 else{
     if(!(@include($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."ini/ini.$php_ex"))){
         $error_log->add_error(1,"script");
-	    die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANG"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
+	    die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
            $error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
     }
 }
@@ -74,7 +74,7 @@ $current_page = new page($error_log,$sql_db);
 
 //one final check for errors
 if($error_log->get_status()==2){
-    die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANG"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
+    die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
         $error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
 }
 
