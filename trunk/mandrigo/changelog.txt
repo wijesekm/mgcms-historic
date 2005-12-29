@@ -2,4 +2,5 @@
 1) hook system now used to regester display packages and other addins
 2) debug mode to bypass the error msg logging system
 3) support for basic page statistics
+4) you can now turn individual pages off for maintainance as well as the whole site
 
