@@ -107,7 +107,7 @@ $GLOBALS["MANDRIGO_CONFIG"]["SITE_STATUS"]=true;
 //TO TRUE FOR PRODUCTION RELEASES.  THIS IS FOR DEVELOPMENT ONLY AND INTRODUCES
 //SECURITY HOLES!
 //
-$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]=true;
+$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]=false;
 
 //
 //Index name is the name of what ever your main access file is default is (index.php)
