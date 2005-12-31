@@ -175,13 +175,13 @@ class error_logger{
     function write_to_file($report){
         $time = date("m-d-Y")." at ".date("h:i:s")."\n";
         if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-            if(!(@$f=fopen($GLOBALS["MANDRIGO_CONFIG"]["LOG_PATH"]."log_".date($this->format).".log","x"))){
+            if(!($f=fopen($GLOBALS["MANDRIGO_CONFIG"]["LOG_PATH"]."log_".date($this->format).".log","x"))){
                 $f=fopen($GLOBALS["MANDRIGO_CONFIG"]["LOG_PATH"]."log_".date($this->format).".log","a");
             }
         }
         else{
             if(!(@$f=fopen($GLOBALS["MANDRIGO_CONFIG"]["LOG_PATH"]."log_".date($this->format).".log","x"))){
-                if(!($f=fopen($GLOBALS["MANDRIGO_CONFIG"]["LOG_PATH"]."log_".date($this->format).".log","a"))){
+                if(!(@$f=fopen($GLOBALS["MANDRIGO_CONFIG"]["LOG_PATH"]."log_".date($this->format).".log","a"))){
                     die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
                         $GLOBALS["LANGUAGE"]["ETHREE"].$GLOBALS["HTML"]["EEND"]);
                 }
