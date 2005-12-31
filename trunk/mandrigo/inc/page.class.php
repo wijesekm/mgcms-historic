@@ -81,19 +81,22 @@ class page{
                 }
             }
         }
-        if($GLOBALS["PAGE_DATA"]["AUTH_PAGE"]&&!($GLOBALS["USER_DATA"]["PERMISSIONS"]["READ_RESTRICTED"]||$GLOBALS["USER_DATA"]["PERMISSIONS"]["FULL_CONTROL"])){
-            $this->page_error_logger->add_error(1,"access");
-            if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-                die($GLOBALS["LANGUAGE"]["PERMISSION"]);
-            }
+        if($this->page_error_logger->get_status()!=0){
+                    $this->page_parse_vars=array_merge_recursive(array("CONTENT",$this->page_error_logger->generate_report(),"PAGE_TITLE",$GLOBALS["LANGUAGE"]["ETITLE2"]),$this->page_parse_vars);
         }
-        if(!$GLOBALS["PAGE_DATA"]["AUTH_PAGE"]&&!($GLOBALS["USER_DATA"]["PERMISSIONS"]["READ"]||$GLOBALS["USER_DATA"]["PERMISSIONS"]["FULL_CONTROL"])){
-            $this->page_error_logger->add_error(1,"access");
-            if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-                die($GLOBALS["LANGUAGE"]["PERMISSION"]);
-            }
-        }
-        if($GLOBALS["PAGE_DATA"]["PAGE_STATUS"]||$GLOBALS["HTTP_GET"]["KEY"]==$GLOBALS["SITE_DATA"]["BYPASS_CODE"]){
+        else if($GLOBALS["PAGE_DATA"]["PAGE_STATUS"]||$GLOBALS["HTTP_GET"]["KEY"]==$GLOBALS["SITE_DATA"]["BYPASS_CODE"]){
+                if($GLOBALS["PAGE_DATA"]["AUTH_PAGE"]&&!($GLOBALS["USER_DATA"]["PERMISSIONS"]["READ_RESTRICTED"]||$GLOBALS["USER_DATA"]["PERMISSIONS"]["FULL_CONTROL"])){
+                    $this->page_error_logger->add_error(1,"access");
+                    if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
+                        die($GLOBALS["LANGUAGE"]["PERMISSION"]);
+                    }
+                }
+                if(!$GLOBALS["PAGE_DATA"]["AUTH_PAGE"]&&!($GLOBALS["USER_DATA"]["PERMISSIONS"]["READ"]||$GLOBALS["USER_DATA"]["PERMISSIONS"]["FULL_CONTROL"])){
+                    $this->page_error_logger->add_error(1,"access");
+                    if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
+                        die($GLOBALS["LANGUAGE"]["PERMISSION"]);
+                    }
+                }
             $content=$this->gen_content();
             if(!$content){
                 if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
@@ -116,7 +119,7 @@ class page{
         }
         else{
             if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-                if($error_log->get_status()==2){
+                if($this->page_error_logger->get_status()==2){
                     die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
                         $this->page_error_logger->generate_report().$GLOBALS["HTML"]["EEND"]);
                     return false;
