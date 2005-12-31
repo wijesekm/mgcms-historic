@@ -91,6 +91,7 @@ class template{
         for($i=0;$i<$sov-1;$i+=2){
             $string=ereg_replace("{".$vars[$i]."}",$vars[$i+1],$string);
         }
+        $string=eregi_replace("[{]+[a-z0-9_-]+[}]","",$string);
         return $string;
     }
     function compile($vars,$string){
