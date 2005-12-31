@@ -40,7 +40,7 @@ if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
     $sql_db->query("UPDATE `".TABLE_PREFIX.TABLE_SITE_STATS."` SET total_hits=total_hits+1 WHERE `page_id`=".$GLOBALS["PAGE_DATA"]["ID"].";");
     $sql_db->query("UPDATE `".TABLE_PREFIX.TABLE_SITE_STATS."` SET `time_last`='".time()."' WHERE `page_id`=".$GLOBALS["PAGE_DATA"]["ID"].";");
 }
-else{
+else if(!$error_log->get_status()){
     if(!($sql_db->query("UPDATE `".TABLE_PREFIX.TABLE_SITE_STATS."` SET total_hits=total_hits+1 WHERE `page_id`=".$GLOBALS["PAGE_DATA"]["ID"].";"))){
         $error_log->add_error(15,"sql");
     }
