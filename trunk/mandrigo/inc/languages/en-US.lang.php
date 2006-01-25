@@ -57,5 +57,8 @@ $GLOBALS["LANGUAGE"]["PERMISSION"]="You are not authorized to view this page.";
 //Off Page
 $GLOBALS["LANGUAGE"]["OPTITLE"]="Page Under Maintainance";
 
+//f_mail script
+$GLOBALS["LANGUAGE"]["F_MAIL_ERROR_ALERT"]="Invalid Data. Please fill out or fix the dotted fields.";
+$GLOBALS["LANGUAGE"]["F_MAIL_SENT"]="Message Sent!";
 
 ?>
