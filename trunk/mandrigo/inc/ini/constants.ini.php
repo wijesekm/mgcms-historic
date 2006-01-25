@@ -67,7 +67,15 @@ define("HOOK_VARS","_vars_hook($"."this->page_db,$"."this->page_error_logger,$".
 define("HOOK_CLASS","_hook();");
 
 //
+//Defaults
+//
+define("DEFAULT_ACTION","D");
+define("DEFAULT_ID",1);
+define("DEFAULT_PN",0);
+//
 //Misc
 //
 define("MANDRIGO_CODE_BLOCK","<!--MG_CODE-->");
+define("BAD_DATA","&ERROR_IN_DATA;")
+
 ?>
