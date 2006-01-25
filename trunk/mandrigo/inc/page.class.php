@@ -45,16 +45,18 @@ class page{
     function page(&$error_logger,&$db){
         $this->page_error_logger=$error_logger;
         $this->page_db=$db;
-                $this->page_parse_vars = array(
-                    "SITE_NAME",$GLOBALS["SITE_DATA"]["SITE_NAME"]
-                    ,"SITE_URL",$GLOBALS["SITE_DATA"]["SITE_URL"]
-                    ,"IMG_URL",$GLOBALS["SITE_DATA"]["IMG_URL"]
-                    ,"WEBMASTER_NAME",$GLOBALS["SITE_DATA"]["WEBMASTER_NAME"]
-                    ,"LAST_UPDATED",$GLOBALS["SITE_DATA"]["LAST_UPDATED"]
-                    ,"MANDRIGO_VER",$GLOBALS["SITE_DATA"]["MANDRIGO_VER"]
-                    ,"USER_NAME",$GLOBALS["USER_DATA"]["NAME"]
-                    ,"CURRENT_PAGE",$GLOBALS["PAGE_DATA"]["RNAME"]
-                );
+
+        $this->page_parse_vars = array(
+            "REQUESTED_URI",$GLOBALS["HTTP_SERVER"]["URI"]
+            ,"SITE_NAME",$GLOBALS["SITE_DATA"]["SITE_NAME"]
+            ,"SITE_URL",$GLOBALS["SITE_DATA"]["SITE_URL"]
+            ,"IMG_URL",$GLOBALS["SITE_DATA"]["IMG_URL"]
+            ,"WEBMASTER_NAME",$GLOBALS["SITE_DATA"]["WEBMASTER_NAME"]
+            ,"LAST_UPDATED",$GLOBALS["SITE_DATA"]["LAST_UPDATED"]
+            ,"MANDRIGO_VER",$GLOBALS["SITE_DATA"]["MANDRIGO_VER"]
+            ,"USER_NAME",$GLOBALS["USER_DATA"]["NAME"]
+            ,"CURRENT_PAGE",$GLOBALS["PAGE_DATA"]["RNAME"]
+        );
         if(count($GLOBALS["PAGE_DATA"]["VARS"])%2==0){
             $this->page_parse_vars=array_merge_recursive($GLOBALS["PAGE_DATA"]["VARS"],$this->page_parse_vars);
         }
@@ -112,7 +114,6 @@ class page{
                 }
             }
             else{
-                $content=$this->gen_content();
                 $this->page_parse_vars=array_merge_recursive(array("CONTENT",$content,"PAGE_TITLE",$GLOBALS["PAGE_DATA"]["TITLE"]),$this->page_parse_vars);
             }
 
@@ -143,17 +144,22 @@ class page{
         $content="";
         $soq=count($GLOBALS["PAGE_DATA"]["HOOKS"]);
         for($i=0;$i<$soq;$i++){
-            if(!($sql_result=$this->page_db->fetch_array("SELECT * FROM `".TABLE_PREFIX.TABLE_PACKAGE_DATA."` WHERE `package_id`='".$GLOBALS["PAGE_DATA"]["HOOKS"][$i]."';"))){
-                if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-                    $this->page_error_logger->add_error(14,"sql");
-                    die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
-                        $this->page_error_logger->generate_report().$GLOBALS["HTML"]["EEND"]);
+            if(!empty($GLOBALS["PAGE_DATA"]["HOOKS"][$i])){
+                if(!($sql_result=$this->page_db->fetch_array("SELECT * FROM `".TABLE_PREFIX.TABLE_PACKAGE_DATA."` WHERE `package_id`='".$GLOBALS["PAGE_DATA"]["HOOKS"][$i]."';"))){
+                    if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
+                        $this->page_error_logger->add_error(14,"sql");
+                        die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
+                            $this->page_error_logger->generate_report().$GLOBALS["HTML"]["EEND"]);
+                    }
                 }
+                if(!$tmp=$this->regester_hook($i,$sql_result["package_name"])){
+                    return false;
+                }
+                $content.=$tmp;
             }
-            if(!$tmp=$this->regester_hook($i,$sql_result["package_name"])){
+            else{
                 return false;
             }
-            $content.=$tmp;
         }
         return $content;
     }
@@ -164,6 +170,7 @@ class page{
         $string="$"."content=$"."hookc->".$hook.HOOK_DISPLAY;
         eval($string);
         $string="$"."vars=$"."hookc->".$hook.HOOK_VARS;
+        eval($string);
         if(count($vars)%2==0){
             $this->page_parse_vars=array_merge_recursive($vars,$this->page_parse_vars);
         }

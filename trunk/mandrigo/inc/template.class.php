@@ -72,11 +72,15 @@ class template{
         }
         return true;
     }
-    function pparse($vars=array()){
+    function pparse($vars=array(),$comp=true,$vparse=true){
         $sot=count($this->tpl);
         for($i=0;$i<$sot;$i++){
-            $this->tpl[$i]=$this->compile($vars,$this->tpl[$i]);
-            $this->tpl[$i]=$this->vparse($vars,$this->tpl[$i]);
+            if($comp){
+                $this->tpl[$i]=$this->compile($vars,$this->tpl[$i]);
+            }
+            if($vparse){
+                $this->tpl[$i]=$this->vparse($vars,$this->tpl[$i]);
+            }
         }
         return true;
     }
