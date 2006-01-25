@@ -1,6 +1,9 @@
 example
 Just an example of how to format packages
 
+f_mail 0.1
+Display finished.  Mail feature done but buggy.  Admin not finished yet.
+
 title 0.1
 Title generation done (admin not finished yet)
 
