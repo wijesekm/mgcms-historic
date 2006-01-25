@@ -1,4 +1,4 @@
 0&split;<h3 style="margin: 0px;">Display Errors</h3>
-&split;1&split;The requested page {CURRENT_PAGE} does not exist on this server.
+&split;1&split;The requested URL {SITE_URL}{REQUESTED_URI} does not exist on this server. If you're having trouble locating a destination, try visiting the home page. 
 &split;2&split;The requested page {CURRENT_PAGE} exists but it either has no data or had errors during the page generation process.  Please contact the webmaster to alert them of this issue.
 &split;3&split;The requested URL contained illegal inputs. For security reasons certain characters are not permitted to be entered as script inputs through the browser bar. If you're having trouble locating a destination, try visiting the home page. If you think this message is in error please e-mail the webmaster to alert him/her of this issue.
