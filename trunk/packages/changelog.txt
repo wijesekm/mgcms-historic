@@ -1,6 +1,9 @@
 example
 Just an example of how to format packages
 
+site_map 0.1
+Display function finished.  Admin not yet finished
+
 menu 0.1
 Display function finished.  Admin not yet finished
 
