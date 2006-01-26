@@ -24,5 +24,8 @@
 # character to interpose another module into the current module.  This
 # can be useful for creating a module that consists of many directories
 # spread out over the entire source repository.
+
 # The list of the mandrigo core packages
 core_modules -a mandrigo install packages
+
+everything -a mandrigo all
