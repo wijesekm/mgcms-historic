@@ -49,7 +49,7 @@ class f_mail_display{
 
     function f_mail_display(&$sql_db){
         $this->db=$sql_db;
-        $attrib="href=\"".$GLOBALS["SITE_DATA"]["IMG_URL"]."mg_images/dot.jpg\" alt=\"*\" border=\"0\"";
+        $attrib="src=\"".$GLOBALS["SITE_DATA"]["IMG_URL"]."mg_images/dot.jpg\" alt=\"*\" border=\"0\"";
         $this->config["STAR"]=ereg_replace("{ATTRIB}",$attrib,$GLOBALS["HTML"]["IMG"]);
 	}
     function display($id,$errors=array("FAIL"=>false,"MAIL"=>false)){
