@@ -65,6 +65,12 @@ $GLOBALS["HTML"]["HR"]="<hr {ATTRIB}/>";
 
 //IMG Tag
 $GLOBALS["HTML"]["IMG"]="<img {ATTRIB} />";
+
+//LIST Tags
+$GLOBALS["HTML"]["UL"]="<ul {ATTRIB}>\n";
+$GLOBALS["HTML"]["UL!"]="</ul>\n";
+$GLOBALS["HTML"]["LI"]="<li {ATTRIB}>";
+$GLOBALS["HTML"]["LI!"]="</li>\n";
 //
 //Tag Groups
 //
