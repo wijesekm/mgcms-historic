@@ -92,11 +92,7 @@ class f_mail_display{
                 $to_name=$tmp[0]." ".$tmp[1];
             }
         }
-            $this->pparse_vars = array("MAIL_U_NAME",$GLOBALS["HTTP_POST"]["M_USER_NAME"]
-                                ,"MAIL_U_EMAIL",$GLOBALS["HTTP_POST"]["M_USER_EMAIL"]
-                                ,"MAIL_SUBJECT",$GLOBALS["HTTP_POST"]["M_SUBJECT"]
-                                ,"MAIL_MESSAGE",$GLOBALS["HTTP_POST"]["M_MESSAGE"]
-                                ,"MAIL_S_NAME",$to_name
+            $this->pparse_vars = array("MAIL_S_NAME",$to_name
                                 ,"MAIL_S_FORM_EMAIL",$to_email
                                 ,"MAIL_S_DISP_EMAIL",$r_email);
         if($errors["FAIL"]&&!$errors["MAIL"]){
@@ -124,10 +120,15 @@ class f_mail_display{
 			else{
 				$this->pparse_vars=$this->merge_array(array("MAIL_STAR4",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars);    
 			}
-			$this->pparse_vars=$this->merge_array(array("MAIL_TOP_ERROR",$GLOBALS["LANGUAGE"]["F_MAIL_ERROR_ALERT"]),$this->pparse_vars);
+			$this->pparse_vars=$this->merge_array(array("MAIL_TOP_ERROR",$GLOBALS["LANGUAGE"]["F_MAIL_ERROR_ALERT"].$GLOBALS["HTML"]["BR"]),$this->pparse_vars);
+			$vars=array("MAIL_U_NAME",$GLOBALS["HTTP_POST"]["M_USER_NAME"]
+                        ,"MAIL_U_EMAIL",$GLOBALS["HTTP_POST"]["M_USER_EMAIL"]
+                        ,"MAIL_SUBJECT",$GLOBALS["HTTP_POST"]["M_SUBJECT"]
+                        ,"MAIL_MESSAGE",$GLOBALS["HTTP_POST"]["M_MESSAGE"]);
+            $this->pparse_vars=$this->merge_array($vars,$this->pparse_vars);
 		}
 		else if(!$errors["FAIL"]&&$errors["MAIL"]){
-			$this->pparse_vars=$this->merge_array(array("MAIL_TOP_ERROR",$GLOBALS["LANGUAGE"]["F_MAIL_SENT"]),$this->pparse_vars);	
+			$this->pparse_vars=$this->merge_array(array("MAIL_TOP_ERROR",$GLOBALS["LANGUAGE"]["F_MAIL_SENT"].$GLOBALS["HTML"]["BR"]),$this->pparse_vars);	
 			$this->pparse_vars=$this->merge_array(array("MAIL_STAR1",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars); 
 			$this->pparse_vars=$this->merge_array(array("MAIL_STAR2",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars); 
 			$this->pparse_vars=$this->merge_array(array("MAIL_STAR3",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars); 
