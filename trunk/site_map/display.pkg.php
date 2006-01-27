@@ -70,9 +70,7 @@ class site_map_display{
 						}
 						$data.=$this->genlink_internal($page,$current_page["page_rname"]);	
 					}
-					if(!$tmp_=$this->subpage($current_page,1)){
-						return false;
-					}
+					$tmp_=$this->subpage($current_page,1);
 					$data.=$tmp_;
 				}
 			}
@@ -82,12 +80,19 @@ class site_map_display{
 		return $this->tpl->return_template();
 	}
 	function subpage($sql,$level){
-		$data=ereg_replace("{ATTRIB}",$this->config["ul_attrib"],$GLOBALS["HTML"]["UL"]);
+	  	$first_ul=true;
+	  	$end_ul=false;
+		$data="";
 		$sql["page_subpages"]=explode(";",$sql["page_subpages"]);
 		$soq=count($sql["page_subpages"]);
 		for($i=0;$i<$soq;$i++){
 			$current_page=$this->sql_db->fetch_array("SELECT * FROM `".TABLE_PREFIX.TABLE_PAGE_DATA."` WHERE `page_id`='".$sql["page_subpages"][$i]."';");
 			if($current_page){
+			  	if($first_ul){
+					$data.=ereg_replace("{ATTRIB}",$this->config["li_attrib"]."style=\"list-style-type: none;\"",$GLOBALS["HTML"]["LI"]).ereg_replace("{ATTRIB}",$this->config["ul_attrib"],$GLOBALS["HTML"]["UL"]);
+					$first_ul=false;
+					$end_ul=true;
+				}
 				if(eregi("==>",$current_page["page_name"])){
 					$data.=$this->genlink_external($current_page["page_name"],$current_page["page_rname"]);	
 				}	
@@ -101,13 +106,14 @@ class site_map_display{
 					}
 					$data.=$this->genlink_internal($page,$current_page["page_rname"]);
 				}
-				if(!$tmp_=$this->subpage($current_page,$level+1)){
-					return false;
-				}				
+				$tmp_=$this->subpage($current_page,$level+1);			
 				$data.=$tmp_;
 			}
 		}
-		return $data.$GLOBALS["HTML"]["UL!"];
+		if($end_ul){
+			$data.=$GLOBALS["HTML"]["UL!"].$GLOBALS["HTML"]["LI!"];
+		}
+		return $data;
 	}
 	function genlink_external($url,$name){
 		$attr="href=\"".ereg_replace("==>","",$url)."\" ".$this->config["link_attrib"];
