@@ -62,12 +62,12 @@ class title{
                 $data=$h.$this->config["title"].$endh.$hr."\n";
             break;
             case 2:
-                $attrib="src=\"".$this->config["i_url"]."\" border=\"0\" alt=\"".$this->config["title"]."\"";
+                $attrib="src=\"".$this->config["i_url"]."\" alt=\"".$this->config["title"]."\"";
                 $img=ereg_replace("{ATTRIB}",$attrib,$GLOBALS["HTML"]["IMG"]);
                 $data=$img."\n";
             break;
             case 3:
-                $attrib="src=\"".$this->config["i_url"]."\" border=\"0\" alt=\"".$this->config["title"]."\"";
+                $attrib="src=\"".$this->config["i_url"]."\" alt=\"".$this->config["title"]."\"";
                 $img=ereg_replace("{ATTRIB}",$attrib,$GLOBALS["HTML"]["IMG"]);
                 $hr=ereg_replace("{ATTRIB}",$this->config["hr_attrib"],$GLOBALS["HTML"]["HR"]);
                 $data=$img.$hr."\n";
