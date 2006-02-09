@@ -82,8 +82,9 @@ if($GLOBALS["MANDRIGO_CONFIG"]["SITE_STATUS"]||$GLOBALS["HTTP_GET"]["KEY"]==$GLO
     echo $current_page->display();
 }
 else{
-    $tpl = new template($GLOBALS["MANDRIGO_CONFIG"]["TEMPLATE_PATH"].TPL_OFF_SITE);
-    echo $tpl->pparse();
+  	$tpl = new template();
+    $tpl->load($GLOBALS["MANDRIGO_CONFIG"]["TEMPLATE_PATH"].TPL_OFF_SITE);
+    echo $tpl->return_template();
 }
 
 ?>
