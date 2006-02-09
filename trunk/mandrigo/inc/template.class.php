@@ -72,15 +72,17 @@ class template{
         }
         return true;
     }
-    function pparse($vars=array(),$comp=true,$vparse=true){
+    function pparse($vars=array(),$comp=true,$vparse=true,$tplcomp=false){
         $sot=count($this->tpl);
         for($i=0;$i<$sot;$i++){
-            if($comp){
-                $this->tpl[$i]=$this->compile($vars,$this->tpl[$i]);
-            }
-            if($vparse){
-                $this->tpl[$i]=$this->vparse($vars,$this->tpl[$i]);
-            }
+          	if($tplcomp[$i]&&!$tplcomp){
+	            if($comp){
+	                $this->tpl[$i]=$this->compile($vars,$this->tpl[$i]);
+	            }
+	            if($vparse){
+	                $this->tpl[$i]=$this->vparse($vars,$this->tpl[$i]);
+	            }			    
+			}
         }
         return true;
     }
