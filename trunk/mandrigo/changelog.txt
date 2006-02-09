@@ -1,6 +1,6 @@
 0.5.0
-1) hook system now used to regester display packages and other addins
+1) hook system now used to register display packages and other addins
 2) debug mode to bypass the error msg logging system
 3) support for basic page statistics
-4) you can now turn individual pages off for maintainance as well as the whole site
-
+4) you can now turn individual pages off for maintenance as well as the whole site
+5) Display system now completely separate from mandrigo core
