@@ -75,7 +75,7 @@ class template{
     function pparse($vars=array(),$comp=true,$vparse=true,$tplcomp=false){
         $sot=count($this->tpl);
         for($i=0;$i<$sot;$i++){
-          	if($tplcomp[$i]&&!$tplcomp){
+          	if($tplcomp[$i]||!$tplcomp){
 	            if($comp){
 	                $this->tpl[$i]=$this->compile($vars,$this->tpl[$i]);
 	            }
