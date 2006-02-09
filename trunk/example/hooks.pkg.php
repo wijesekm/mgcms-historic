@@ -52,16 +52,16 @@ if(!defined("START_MANDRIGO")){
 //$i is the hooks position in the stack of hooks for this page.
 //For information on using the $sql or $error_log please see its respective documentation.
 //
-class p_content_hook{
-    function p_content_display_hook(&$sql,&$error_log,$i){
+class example_hook{
+    function example_display_hook(&$sql,&$error_log,$i){
         $tmp = new example_display();
         return $tmp->display();
     }
-    function p_content_vars_hook(&$sql,&$error_log,$i){
+    function example_vars_hook(&$sql,&$error_log,$i){
         $tmp = new example_display();
         return $tmp->return_vars();
     }
-    function p_content_admin_hook(&$sql,&$error_log,$i){
+    function example_admin_hook(&$sql,&$error_log,$i){
         $tmp = new example_admin();
         return $tmp->admin();
     }
