@@ -26,6 +26,10 @@
 # spread out over the entire source repository.
 
 # The list of the mandrigo core packages
-core_modules -a mandrigo install packages
+core_modules -a mandrigo install
+
+package_modules -a example f_mail menu p_content site_map title
+
+all -a package_modules core_modules
 
 everything -a mandrigo all
