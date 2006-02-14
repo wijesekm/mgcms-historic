@@ -50,7 +50,6 @@ if($GLOBALS["SITE_DATA"]["URL_FORMAT"] == 0){
     $GLOBALS["HTTP_GET"]["KEY"]  = (isset($HTTP_GET_VARS["k"]))?clean_password($HTTP_GET_VARS["k"]):"";
     $GLOBALS["HTTP_GET"]["MAIL_ADDR"] = (isset($HTTP_GET_VARS["mail"]))?clean_email($HTTP_GET_VARS["mail"]):$GLOBALS["SITE_DATA"]["WEBMASTER_EMAIL"];
     $GLOBALS["HTTP_GET"]["ID"] = (isset($HTTP_GET_VARS["id"]))?clean_num($HTTP_GET_VARS["id"]):DEFAULT_ID;
-    $GLOBALS["HTTP_GET"]["COM_ID"] = (isset($HTTP_GET_VARS["cid"]))?clean_num($HTTP_GET_VARS["cid"]):DEFAULT_ID;
 	$GLOBALS["HTTP_GET"]["PAGE_NUMBER"] = (isset($HTTP_GET_VARS["n"]))?clean_num($HTTP_GET_VARS["n"]):DEFAULT_PN;
     if(eregi(BAD_DATA,$GLOBALS["HTTP_GET"]["MAIL_ADDR"])){
         $GLOBALS["HTTP_GET"]["MAIL_ADDR"] = clean_num($HTTP_GET_VARS["mail"]);
@@ -78,7 +77,6 @@ else{
     $GLOBALS["HTTP_GET"]["KEY"] = (isset($url["k"]))?clean_password($url["k"]):"";
     $GLOBALS["HTTP_GET"]["MAIL_ADDR"] = (isset($url["mail"]))?clean_email($url["mail"]):$GLOBALS["SITE_DATA"]["WEBMASTER_EMAIL"];
     $GLOBALS["HTTP_GET"]["ID"] = (isset($url["id"]))?clean_num($url["id"]):DEFAULT_ID;
-    $GLOBALS["HTTP_GET"]["COM_ID"] = (isset($url["cid"]))?clean_num($url["cid"]):DEFAULT_ID;
     $GLOBALS["HTTP_GET"]["PAGE_NUMBER"] = (isset($url["n"]))?clean_num($url["n"]):DEFAULT_PN;
     if(eregi(BAD_DATA,$GLOBALS["HTTP_GET"]["MAIL_ADDR"])){
         $GLOBALS["HTTP_GET"]["MAIL_ADDR"] = clean_num($url["mail"]);
