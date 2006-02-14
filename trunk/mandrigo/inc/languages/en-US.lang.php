@@ -61,4 +61,6 @@ $GLOBALS["LANGUAGE"]["OPTITLE"]="Page Under Maintainance";
 $GLOBALS["LANGUAGE"]["F_MAIL_ERROR_ALERT"]="Invalid Data. Please fill out or fix the dotted fields.";
 $GLOBALS["LANGUAGE"]["F_MAIL_SENT"]="Message Sent!";
 
+//news script
+$GLOBALS["LANGUAGE"]["NO_POST"]="Cannot find the requested post.";
 ?>
