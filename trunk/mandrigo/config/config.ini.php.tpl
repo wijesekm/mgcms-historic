@@ -110,7 +110,7 @@ $GLOBALS["MANDRIGO_CONFIG"]["SITE_STATUS"]=true;
 $GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]=false;
 
 //
-//Index name is the name of what ever your main access file is default is (index.php)
+//Index name is the name of what ever your main access file is ex (index.$php_ex)
 //
 $GLOBALS["MANDRIGO_CONFIG"]["INDEX"]="index.$php_ex";
 
