@@ -70,7 +70,7 @@ define("HOOK_CLASS","_hook();");
 //Defaults
 //
 define("DEFAULT_ACTION","D");
-define("DEFAULT_ID",1);
+define("DEFAULT_ID",0);
 define("DEFAULT_PN",0);
 //
 //Misc
