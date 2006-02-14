@@ -84,6 +84,7 @@ if($GLOBALS["MANDRIGO_CONFIG"]["SITE_STATUS"]||$GLOBALS["HTTP_GET"]["KEY"]==$GLO
 else{
   	$tpl = new template();
     $tpl->load($GLOBALS["MANDRIGO_CONFIG"]["TEMPLATE_PATH"].TPL_OFF_SITE);
+    $tpl->pparse();
     echo $tpl->return_template();
 }
 
