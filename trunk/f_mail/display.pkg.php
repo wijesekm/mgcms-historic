@@ -74,7 +74,11 @@ class f_mail_display{
                 }
                 $r_email=$sql_result1["user_email"];
                 $tmp=explode(";",$sql_result1["user_real_name"]);
-                $to_name=$tmp[0]." ".$tmp[1];
+                $to_name=$tmp[0]." ";
+                if($tmp[1]){
+					$to_name.=$tmp[1]." ";
+				}
+				$to_name.=$tmp[2];
             }
         }
         else{
@@ -89,7 +93,11 @@ class f_mail_display{
                 }
                 $r_email=$sql_result1["user_email"];
                 $tmp=explode(";",$sql_result1["user_real_name"]);
-                $to_name=$tmp[0]." ".$tmp[1];
+                $to_name=$tmp[0]." ";
+                if($tmp[1]){
+					$to_name.=$tmp[1]." ";
+				}
+				$to_name.=$tmp[2];
             }
         }
             $this->pparse_vars = array("MAIL_S_NAME",$to_name
@@ -192,8 +200,12 @@ class f_mail_display{
                     return false;
                 }
                     $rc_email=$sql_result1["user_email"];
-                    $tmp=$sql_result1["user_real_name"];
-                    $rc_fullname=$tmp[0]." ".$tmp[1];
+                    $tmp=explode(";",$sql_result1["user_real_name"]);
+	                $rc_fullname=$tmp[0]." ";
+	                if($tmp[1]){
+						$rc_fullname.=$tmp[1]." ";
+					}
+					$rc_fullname.=$tmp[2];
             }
             else{
                 $rc_fullname=$sql_result["user_fullname"];
