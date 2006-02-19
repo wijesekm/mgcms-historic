@@ -109,7 +109,7 @@ class profile_display{
 		$sql_result["group_users"]=explode(";",$sql_result["group_users"]);
 		for($i=0;$i<count($sql_result["group_users"]);$i++){
 		  	if($sql_result1=$this->profile_db->fetch_array("SELECT * FROM `".TABLE_PREFIX.TABLE_USER_DATA."` where `user_id`='".$sql_result["group_users"][$i]."';")){
-				$group_members.=$this->gen_link_internal($GLOBALS["SITE_DATA"]["PROFILE_PAGE"],$sql_result1["user_name"],"id",$sql_result["group_users"][$i]);
+				$group_members.=$this->gen_link_internal($GLOBALS["SITE_DATA"]["PROFILE_PAGE"],$sql_result1["user_name"],"id","u".$sql_result["group_users"][$i]);
 				if($i<count($sql_result["group_users"])-1){
 					$group_members.=",";
 				}	
