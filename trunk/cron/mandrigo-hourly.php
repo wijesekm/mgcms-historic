@@ -27,8 +27,8 @@
 **********************************************************/
 
 #change this!!!
-$web_path="";
-
+$web_path="/var/public_html/external_web/htdocs/";
+$img_path="/var/public_html/common_resources/skin_1/images/mg_images/tmp/";
 #dont change below this!
 define("START_MANDRIGO",true);
 include($web_path."config/config.ini.php");
@@ -41,4 +41,18 @@ $db->connect($sql_config["SQL_HOST"],$sql_config["SQL_USER"],$sql_config["SQL_PA
 
 #tmp_dir cleaning
 $db->query("TRUNCATE TABLE `".TABLE_PREFIX.TABLE_TEMP."`;");
+
+#tmp image cleaning
+function remove_dir($dir) {
+   if(!$dh = @opendir($dir)) return;
+   while (($obj = readdir($dh))) {
+     if($obj=='.' || $obj=='..') continue;
+     if (!@unlink($dir.'/'.$obj)) {
+         remove_dir($dir.'/'.$obj);
+     } else {
+         $file_deleted++;
+     }
+   }
+}
+remove_dir($img_path);
 ?>
