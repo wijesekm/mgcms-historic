@@ -110,6 +110,7 @@ class page{
                     $this->page_parse_vars=array_merge_recursive(array("CONTENT",$this->page_error_logger->generate_report(),"PAGE_TITLE",$GLOBALS["LANGUAGE"]["ETITLE2"]),$this->page_parse_vars);
                 }
                 else{
+                  	//echo "<pre>";print_r($this->page_parse_vars);
                     $this->page_parse_vars=array_merge_recursive(array("CONTENT",$content,"PAGE_TITLE",$GLOBALS["PAGE_DATA"]["TITLE"]),$this->page_parse_vars);
                 }
             }
@@ -171,6 +172,7 @@ class page{
         eval($string);
         $string="$"."vars=$"."hookc->".$hook.HOOK_VARS;
         eval($string);
+        //echo count($vars);
         if(count($vars)%2==0){
             $this->page_parse_vars=array_merge_recursive($vars,$this->page_parse_vars);
         }
