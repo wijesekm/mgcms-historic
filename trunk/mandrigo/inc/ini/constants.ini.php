@@ -48,6 +48,7 @@ define("TABLE_PAGE_DATA","page_data");
 define("TABLE_RESTRICTED_PAGE_DATA","restricted_page_data");
 define("TABLE_PACKAGE_DATA","packages");
 define("TABLE_SITE_STATS","site_stats");
+define("TABLE_TEMP","tmp");
 
 //
 //Templates
@@ -76,6 +77,6 @@ define("DEFAULT_PN",0);
 //Misc
 //
 define("MANDRIGO_CODE_BLOCK","<!--MG_CODE-->");
-define("BAD_DATA","&ERROR_IN_DATA;")
-
+define("BAD_DATA","&ERROR_IN_DATA;");
+define("TMP_IMG","tmp");
 ?>
