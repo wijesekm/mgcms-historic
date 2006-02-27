@@ -215,11 +215,19 @@ else{
     if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."word_filter.class.$php_ex"))){
         $error_log->add_error(14,"script");
     }
+    if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."form_validator.class.$php_ex"))){
+        $error_log->add_error(16,"script");
+    }
     if($error_log->get_status()==2){
         die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
            $error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
     }
 }
+
+//
+//Seeds random number generator
+//
+srand(((int)((double)microtime()*1000003)));
 
 //
 //Stats and Banning
