@@ -49,7 +49,7 @@ if($GLOBALS["SITE_DATA"]["URL_FORMAT"] == 0){
     $GLOBALS["HTTP_GET"]["ACTION"] = (isset($HTTP_GET_VARS["a"]))?clean_action($HTTP_GET_VARS["a"]):DEFAULT_ACTION;
     $GLOBALS["HTTP_GET"]["KEY"]  = (isset($HTTP_GET_VARS["k"]))?clean_password($HTTP_GET_VARS["k"]):"";
     $GLOBALS["HTTP_GET"]["MAIL_ADDR"] = (isset($HTTP_GET_VARS["mail"]))?clean_email($HTTP_GET_VARS["mail"]):$GLOBALS["SITE_DATA"]["WEBMASTER_EMAIL"];
-    $GLOBALS["HTTP_GET"]["ID"] = (isset($HTTP_GET_VARS["id"]))?clean_num($HTTP_GET_VARS["id"]):DEFAULT_ID;
+    $GLOBALS["HTTP_GET"]["ID"] = (isset($HTTP_GET_VARS["id"]))?clean_id($HTTP_GET_VARS["id"]):DEFAULT_ID;
 	$GLOBALS["HTTP_GET"]["PAGE_NUMBER"] = (isset($HTTP_GET_VARS["n"]))?clean_num($HTTP_GET_VARS["n"]):DEFAULT_PN;
     if(eregi(BAD_DATA,$GLOBALS["HTTP_GET"]["MAIL_ADDR"])){
         $GLOBALS["HTTP_GET"]["MAIL_ADDR"] = clean_num($HTTP_GET_VARS["mail"]);
@@ -76,7 +76,7 @@ else{
     $GLOBALS["HTTP_GET"]["ACTION"] = (isset($url["a"]))?clean_action($url["a"]):DEFAULT_ACTION;
     $GLOBALS["HTTP_GET"]["KEY"] = (isset($url["k"]))?clean_password($url["k"]):"";
     $GLOBALS["HTTP_GET"]["MAIL_ADDR"] = (isset($url["mail"]))?clean_email($url["mail"]):$GLOBALS["SITE_DATA"]["WEBMASTER_EMAIL"];
-    $GLOBALS["HTTP_GET"]["ID"] = (isset($url["id"]))?clean_num($url["id"]):DEFAULT_ID;
+    $GLOBALS["HTTP_GET"]["ID"] = (isset($url["id"]))?clean_id($url["id"]):DEFAULT_ID;
     $GLOBALS["HTTP_GET"]["PAGE_NUMBER"] = (isset($url["n"]))?clean_num($url["n"]):DEFAULT_PN;
     if(eregi(BAD_DATA,$GLOBALS["HTTP_GET"]["MAIL_ADDR"])){
         $GLOBALS["HTTP_GET"]["MAIL_ADDR"] = clean_num($url["mail"]);
@@ -128,7 +128,7 @@ $GLOBALS["HTTP_POST"]["M_USER_NAME"]=(!empty($HTTP_POST_VARS["u_name"]))?clean_n
 $GLOBALS["HTTP_POST"]["M_USER_EMAIL"]=(!empty($HTTP_POST_VARS["u_addr"]))?clean_email($HTTP_POST_VARS["u_addr"]):"";
 $GLOBALS["HTTP_POST"]["M_SUBJECT"]=(!empty($HTTP_POST_VARS["u_subj"]))?clean_text($HTTP_POST_VARS["u_subj"]):"";
 $GLOBALS["HTTP_POST"]["M_MESSAGE"]=(!empty($HTTP_POST_VARS["u_message"]))?clean_text($HTTP_POST_VARS["u_message"]):"";
-
+$GLOBALS["HTTP_POST"]["S_CODE"]=(!empty($HTTP_POST_VARS["s_code"]))?clean_text($HTTP_POST_VARS["s_code"]):"";
 //{HTTP_POST_ADD_IN}
 
 ?>
