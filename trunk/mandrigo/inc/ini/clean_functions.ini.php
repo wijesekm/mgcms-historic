@@ -48,6 +48,9 @@ function clean_UID($id){
 function clean_email($string){
     return (eregi("^[a-z0-9._-]+@[a-z0-9-]+\.[a-z.]{2,5}$",$string))?$string : BAD_DATA;
 }
+function clean_id($string){
+    return (eregi("^[a-z]{0,1}[0-9]+$",$string))?$string:BAD_DATA;
+}
 function clean_page($string){
     return (eregi("^[a-z0-9._-]+$",$string))?$string:BAD_DATA;
 }
