@@ -38,7 +38,7 @@ if(!defined("START_MANDRIGO")){
 
 $GLOBALS["SITE_DATA"]["SITE_NAME"]=$sql_db->fetch_result("SELECT `data_value` FROM `".TABLE_PREFIX.TABLE_MAIN_DATA."` WHERE `data_name`='site_name';");
 $GLOBALS["SITE_DATA"]["SITE_URL"]=$sql_db->fetch_result("SELECT `data_value` FROM `".TABLE_PREFIX.TABLE_MAIN_DATA."` WHERE `data_name`='site_url';");
-$GLOBALS["SITE_DATA"]["IMG_URL"]=$sql_db->fetch_result("SELECT `data_value` FROM `".TABLE_PREFIX.TABLE_MAIN_DATA."` WHERE `data_name`='template_url';");
+$GLOBALS["SITE_DATA"]["IMG_URL"]=$sql_db->fetch_result("SELECT `data_value` FROM `".TABLE_PREFIX.TABLE_MAIN_DATA."` WHERE `data_name`='img_url';");
 $GLOBALS["SITE_DATA"]["IMG_URL"]=(empty($GLOBALS["SITE_DATA"]["IMG_URL"]))?$GLOBALS["SITE_DATA"]["SITE_URL"]:$GLOBALS["SITE_DATA"]["IMG_URL"];
 $GLOBALS["SITE_DATA"]["URL_FORMAT"]=$sql_db->fetch_result("SELECT `data_value` FROM `".TABLE_PREFIX.TABLE_MAIN_DATA."` WHERE `data_name`='url_format';");
 $GLOBALS["SITE_DATA"]["MAIN_PAGE"]=$sql_db->fetch_result("SELECT `data_value` FROM `".TABLE_PREFIX.TABLE_MAIN_DATA."` WHERE `data_name`='main_page';");
@@ -60,5 +60,5 @@ $GLOBALS["SITE_DATA"]["UC_LOGIN_TYPE"]=$sql_db->fetch_result("SELECT `data_value
 $GLOBALS["SITE_DATA"]["STANDARD_SESSION_LEN"]=$sql_db->fetch_result("SELECT `data_value` FROM `".TABLE_PREFIX.TABLE_MAIN_DATA."` WHERE `data_name`='standard_session_len';");
 $GLOBALS["SITE_DATA"]["REMEMBERED_SESSION_LEN"]=$sql_db->fetch_result("SELECT `data_value` FROM `".TABLE_PREFIX.TABLE_MAIN_DATA."` WHERE `data_name`='remembered_session_len';");
 $GLOBALS["SITE_DATA"]["UC_REMEMBERED_SESSION_LEN"]=$sql_db->fetch_result("SELECT `data_value` FROM `".TABLE_PREFIX.TABLE_MAIN_DATA."` WHERE `data_name`='uc_remembered_session_len';");
-
+$GLOBALS["SITE_DATA"]["IMG_PATH"]=$sql_db->fetch_result("SELECT `data_value` FROM `".TABLE_PREFIX.TABLE_MAIN_DATA."` WHERE `data_name`='img_path';");
 ?>
