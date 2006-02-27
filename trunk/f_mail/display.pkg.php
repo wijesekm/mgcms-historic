@@ -44,15 +44,26 @@ class f_mail_display{
 
     var $config;
     var $db;
+    var $fv;
     var $pparse_vars;
     var $def_error;
 
     function f_mail_display(&$sql_db){
         $this->db=$sql_db;
-        $attrib="src=\"".$GLOBALS["SITE_DATA"]["IMG_URL"]."mg_images/dot.jpg\" alt=\"*\" border=\"0\"";
+        $attrib="src=\"".$GLOBALS["SITE_DATA"]["IMG_URL"]."dot.jpg\" alt=\"*\" border=\"0\"";
         $this->config["STAR"]=ereg_replace("{ATTRIB}",$attrib,$GLOBALS["HTML"]["IMG"]);
+        $this->fv=new form_validator($this->db,4);
+	}
+	function id(){
+		return rand(0,999999);
 	}
     function display($id,$errors=array("FAIL"=>false,"MAIL"=>false)){
+      	$message_id=$this->id();
+      	if($this->config["FORM_VALIDATE"]==1){
+	      	if(!$this->fv->make("$message_id","fm")){
+				return false;
+			}
+      	}
         //gets the email address and name to mail to
         $to_name=false;
         $to_email=false;
@@ -102,7 +113,9 @@ class f_mail_display{
         }
             $this->pparse_vars = array("MAIL_S_NAME",$to_name
                                 ,"MAIL_S_FORM_EMAIL",$to_email
-                                ,"MAIL_S_DISP_EMAIL",$r_email);
+                                ,"MAIL_S_DISP_EMAIL",$r_email
+								,"MAIL_FORM_ID","$message_id"
+								,"MAIL_IMG",$GLOBALS["SITE_DATA"]["IMG_URL"].TMP_IMG."/"."fm_".$message_id.".png");
         if($errors["FAIL"]&&!$errors["MAIL"]){
 			if($errors["MAIL_STAR1"]){
 				$this->pparse_vars=$this->merge_array(array("MAIL_STAR1",$this->config["STAR"]),$this->pparse_vars);  
@@ -128,6 +141,12 @@ class f_mail_display{
 			else{
 				$this->pparse_vars=$this->merge_array(array("MAIL_STAR4",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars);    
 			}
+			if($errors["MAIL_STAR5"]){
+				$this->pparse_vars=$this->merge_array(array("MAIL_STAR5",$this->config["STAR"]),$this->pparse_vars);
+			}
+			else{
+				$this->pparse_vars=$this->merge_array(array("MAIL_STAR5",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars);    
+			}
 			$this->pparse_vars=$this->merge_array(array("MAIL_TOP_ERROR",$GLOBALS["LANGUAGE"]["F_MAIL_ERROR_ALERT"].$GLOBALS["HTML"]["BR"]),$this->pparse_vars);
 			$vars=array("MAIL_U_NAME",$GLOBALS["HTTP_POST"]["M_USER_NAME"]
                         ,"MAIL_U_EMAIL",$GLOBALS["HTTP_POST"]["M_USER_EMAIL"]
@@ -141,18 +160,22 @@ class f_mail_display{
 			$this->pparse_vars=$this->merge_array(array("MAIL_STAR2",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars); 
 			$this->pparse_vars=$this->merge_array(array("MAIL_STAR3",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars); 
 			$this->pparse_vars=$this->merge_array(array("MAIL_STAR4",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars); 	
+			$this->pparse_vars=$this->merge_array(array("MAIL_STAR5",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars); 	
 		}
 		else{
 			$this->pparse_vars=$this->merge_array(array("MAIL_STAR1",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars); 
 			$this->pparse_vars=$this->merge_array(array("MAIL_STAR2",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars); 
 			$this->pparse_vars=$this->merge_array(array("MAIL_STAR3",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars); 
 			$this->pparse_vars=$this->merge_array(array("MAIL_STAR4",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars); 	
+			$this->pparse_vars=$this->merge_array(array("MAIL_STAR5",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars); 	
 		}
         $tmp = new template();
         $tmp->load($GLOBALS["MANDRIGO_CONFIG"]["TEMPLATE_PATH"].$GLOBALS["PAGE_DATA"]["DATAPATH"].$GLOBALS["PAGE_DATA"]["ID"]."_".$id."_email.".TPL_EXT);
-        return $tmp->return_template();
+        //echo "<pre>";print_r($this->pparse_vars);
+		return $tmp->return_template();
     }
     function return_vars(){
+      	//echo "<pre>";print_r($this->pparse_vars);
         return $this->pparse_vars;
     }
     function mail($id){
@@ -182,6 +205,11 @@ class f_mail_display{
         if(!$GLOBALS["HTTP_GET"]["MAIL_ADDR"]){
             return false;
         }
+        if($this->config["FORM_VALIDATE"]==1){
+	        if(!$this->fv->check($GLOBALS["HTTP_POST"]["S_CODE"],$GLOBALS["HTTP_GET"]["ID"],"fm")){
+				$errors["MAIL_STAR5"]=true;
+			}
+		}
         //if we have any errors go back to display screen and show errors
         if(count($errors)){
             $errors["FAIL"]=true;
@@ -267,6 +295,7 @@ class f_mail_display{
         $this->config["EMAIL_MSG"]=$sql_result["email_msg"];
         $this->config["E_LEVEL"]=$sql_result["error_level"];
         $this->config["SEND_TYPE"]=$sql_result["send_type"];
+        $this->config["FORM_VALIDATE"]=$sql_result["form_validate"];
         $this->config["ALERT_STYLE"]=$sql_result["alert_style"];
         $this->config["DATE_FORMAT"]=$sql_result["date_format"];
     }
