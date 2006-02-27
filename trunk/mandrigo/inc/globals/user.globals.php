@@ -94,7 +94,10 @@ else{
 $GLOBALS["USER_DATA"]["ID"]=$sql_result["user_id"];
 $GLOBALS["USER_DATA"]["NAME"]=$sql_result["user_name"];
 $GLOBALS["USER_DATA"]["GROUPS"]=explode(";",$sql_result["user_group"]);
-$GLOBALS["USER_DATA"]["REAL_NAME"]=$sql_result["user_real_name"];
+$tmp=explode(";",$sql_result["user_real_name"]);
+$GLOBALS["USER_DATA"]["FIRST_NAME"]=$tmp[0];
+$GLOBALS["USER_DATA"]["MIDDLE_NAME"]=$tmp[1];
+$GLOBALS["USER_DATA"]["LAST_NAME"]=$tmp[2];
 $GLOBALS["USER_DATA"]["EMAIL"]=$sql_result["user_email"];
 $GLOBALS["USER_DATA"]["IM"]=$sql_result["user_im"];
 $GLOBALS["USER_DATA"]["WEBSITE"]=$sql_result["user_website"];
