@@ -63,4 +63,11 @@ $GLOBALS["LANGUAGE"]["F_MAIL_SENT"]="Message Sent!";
 
 //news script
 $GLOBALS["LANGUAGE"]["NO_POST"]="Cannot find the requested post.";
+$GLOBALS["LANGUAGE"]["NO_COM"]="There are no comments for this post.";
+
+//profile
+$GLOBALS["LANGUAGE"]["YES"]="Yes";
+$GLOBALS["LANGUAGE"]["NO"]="No";
+$GLOBALS["LANGUAGE"]["EMAIL"]="Email ";
+$GLOBALS["LANGUAGE"]["NOUSER"]="User does not exist.";
 ?>
