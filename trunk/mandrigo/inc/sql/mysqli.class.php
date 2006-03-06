@@ -73,11 +73,16 @@ class db{
                 if(!mysqli_close($this->db_id)){
                     $thread_id = mysqli_thread_id($this->db_id);
                     mysqli_kill($this->db_id, $thread_id);
+                    mysqli_close($this->db_id)
                 }
 
             }
             else{
-                @mysqli_close($this->db_id)
+                if(!(@mysqli_close($this->db_id))){
+                	$thread_id = mysqli_thread_id($this->db_id);
+                    @mysqli_kill($this->db_id, $thread_id);
+					@mysqli_close($this->db_id)					
+				}
             }
         }
     }
