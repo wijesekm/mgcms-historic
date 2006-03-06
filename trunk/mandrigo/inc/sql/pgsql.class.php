@@ -2,7 +2,7 @@
 /**********************************************************
     pgsql.class.php
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 11/04/05
+	Date Last Edited: 3/03/06
 
 	Copyright (C) 2005  Kevin Wijesekera
 
@@ -37,67 +37,229 @@ if(!defined("START_MANDRIGO")){
 }
 
 class db{
-    var $cur_db;
 
-    function connect($host,$user_name,$password,$database,$port=""){
-        $con="host=$host ";
-        if($port){
-            $con.="port=$port ";
+    //database varable
+    var $db_id;
+
+    //
+    //Connection Commands
+    //
+    
+    //connects to the database server and selects the initial database
+    //returns true if connection and database selection successfull
+    function db_connect($host,$port,$socket,$user,$password,$database,$persistant=true,$secure=false,$ssl=""){
+        $con_str="";
+        if($host){
+            $con_str.="user=".$user;
         }
-        $con.="dbname=$database user=$user_name password=$password";
-		$this->cur_db=pg_connect($con);
-        if(!$this->cur_db) {
+        if($password){
+            $con_str.="password=".$password;
+        }
+        if($host){
+            $con_str.="host=".$host;
+        }
+        if($port){
+            $con_str.="port=".$port;
+        }
+        if($database){
+            $con_str.="dbname=".$database;
+        }
+        if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
+            if($persistant){
+                $this->db_id=pg_pconnect($con_str);
+            }
+            else{
+                $this->db_id=pg_connect($con_str);
+            }
+        }
+        else{
+            if($persistant){
+                if(!(@$this->db_id=pg_pconnect($con_str))){
+                    return false;
+                }
+            }
+            else{
+                if(!(@$this->db_id=pg_connect($con_str))){
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    //closes the current sql connection
+    function db_close(){
+        if($this->db_id){
+            if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
+                pg_close($this->db_id);
+            }
+            else{
+                @pg_close($this->db_id)
+            }
+        }
+    }
+
+    //
+    //Query Commands
+    //
+    
+    //function to find a result in a query
+    //returns the result value
+    function db_fetchresult($table,$value,$params,$row=0){
+		$tmp_value="";
+		$qstring="SELECT ".pg_escape_string($value)." FROM ".pg_escape_string($table)."";
+        if($params&&!$params%3){
+            for($i=0;$i<count($params);$i+=3){
+                $qstring.=" ".pg_escape_string($params[$i])."".$params[$i+1]."".pg_escape_string($params[$i+2])."";
+            }
+        }
+        $qstring.=";";
+        $result=$this->db_query($qstring);
+        if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
+            $tmp_value=pg_fetch_result($result,$row);
+        }
+        else{
+            if(!(@$tmp_value=pg_fetch_result($result,$row))){
+                return false;
+            }
+        }
+        $this->db_freeresult($result);
+        return $tmp_value;
+	}
+    
+    //function to find an array of values from the database
+    //returns the array of values
+    function db_fetcharray($table,$value,$params,$type="ASSOC"){
+		$tmp_value="";
+		$new_value="";
+		if(ereg(",",$value)){
+			$value=explode($value);
+			for($i=0;$i<count($value);$i++){
+				$new_value.="".pg_escape_string($value[$i])."";
+				if($i<count($value)){
+					$new_value.=",";
+				}
+			}
+		}
+		else{
+			$new_value="".pg_escape_string($value)."";
+		}
+		$qstring="SELECT ".$new_value." FROM ".pg_escape_string($table)."";
+        if($params&&!$params%3){
+            for($i=0;$i<count($params);$i+=3){
+                $qstring.=" ".pg_escape_string($params[$i])."".$params[$i+1]."".pg_escape_string($params[$i+2])."";
+            }
+        }
+        $qstring.=";";
+        $result=$this->db_query($qstring);
+        if($type="ASSOC"){
+			$type=PGSQL_ASSOC;
+		}
+		else if($type="NUM"){
+			$type=PGSQL_NUM;	
+		}
+		else{
+			$type=PGSQL_BOTH;
+		}       
+        if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
+            $tmp_value=pg_fetch_array($result,0,$type);
+        }
+        else{
+            if(!(@$tmp_value=pg_fetch_array($result,0,$type))){
+                return false;
+            }
+        }
+        $this->db_freeresult($result);
+        return $tmp_value;
+	}
+		
+    //function to find the number of rows in a query
+    //returns the number of rows
+    function db_numrows($table,$params){
+        $num_rows=0;
+        $qstring="SELECT * FROM ".pg_escape_string($table);
+        if($params&&!$params%3){
+            for($i=0;$i<count($params);$i+=3){
+                $qstring.=" ".pg_escape_string($params[$i]).$params[$i+1].pg_escape_string($params[$i+2]);
+            }
+        }
+        $qstring.=";";
+        $result=$this->db_query($qstring);
+        if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
+            $num_rows=pg_num_rows($result);
+        }
+        else{
+            if(!(@$num_rows=pg_num_rows($result))){
+                return false;
+            }
+        }
+        $this->db_freeresult($result);
+        return $num_rows;
+    }
+    
+    //function to find the number of fields in a query
+    //returns the number of fields
+	function db_numfields($table,$params){
+		$num_cols=0;
+		$qstring="SELECT * FROM ".pg_escape_string($table);
+        if($params&&!$params%3){
+            for($i=0;$i<count($params);$i+=3){
+                $qstring.=" ".pg_escape_string($params[$i]).$params[$i+1].pg_escape_string($params[$i+2]);
+            }
+        }
+        $qstring.=";";
+        $result=$this->db_query($qstring);
+        if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
+            $num_cols=pg_num_fields($result);
+        }
+        else{
+            if(!(@$num_cols=pg_num_fields($result))){
+                return false;
+            }
+        }
+        $this->db_freeresult($result);
+        return $num_cols;			
+	}
+	
+    //internal only query function.  Should only be called by functions in the db class!!
+    function db_query($string){
+        $result="";
+        if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
+            $result=pg_query($this->db_id,$string)
+        }
+        else{
+            if(!(@$result=pg_query($this->db_id,$string))){
+                return false;
+            }
+        }
+        return $result;
+    }
+    //
+    //Misc Commands
+    //
+    
+    //change the current database
+    //returns true if database selection successfull
+    function db_switchdatabase($new_database){
+        return false;
+    }
+    
+    //checks the current status of the connection
+    //returns true if the connection is ok
+    function db_checkstatus(){
+        if(!pg_ping($this->db_id)){
             return false;
         }
         return true;
     }
-    function close(){
-        pg_close($this->cur_db);
-    }
 
-    //executes a pgSQL query
-   	function query($query_string){
-        if(!$this->result= pg_query($this->cur_db,$query_string)){
-            return false;
+    //frees the current result. Internal only!
+    function db_freeresult($result){
+        if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
+            pg_free_result($result);
         }
-        return $this->result;
-	}
-
-	//fetches the number of rows given a query
-	function num_rows($query_string){
-        $query_id = $this->query($query_string);
-		$data = ($query_id) ? pg_num_rows($query_id):0;
-        $this->free_result($query_id);
-        return $data;
-	}
-
-	//fetches the number of fields given a query
-	function num_fields($query_string){
-        $query_id = $this->query($query_string);
-        $data = ($query_id) ?  pg_num_fields($query_id):0;
-        $this->free_result($query_id);
-        return $data;
-	}
-
-	//fetches an array of the row given a query
-    function fetch_array($query_string,$type=ASSOC){//PGSQL_ASSOC,PGSQL_NUM
-        $type.="PGSQL_".$type;
-        $query_id = $this->query($query_string);
-        $data =  pg_fetch_array($query_id,0,$type);
-        $this->free_result($query_id);
-        return $data;
-    }
-
-    //clears the pgSQL query
-    function free_result($query_id){
-        return pg_freeresult($query_id);
-    }
-
-    //fetches one result given a query
-    function fetch_result($query_string,$row=0){
-        $query_id = $this->query($query_string);
-        $data =  pg_fetch_result($query_id,$row,0);
-        $this->free_result($query_id);
-        return $data;
+        else{
+            @pg_free_result($result);
+        }
     }
 }
