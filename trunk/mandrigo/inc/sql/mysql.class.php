@@ -197,6 +197,9 @@ class db{
 		}
 		return false;
 	}
+	
+	//function to preform DROP, CREATE, ALTER, and TRUNCATE sql statements
+	//returns true if query is a success
 	function db_dbcommands($c_type,$q_type,$db,$table="",$fields="",$params=""){
 	  	$qstring.="";
 		switch($c_type){
@@ -402,6 +405,7 @@ class db{
             @mysql_free_result($result);
         }
     }
+    
     //Internal function to form querys for select statements
     //returns the query string
     function db_formfetchquery($table,$fields,$params){
