@@ -49,9 +49,12 @@ class db{
     //returns true if connection and database selection successfull
     function db_connect($host,$port,$socket,$user,$password,$database,$persistant=true,$secure=false,$ssl=""){
         if($port){
-            $host=host.":".$port
+            $host=host.":".$port;
         }
-        if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
+        else if($socket){
+			$host=$host.":".$socket;
+		}
+        if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){      
             if($persistant){
                 $this->db_id=mysql_pconnect($host,$user,$password);
             }
@@ -85,7 +88,7 @@ class db{
                 mysql_close($this->db_id);
             }
             else{
-                @mysql_close($this->db_id)
+                @mysql_close($this->db_id);
             }
         }
     }
@@ -96,29 +99,9 @@ class db{
     
     //function to find a result in a query
     //returns the result value
-    function db_fetchresult($table,$value,$params,$row=0){
+    function db_fetchresult($table,$fields,$params,$row=0){
 		$tmp_value="";
-		$new_value="";
-		if(ereg(",",$value)){
-			$value=explode($value);
-			for($i=0;$i<count($value);$i++){
-				$new_value.="`".mysql_real_escape_string($value[$i])."`";
-				if($i<count($value)){
-					$new_value.=",";
-				}
-			}
-		}
-		else{
-			$new_value="`".mysql_real_escape_string($value)."`";
-		}
-		$qstring="SELECT ".$new_value." FROM `".mysql_real_escape_string($table)."`";
-        if($params&&!$params%3){
-            for($i=0;$i<count($params);$i+=3){
-                $qstring.=" `".mysql_real_escape_string($params[$i])."`".$params[$i+1]."'".mysql_real_escape_string($params[$i+2])."'";
-            }
-        }
-        $qstring.=";";
-        $result=$this->db_query($qstring);
+        $result=$this->db_query($this->db_formfetchquery($table,$fields,$params));
         if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
             $tmp_value=mysql_result($result,$row);
         }
@@ -133,29 +116,10 @@ class db{
     
     //function to find an array of values from the database
     //returns the array of values
-    function db_fetcharray($table,$value,$params,$type="ASSOC"){
+    function db_fetcharray($table,$fields,$params="",$type="ASSOC"){
 		$tmp_value="";
-		$new_value="";
-		if(ereg(",",$value)){
-			$value=explode($value);
-			for($i=0;$i<count($value);$i++){
-				$new_value.="`".mysql_real_escape_string($value[$i])."`";
-				if($i<count($value)){
-					$new_value.=",";
-				}
-			}
-		}
-		else{
-			$new_value="`".mysql_real_escape_string($value)."`";
-		}
-		$qstring="SELECT ".$new_value." FROM `".mysql_real_escape_string($table)."`";
-        if($params&&!$params%3){
-            for($i=0;$i<count($params);$i+=3){
-                $qstring.=" `".mysql_real_escape_string($params[$i])."`".$params[$i+1]."'".mysql_real_escape_string($params[$i+2])."'";
-            }
-        }
-        $qstring.=";";
-        $result=$this->db_query($qstring);
+		echo $this->db_formfetchquery($table,$fields,$params);		
+        $result=$this->db_query($this->db_formfetchquery($table,$fields,$params));
         if($type="ASSOC"){
 			$type=MYSQL_ASSOC;
 		}
@@ -176,19 +140,183 @@ class db{
         $this->db_freeresult($result);
         return $tmp_value;
 	}
-    
-    //function to find the number of rows in a query
+	
+	//function to execute non-get db querys
+	//returns true if the query was successful
+	function db_update($q_type,$table,$set,$params=""){
+		$qstring="";
+		switch($q_type){
+			case DB_UPDATE:
+				$qstring.="UPDATE `".mysql_real_escape_string($table)."` SET";
+				for($i=0;$i<count($set);$i++){
+					$qstring.=" `".mysql_real_escape_string($set[$i][0])."`='".mysql_real_escape_string($set[$i][1])."'";
+					if($i<count($set)-1){
+						$qstring.=",";	
+					}
+				}
+				$qstring.=" WHERE";
+				for($i=0;$i<count($params);$i++){
+					$qstring.=" `".mysql_real_escape_string($params[$i][0])."`".$params[$i][1]."'".mysql_real_escape_string($params[$i][2])."'"; 	 
+					if($i<count($params)-1){
+						$qstring.=" AND";	
+					}					
+				}
+			break;
+			case DB_INSERT:
+				$qstring.="INSERT INTO `".mysql_real_escape_string($table)."` VALUES (";
+				for($i=0;$i<count($set);$i++){
+					$qstring.="'".mysql_real_escape_string($set[$i])."'";	
+					if($i<count($set)-1){
+						$qstring.=",";	
+					}
+				}
+				$qstring.=")";	
+			break;	
+			case DB_REMOVE:
+				$qstring.="DELETE FROM `".mysql_real_escape_string($table)."` WHERE";
+	            for($i=0;$i<count($params);$i++){
+	              	$qstring.=" `".mysql_real_escape_string($params[$i][0])."`".$params[$i][1]."'".mysql_real_escape_string($params[$i][2])."'";
+	            	switch($params[$i][3]){
+						case DB_AND;
+							$qstring.=" AND";
+						break;
+						case DB_OR:
+							$qstring.=" OR";					
+						break;
+						default:
+							$qstring.="";
+						break;
+					};
+				}
+			break;
+		};
+		$qstring.=";";
+		if($this->db_query($qstring)){
+			$this->db_freeresult($result);
+			return true;	
+		}
+		return false;
+	}
+	function db_dbcommands($c_type,$q_type,$db,$table="",$fields="",$params=""){
+	  	$qstring.="";
+		switch($c_type){
+			case DB_DROP:
+				if($q_type==DB_DATABASE){
+					$qstring.="DROP DATABASE `".mysql_real_escape_string($db)."`";
+				}
+				else if($q_type==DB_TABLE){
+					$qstring.="DROP TABLE `".mysql_real_escape_string($table)."`";
+				}				
+			break;
+			case DB_CREATE:
+				if($q_type==DB_DATABASE){
+					$qstring.="CREATE DATABASE `".mysql_real_escape_string($db)."`";
+				}
+				else if($q_type==DB_TABLE){
+					$qstring.="CREATE TABLE `".mysql_real_escape_string($table)."` (";
+					for($i=0;$i<count($fields);$i++){
+						$qstring.="`".mysql_real_escape_string($fields[$i][0])."` ";
+						$qstring.=mysql_real_escape_string($fields[$i][1])."(".mysql_real_escape_string($fields[$i][2]).") ";
+						if($fields[$i][3]==DB_NULL){
+							$qstring.="default NULL";	  
+						}
+						else if($fields[$i][3]==DB_AUTO_INC){
+							$qstring.="NOT NULL  auto_increment";	
+						}
+						else{
+							$qstring.="NOT NULL default '".mysql_real_escape_string($fields[$i][4])."'";
+						}
+						if($i<count($fields)-1){
+							$qstring.=",";
+						}
+					}
+					if($params){
+						$qstring.=",";
+					}
+					if($params){
+						for($i=0;$i<count($params);$i++){
+							if($params[$i][0]==DB_PRIMARY){
+								$qstring.="PRIMARY KEY (`".mysql_real_escape_string($params[$i][1])."`)"; 
+							}
+							else if($params[$i][0]==DB_UINDEX){
+								$qstring.="UNIQUE KEY `".mysql_real_escape_string($params[$i][1])."` (`".mysql_real_escape_string($params[$i][2])."`)";   
+							}
+							else{
+								$qstring.="KEY `".mysql_real_escape_string($params[$i][1])."` (`".mysql_real_escape_string($params[$i][2])."`)"; 					
+							}
+							if($i<count($fields)-1){
+								$qstring.=",";
+							}
+						}
+					}
+					$qstring.=")"; 
+				}
+			break;
+			case DB_ALTER:
+				$qstring.="ALTER TABLE `".mysql_real_escape_string($table)."`";
+				if($q_type==DB_DROP){
+					for($i=0;$i<count($fields);$i++){
+					  	if($fields[$i][0]==DB_TABLE){
+							$qstring.=" DROP `".mysql_real_escape_string($fields[$i][1])."`";	
+						}
+						else if($fields[$i][0]==DB_PRIMARY){
+							$qstring.=" DROP PRIMARY KEY";
+						}
+						else{
+							$qstring.=" DROP INDEX `".mysql_real_escape_string($fields[$i][1])."`";
+						}
+						if($i<count($fields)-1){
+							$qstring.=",";	
+						}
+					} 
+				}
+				if($q_type==DB_ADD){
+					for($i=0;$i<count($fields);$i++){
+					  	if($fields[$i][0]==DB_PRIMARY){
+							$qstring.=" ADD PRIMARY KEY(`".mysql_real_escape_string($fields[$i][1])."`)";
+						}
+						else if($fields[$i][0]==DB_KEY){
+							$qstring.=" ADD INDEX(`".mysql_real_escape_string($fields[$i][1])."`)";
+						}
+						else if($fields[$i][0]==DB_UINDEX){
+							$qstring.=" ADD UNIQUE(`".mysql_real_escape_string($fields[$i][1])."`)";	
+						}
+					  	else{
+							$qstring.=" ADD `".mysql_real_escape_string($fields[$i][0])."` ";
+							$qstring.=mysql_real_escape_string($fields[$i][1])."(".mysql_real_escape_string($fields[$i][2]).") ";
+							if($fields[$i][3]==DB_NULL){
+								$qstring.="default NULL";	  
+							}
+							else if($fields[$i][3]==DB_AUTO_INC){
+								$qstring.="NOT NULL  auto_increment";	
+							}
+							else{
+								$qstring.="NOT NULL default '".mysql_real_escape_string($fields[$i][4])."'";
+							}
+						}	
+						if($i<count($fields)-1){
+							$qstring.=",";	
+						}
+					} 				  
+				}
+			break;
+			case DB_TRUNCATE:
+				$qstring.="TRUNCATE TABLE `".mysql_real_escape_string($table)."`";
+			break;
+		};
+		$qstring.=";";
+		if($this->db_query($qstring)){
+			$this->db_freeresult($result);
+			return true;	
+		}
+		return false;
+	}
+
+   //function to find the number of rows in a query
     //returns the number of rows
     function db_numrows($table,$params){
         $num_rows=0;
-        $qstring="SELECT * FROM `".mysql_real_escape_string($table)."`";
-        if($params&&!$params%3){
-            for($i=0;$i<count($params);$i+=3){
-                $qstring.=" `".mysql_real_escape_string($params[$i])."`".$params[$i+1]."'".mysql_real_escape_string($params[$i+2])."'";
-            }
-        }
-        $qstring.=";";
-        $result=$this->db_query($qstring);
+        $result=$this->db_query($this->db_formfetchquery($table,"",$params));
         if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
             $num_rows=mysql_num_rows($result);
         }
@@ -205,14 +333,7 @@ class db{
     //returns the number of fields
 	function db_numfields($table,$params){
 		$num_cols=0;
-		$qstring="SELECT * FROM ".mysql_real_escape_string($table);
-        if($params&&!$params%3){
-            for($i=0;$i<count($params);$i+=3){
-                $qstring.=" ".mysql_real_escape_string($params[$i]).$params[$i+1].mysql_real_escape_string($params[$i+2]);
-            }
-        }
-        $qstring.=";";
-        $result=$this->db_query($qstring);
+        $result=$this->db_query($this->db_formfetchquery($table,"",$params));
         if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
             $num_cols=mysql_num_fields($result);
         }
@@ -229,7 +350,7 @@ class db{
     function db_query($string){
         $result="";
         if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-            $result=mysql_query($string,$this->db_id)
+            $result=mysql_query($string,$this->db_id);
         }
         else{
             if(!(@$result=mysql_query($string,$this->db_id))){
@@ -259,10 +380,17 @@ class db{
     //checks the current status of the connection
     //returns true if the connection is ok
     function db_checkstatus(){
-        if(!mysql_ping($this->db_id)){
-            return false;
+       	if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
+	        if(!mysql_ping($this->db_id)){
+	            return false;
+	        }
         }
-        return true;
+        else{
+			if(!@mysql_ping($this->db_id)){
+	            return false;
+	        }	
+		}
+		return true;
     }
 
     //frees the current result. Internal only!
@@ -274,4 +402,80 @@ class db{
             @mysql_free_result($result);
         }
     }
+    //Internal function to form querys for select statements
+    //returns the query string
+    function db_formfetchquery($table,$fields,$params){
+		$new_field="";
+		$new_table="";
+		if(ereg(",",$fields)){
+			$fields=explode($fields);
+			for($i=0;$i<count($fields);$i++){
+				$new_field.="`".mysql_real_escape_string($fields[$i])."`";
+				if($i<count($fields)){
+					$new_field.=",";
+				}
+			}
+		}
+		else{
+		  	if($fields){
+				$new_field="`".mysql_real_escape_string($fields)."`";
+			}
+			else{
+				$new_field.="*";
+			}
+		}
+		if(ereg(",",$table)){
+			$table=explode($table);
+			for($i=0;$i<count($table);$i++){
+				$new_table.="`".mysql_real_escape_string($table[$i])."`";
+				if($i<count($table)){
+					$new_table.=",";
+				}
+			}
+		}
+		else{
+			$new_table="`".mysql_real_escape_string($table)."`";
+		}
+		$qstring="SELECT ".$new_field." FROM ".$new_table;
+        if($params){
+          	$qstring.=" WHERE";
+            for($i=0;$i<count($params);$i++){
+              	switch($params[$i][0]){
+              	  	case DB_IN:
+              	  		$qstring.=" `".mysql_real_escape_string($params[$i][1])."` IN (";
+              	  		for($j=0;$j<count($params[$i][2]);$j++){
+							$qstring.="'".mysql_real_escape_string($params[$i][2][$j])."'";
+							if($j<count($params[$i][2])-1){
+								$qstring.=",";
+							}
+						}
+						$qstring.=")";
+              	  	break;
+              	  	case DB_BETWEEN:
+              	  		$qstring.=" `".mysql_real_escape_string($params[$i][1])."` BETWEEN '";
+						$qstring.=mysql_real_escape_string($params[$i][2][0])."' AND '".mysql_real_escape_string($params[$i][2][1])."'";
+								
+              	  	break;
+				 	default:  
+						$qstring.=" `".mysql_real_escape_string($params[$i][0])."`".$params[$i][1]."'".mysql_real_escape_string($params[$i][2])."'";
+				    break;
+				};
+            	switch($params[$i][3]){
+					case DB_AND;
+						$qstring.=" AND";
+					break;
+					case DB_OR:
+						$qstring.=" OR";					
+					break;
+					default:
+						$qstring.="";
+					break;
+				};
+			}
+        }
+        else{
+			$qstring.=" WHERE 1";
+		}
+        return $qstring.";";
+	}
 }
