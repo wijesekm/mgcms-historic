@@ -36,10 +36,9 @@ if(!defined("START_MANDRIGO")){
         </html></body>");
 }
 
-class db{
+@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."sql/db.inc.".$php_ex);
 
-    //database varable
-    var $db_id;
+class db extends _db{
 
     //
     //Connection Commands
