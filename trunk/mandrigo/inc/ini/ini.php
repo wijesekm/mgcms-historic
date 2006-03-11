@@ -97,10 +97,10 @@ if(!get_magic_quotes_gpc()){
 //
 if(!$GLOBALS["MANDRIGO_CONFIG"]["IS_INSTALLED"]){
     if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-        header("Location: install/install.php");
+        header("Location: install/install.$php_ex");
     }
     else{
-        @header("Location: install/install.php");
+        @header("Location: install/install.$php_ex");
     }
     die();
 }
@@ -121,10 +121,12 @@ else{
 $sql_db = & new db();
 
 if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-    $sql_db->connect($sql_config["SQL_HOST"],$sql_config["SQL_USER"],$sql_config["SQL_PASSWORD"],$sql_config["SQL_DATABASE"],$sql_config["SQL_PORT"]);
+	$sql_db->db_connect($sql_config["SQL_HOST"],$sql_config["SQL_PORT"],$sql_config["SQL_SOCKET"],$sql_config["SQL_USER"],
+						$sql_config["SQL_PASSWORD"],$sql_config["SQL_DATABASE"],true,$sql_config["USE_SSL"],$sql_config["SSL"]);
 }
 else{
-    if(!$sql_db->connect($sql_config["SQL_HOST"],$sql_config["SQL_USER"],$sql_config["SQL_PASSWORD"],$sql_config["SQL_DATABASE"],$sql_config["SQL_PORT"])){
+    if(!$sql_db->db_connect($sql_config["SQL_HOST"],$sql_config["SQL_PORT"],$sql_config["SQL_SOCKET"],$sql_config["SQL_USER"],
+		$sql_config["SQL_PASSWORD"],$sql_config["SQL_DATABASE"],true,$sql_config["USE_SSL"],$sql_config["SSL"])){
         $error_log->add_error(1,"sql");
         die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].$error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
     }

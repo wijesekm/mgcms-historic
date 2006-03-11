@@ -146,7 +146,7 @@ class page{
         $soq=count($GLOBALS["PAGE_DATA"]["HOOKS"]);
         for($i=0;$i<$soq;$i++){
             if(!empty($GLOBALS["PAGE_DATA"]["HOOKS"][$i])){
-                if(!($sql_result=$this->page_db->fetch_array("SELECT * FROM `".TABLE_PREFIX.TABLE_PACKAGE_DATA."` WHERE `package_id`='".$GLOBALS["PAGE_DATA"]["HOOKS"][$i]."';"))){
+                if(!($sql_result=$this->page_db->db_fetcharray(TABLE_PREFIX.TABLE_PACKAGE_DATA,"",array(array("package_id","=",$GLOBALS["PAGE_DATA"]["HOOKS"][$i]))))){
                     if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
                         $this->page_error_logger->add_error(14,"sql");
                         die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].

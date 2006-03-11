@@ -42,10 +42,10 @@ if($GLOBALS["SITE_DATA"]["PAGE_INPUT_TYPE"]==1){
 }
 
 if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-    $page_data = $sql_db->fetch_array("SELECT * FROM `".TABLE_PREFIX.TABLE_PAGE_DATA."` WHERE `".$page_input_type."`='".$GLOBALS["HTTP_GET"]["PAGE"]."';");
+    $page_data=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_PAGE_DATA,"",array(array($page_input_type,"=",$GLOBALS["HTTP_GET"]["PAGE"])));
 }
 else{
-    if(!$page_data = $sql_db->fetch_array("SELECT * FROM `".TABLE_PREFIX.TABLE_PAGE_DATA."` WHERE `".$page_input_type."`='".$GLOBALS["HTTP_GET"]["PAGE"]."';")){
+    if(!$page_data=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_PAGE_DATA,"",array(array($page_input_type,"=",$GLOBALS["HTTP_GET"]["PAGE"])))){
         $error_log->add_error(1,"display");
     }
 }
@@ -65,7 +65,7 @@ $GLOBALS["USER_DATA"]["PERMISSIONS"]["FULL_CONTROL"]=false;
 
 if(!$error_log->get_status()){
     for($i=0;$i<count($GLOBALS["USER_DATA"]["GROUPS"]);$i++){
-        if(!$sql_result=$sql_db->fetch_array("SELECT * FROM `".TABLE_PREFIX.TABLE_GROUP_PERMISSIONS."` WHERE `group_id`='".$GLOBALS["USER_DATA"]["GROUPS"]["$i"]."' AND `page_id`='".$GLOBALS["PAGE_DATA"]["ID"]."';")){
+        if(!$sql_result=$sql_result=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_GROUP_PERMISSIONS,"",array(array("group_id","=",$GLOBALS["USER_DATA"]["GROUPS"]["$i"],DB_AND),array("page_id","=",$GLOBALS["PAGE_DATA"]["ID"])))){
             if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
                 $error_log->add_error(1,"access");
                 break;
@@ -94,7 +94,7 @@ if(!$error_log->get_status()){
     }
 }
 if(!$error_log->get_status()){
-    if(!($r_page_data = $sql_db->fetch_array("SELECT * FROM `".TABLE_PREFIX.TABLE_RESTRICTED_PAGE_DATA."` WHERE `page_id`='".$GLOBALS["PAGE_DATA"]["ID"]."';"))||!$GLOBALS["USER_DATA"]["PERMISSIONS"]["READ_RESTRICTED"]){
+    if(!($r_page_data=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_RESTRICTED_PAGE_DATA,"",array(array("page_id","=",$GLOBALS["PAGE_DATA"]["ID"]))))||!$GLOBALS["USER_DATA"]["PERMISSIONS"]["READ_RESTRICTED"]){
         $GLOBALS["PAGE_DATA"]["AUTH_PAGE"]=false;
         $GLOBALS["PAGE_DATA"]["RNAME"]=$page_data["page_rname"];
         $GLOBALS["PAGE_DATA"]["TITLE"]=$page_data["page_title"];

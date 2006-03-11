@@ -47,8 +47,8 @@ if(!defined("START_MANDRIGO")){
         if($cookie_uid===1){
             return false;
         }
-        $sql_result = $sql_db->fetch_array("SELECT * FROM `".TABLE_PREFIX.TABLE_USER_DATA."` WHERE `user_id`='$cookie_uid';");
-        if($sql_result["user_session"]!=$cookie_sesid){
+        $sql_sesid=$sql_db->db_fetchresult(TABLE_PREFIX.TABLE_USER_DATA,"user_session",array(array("user_id","=",$cookie_uid)));
+        if($sql_sesid!=$cookie_sesid){
             return false;
         }
         return true;

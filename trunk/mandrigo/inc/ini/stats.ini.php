@@ -37,16 +37,19 @@ if(!defined("START_MANDRIGO")){
 }
 
 if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-    $sql_db->query("UPDATE `".TABLE_PREFIX.TABLE_SITE_STATS."` SET total_hits=total_hits+1 WHERE `page_id`=".$GLOBALS["PAGE_DATA"]["ID"].";");
-    $sql_db->query("UPDATE `".TABLE_PREFIX.TABLE_SITE_STATS."` SET `time_last`='".time()."' WHERE `page_id`=".$GLOBALS["PAGE_DATA"]["ID"].";");
+	$cur=$sql_db->db_fetchresult(TABLE_PREFIX.TABLE_SITE_STATS,"total_hits",array(array("page_id","=",$GLOBALS["PAGE_DATA"]["ID"])));
+	$cur++;
+	$sql_db->db_update(DB_UPDATE,TABLE_PREFIX.TABLE_SITE_STATS,array(array("total_hits",$cur,"time_last",time())),array(array("page_id","=",$GLOBALS["PAGE_DATA"]["ID"])));
 }
 else if(!$error_log->get_status()){
-    if(!($sql_db->query("UPDATE `".TABLE_PREFIX.TABLE_SITE_STATS."` SET total_hits=total_hits+1 WHERE `page_id`=".$GLOBALS["PAGE_DATA"]["ID"].";"))){
-        $error_log->add_error(15,"sql");
-    }
-    if(!($sql_db->query("UPDATE `".TABLE_PREFIX.TABLE_SITE_STATS."` SET `time_last`='".time()."' WHERE `page_id`=".$GLOBALS["PAGE_DATA"]["ID"].";"))){
-        $error_log->add_error(15,"sql");
-    }
+	$cur=$sql_db->db_fetchresult(TABLE_PREFIX.TABLE_SITE_STATS,"total_hits",array(array("page_id","=",$GLOBALS["PAGE_DATA"]["ID"])));
+	if(!$cur){
+		 $error_log->add_error(15,"sql"); 
+	}
+	$cur++;
+	if(!$sql_db->db_update(DB_UPDATE,TABLE_PREFIX.TABLE_SITE_STATS,array(array("total_hits",$cur,"time_last",$GLOBALS["SITE_DATA"]["SERVER_TIME"])),array(array("page_id","=",$GLOBALS["PAGE_DATA"]["ID"])))){
+	 	$error_log->add_error(15,"sql");  
+	}
 }
 
 ?>

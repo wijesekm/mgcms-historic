@@ -51,6 +51,29 @@ define("TABLE_SITE_STATS","site_stats");
 define("TABLE_TEMP","tmp");
 
 //
+//DB Constants
+//
+define("DB_UPDATE","UPDATE");
+define("DB_INSERT","INSERT");
+define("DB_DELETE","DELETE");
+define("DB_REMOVE","DELETE");
+define("DB_DROP","DROP");
+define("DB_ADD","ADD");
+define("DB_CREATE","CREATE");
+define("DB_ALTER","ALTER");
+define("DB_TRUNCATE","TRUNCATE");
+define("DB_DATABASE","DATABASE");
+define("DB_PRIMARY","PRIMARY");
+define("DB_KEY","KEY");
+define("DB_TABLE","TABLE");
+define("DB_UINDEX","UINDEX");
+define("DB_AND","AND");
+define("DB_OR","OR");
+define("DB_IN","IN");
+define("DB_BETWEEN","BETWEEN");
+define("DB_NULL","NULL");
+define("DB_AUTO_INC","AUTO");
+//
 //Templates
 //
 define("TPL_EXT",$tpl_ex);
@@ -73,10 +96,16 @@ define("HOOK_CLASS","_hook();");
 define("DEFAULT_ACTION","D");
 define("DEFAULT_ID",0);
 define("DEFAULT_PN",0);
+
+//
+//Paths
+//
+define("TMP_IMG","tmp");
+
 //
 //Misc
 //
 define("MANDRIGO_CODE_BLOCK","<!--MG_CODE-->");
 define("BAD_DATA","&ERROR_IN_DATA;");
-define("TMP_IMG","tmp");
+
 ?>

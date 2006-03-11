@@ -69,10 +69,10 @@ if(user_is_logged_in($GLOBALS["HTTP_COOKIE"]["SESID"],$GLOBALS["HTTP_COOKIE"]["U
 }
 if($GLOBALS["SCRIPT"]["AUTHENTICATED"]){
     if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-        $sql_result = $sql_db->fetch_array("SELECT * FROM `".TABLE_PREFIX.TABLE_USER_DATA."` WHERE `user_id`='".$GLOBALS["HTTP_COOKIE"]["UID"]."';");
-    }
+    	$sql_result=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_USER_DATA,"",array(array("user_id","=",$GLOBALS["HTTP_COOKIE"]["UID"])));
+	}
     else{
-        if(!$sql_result = $sql_db->fetch_array("SELECT * FROM `".TABLE_PREFIX.TABLE_USER_DATA."` WHERE `user_id`='".$GLOBALS["HTTP_COOKIE"]["UID"]."';")){
+        if(!$sql_result=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_USER_DATA,"",array(array("user_id","=",$GLOBALS["HTTP_COOKIE"]["UID"])))){
             $error_log->add_error(10,"sql");
             die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
                 $error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
@@ -81,10 +81,11 @@ if($GLOBALS["SCRIPT"]["AUTHENTICATED"]){
 }
 else{
     if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-        $sql_result = $sql_db->fetch_array("SELECT * FROM `".TABLE_PREFIX.TABLE_USER_DATA."` WHERE `user_id`='1';");
+      	$sql_result=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_USER_DATA,"",array(array("user_id","=",1)));
+
     }
     else{
-        if(!$sql_result = $sql_db->fetch_array("SELECT * FROM `".TABLE_PREFIX.TABLE_USER_DATA."` WHERE `user_id`='1';")){
+        if(!$sql_result=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_USER_DATA,"",array(array("user_id","=",1)))){
             $error_log->add_error(10,"sql");
             die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
                 $error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
@@ -103,7 +104,6 @@ $GLOBALS["USER_DATA"]["IM"]=$sql_result["user_im"];
 $GLOBALS["USER_DATA"]["WEBSITE"]=$sql_result["user_website"];
 $GLOBALS["USER_DATA"]["ABOUT"]=$sql_result["user_about"];
 $GLOBALS["USER_DATA"]["WEBSITE"]=$sql_result["user_website"];
-//$GLOBALS["USER_DATA"]["SESSION"]=$sql_result["user_session"];
 $GLOBALS["USER_DATA"]["LAST_LOGIN"]=$sql_result["user_last_login"];
 $GLOBALS["USER_DATA"]["LAST_IP"]=$sql_result["user_last_ip"];
 $GLOBALS["USER_DATA"]["TIMEZONE"]=$sql_result["user_timezone"];
@@ -117,7 +117,7 @@ $GLOBALS["USER_DATA"]["IP"] = (!empty($HTTP_SERVER_VARS['REMOTE_ADDR']))?$HTTP_S
 
 
 for($i=0;$i<count($GLOBALS["USER_DATA"]["GROUPS"]);$i++){
-    if(!$sql_result = $sql_db->fetch_array("SELECT * FROM `".TABLE_PREFIX.TABLE_USER_GROUPS."` WHERE `group_id`='".$GLOBALS["USER_DATA"]["GROUPS"]["$i"]."';")){
+    if(!$sql_result=$sql_result=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_USER_GROUPS,"",array(array("group_id","=",$GLOBALS["USER_DATA"]["GROUPS"]["$i"])))){
         if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
             $error_log->add_error(11,"sql");
             die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].

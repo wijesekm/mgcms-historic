@@ -55,9 +55,9 @@ class form_validator{
 			$col=$this->rand_color();	
 			imagechar($image, imageloadfont($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"].$this->rand_font()), (20*$i)+5+$this->rand_offset(), 1+$this->rand_offset(),$rnd[$i], imagecolorallocate($image,$col[0],$col[1],$col[2]));
 		}
-		imagepng($image,$GLOBALS["SITE_DATA"]["IMG_PATH"].TMP_IMG."/".$app."_".$id.".png");
+		imagepng($image,$GLOBALS["MANDRIGO_CONFIG"]["IMG_PATH"].TMP_IMG."/".$app."_".$id.".png");
 		imagedestroy($image);
-		if(!($this->db->query("INSERT INTO `".TABLE_PREFIX.TABLE_TEMP."` VALUES ('$app.$id','".$rnd."')"))){
+		if(!$this->db->db_update(DB_INSERT,TABLE_PREFIX.TABLE_TEMP,array("$app.$id",$rnd))){
 			return false;
 		}
 		return true;
@@ -87,13 +87,13 @@ class form_validator{
 		return $file;
 	}
 	function check($str,$id,$app){
-		if(!$result=$this->db->fetch_result("SELECT `field_value` FROM `".TABLE_PREFIX.TABLE_TEMP."` WHERE `field_name`='$app.$id'")){
+		if(!$db_str=$this->db->db_fetchresult(TABLE_PREFIX.TABLE_TEMP,"field_value",array(array("field_name","=","$app.$id")))){
 			return false;
 		}
 		$str=ereg_replace("\n","",$str);
-		$this->db->query("DELETE FROM `".TABLE_PREFIX.TABLE_TEMP."` WHERE `field_name`='$app.$id'");	
-		unlink($GLOBALS["SITE_DATA"]["IMG_PATH"].TMP_IMG."/".$app."_".$id.".png");
-		if($str!=$result){
+		$this->db->db_update(DB_REMOVE,TABLE_PREFIX.TABLE_TEMP,"",array(array("field_name","=","$app.$id")));	
+		unlink($GLOBALS["MANDRIGO_CONFIG"]["IMG_PATH"].TMP_IMG."/".$app."_".$id.".png");
+		if(strtoupper($str)!=strtoupper($db_str)){
 			return false;
 		}	
 		return true;
