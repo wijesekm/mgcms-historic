@@ -43,7 +43,7 @@ define("TABLE_PREFIX",$sql_config["TABLE_PREFIX"]);
 define("TABLE_USER_DATA","user_data");
 define("TABLE_USER_GROUPS","user_groups");
 define("TABLE_GROUP_PERMISSIONS","group_permissions");
-define("TABLE_MAIN_DATA","main_data");
+define("TABLE_MAIN_DATA","config");
 define("TABLE_PAGE_DATA","page_data");
 define("TABLE_RESTRICTED_PAGE_DATA","restricted_page_data");
 define("TABLE_PACKAGE_DATA","packages");
