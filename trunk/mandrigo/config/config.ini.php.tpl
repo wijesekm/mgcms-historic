@@ -41,7 +41,8 @@ if(!defined("START_MANDRIGO")){
 /////////////////////
 
 //Enter in the information for your SQL database:
-//Type is the sql type (supported types: mysql4,pgsql(not ready yet),mssql(not ready yet))
+//Type is the sql type (supported types: mysql(mysql 4.0),mysqli(mysql 4.1 and up. supports ssl),pgsql
+//mssql(not ready yet))
 //
 //Host is the server it is hosted on (ex sql.kevinwijesekera.net, localhost)
 //
@@ -53,15 +54,23 @@ if(!defined("START_MANDRIGO")){
 //
 //Database is the name of the database where mandrigo was set up
 //
+//Use ssl is set to true if you wish to use a secure connection.  This is only available for the mysqli package
+//
 
-$sql_config["SQL_TYPE"]="mysql4";
+$sql_config["SQL_TYPE"]="mysql";
 $sql_config["SQL_HOST"]="localhost";
 $sql_config["SQL_PORT"]="";
+$sql_config["SQL_SOCKET"]="";
 $sql_config["SQL_USER"]="";
 $sql_config["SQL_PASSWORD"]="";
 $sql_config["SQL_DATABASE"]="";
 $sql_config["TABLE_PREFIX"]="mg_";
-
+$sql_config["USE_SSL"]=false;
+$sql_config["SSL"]=array("KEY"=>"",
+						 "CERT"=>"",
+						 "CA"=>"",
+						 "CAPATH"=>"" 
+						);
 //////////////////////
 // Error Logging
 /////////////////////
@@ -84,17 +93,25 @@ $log_config["ARCHIVE"]="m_d_h";
 
 
 //
+//NOTE: Only the IMG_PATH has to be accessibly by the webserver.  All other paths can be to non web locations.
+//
 //Root Path - path to the inc folder ex: /var/www/htdocs/inc/
 //
-//Template Path - path to the templates folders ex /var/www/htdocs/templates/
+//Plugin Path - path to the plugins folder (usually a subdir of inc) ex: /var/www/htdocs/inc/packages
 //
-//Log Path - path to the logs folder ex /var/www/htdocs/logs/
+//Template Path - path to the templates folders ex /var/www/templates/
+//
+//Log Path - path to the logs folder ex /var/www/logs/
+//
+//Img Path - path to the mandrigo images folder ex /var/www/htdocs/images
+//
 //
 
 $GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]=ereg_replace("/config/config.ini.php","",__FILE__)."/inc/";
 $GLOBALS["MANDRIGO_CONFIG"]["PLUGIN_PATH"]=ereg_replace("/config/config.ini.php","",__FILE__)."/inc/packages/";
 $GLOBALS["MANDRIGO_CONFIG"]["TEMPLATE_PATH"]=ereg_replace("/config/config.ini.php","",__FILE__)."/templates/";
 $GLOBALS["MANDRIGO_CONFIG"]["LOG_PATH"]=ereg_replace("/config/config.ini.php","",__FILE__)."/logs/";
+$GLOBALS["MANDRIGO_CONFIG"]["IMG_PATH"]=ereg_replace("/config/config.ini.php","",__FILE__)."/htdocs/images/";
 
 //
 //Site Status - false if you want to redirect to the off_site page, true if you want
@@ -103,11 +120,13 @@ $GLOBALS["MANDRIGO_CONFIG"]["LOG_PATH"]=ereg_replace("/config/config.ini.php",""
 $GLOBALS["MANDRIGO_CONFIG"]["SITE_STATUS"]=true;
 
 //
-//Debug Mode - Shows php errors instead of Mandrigo errors.  DO NOT SET THIS
-//TO TRUE FOR PRODUCTION RELEASES.  THIS IS FOR DEVELOPMENT ONLY AND INTRODUCES
+//Debug Mode - Shows php errors instead of Mandrigo errors.
+//Print SQL Mode - prints sql queries.
+//DO NOT SET THESE TO TRUE FOR PRODUCTION RELEASES.  THIS IS FOR DEVELOPMENT ONLY AND INTRODUCES
 //SECURITY HOLES!
 //
 $GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]=false;
+$GLOBALS["MANDRIGO_CONFIG"]["SQL_PRINT_MODE"]=false;
 
 //
 //Index name is the name of what ever your main access file is ex (index.$php_ex)
