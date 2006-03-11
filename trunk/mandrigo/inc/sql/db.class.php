@@ -41,6 +41,8 @@ class _db{
     //database varable
     var $db_id;
 
+	function _db(){}
+
     //
     //Connection Commands
     //
