@@ -36,7 +36,7 @@ if(!defined("START_MANDRIGO")){
         </html></body>");
 }
 
-include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."sql/db.class.".$php_ex);
+@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."sql/db.class.".$php_ex);
 
 class db extends _db{
 
