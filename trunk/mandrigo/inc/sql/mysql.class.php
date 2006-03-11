@@ -36,7 +36,7 @@ if(!defined("START_MANDRIGO")){
         </html></body>");
 }
 
-@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."sql/db.inc.".$php_ex);
+include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."sql/db.class.".$php_ex);
 
 class db extends _db{
 
@@ -116,8 +116,7 @@ class db extends _db{
     //function to find an array of values from the database
     //returns the array of values
     function db_fetcharray($table,$fields,$params="",$type="ASSOC"){
-		$tmp_value="";
-		echo $this->db_formfetchquery($table,$fields,$params);		
+		$tmp_value="";	
         $result=$this->db_query($this->db_formfetchquery($table,$fields,$params));
         if($type="ASSOC"){
 			$type=MYSQL_ASSOC;
@@ -351,6 +350,9 @@ class db extends _db{
     //internal only query function.  Should only be called by functions in the db class!!
     function db_query($string){
         $result="";
+        if($GLOBALS["MANDRIGO_CONFIG"]["SQL_PRINT_MODE"]){
+			echo $string;
+		}
         if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
             $result=mysql_query($string,$this->db_id);
         }

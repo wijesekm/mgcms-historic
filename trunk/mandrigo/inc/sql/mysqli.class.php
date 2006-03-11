@@ -36,7 +36,7 @@ if(!defined("START_MANDRIGO")){
         </html></body>");
 }
 
-@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."sql/db.inc.".$php_ex);
+@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."sql/db.class.".$php_ex);
 
 class db extends _db{
 
@@ -345,6 +345,9 @@ class db extends _db{
     //Basic query function.  This should be NOT used for external (outside this class) operations unless absolutly necessary.
     function db_query($string){
         $result="";
+        if($GLOBALS["MANDRIGO_CONFIG"]["SQL_PRINT_MODE"]){
+			echo $string;
+		}
         if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
             $result=mysqli_query($this->db_id,$string)
         }
