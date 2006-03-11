@@ -68,8 +68,9 @@ class f_mail_display{
         $to_name=false;
         $to_email=false;
         $r_email=false;
-        if(!($sql_result=$this->db->fetch_array("SELECT * FROM `".TABLE_PREFIX.TABLE_EMAIL_LIST."` WHERE `email_id`='".$GLOBALS["HTTP_GET"]["MAIL_ADDR"]."';"))){
-            if(!($sql_result=$this->db->fetch_array("SELECT * FROM `".TABLE_PREFIX.TABLE_EMAIL_LIST."` WHERE `user_email`='".$GLOBALS["HTTP_GET"]["MAIL_ADDR"]."';"))){
+        
+        if(!$sql_result=$this->db->db_fetcharray(TABLE_PREFIX.TABLE_EMAIL_LIST,"",array(array("email_id","=",$GLOBALS["HTTP_GET"]["MAIL_ADDR"])))){
+            if(!$sql_result=$this->db->db_fetcharray(TABLE_PREFIX.TABLE_EMAIL_LIST,"",array(array("user_email","=",$GLOBALS["HTTP_GET"]["MAIL_ADDR"])))){
                 $to_email=$GLOBALS["HTTP_GET"]["MAIL_ADDR"];
                 $to_name=$GLOBALS["HTTP_GET"]["MAIL_ADDR"];
                 $r_email=$GLOBALS["HTTP_GET"]["MAIL_ADDR"];
@@ -80,7 +81,7 @@ class f_mail_display{
                 $to_name=$sql_result["user_fullname"];
             }
             else{
-                if(!$sql_result1=$this->db->fetch_array("SELECT * FROM `".TABLE_PREFIX.TABLE_USER_DATA."` WHERE `user_id`='".$sql_result["user_id"]."';")){
+                if(!$sql_result1=$this->db->db_fetcharray(TABLE_PREFIX.TABLE_USER_DATA,"",array(array("user_id","=",$sql_result["user_id"])))){
                     return false;
                 }
                 $r_email=$sql_result1["user_email"];
@@ -99,7 +100,7 @@ class f_mail_display{
                 $to_name=$sql_result["user_fullname"];
             }
             else{
-                if(!$sql_result1=$this->db->fetch_array("SELECT * FROM `".TABLE_PREFIX.TABLE_USER_DATA."` WHERE `user_id`='".$sql_result["user_id"]."';")){
+                if(!$sql_result1=$this->db->db_fetcharray(TABLE_PREFIX.TABLE_USER_DATA,"",array(array("user_id","=",$sql_result["user_id"])))){
                     return false;
                 }
                 $r_email=$sql_result1["user_email"];
@@ -220,11 +221,11 @@ class f_mail_display{
         $rc_email=false;
         $rc_fullname=false;
         if($GLOBALS["HTTP_GET"]["MAIL_ADDR_SYS"]){
-            if(!($sql_result=$this->db->fetch_array("SELECT * FROM `".TABLE_PREFIX.TABLE_EMAIL_LIST."` WHERE `email_id`='".$GLOBALS["HTTP_GET"]["MAIL_ADDR"]."';"))){
+            if(!$sql_result=$this->db->db_fetcharray(TABLE_PREFIX.TABLE_EMAIL_LIST,"",array(array("email_id","=",$GLOBALS["HTTP_GET"]["MAIL_ADDR"])))){
                 return false;
             }
             if($sql_result["user_id"]){
-                if(!($sql_result1=$this->db->fetch_array("SELECT * FROM `".TABLE_PREFIX.TABLE_USER_DATA."` WHERE `user_id`='".$sql_result["user_id"]."';"))){
+                if(!$sql_result1=$this->db->db_fetcharray(TABLE_PREFIX.TABLE_USER_DATA,"",array(array("user_id","=",$sql_result["user_id"])))){
                     return false;
                 }
                     $rc_email=$sql_result1["user_email"];
@@ -285,7 +286,7 @@ class f_mail_display{
         return $this->display($id,array("FAIL"=>false,"MAIL"=>true));
     }
     function load($i){
-        if(!$sql_result=$this->db->fetch_array("SELECT * FROM `".TABLE_PREFIX.TABLE_EMAIL_DATA."` WHERE `page_id`='".$GLOBALS["PAGE_DATA"]["ID"]."' AND `part_id`='$i';")){
+      	if(!$sql_result=$this->db->db_fetcharray(TABLE_PREFIX.TABLE_EMAIL_DATA,"",array(array("page_id","=",$GLOBALS["PAGE_DATA"]["ID"],DB_AND),array("part_id","=",$i)))){
             return false;
         }
         $this->config["SUBJ_PREFIX"]=$sql_result["subj_prefix"];
