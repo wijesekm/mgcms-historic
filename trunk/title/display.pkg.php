@@ -76,7 +76,8 @@ class title{
         return $data;
     }
     function load($i){
-        if(!$sql_result=$this->db->fetch_array("SELECT * FROM `".TABLE_PREFIX.TABLE_TITLE_DATA."` WHERE `page_id`='".$GLOBALS["PAGE_DATA"]["ID"]."' AND `part_id`='$i';")){
+      	
+        if(!$sql_result=$this->db->db_fetcharray(TABLE_PREFIX.TABLE_TITLE_DATA,"",array(array("page_id","=",$GLOBALS["PAGE_DATA"]["ID"],DB_AND),array("part_id","=",$i)))){
             return false;
         }
         $this->config["title"]=isset($sql_result{"title"})?$sql_result{"title"}:$GLOBALS["PAGE_DATA"]["RNAME"];
