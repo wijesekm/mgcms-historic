@@ -3,7 +3,7 @@
 /**********************************************************
     mandrigo-hourly.php
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 2/27/06
+	Date Last Edited: 3/12/06
 
 	Copyright (C) 2005  Kevin Wijesekera
 
@@ -24,9 +24,12 @@
 
 	###########################################################
 
+	To use this script change the #!/usr/bin/php to be the directory to your php-client.
+	If you do not have a php-client remove the line and place this file in a web-accessable
+	directory.  Also change the root_path varable
 **********************************************************/
 
-#change this!!!
+#change to be path to the webdir that mandrigo is installed under
 $root_path="/var/public_html/external_web/htdocs/";
 
 #dont change below this!
