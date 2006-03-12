@@ -47,13 +47,13 @@ class site_map_display{
         $this->sql_db=$sql;
     }
     function display($i){
-	    if(!@$soq = $this->sql_db->num_rows("SELECT * FROM `".TABLE_PREFIX.TABLE_PAGE_DATA."`;")){
+	    if(!@$soq=$this->sql_db->db_numrows(TABLE_PREFIX.TABLE_PAGE_DATA,"")){
             return false;
         }
         $j=0;
         $data=ereg_replace("{ATTRIB}",$this->config["ul_attrib"],$GLOBALS["HTML"]["UL"]);
         for($i=1;$j<$soq;$i++){
-			$current_page=$this->sql_db->fetch_array("SELECT * FROM `".TABLE_PREFIX.TABLE_PAGE_DATA."` WHERE `page_id`='$i';");
+			$current_page=$this->sql_db->db_fetcharray(TABLE_PREFIX.TABLE_PAGE_DATA,"",array(array("page_id","=",$i)));
 			if($current_page){
 				$j++;
 				if($current_page["page_root"]){
@@ -86,7 +86,7 @@ class site_map_display{
 		$sql["page_subpages"]=explode(";",$sql["page_subpages"]);
 		$soq=count($sql["page_subpages"]);
 		for($i=0;$i<$soq;$i++){
-			$current_page=$this->sql_db->fetch_array("SELECT * FROM `".TABLE_PREFIX.TABLE_PAGE_DATA."` WHERE `page_id`='".$sql["page_subpages"][$i]."';");
+		  	$current_page=$this->sql_db->db_fetcharray(TABLE_PREFIX.TABLE_PAGE_DATA,"",array(array("page_id","=",$sql["page_subpages"][$i])));
 			if($current_page){
 			  	if($first_ul){
 					$data.=ereg_replace("{ATTRIB}",$this->config["li_attrib"]."style=\"list-style-type: none;\"",$GLOBALS["HTML"]["LI"]).ereg_replace("{ATTRIB}",$this->config["ul_attrib"],$GLOBALS["HTML"]["UL"]);
@@ -131,7 +131,7 @@ class site_map_display{
 		return ereg_replace("{ATTRIB}",$this->config["li_attrib"],$GLOBALS["HTML"]["LI"]).$link.$GLOBALS["HTML"]["LI!"];	
 	}
     function load($i){
-		if(!$sql_result=$this->sql_db->fetch_array("SELECT * FROM `".TABLE_PREFIX.TABLE_SITEMAP_DATA."` WHERE `page_id`='".$GLOBALS["PAGE_DATA"]["ID"]."' AND `part_id`='$i';")){
+		if(!$sql_result=$this->sql_db->db_fetcharray(TABLE_PREFIX.TABLE_SITEMAP_DATA,"",array(array("page_id","=",$GLOBALS["PAGE_DATA"]["ID"],DB_AND),array("part_id","=",$i)))){
             return false;
         }
         $this->config["link_attrib"]=$sql_result["link_attrib"];
