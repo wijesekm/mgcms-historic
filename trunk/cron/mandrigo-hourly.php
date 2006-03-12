@@ -27,20 +27,21 @@
 **********************************************************/
 
 #change this!!!
-$web_path="/var/public_html/external_web/htdocs/";
-$img_path="/var/public_html/common_resources/skin_1/images/mg_images/tmp/";
+$root_path="/var/public_html/external_web/htdocs/";
+
 #dont change below this!
 define("START_MANDRIGO",true);
-include($web_path."config/config.ini.php");
-include($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."sql/".$sql_config["SQL_TYPE"].".class.php");
-include($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."ini/constants.ini.php");
+include($root_path."config/extension.inc");
+include($root_path."config/config.ini.".$php_ex);
+include($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."sql/".$sql_config["SQL_TYPE"].".class.".$php_ex);
+include($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."ini/constants.ini.".$php_ex);
 $GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]=true;
 
 $db=new db();
-$db->connect($sql_config["SQL_HOST"],$sql_config["SQL_USER"],$sql_config["SQL_PASSWORD"],$sql_config["SQL_DATABASE"],$sql_config["SQL_PORT"]);
-
+$db->db_connect($sql_config["SQL_HOST"],$sql_config["SQL_PORT"],$sql_config["SQL_SOCKET"],$sql_config["SQL_USER"],
+						$sql_config["SQL_PASSWORD"],$sql_config["SQL_DATABASE"],true,$sql_config["USE_SSL"],$sql_config["SSL"]);
 #tmp_dir cleaning
-$db->query("TRUNCATE TABLE `".TABLE_PREFIX.TABLE_TEMP."`;");
+$db->db_dbcommands(DB_TRUNCATE,"","",TABLE_PREFIX.TABLE_TEMP);
 
 #tmp image cleaning
 function remove_dir($dir) {
@@ -54,5 +55,5 @@ function remove_dir($dir) {
      }
    }
 }
-remove_dir($img_path);
+remove_dir($GLOBALS["MANDRIGO_CONFIG"]["IMG_PATH"].TMP_IMG);
 ?>
