@@ -52,7 +52,7 @@ class menu_display{
 		$soa=count($this->config["menu_items"]);
 		for($i=0;$i<$soa;$i++){
 			$cur_subpage=$GLOBALS["PAGE_DATA"]["SUBPAGES"][$this->config["menu_items"][$i]];
-			$subpage_sql=$this->sql_db->fetch_array("SELECT * FROM `".TABLE_PREFIX.TABLE_PAGE_DATA."` WHERE `page_id`='".$cur_subpage."';");
+			$subpage_sql=$this->sql_db->db_fetcharray(TABLE_PREFIX.TABLE_PAGE_DATA,"",array(array("page_id","=",$cur_subpage)));
 			$name=$subpage_sql["page_name"];
 			if(eregi("==>",$name)){
 				$attr="href=\"".ereg_replace("==>","",$name)."\" ".$this->config["menu_attrib"];
@@ -83,7 +83,8 @@ class menu_display{
 		return ereg_replace("{ATTRIB}",$attr,$GLOBALS["HTML"]["A"]).$page_name.$GLOBALS["HTML"]["A!"];
 	}
 	function load($i){
-		if(!$sql_result=$this->sql_db->fetch_array("SELECT * FROM `".TABLE_PREFIX.TABLE_MENU_DATA."` WHERE `page_id`='".$GLOBALS["PAGE_DATA"]["ID"]."' AND `part_id`='$i';")){
+	  	
+		if(!$sql_result=$this->sql_db->db_fetcharray(TABLE_PREFIX.TABLE_MENU_DATA,"",array(array("page_id","=",$GLOBALS["PAGE_DATA"]["ID"],DB_AND),array("part_id","=",$i)))){
             return false;
         }
         $this->config["menu_items"]=explode(";",$sql_result["menu_items"]);
