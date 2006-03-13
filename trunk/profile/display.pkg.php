@@ -55,15 +55,15 @@ class profile_display{
         if($GLOBALS["HTTP_GET"]["ID"]==1){
         	$GLOBALS["HTTP_GET"]["ID"]++;	
 		}
-
-		if(!$sql_result=$this->profile_db->fetch_array("SELECT * FROM `".TABLE_PREFIX.TABLE_USER_DATA."` where `user_id`='".$GLOBALS["HTTP_GET"]["ID"]."';")){
+		
+		if(!$sql_result=$this->profile_db->db_fetcharray(TABLE_PREFIX.TABLE_USER_DATA,"",array(array("user_id","=",$GLOBALS["HTTP_GET"]["ID"])))){
 			return $GLOBALS["LANGUAGE"]["NOUSER"];
 		}
 		$sql_result["user_group"]=explode(";",$sql_result["user_group"]);
 		$group_name="";
 		$group_admin=false;
 		for($i=0;$i<count($sql_result["user_group"]);$i++){
-			if(!$sql_result1=$this->profile_db->fetch_array("SELECT * FROM `".TABLE_PREFIX.TABLE_USER_GROUPS."` where `group_id`='".$sql_result["user_group"][$i]."';")){
+			if(!$sql_result1=$this->profile_db->db_fetcharray(TABLE_PREFIX.TABLE_USER_GROUPS,"",array(array("group_id","=",$sql_result["user_group"][$i])))){
 				return false;
 			}
 			$group_name.=$this->gen_link_internal($GLOBALS["SITE_DATA"]["PROFILE_PAGE"],$sql_result1["group_name"],"id","g".$sql_result1["group_id"]);
@@ -102,13 +102,13 @@ class profile_display{
         if($GLOBALS["HTTP_GET"]["ID"]==1){
         	$GLOBALS["HTTP_GET"]["ID"]++;	
 		}
-		if(!$sql_result=$this->profile_db->fetch_array("SELECT * FROM `".TABLE_PREFIX.TABLE_USER_GROUPS."` where `group_id`='".$GLOBALS["HTTP_GET"]["ID"]."';")){
+		if(!$sql_result=$this->profile_db->db_fetcharray(TABLE_PREFIX.TABLE_USER_GROUPS,"",array(array("group_id","=",$GLOBALS["HTTP_GET"]["ID"])))){
 			return $GLOBALS["LANGUAGE"]["NOUSER"];
 		}
 		$group_members="";
 		$sql_result["group_users"]=explode(";",$sql_result["group_users"]);
 		for($i=0;$i<count($sql_result["group_users"]);$i++){
-		  	if($sql_result1=$this->profile_db->fetch_array("SELECT * FROM `".TABLE_PREFIX.TABLE_USER_DATA."` where `user_id`='".$sql_result["group_users"][$i]."';")){
+		  	if($sql_result1=$this->profile_db->db_fetcharray(TABLE_PREFIX.TABLE_USER_DATA,"",array(array("user_id","=",$sql_result["group_users"][$i])))){
 				$group_members.=$this->gen_link_internal($GLOBALS["SITE_DATA"]["PROFILE_PAGE"],$sql_result1["user_name"],"id","u".$sql_result["group_users"][$i]);
 				if($i<count($sql_result["group_users"])-1){
 					$group_members.=",";
@@ -123,7 +123,7 @@ class profile_display{
 		return $tpl->return_template();	
 	}
 	function gen_email($id,$name){
-		if($eid=$this->profile_db->fetch_result("SELECT `email_id` FROM `".TABLE_PREFIX.TABLE_EMAIL_LIST."` WHERE `user_id`='$id';")){
+		if($eid=$this->profile_db->db_fetchresult(TABLE_PREFIX.TABLE_EMAIL_LIST,"email_id",array(array("user_id","=",$id)))){
 			return $this->gen_link_internal($GLOBALS["SITE_DATA"]["FORM_MAIL_PAGE"],$GLOBALS["LANGUAGE"]["EMAIL"].$name,"mail",$eid);
 		}
 		return false;
