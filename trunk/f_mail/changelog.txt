@@ -1,0 +1,5 @@
+1.0
+1) First revision of the form mail script
+2) Supports the php mail command (smtp mailer in a later version)
+3) Supprots the template engine
+4) Uses the Mandrigo core form_validator tool to weed out bots
