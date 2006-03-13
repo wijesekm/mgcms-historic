@@ -61,6 +61,7 @@ class news_display{
         $end_post = ($GLOBALS["HTTP_GET"]["PAGE_NUMBER"]+1)*$this->config["num_per_page"];
    
         //total posts in the system
+        $this->news_db->db_numrows(TABLE_PREFIX.TABLE_NEWS."_".$GLOBALS["PAGE_DATA"]["ID"]."_".$i,"");
         if(!@$total_posts = $this->news_db->num_rows("SELECT * FROM `".TABLE_PREFIX.TABLE_NEWS."_".$GLOBALS["PAGE_DATA"]["ID"]."_".$i."`;")){
             return false;
         }
@@ -78,7 +79,7 @@ class news_display{
 
         //generates the content string
         while($start_post <= $end_post){
-            if($sql_result = $this->news_db->fetch_array("SELECT * FROM `".TABLE_PREFIX.TABLE_NEWS."_".$GLOBALS["PAGE_DATA"]["ID"]."_".$i."` WHERE `post_id`='".$id_array[$start_post]."';")){
+            if($sql_result=$this->news_db->db_fetcharray(TABLE_PREFIX.TABLE_NEWS."_".$GLOBALS["PAGE_DATA"]["ID"]."_".$i,array(array("post_id","=",$id_array[$start_post])))){
                 $dd_date=true;
 				if($this->same_day($sql_result["post_time"],$last_time)&&$this->config["show_rep_time"]==0){
                     $dd_date=false;
@@ -121,8 +122,7 @@ class news_display{
 		if($this->config["allow_comments"]){
 	        $start_post = ($GLOBALS["HTTP_GET"]["PAGE_NUMBER"]*$this->config["com_per_page"])+1;
 	        $end_post = ($GLOBALS["HTTP_GET"]["PAGE_NUMBER"]+1)*$this->config["com_per_page"];
-	   		
-	    	$total_posts = $this->news_db->num_rows("SELECT * FROM `".TABLE_PREFIX.TABLE_NEWS_COMMENTS."_".$GLOBALS["PAGE_DATA"]["ID"]."_".$i."` WHERE `post_id`='".$GLOBALS["HTTP_GET"]["ID"]."';");
+	    	$total_posts=$this->news_db->db_numrows(TABLE_PREFIX.TABLE_NEWS_COMMENTS."_".$GLOBALS["PAGE_DATA"]["ID"]."_".$i,array(array("post_id","=",$GLOBALS["HTTP_GET"]["ID"])));
 	        if($end_post > $total_posts){
 	            $end_post = $total_posts;
 	        }
@@ -132,8 +132,7 @@ class news_display{
 
 	        $id_array = $this->post_id_array($i,$total_posts,TABLE_NEWS_COMMENTS,$GLOBALS["HTTP_GET"]["ID"]);
 	        while($start_post <= $end_post){
-	          	
-	            if($sql_result1 = $this->news_db->fetch_array("SELECT * FROM `".TABLE_PREFIX.TABLE_NEWS_COMMENTS."_".$GLOBALS["PAGE_DATA"]["ID"]."_".$i."` WHERE `post_id`='".$GLOBALS["HTTP_GET"]["ID"]."' AND `com_id`='".$id_array[$start_post]."';")){
+	            if($sql_result1=$this->news_db->db_fetcharray(TABLE_PREFIX.TABLE_NEWS_COMMENTS."_".$GLOBALS["PAGE_DATA"]["ID"]."_".$i,"",array(array("post_id","=",$GLOBALS["HTTP_GET"]["ID"],DB_AND),array("com_id","=",$id_array[$start_post])))){
 					if($sql_result1["user_id"]){
 						$user=$this->gen_user($sql_result1["user_id"]);	
 					}
@@ -171,7 +170,7 @@ class news_display{
 			}
 		}
 		//gets the post from the database
-		if(!$sql_result = $this->news_db->fetch_array("SELECT * FROM `".TABLE_PREFIX.TABLE_NEWS."_".$GLOBALS["PAGE_DATA"]["ID"]."_".$i."` WHERE `post_id`='".$GLOBALS["HTTP_GET"]["ID"]."';")){
+		if(!$sql_result=$this->news_db->db_fetcharray(TABLE_PREFIX.TABLE_NEWS."_".$GLOBALS["PAGE_DATA"]["ID"]."_".$i,"",array(array("post_id","=",$GLOBALS["HTTP_GET"]["ID"])))){
 			return $GLOBALS["LANGUAGE"]["NO_POST"];  
 		}
 		if(!$post_content){
@@ -200,13 +199,13 @@ class news_display{
         $post_id_array=array();
         while($i>0){
           	if(!$post_id){
-	            if($sql_result = $this->news_db->fetch_array("SELECT * FROM `".TABLE_PREFIX.$table."_".$GLOBALS["PAGE_DATA"]["ID"]."_".$part_id."` WHERE `post_id`='$j';")){
+	            if($sql_result=$this->news_db->db_fetcharray(TABLE_PREFIX.$table."_".$GLOBALS["PAGE_DATA"]["ID"]."_".$part_id,"",array(array("post_id","=",$j)))){
 					$post_id_array[$i] = $j;
 	                $i--;
 	            }
 	        }
-	        else{
-	        	if($sql_result = $this->news_db->fetch_array("SELECT * FROM `".TABLE_PREFIX.$table."_".$GLOBALS["PAGE_DATA"]["ID"]."_".$part_id."` WHERE `post_id`='$post_id' AND `com_id`='$j';")){
+	        else{     	
+	        	if($sql_result=$this->news_db->db_fetcharray(TABLE_PREFIX.$table."_".$GLOBALS["PAGE_DATA"]["ID"]."_".$part_id,"",array(array("post_id","=",$post_id,DB_AND),array("com_id","=",$j)))){
 					$post_id_array[$i] = $j;
 	                $i--;
 	            }			
@@ -260,7 +259,7 @@ class news_display{
         return false;
     }
     function gen_user($uid){
-        if(!@$sql_result = $this->news_db->fetch_array("SELECT * FROM `".TABLE_PREFIX.TABLE_USER_DATA."` WHERE `user_id`='$uid';")){
+        if(!@$sql_result=$this->news_db->db_fetcharray(TABLE_PREFIX.TABLE_USER_DATA,"",array(array("user_id","=",$uid)))){
             return false;
         }
         return $this->gen_link_internal($GLOBALS["SITE_DATA"]["PROFILE_PAGE"],"u".$uid,$sql_result["user_name"],"id");
@@ -278,7 +277,8 @@ class news_display{
         return ereg_replace("{ATTRIB}","href=\"$link\"",$GLOBALS["HTML"]["A"]).$name.$GLOBALS["HTML"]["A!"];
 	}
 	function load($i,$type){
-		if(!$sql_result=$this->news_db->fetch_array("SELECT * FROM `".TABLE_PREFIX.TABLE_NEWS_DATA."` WHERE `page_id`='".$GLOBALS["PAGE_DATA"]["ID"]."' AND `part_id`='$i';")){
+	  
+		if(!$sql_result=$this->news_db->db_fetcharray(TABLE_PREFIX.TABLE_NEWS_DATA,"",array(array("page_id","=",$GLOBALS["PAGE_DATA"]["ID"],DB_AND),array("part_id","=",$i)))){
             return false;
         }
         $this->config["num_per_page"]=$sql_result["num_per_page"];
