@@ -59,53 +59,55 @@ class news_display{
         //
         $start_post = ($GLOBALS["HTTP_GET"]["PAGE_NUMBER"]*$this->config["num_per_page"])+1;
         $end_post = ($GLOBALS["HTTP_GET"]["PAGE_NUMBER"]+1)*$this->config["num_per_page"];
-   
         //total posts in the system
-        $this->news_db->db_numrows(TABLE_PREFIX.TABLE_NEWS."_".$GLOBALS["PAGE_DATA"]["ID"]."_".$i,"");
-        if(!@$total_posts = $this->news_db->num_rows("SELECT * FROM `".TABLE_PREFIX.TABLE_NEWS."_".$GLOBALS["PAGE_DATA"]["ID"]."_".$i."`;")){
-            return false;
-        }
-        
+        $total_posts=$this->news_db->db_numrows(TABLE_PREFIX.TABLE_NEWS."_".$GLOBALS["PAGE_DATA"]["ID"]."_".$i,"");
         //prevents system from exceding the max number of posts
         if($end_post > $total_posts){
             $end_post = $total_posts;
         }
 		//$start_post--;     
         //forms array of post id's from most current to oldest
-        $id_array = $this->post_id_array($i,$total_posts);
+        $id_array=$this->post_id_array($i,$total_posts);
         $last_time=0;
         $dd_date=true;
         $post_content="";
-
         //generates the content string
-        while($start_post <= $end_post){
-            if($sql_result=$this->news_db->db_fetcharray(TABLE_PREFIX.TABLE_NEWS."_".$GLOBALS["PAGE_DATA"]["ID"]."_".$i,array(array("post_id","=",$id_array[$start_post])))){
-                $dd_date=true;
-				if($this->same_day($sql_result["post_time"],$last_time)&&$this->config["show_rep_time"]==0){
-                    $dd_date=false;
-                }
-                $parse_vars = array(
-                        "NEWS_MAIN_TITLE",$sql_result["post_title"]
-                        ,"NEWS_MAIN_DATE",date($this->config["date_struct"],$sql_result["post_time"])
-                        ,"NEWS_MAIN_TIME",$this->gen_link_internal($GLOBALS["HTTP_GET"]["PAGE"],$id_array[$start_post],date($this->config["time_struct"],$sql_result["post_time"]),"id")
-                        ,"NEWS_MAIN_USER",$this->gen_user($sql_result["post_author"])
-                        ,"NEWS_MAIN_CONTENT",$sql_result["post_content"]);
-                $last_time = $sql_result["post_time"];
-                $cur_tpl= new template();
-            	$cur_tpl->load(false,$this->tpl->return_template(1).$this->tpl->return_template(2));
-            	$cur_tpl->pparse($parse_vars,true,true,array($dd_date,true));
-            	$post_content.=$cur_tpl->return_template();
-            }
-            $start_post++;
-        } 
-		$nav=$this->nav_gen($total_posts);
-		$tpl=$this->tpl->return_template(0).$this->tpl->return_template(3).$this->tpl->return_template(4);
-		if(!$nav){
-			$tpl=$this->tpl->return_template(0).$this->tpl->return_template(3);
-		} 
-		$this->pparse_vars=array("NEWS_POSTS",$post_content
-								,"NEWS_PAGE_LIST",$nav[0]
-								,"NEWS_NAV",$nav[1]); 
+        if($total_posts!=0){
+	        while($start_post <= $end_post){
+	            if($sql_result=$this->news_db->db_fetcharray(TABLE_PREFIX.TABLE_NEWS."_".$GLOBALS["PAGE_DATA"]["ID"]."_".$i,"",array(array("post_id","=",$id_array[$start_post])))){
+	                $dd_date=true;
+					if($this->same_day($sql_result["post_time"],$last_time)&&$this->config["show_rep_time"]==0){
+	                    $dd_date=false;
+	                }
+	                $parse_vars = array(
+	                        "NEWS_MAIN_TITLE",$sql_result["post_title"]
+	                        ,"NEWS_MAIN_DATE",date($this->config["date_struct"],$sql_result["post_time"])
+	                        ,"NEWS_MAIN_TIME",$this->gen_link_internal($GLOBALS["HTTP_GET"]["PAGE"],$id_array[$start_post],date($this->config["time_struct"],$sql_result["post_time"]),"id")
+	                        ,"NEWS_MAIN_USER",$this->gen_user($sql_result["post_author"])
+	                        ,"NEWS_MAIN_CONTENT",$sql_result["post_content"]);
+	                $last_time = $sql_result["post_time"];
+	                $cur_tpl= new template();
+	            	$cur_tpl->load(false,$this->tpl->return_template(1).$this->tpl->return_template(2));
+	            	$cur_tpl->pparse($parse_vars,true,true,array($dd_date,true));
+	            	$post_content.=$cur_tpl->return_template();
+	            }
+	            $start_post++;
+	        } 
+			$nav=$this->nav_gen($total_posts);
+			$tpl=$this->tpl->return_template(0).$this->tpl->return_template(3).$this->tpl->return_template(4);
+			if(!$nav){
+				$tpl=$this->tpl->return_template(0).$this->tpl->return_template(3);
+			} 
+			$this->pparse_vars=array("NEWS_POSTS",$post_content
+									,"NEWS_PAGE_LIST",$nav[0]
+									,"NEWS_NAV",$nav[1]); 
+		}
+		else{
+		  	$tpl=$this->tpl->return_template(0).$this->tpl->return_template(3);
+			$this->pparse_vars=array("NEWS_POSTS",$GLOBALS["LANGUAGE"]["NO_POSTS"]
+									,"NEWS_PAGE_LIST",""
+									,"NEWS_NAV",""); 			
+		}
 		return $tpl;
 	}
 	function display_post($i){
