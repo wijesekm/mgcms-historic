@@ -62,6 +62,7 @@ $GLOBALS["LANGUAGE"]["F_MAIL_ERROR_ALERT"]="Invalid Data. Please fill out or fix
 $GLOBALS["LANGUAGE"]["F_MAIL_SENT"]="Message Sent!";
 
 //news script
+$GLOBALS["LANGUAGE"]["NO_POSTS"]="There are currently no posts.";
 $GLOBALS["LANGUAGE"]["NO_POST"]="Cannot find the requested post.";
 $GLOBALS["LANGUAGE"]["NO_COM"]="There are no comments for this post.";
 
