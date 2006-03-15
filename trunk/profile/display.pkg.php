@@ -78,7 +78,7 @@ class profile_display{
 		$pparse_vars = array("USER_ID",$sql_result["user_id"]
 							,"USER_ANAME",$sql_result["user_name"]
 							,"USER_RNAME",$rn[0]." ".$rn[1]." ".$rn[2]
-							,"USER_EMAIL",$this->gen_email($sql_result["user_id"],$rn[0])
+							,"USER_EMAIL",$this->gen_email($sql_result["user_id"],$rn[0],$sql_result["user_email"])
 							,"USER_IM",$this->gen_im(explode(";",$sql_result["user_im"]))
 							,"USER_WEBSITE",$this->gen_link_external($sql_result["user_website"],$sql_result["user_website"])
 							,"USER_ABOUT",$sql_result["user_about"]
@@ -122,11 +122,16 @@ class profile_display{
 		$tpl->pparse($pparse_vars);
 		return $tpl->return_template();	
 	}
-	function gen_email($id,$name){
-		if($eid=$this->profile_db->db_fetchresult(TABLE_PREFIX.TABLE_EMAIL_LIST,"email_id",array(array("user_id","=",$id)))){
+	function gen_email($id,$name,$email){
+		if($eid=$this->profile_db->db_fetchresult(TABLE_PREFIX.TABLE_EMAIL_LIST,"email_id",array(array("user_id","=",$id)))&&$GLOBALS["SITE_DATA"]["FORM_MAIL_PAGE"]){
 			return $this->gen_link_internal($GLOBALS["SITE_DATA"]["FORM_MAIL_PAGE"],$GLOBALS["LANGUAGE"]["EMAIL"].$name,"mail",$eid);
 		}
-		return false;
+		else{
+			$link="href=\"#\" onclick=\"document.location='mai'+'lto:";
+			$email=explode("@",$email);
+			$link.=$email[0]."'+unescape('%40')+'".$email[1]."'; return false;\"";
+			return ereg_replace("{ATTRIB}",$link,$GLOBALS["HTML"]["A"]).$name.$GLOBALS["HTML"]["A!"];
+		}
 	}
 	function gen_im($array){
 	  	$string="";
