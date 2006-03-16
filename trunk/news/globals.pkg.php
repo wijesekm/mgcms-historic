@@ -1,11 +1,11 @@
 <?php
 /**********************************************************
     globals.pkg.php
-    {package_name} ver {version}
-	Last Edited By: {yourname}
-	Date Last Edited: {date}
+    news ver 1.0
+	Last Edited By: Kevin Wijesekera
+	Date Last Edited: 02/09/05
 
-	Copyright (C) {year} {yourname}
+	Copyright (C) 2006 Kevin Wijesekera
 
     ##########################################################
 	This program is free software; you can redistribute it and/or
