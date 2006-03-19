@@ -105,7 +105,7 @@ define("TMP_IMG","tmp");
 //
 //Misc
 //
-define("MANDRIGO_CODE_BLOCK","<!--MG_CODE-->");
+define("MANDRIGO_CODE_BLOCK","<?MG_CODE>");
 define("BAD_DATA","&ERROR_IN_DATA;");
 
 ?>
