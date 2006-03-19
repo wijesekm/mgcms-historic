@@ -40,7 +40,7 @@ if(!defined("START_MANDRIGO")){
 define("TABLE_NEWS_DATA","news_data");
 define("TABLE_NEWS_SUM_DATA","newssum_data");
 define("TABLE_NEWS","news");
-define("TABLE_NEWS_COMMENTS","news_com");
 define("TPL_NEWSSUM","newssum");
+define("TPL_NEWSSUM_MINI","newssum_mini");
 define("SKIN_MINI","mini");
 ?>
