@@ -41,9 +41,9 @@ class newssum_hook{
   	var $pparse_vars;
     
 	function newssum_display_hook(&$sql,&$error_log,$i){
-	  	$cur_news=new news_display($sql);
-	  	$string="";
-
+	  	$cur_newssum=new newssum_display($sql);
+	  	$string=$cur_newssum->display($i);
+	  	$this->pparse_vars=$cur_newssum->return_vars();
 		return $string;
     }
     function newssum_vars_hook(&$sql,&$error_log,$i){
