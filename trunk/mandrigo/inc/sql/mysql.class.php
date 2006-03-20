@@ -190,7 +190,6 @@ class db extends _db{
 		};
 		$qstring.=";";
 		if($this->db_query($qstring)){
-			$this->db_freeresult($result);
 			return true;	
 		}
 		return false;
@@ -307,7 +306,6 @@ class db extends _db{
 		};
 		$qstring.=";";
 		if($this->db_query($qstring)){
-			$this->db_freeresult($result);
 			return true;	
 		}
 		return false;
