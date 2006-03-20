@@ -1,10 +1,10 @@
 <?php
 /**********************************************************
-    auth.class.php
+    sql_auth.class.php
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 03/17/06
+	Date Last Edited: 03/20/06
 
-	Copyright (C) 2005  Kevin Wijesekera
+	Copyright (C) 2006  Kevin Wijesekera
 
     ##########################################################
 	This program is free software; you can redistribute it and/or
