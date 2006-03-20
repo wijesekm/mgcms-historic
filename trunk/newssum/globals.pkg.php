@@ -41,7 +41,7 @@ define("TABLE_NEWS_SUM_DATA","newssum_data");
 define("TABLE_NEWSSUM","newssum");
 define("TABLE_NEWS","news");
 define("TPL_NEWSSUM","newssum");
-define("TPL_NEWSSUM_MINI","newssum_mini");
+define("TPL_NEWSSUM_MINI","_newssum_mini");
 define("SKIN_MINI","mini");
 $GLOBALS["LANGUAGE"]["NOFEEDS"]="There are no feeds setup.";
 ?>
