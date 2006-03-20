@@ -58,7 +58,7 @@ class page{
             ,"CURRENT_PAGE",$GLOBALS["PAGE_DATA"]["RNAME"]
         );
         if(count($GLOBALS["PAGE_DATA"]["VARS"])%2==0){
-            $this->page_parse_vars=array_merge_recursive($GLOBALS["PAGE_DATA"]["VARS"],$this->page_parse_vars);
+            $this->page_parse_vars=$this->merge_arrays($GLOBALS["PAGE_DATA"]["VARS"],$this->page_parse_vars);
         }
     }
     function display(){
@@ -84,7 +84,7 @@ class page{
             }
         }
         if($this->page_error_logger->get_status()!=0){
-                    $this->page_parse_vars=array_merge_recursive(array("CONTENT",$this->page_error_logger->generate_report(),"PAGE_TITLE",$GLOBALS["LANGUAGE"]["ETITLE2"]),$this->page_parse_vars);
+                    $this->page_parse_vars=$this->merge_arrays(array("CONTENT",$this->page_error_logger->generate_report(),"PAGE_TITLE",$GLOBALS["LANGUAGE"]["ETITLE2"]),$this->page_parse_vars);
         }
         else if($GLOBALS["PAGE_DATA"]["PAGE_STATUS"]||$GLOBALS["HTTP_GET"]["KEY"]==$GLOBALS["SITE_DATA"]["BYPASS_CODE"]){
                 if($GLOBALS["PAGE_DATA"]["AUTH_PAGE"]&&!($GLOBALS["USER_DATA"]["PERMISSIONS"]["READ_RESTRICTED"]||$GLOBALS["USER_DATA"]["PERMISSIONS"]["FULL_CONTROL"])){
@@ -107,15 +107,15 @@ class page{
             }
             if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
                 if($this->page_error_logger->get_status()!=0){
-                    $this->page_parse_vars=array_merge_recursive(array("CONTENT",$this->page_error_logger->generate_report(),"PAGE_TITLE",$GLOBALS["LANGUAGE"]["ETITLE2"]),$this->page_parse_vars);
+                    $this->page_parse_vars=$this->merge_arrays(array("CONTENT",$this->page_error_logger->generate_report(),"PAGE_TITLE",$GLOBALS["LANGUAGE"]["ETITLE2"]),$this->page_parse_vars);
                 }
                 else{
                   	//echo "<pre>";print_r($this->page_parse_vars);
-                    $this->page_parse_vars=array_merge_recursive(array("CONTENT",$content,"PAGE_TITLE",$GLOBALS["PAGE_DATA"]["TITLE"]),$this->page_parse_vars);
+                    $this->page_parse_vars=$this->merge_arrays(array("CONTENT",$content,"PAGE_TITLE",$GLOBALS["PAGE_DATA"]["TITLE"]),$this->page_parse_vars);
                 }
             }
             else{
-                $this->page_parse_vars=array_merge_recursive(array("CONTENT",$content,"PAGE_TITLE",$GLOBALS["PAGE_DATA"]["TITLE"]),$this->page_parse_vars);
+                $this->page_parse_vars=$this->merge_arrays(array("CONTENT",$content,"PAGE_TITLE",$GLOBALS["PAGE_DATA"]["TITLE"]),$this->page_parse_vars);
             }
 
         }
@@ -129,13 +129,13 @@ class page{
                 else{
                     $tmp_tpl=new template($GLOBALS["MANDRIGO_CONFIG"]["TEMPLATE_PATH"].TPL_OFF_PAGE);
                     $content=$tmp_tpl->return_template();
-                    $this->page_parse_vars=array_merge_recursive(array("CONTENT",$content,"PAGE_TITLE",$GLOBALS["LANGUAGE"]["OPTITLE"]),$this->page_parse_vars);
+                    $this->page_parse_vars=$this->merge_arrays(array("CONTENT",$content,"PAGE_TITLE",$GLOBALS["LANGUAGE"]["OPTITLE"]),$this->page_parse_vars);
                 }
             }
             else{
                 $tmp_tpl=new template($GLOBALS["MANDRIGO_CONFIG"]["TEMPLATE_PATH"].TPL_OFF_PAGE);
                 $content=$tmp_tpl->return_template();
-                $this->page_parse_vars=array_merge_recursive(array("CONTENT",$content,"PAGE_TITLE",$GLOBALS["LANGUAGE"]["OPTITLE"]),$this->page_parse_vars);
+                $this->page_parse_vars=$this->merge_arrays(array("CONTENT",$content,"PAGE_TITLE",$GLOBALS["LANGUAGE"]["OPTITLE"]),$this->page_parse_vars);
             }
         }
         $tpl->pparse($this->page_parse_vars);
@@ -174,10 +174,25 @@ class page{
         eval($string);
         //echo count($vars);
         if(count($vars)%2==0){
-            $this->page_parse_vars=array_merge_recursive($vars,$this->page_parse_vars);
+            $this->page_parse_vars=$this->merge_arrays($vars,$this->page_parse_vars);
         }
         return $content;
     }
+    function merge_arrays($a1,$a2){
+		$an=array();
+		$size=count($a1)+count($a2);
+		$j=0;
+		for($i=0;$i<$size;$i++){
+			if($i<count($a1)){
+				$an[$i]=$a1[$i];
+			}
+			else{
+				$an[$i]=$a2[$j];
+				$j++;
+			}
+		}
+		return $an;
+	}
 }
 
 ?>
