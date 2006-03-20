@@ -165,10 +165,14 @@ unset($lang);
 
 if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
     include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."globals/site.globals.$php_ex");
+    include_once($GLOBALS["MANDRIGO_CONFIG"]["LOGIN_PATH"]."globals/server.globals.$php_ex");
 }
 else{
     if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."globals/site.globals.$php_ex"))){
         $error_log->add_error(7,"script");
+    }
+    if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["LOGIN_PATH"]."globals/server.globals.$php_ex"))){
+        $error_log->add_error(8,"script");
     }
     if($error_log->get_status()==2){
         die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
@@ -183,6 +187,10 @@ if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
     include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."template.class.$php_ex");
     include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."word_filter.class.$php_ex");
     include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."form_validator.class.$php_ex");
+    include_once($GLOBALS["MANDRIGO_CONFIG"]["LOGIN_PATH"]."login.class.$php_ex");
+    include_once($GLOBALS["MANDRIGO_CONFIG"]["LOGIN_PATH"]."logout.class.$php_ex");
+    include_once($GLOBALS["MANDRIGO_CONFIG"]["LOGIN_PATH"]."regester.class.$php_ex");
+    include_once($GLOBALS["MANDRIGO_CONFIG"]["LOGIN_PATH"]."reset.class.$php_ex");
 }
 else{
     if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."template.class.$php_ex"))){
@@ -191,8 +199,20 @@ else{
     if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."word_filter.class.$php_ex"))){
         $error_log->add_error(14,"script");
     }
-    if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."form_validator.class.$php_ex"))){
+    if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."login.class.$php_ex"))){
         $error_log->add_error(16,"script");
+    }
+    if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["LOGIN_PATH"]."form_validator.class.$php_ex"))){
+        $error_log->add_error(200,"script");
+    }
+    if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["LOGIN_PATH"]."logout.class.$php_ex"))){
+        $error_log->add_error(201,"script");
+    }
+    if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["LOGIN_PATH"]."regester.class.$php_ex"))){
+        $error_log->add_error(202,"script");
+    }
+    if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["LOGIN_PATH"]."reset.class.$php_ex"))){
+        $error_log->add_error(203,"script");
     }
     if($error_log->get_status()==2){
         die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
