@@ -1,10 +1,10 @@
 <?php
 /**********************************************************
-    ini.php
+    login.ini.php
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 12/14/05
+	Date Last Edited: 03/20/06
 
-	Copyright (C) 2005  Kevin Wijesekera
+	Copyright (C) 2006  Kevin Wijesekera
 
     ##########################################################
 	This program is free software; you can redistribute it and/or
@@ -101,3 +101,124 @@ if(!$GLOBALS["MANDRIGO_CONFIG"]["IS_INSTALLED"]){
 		$GLOBALS["HTML"]["TITLE!"].$GLOBALS["HTML"]["HEAD!"].$GLOBALS["HTML"]["BODY"].
 		$GLOBALS["LANGUAGE"]["INSTALLWARN"].$GLOBALS["HTML"]["BODY!"].$GLOBALS["HTML"]["HTML!"]);
 }
+
+//
+// Now we will start up SQL and connect to the server/database
+//
+if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
+    require_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."sql/".$sql_config["SQL_TYPE"].".class.$php_ex");
+}
+else{
+    if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."sql/".$sql_config["SQL_TYPE"].".class.$php_ex"))){
+        $error_log->add_error(2,"script");
+        die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
+           $error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
+    }
+}
+$sql_db = & new db();
+
+if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
+	$sql_db->db_connect($sql_config["SQL_HOST"],$sql_config["SQL_PORT"],$sql_config["SQL_SOCKET"],$sql_config["SQL_USER"],
+						$sql_config["SQL_PASSWORD"],$sql_config["SQL_DATABASE"],true,$sql_config["USE_SSL"],$sql_config["SSL"]);
+}
+else{
+    if(!$sql_db->db_connect($sql_config["SQL_HOST"],$sql_config["SQL_PORT"],$sql_config["SQL_SOCKET"],$sql_config["SQL_USER"],
+		$sql_config["SQL_PASSWORD"],$sql_config["SQL_DATABASE"],true,$sql_config["USE_SSL"],$sql_config["SSL"])){
+        $error_log->add_error(1,"sql");
+        die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].$error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
+    }
+}
+
+//
+//Now we will load a few essential packages such as constants
+//
+if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
+    include_once($GLOBALS["MANDRIGO_CONFIG"]["LOGIN_PATH"]."ini/constants.ini.$php_ex");
+    include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."ini/clean_functions.ini.$php_ex");
+    include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."server_time.class.$php_ex");
+    include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."ini/funct.ini.$php_ex");
+}
+else{
+    if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["LOGIN_PATH"]."ini/constants.ini.$php_ex"))){
+        $error_log->add_error(3,"script");
+    }
+    if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."ini/clean_functions.ini.$php_ex"))){
+        $error_log->add_error(4,"script");
+    }
+    if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."server_time.class.$php_ex"))){
+        $error_log->add_error(5,"script");
+    }
+    if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."ini/funct.ini.$php_ex"))){
+        $error_log->add_error(6,"script");
+    }
+    if($error_log->get_status()==2){
+        die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
+           $error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
+    }
+}
+//
+//Gets rid of unneeded config vars
+//
+unset($sql_config);
+unset($log_config);
+unset($lang);
+
+if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
+    include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."globals/site.globals.$php_ex");
+}
+else{
+    if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."globals/site.globals.$php_ex"))){
+        $error_log->add_error(7,"script");
+    }
+    if($error_log->get_status()==2){
+        die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
+           $error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
+    }
+}
+
+//
+//Loads remaining classes and loads page display classes
+//
+if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
+    include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."template.class.$php_ex");
+    include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."word_filter.class.$php_ex");
+    include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."form_validator.class.$php_ex");
+}
+else{
+    if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."template.class.$php_ex"))){
+        $error_log->add_error(13,"script");
+    }
+    if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."word_filter.class.$php_ex"))){
+        $error_log->add_error(14,"script");
+    }
+    if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."form_validator.class.$php_ex"))){
+        $error_log->add_error(16,"script");
+    }
+    if($error_log->get_status()==2){
+        die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
+           $error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
+    }
+}
+
+//
+//Seeds random number generator
+//
+srand(((int)((double)microtime()*1000003)));
+
+//
+//Stats and Banning
+//
+if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
+    include_once($GLOBALS["MANDRIGO_CONFIG"]["LOGIN_PATH"]."ini/stats.ini.$php_ex");
+
+}
+else{
+    if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["LOGIN_PATH"]."ini/stats.ini.$php_ex"))){
+        $error_log->add_error(15,"script");
+    }
+    if($error_log->get_status()==2){
+        die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
+           $error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
+    }
+}
+?>
