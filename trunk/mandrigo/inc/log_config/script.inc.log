@@ -25,3 +25,8 @@
 &split;104&split;Could not load files associated with the site map script.  The files could be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue
 &split;105&split;Could not load files associated with the news script.  The files could be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue
 &split;106&split;Could not load files associated with the newssum script.  The files could be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue
+
+&split;200&split;Could not load the login class.  Script may be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue.
+&split;201&split;Could not load the logout class.  Script may be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue.
+&split;202&split;Could not load the regester class.  Script may be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue.
+&split;203&split;Could not load the reset class.  Script may be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue.
