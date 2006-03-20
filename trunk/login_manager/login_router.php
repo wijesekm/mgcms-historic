@@ -66,6 +66,35 @@ else{
            $error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
     }
 }
-
-
+//one final check for errors
+if($error_log->get_status()==2){
+    die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
+        $error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
+}
+if($GLOBALS["MANDRIGO_CONFIG"]["SITE_STATUS"]||$GLOBALS["HTTP_GET"]["KEY"]==$GLOBALS["SITE_DATA"]["BYPASS_CODE"]){
+	switch($GLOBALS["HTTP_GET"]["ACTION"]){
+		case "lo":
+			$act=new logout($error_log,$sql_db);
+			echo $act->display();
+		break;
+		case "rg":
+			$act=new regester($error_log,$sql_db);
+			echo $act->display();
+		break;
+		case "pi":
+			$act=new reset($error_log,$sql_db);
+			echo $act->display();
+		break;
+		default:
+			$act=new login($error_log,$sql_db);
+			echo $act->display();
+		break;		 
+	};
+}
+else{
+  	$tpl = new template();
+    $tpl->load($GLOBALS["MANDRIGO_CONFIG"]["TEMPLATE_PATH"].TPL_OFF_SITE);
+    $tpl->pparse();
+    echo $tpl->return_template();
+}
 ?>
