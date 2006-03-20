@@ -36,4 +36,42 @@ if(!defined("START_MANDRIGO")){
         </html></body>");
 }
 
+//
+//SQL Tables
+//
+define("TABLE_PREFIX",$sql_config["TABLE_PREFIX"]);
+define("TABLE_USER_DATA","user_data");
+define("TABLE_USER_GROUPS","user_groups");
+define("TABLE_GROUP_PERMISSIONS","group_permissions");
+define("TABLE_MAIN_DATA","config");
+
+//
+//DB Constants
+//
+define("DB_UPDATE","UPDATE");
+define("DB_INSERT","INSERT");
+define("DB_DELETE","DELETE");
+define("DB_REMOVE","DELETE");
+define("DB_DROP","DROP");
+define("DB_ADD","ADD");
+define("DB_CREATE","CREATE");
+define("DB_ALTER","ALTER");
+define("DB_TRUNCATE","TRUNCATE");
+define("DB_DATABASE","DATABASE");
+define("DB_PRIMARY","PRIMARY");
+define("DB_KEY","KEY");
+define("DB_TABLE","TABLE");
+define("DB_UINDEX","UINDEX");
+define("DB_AND","AND");
+define("DB_OR","OR");
+define("DB_IN","IN");
+define("DB_BETWEEN","BETWEEN");
+define("DB_NULL","NULL");
+define("DB_AUTO_INC","AUTO");
+
+//
+//Misc
+//
+define("BAD_DATA","&ERROR_IN_DATA;");
+
 ?>
