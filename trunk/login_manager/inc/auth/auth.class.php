@@ -4,7 +4,7 @@
 	Last Edited By: Kevin Wijesekera
 	Date Last Edited: 03/17/06
 
-	Copyright (C) 2005  Kevin Wijesekera
+	Copyright (C) 2006  Kevin Wijesekera
 
     ##########################################################
 	This program is free software; you can redistribute it and/or
@@ -165,5 +165,23 @@ class _auth{
         }
         return false;
     }    
+    function auth_cleanusername($string){
+		if(!eregi("^[a-z0-9_-]+$",$string)){
+            return false;
+        }
+        return true;
+	}
+	function auth_cleanpassword($string){
+		if(!eregi("^[a-z0-9_-]+$",$string)){
+            return false;
+        }
+		return true;	
+	}
+	function auth_cleanuid($num){
+		if(!eregi("^[0-9]+$",$num)){
+            return false;
+        }
+		return true;			
+	}
 }
 ?>
