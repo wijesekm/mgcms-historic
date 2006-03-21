@@ -30,3 +30,7 @@
 &split;201&split;Could not load the logout class.  Script may be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue.
 &split;202&split;Could not load the regester class.  Script may be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue.
 &split;203&split;Could not load the reset class.  Script may be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue.
+&split;204&split;Could not load the login globals script.  Script may be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue.
+&split;205&split;Could not load the session class.  Script may be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue.
+&split;206&split;Could not load the root auth class.  Script may be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue.
+&split;207&split;Could not load the auth class.  Script may be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue.
