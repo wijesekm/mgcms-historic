@@ -2,7 +2,7 @@
 /**********************************************************
     auth.class.php
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 03/17/06
+	Date Last Edited: 03/21/06
 
 	Copyright (C) 2006  Kevin Wijesekera
 
@@ -39,7 +39,9 @@ if(!defined("START_MANDRIGO")){
 class _auth{
   
   	var $seeded;
-  	
+  	var $sql_db;
+  	var $session;
+	    	
     function auth_randstring($size){
         $str = "";
         $char = array(
