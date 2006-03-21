@@ -38,10 +38,9 @@ if(!defined("START_MANDRIGO")){
 
 class auth extends _auth{
   
-  	var $sql_db;
-  
 	function auth($db){
 	 	$this->sql_db=$db; 
+		$this->session=new session($db);
 	}
 	function auth_validate($user_name,$user_password,$crypt_type){
 	  
@@ -58,8 +57,12 @@ class auth extends _auth{
 		}
 		return false;
 	}
-	function auth_loguserin($user_name,$ip,$timestamp){
-		return $this->sql_db->db_update(DB_UPDATE,TABLE_PREFIX.TABLE_USER_DATA,array(array("user_last_login",$timestamp),array("user_last_ip",$ip)),array(array("user_name","=",$user_name))));
+	function auth_loguserin($uid,$ip,$timestamp){
+		$this->sql_db->db_update(DB_UPDATE,TABLE_PREFIX.TABLE_USER_DATA,array(array("user_last_login",$timestamp),array("user_last_ip",$ip)),array(array("user_id","=",$uid))));
+		return $this->session->session_start($uid);
+	}
+	function auth_loguserout($uid){
+		return $this->session->session_stop($uid);
 	}
 	function auth_validsession($uid,$session){
 	  	if(!$this->auth_cleanuid($uid)){
