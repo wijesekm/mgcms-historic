@@ -134,6 +134,7 @@ else{
 //
 if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
     include_once($GLOBALS["MANDRIGO_CONFIG"]["LOGIN_PATH"]."ini/constants.ini.$php_ex");
+    include_once($GLOBALS["MANDRIGO_CONFIG"]["LOGIN_PATH"]."ini/funct.ini.$php_ex");
     include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."ini/clean_functions.ini.$php_ex");
     include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."server_time.class.$php_ex");
     include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."ini/funct.ini.$php_ex");
@@ -147,6 +148,9 @@ else{
     }
     if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."server_time.class.$php_ex"))){
         $error_log->add_error(5,"script");
+    }
+    if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."ini/funct.ini.$php_ex"))){
+        $error_log->add_error(6,"script");
     }
     if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."ini/funct.ini.$php_ex"))){
         $error_log->add_error(6,"script");
