@@ -44,5 +44,5 @@ if(!defined("START_MANDRIGO")){
 //
 $GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]=ereg_replace("/login_manager/config/config.ini.php","",__FILE__)."/inc/packages/";
 $GLOBALS["MANDRIGO_CONFIG"]["LOGIN_PATH"]=ereg_replace("/config/config.ini.php","",__FILE__)."/inc/";
-
+$GLOBALS["MANDRIGO_CONFIG"]["LOGIN"]="login_manager.$php_ex";
 require($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."config/config.ini.$php_ex");
