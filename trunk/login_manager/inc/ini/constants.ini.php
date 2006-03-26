@@ -75,4 +75,10 @@ define("DB_AUTO_INC","AUTO");
 define("BAD_DATA","&ERROR_IN_DATA;");
 define("SESSION_COOKIE","mg_sesid");
 define("USER_COOKIE","mg_uid");
+
+//templates
+define("TPL_EXT",$tpl_ex);
+define("TPL_ERROR_LOG","error_log.".TPL_EXT);
+define("TPL_OFF_SITE","off_site.".TPL_EXT);
+define("TPL_LOGIN","login/login".TPL_EXT);
 ?>
