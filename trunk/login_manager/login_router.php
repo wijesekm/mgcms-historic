@@ -72,24 +72,44 @@ if($error_log->get_status()==2){
         $error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
 }
 if($GLOBALS["MANDRIGO_CONFIG"]["SITE_STATUS"]||$GLOBALS["HTTP_GET"]["KEY"]==$GLOBALS["SITE_DATA"]["BYPASS_CODE"]){
+  	$tpl=new template();
+	if(!$tpl->load($GLOBALS["MANDRIGO_CONFIG"]["TEMPLATE_PATH"].TPL_MAIN_SITE)){
+        if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
+            $this->page_error_logger->add_error(30,"script");
+            die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
+                $this->page_error_logger->generate_report().$GLOBALS["HTML"]["EEND"]);
+        }
+    }
+    $page_parse_vars = array(
+        "SITE_NAME",$GLOBALS["SITE_DATA"]["SITE_NAME"]
+        ,"SITE_URL",$GLOBALS["SITE_DATA"]["SITE_URL"]
+        ,"WEBMASTER_NAME",$GLOBALS["SITE_DATA"]["WEBMASTER_NAME"]
+        ,"MANDRIGO_VER",$GLOBALS["SITE_DATA"]["MANDRIGO_VER"]
+    );
 	switch($GLOBALS["HTTP_GET"]["ACTION"]){
 		case "lo":
 			$act=new logout($error_log,$sql_db);
-			echo $act->display();
+			merge_arrays($page_parse_vars,array("CONTENT",$act->display(),"PAGE_TITLE",$GLOBALS["LANGUAGE"]["LOGIN"]));
 		break;
 		case "rg":
 			$act=new regester($error_log,$sql_db);
-			echo $act->display();
+			merge_arrays($page_parse_vars,array("CONTENT",$act->display(),"PAGE_TITLE",$GLOBALS["LANGUAGE"]["LOGIN"]));
 		break;
 		case "pi":
 			$act=new reset($error_log,$sql_db);
-			echo $act->display();
+			merge_arrays($page_parse_vars,array("CONTENT",$act->display(),"PAGE_TITLE",$GLOBALS["LANGUAGE"]["LOGIN"]));
+		break;
+		case "li"
+			$act=new login($error_log,$sql_db);
+			merge_arrays($page_parse_vars,array("CONTENT",$act->display(true),"PAGE_TITLE",$GLOBALS["LANGUAGE"]["LOGIN"]));
 		break;
 		default:
 			$act=new login($error_log,$sql_db);
-			echo $act->display();
+			merge_arrays($page_parse_vars,array("CONTENT",$act->display(),"PAGE_TITLE",$GLOBALS["LANGUAGE"]["LOGIN"]));
 		break;		 
 	};
+	$tpl->pparse($page_parse_vars);
+	echo $tpl->return_template();
 }
 else{
   	$tpl = new template();
