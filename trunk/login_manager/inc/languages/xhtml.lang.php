@@ -48,4 +48,9 @@ $GLOBALS["HTML"]["BODY!"]="</body>\n";
 //Head Tags
 $GLOBALS["HTML"]["TITLE"]="<title>";
 $GLOBALS["HTML"]["TITLE!"]="</title>\n";
+
+//Error Logger
+$GLOBALS["HTML"]["EHEAD"]=$GLOBALS["HTML"]["DOCTYPE"].$GLOBALS["HTML"]["HTML"].$GLOBALS["HTML"]["HEAD"].$GLOBALS["HTML"]["TITLE"];
+$GLOBALS["HTML"]["EBODY"]=$GLOBALS["HTML"]["TITLE!"].$GLOBALS["HTML"]["HEAD!"].$GLOBALS["HTML"]["BODY"];
+$GLOBALS["HTML"]["EEND"]=$GLOBALS["HTML"]["BODY!"].$GLOBALS["HTML"]["HTML!"];
 ?>

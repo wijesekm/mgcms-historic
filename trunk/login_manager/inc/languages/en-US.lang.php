@@ -48,4 +48,7 @@ $GLOBALS["LANGUAGE"]["ENCODING"]="iso-8859-1";
 
 $GLOBALS["LANGUAGE"]["INSTALLWARN"]="Mandrigo CMS is not setup.  Please run the installer or go to http://yourdomain/path/install/install.php for web based install.";
 $GLOBALS["LANGUAGE"]["INSTALLTITLE"]="Install";
+$GLOBALS["LANGUAGE"]["LOGIN"]="Login Manager";
+$GLOBALS["LANGUAGE"]["ERROR"]="Fatal Error".
+$GLOBALS["LANGUAGE"]["BAD_LOGIN"]="Username and password combination is incorrect".
 ?>
