@@ -92,4 +92,9 @@ if($fail){
     $error_log->add_error(3,"display");
 }
 
+$GLOBALS["HTTP_POST"]["USER_NAME"]=clean_username($HTTP_POST_VARS["mg_user"]);
+$GLOBALS["HTTP_POST"]["USER_PASSWORD"]=clean_password($HTTP_POST_VARS["mg_password"]);
+$GLOBALS["HTTP_POST"]["RSESSION"]=($HTTP_POST_VARS["mg_session"])?true:false;
+
+
 ?>
