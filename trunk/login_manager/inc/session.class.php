@@ -43,7 +43,7 @@ class session{
 	function session($db){
 		$this->session_db=$db;
 	}
-	function session_start($uid){
+	function session_start($uid,$expires,$secure,$path,$domains){
 	  	if($uid<=1){
 			return false;
 		}
@@ -51,7 +51,47 @@ class session{
 		if(!$this->sql_db->db_update(DB_UPDATE,TABLE_PREFIX.TABLE_USER_DATA,array(array("user_session",$sessionid)),array(array("user_id","=",$uid)))){
 			return false;
 		}
+		
+		$domains=explode(";",$domains);
+		for($i=0;$i<count($domains);$i++){
+		  	if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
+				setcookie(SESSION_COOKIE,$sessionid,$expires,$path,$domains[$i],$secure);
+				setcookie(USER_COOKIE,$uid,$expires,$path,$domains[$i],$secure);
+			}	
+			else{
+				if(!(@setcookie(SESSION_COOKIE,$sessionid,$expires,$path,$domains[$i],$secure))){
+					return false
+				}
+				if(!(@setcookie(USER_COOKIE,$uid,$expires,$path,$domains[$i],$secure))){
+					return false
+				}				
+			}
+		}
+
 	  	return $sessionid;
+	}
+	function session_renew($sesid,$uid,$expires,$secure,$path,$domains,$db=false){
+	  	if($db){
+			if(!$this->sql_db->db_update(DB_UPDATE,TABLE_PREFIX.TABLE_USER_DATA,array(array("user_session",$sesid)),array(array("user_id","=",$uid)))){
+				return false;
+			}		
+		}
+		$domains=explode(";",$domains);
+		for($i=0;$i<count($domains);$i++){
+		  	if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
+				setcookie(SESSION_COOKIE,$sessionid,$expires,$path,$domains[$i],$secure);
+				setcookie(USER_COOKIE,$uid,$expires,$path,$domains[$i],$secure);
+			}	
+			else{
+				if(!(@setcookie(SESSION_COOKIE,$sessionid,$expires,$path,$domains[$i],$secure))){
+					return false
+				}
+				if(!(@setcookie(USER_COOKIE,$uid,$expires,$path,$domains[$i],$secure))){
+					return false
+				}				
+			}
+		}
+		return true;		
 	}
 	function session_stop($uid){
 	  	if($uid<=1){
