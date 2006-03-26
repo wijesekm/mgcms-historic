@@ -74,7 +74,7 @@ class auth extends _auth{
 				return $this->auth_cryptcomp($user_password,$user_data["user_password"],$crypt_type);
 			break;
 		};
-		return false;
+		return $user_data["user_id"];
 	}
 	function auth_loguserin($uid,$ip,$timestamp){
 		$this->sql_db->db_update(DB_UPDATE,TABLE_PREFIX.TABLE_USER_DATA,array(array("user_last_login",$timestamp),array("user_last_ip",$ip)),array(array("user_id","=",$uid))));
