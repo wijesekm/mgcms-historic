@@ -73,5 +73,6 @@ define("DB_AUTO_INC","AUTO");
 //Misc
 //
 define("BAD_DATA","&ERROR_IN_DATA;");
-
+define("SESSION_COOKIE","mg_sesid");
+define("USER_COOKIE","mg_uid");
 ?>
