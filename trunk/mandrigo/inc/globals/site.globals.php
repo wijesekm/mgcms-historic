@@ -59,4 +59,9 @@ $GLOBALS["SITE_DATA"]["UC_LOGIN_TYPE"]=$sql_db->db_fetchresult(TABLE_PREFIX.TABL
 $GLOBALS["SITE_DATA"]["STANDARD_SESSION_LEN"]=$sql_db->db_fetchresult(TABLE_PREFIX.TABLE_MAIN_DATA,"data_value",array(array("data_name","=","standard_session_len")));
 $GLOBALS["SITE_DATA"]["REMEMBERED_SESSION_LEN"]=$sql_db->db_fetchresult(TABLE_PREFIX.TABLE_MAIN_DATA,"data_value",array(array("data_name","=","remembered_session_len")));
 $GLOBALS["SITE_DATA"]["UC_REMEMBERED_SESSION_LEN"]=$sql_db->db_fetchresult(TABLE_PREFIX.TABLE_MAIN_DATA,"data_value",array(array("data_name","=","uc_remembered_session_len")));
+$GLOBALS["SITE_DATA"]["COOKIE_PATH"]=$sql_db->db_fetchresult(TABLE_PREFIX.TABLE_MAIN_DATA,"data_value",array(array("data_name","=","cookie_path")));
+$GLOBALS["SITE_DATA"]["COOKIE_DOMAINS"]=$sql_db->db_fetchresult(TABLE_PREFIX.TABLE_MAIN_DATA,"data_value",array(array("data_name","=","cookie_domains")));
+$GLOBALS["SITE_DATA"]["COOKIE_SECURE"]=$sql_db->db_fetchresult(TABLE_PREFIX.TABLE_MAIN_DATA,"data_value",array(array("data_name","=","secure_cookie")));
+
+
 ?>
