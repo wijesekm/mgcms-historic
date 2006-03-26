@@ -195,7 +195,7 @@ if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
     include_once($GLOBALS["MANDRIGO_CONFIG"]["LOGIN_PATH"]."logout.class.$php_ex");
     include_once($GLOBALS["MANDRIGO_CONFIG"]["LOGIN_PATH"]."regester.class.$php_ex");
     include_once($GLOBALS["MANDRIGO_CONFIG"]["LOGIN_PATH"]."reset.class.$php_ex");
-    include_once($GLOBALS["MANDRIGO_CONFIG"]["LOGIN_PATH"]."session.class.$php_ex");
+    include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."session.class.$php_ex");
     include_once($GLOBALS["MANDRIGO_CONFIG"]["LOGIN_PATH"]."auth/auth.class.$php_ex");
     include_once($GLOBALS["MANDRIGO_CONFIG"]["LOGIN_PATH"]."auth/".$GLOBALS["SITE_DATA"]["LOGIN_TYPE"]."_auth.class.$php_ex");
 }
@@ -221,7 +221,7 @@ else{
     if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["LOGIN_PATH"]."reset.class.$php_ex"))){
         $error_log->add_error(203,"script");
     }
-    if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["LOGIN_PATH"]."session.class.$php_ex"))){
+    if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."session.class.$php_ex"))){
         $error_log->add_error(205,"script");
     }
     if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["LOGIN_PATH"]."auth/auth.class.$php_ex"))){
