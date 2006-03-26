@@ -18,6 +18,7 @@
 &split;20&split;Could not set the session cookie.  Please contact the webmaster to alert them of this issue.
 &split;21&split;Could not set the user id cookie.  Please contact the webmaster to alert them of this issue.
 &split;30&split;Could not load the main page template.  The file could be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue
+&split;31&split;Could not load the login page template.  The file could be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue
 &split;100&split;Could not load files associated with the preformatted content generation script.  The files could be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue
 &split;101&split;Could not load files associated with the title generation script.  The files could be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue
 &split;102&split;Could not load files associated with the form mail script.  The files could be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue
