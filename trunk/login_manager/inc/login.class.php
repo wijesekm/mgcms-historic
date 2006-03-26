@@ -39,10 +39,49 @@ class login{
 
 	var $login_db;
 	var $error_log;
+
 	
 	function login(&$error,&$sql){
 		$this->error_log=$error;
-		$this->login_db=$sql;
 	}
-  
+	function display($login,$error=""){
+		$tpl=new template();
+		if($login){
+			$this->login()
+		}
+		if(!$tpl->load($GLOBALS["MANDRIGO_CONFIG"]["TEMPLATE_PATH"].TPL_LOGIN)){
+					$this->error_log->add_error(31,"script");	
+					die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
+                		$this->error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
+		}
+		$action="";
+		if($GLOBALS["SITE_DATA"]["URL_FORMAT"]){
+			$action="href=\"".$GLOBALS["SITE_DATA"]["SITE_URL"].$GLOBALS["MANDRIGO_CONFIG"]["LOGIN"]."/a/li"; 
+		}
+		else{
+	  		$action="href=\"".$GLOBALS["SITE_DATA"]["SITE_URL"].$GLOBALS["MANDRIGO_CONFIG"]["LOGIN"]."?a=li"; 
+		}
+		$pparse_vars=array("ACTION",$action,"USER_NAME",$GLOBALS["USER_DATA"]["USER_NAME"],"ERROR",$error);
+		$tpl->pparse($pparse_vars);
+		return $tpl->return_template()
+
+	}
+	function login(){
+		$auth=new auth($this->login_db);
+		if($uid=$auth->auth_validate($GLOBALS["HTTP_POST"]["USER_NAME"],$GLOBALS["HTTP_POST"]["USER_PASSWORD"],$GLOBALS["SITE_DATA"]["CRYPT_TYPE"])){
+			if($uid>1){
+				if(!$auth->auth_loguserin($uid,time(),$GLOBALS["USER_DATA"]["IP"])){
+					$this->error_log->add_error(300,"script");	
+					die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
+                		$this->error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
+				}
+				header("Location: ".$GLOBALS["SITE_DATA"]["REDIRECT_PATH"]);
+				die();
+			}
+		}
+		else{
+			return $this->display(false,$GLOBALS["LANGUAGE"]["BAD_LOGIN"]);
+		}
+		return false;	
+	}
 }
