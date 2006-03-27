@@ -45,8 +45,8 @@ if(!defined("START_MANDRIGO")){
 //
 $GLOBALS["HTTP_GET"]["MAIL_ADDR_SYS"]=false;
 if($GLOBALS["SITE_DATA"]["URL_FORMAT"] == 0){
-    $GLOBALS["HTTP_GET"]["ACTION"] = (isset($HTTP_GET_VARS["a"]))?clean_action($HTTP_GET_VARS["a"]):DEFAULT_ACTION;
-
+    $GLOBALS["HTTP_GET"]["ACTION"]=(isset($HTTP_GET_VARS["a"]))?clean_action($HTTP_GET_VARS["a"]):DEFAULT_ACTION;
+    $GLOBALS["HTTP_GET"]["REDIRECT"]=(isset($HTTP_GET_VARS["chdir"]))?clean_string($HTTP_GET_VARS["chdir"]):$GLOBALS["MANDRIGO_CONFIG"]["INDEX"];
 }
 else{
     $url = array(null=>null);
@@ -65,6 +65,7 @@ else{
         unset($array_url);
     }
     $GLOBALS["HTTP_GET"]["ACTION"] = (isset($url["a"]))?clean_action($url["a"]):DEFAULT_ACTION;
+    $GLOBALS["HTTP_GET"]["REDIRECT"]=(isset($url["chdir"]))?clean_string($url["chdir"]):$GLOBALS["MANDRIGO_CONFIG"]["INDEX"];
     
 }
 if(clean_num($GLOBALS["HTTP_GET"]["MAIL_ADDR"])!=BAD_DATA){
@@ -91,10 +92,18 @@ reset($GLOBALS["HTTP_GET"]);
 if($fail){
     $error_log->add_error(3,"display");
 }
+//
+//HTTP_COOKIE Vars
+//
+$GLOBALS["HTTP_COOKIE"]["SESID"]=isset($HTTP_COOKIE_VARS["SMX_SESID"])?clean_SESID($HTTP_COOKIE_VARS[SESSION_COOKIE]):"";
+$GLOBALS["HTTP_COOKIE"]["UID"]=isset($HTTP_COOKIE_VARS["SMX_SESID"])?clean_SESID($HTTP_COOKIE_VARS[USER_COOKIE]):0;
 
-$GLOBALS["HTTP_POST"]["USER_NAME"]=clean_username($HTTP_POST_VARS["mg_user"]);
-$GLOBALS["HTTP_POST"]["USER_PASSWORD"]=clean_password($HTTP_POST_VARS["mg_password"]);
+//
+//HTTP_POST Vars
+//
+$GLOBALS["HTTP_POST"]["USER_NAME"]=isset($HTTP_POST_VARS["mg_user"])?clean_username($HTTP_POST_VARS["mg_user"]):"";
+$GLOBALS["HTTP_POST"]["USER_PASSWORD"]=isset($HTTP_POST_VARS["mg_password"])?clean_password($HTTP_POST_VARS["mg_password"]):"";
 $GLOBALS["HTTP_POST"]["RSESSION"]=($HTTP_POST_VARS["mg_session"])?true:false;
 
-
+$GLOBALS["USER_DATA"]["USER_IDENT"]=(isset($GLOBALS["HTTP_POST"]["USER_NAME"]))?"n".$GLOBALS["HTTP_POST"]["USER_NAME"]:$GLOBALS["HTTP_COOKIE"]["UID"];
 ?>
