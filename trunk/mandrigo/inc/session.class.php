@@ -60,10 +60,10 @@ class session{
 			}	
 			else{
 				if(!(@setcookie(SESSION_COOKIE,$sessionid,$expires,$path,$domains[$i],$secure))){
-					return false
+					return false;
 				}
 				if(!(@setcookie(USER_COOKIE,$uid,$expires,$path,$domains[$i],$secure))){
-					return false
+					return false;
 				}				
 			}
 		}
@@ -84,10 +84,10 @@ class session{
 			}	
 			else{
 				if(!(@setcookie(SESSION_COOKIE,$sessionid,$expires,$path,$domains[$i],$secure))){
-					return false
+					return false;
 				}
 				if(!(@setcookie(USER_COOKIE,$uid,$expires,$path,$domains[$i],$secure))){
-					return false
+					return false;
 				}				
 			}
 		}
