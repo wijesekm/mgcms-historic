@@ -35,11 +35,38 @@ if(!defined("START_MANDRIGO")){
             <h1>Forbidden</h1><hr width=\"300\" align=\"left\"/>\n<p>You do not have permission to access this file directly.</p>
         </html></body>");
 }
-$GLOBALS["SITE_DATA"]["CRYPT_TYPE"]=$GLOBALS["SITE_DATA"]["CRYPT_TYPE"];
-$GLOBALS["SITE_DATA"]["LOGIN_TYPE"]=$GLOBALS["SITE_DATA"]["LOGIN_TYPE"];
-$GLOBALS["SITE_DATA"]["REMEMBERED_SESSION_LEN"]=$GLOBALS["SITE_DATA"]["REMEMBERED_SESSION_LEN"];
+if($GLOBALS["HTTP_POST"]["USER_NAME"]){
+    if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
+    	$sql_result=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_USER_DATA,"",array(array("user_name","=",$GLOBALS["HTTP_POST"]["USER_NAME"])));
+	}
+    else{
+        if(!$sql_result=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_USER_DATA,"",array(array("user_name","=",$GLOBALS["HTTP_POST"]["USER_NAME"])))){
+            $error_log->add_error(10,"sql");
+            die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
+                $error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
+        }
+    }
+}
+else if($GLOBALS["HTTP_COOKIE"]["UID"]){
+    if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
+    	$sql_result=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_USER_DATA,"",array(array("user_id","=",$GLOBALS["HTTP_COOKIE"]["UID"])));
+	}
+    else{
+        if(!$sql_result=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_USER_DATA,"",array(array("user_id","=",$GLOBALS["HTTP_COOKIE"]["UID"])))){
+            $error_log->add_error(10,"sql");
+            die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
+                $error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
+        }
+    }
+}
+else{
+	$sql_result="";
+}
 
-$GLOBALS["USER_DATA"]["USER_NAME"]="";
+$GLOBALS["SITE_DATA"]["CRYPT_TYPE"]=($GLOBALS["SITE_DATA"]["UC_CRYPT_TYPE"]==1)?((isset($sql_result["user_crypt_type"]))?$sql_result["user_crypt_type"]:$GLOBALS["SITE_DATA"]["CRYPT_TYPE"]):$GLOBALS["SITE_DATA"]["CRYPT_TYPE"];
+$GLOBALS["SITE_DATA"]["LOGIN_TYPE"]=($GLOBALS["SITE_DATA"]["UC_LOGIN_TYPE"]==1)?((isset($sql_result["user_login_type"]))?$sql_result["user_login_type"]:$GLOBALS["SITE_DATA"]["LOGIN_TYPE"]):$GLOBALS["SITE_DATA"]["LOGIN_TYPE"];
+$rsession=($GLOBALS["SITE_DATA"]["UC_REMEMBERED_SESSION_LEN"]==1)?((isset($sql_result["user_cookie_exp"]))?$sql_result["user_cookie_exp"]:$GLOBALS["SITE_DATA"]["REMEMBERED_SESSION_LEN"]):$GLOBALS["SITE_DATA"]["REMEMBERED_SESSION_LEN"];
+$GLOBALS["SITE_DATA"]["SESSION_LEN"]=(isset($GLOBALS["HTTP_POST"]["RSESSION"]))?$rsession:$GLOBALS["SITE_DATA"]["STANDARD_SESSION_LEN"];
+
 $GLOBALS["USER_DATA"]["IP"]=(!empty($HTTP_SERVER_VARS["REMOTE_ADDR"]))?$HTTP_SERVER_VARS["REMOTE_ADDR"]:((!empty($HTTP_ENV_VARS["REMOTE_ADDR"]))?$HTTP_ENV_VARS["REMOTE_ADDR"]:getenv("REMOTE_ADDR"));
-$GLOBALS["SITE_DATA"]["REDIRECT_PATH"]=$GLOBALS["MANDRIGO_CONFIG"]["INDEX"];
 ?>
