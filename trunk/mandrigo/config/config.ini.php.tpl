@@ -150,6 +150,6 @@ $GLOBALS["MANDRIGO_CONFIG"]["IS_INSTALLED"]=true;
 //
 
 $lang["LANGUAGE"]="en-US";
-$lang["HTML_VER"]="xhtml";
+$lang["HTML_VER"]="xhtml_1_0_trans";
 
 ?>
