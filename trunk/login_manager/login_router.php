@@ -35,7 +35,7 @@ $GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]=dirname(__FILE__)."/";
 //Initial includes (php extension, config vars, language array, html array)
 //
 require($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."config/extension.inc");
-require($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."config/config.admin.$php_ex");
+require($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."config/config.login.$php_ex");
 require($GLOBALS["MANDRIGO_CONFIG"]["LOGIN_PATH"]."languages/".$lang["LANGUAGE"].".lang.$php_ex");
 require($GLOBALS["MANDRIGO_CONFIG"]["LOGIN_PATH"]."languages/".$lang["HTML_VER"].".lang.$php_ex");
 
@@ -99,7 +99,7 @@ if($GLOBALS["MANDRIGO_CONFIG"]["SITE_STATUS"]||$GLOBALS["HTTP_GET"]["KEY"]==$GLO
 			$act=new reset($error_log,$sql_db);
 			merge_arrays($page_parse_vars,array("CONTENT",$act->display(),"PAGE_TITLE",$GLOBALS["LANGUAGE"]["LOGIN"]));
 		break;
-		case "li"
+		case "li":
 			$act=new login($error_log,$sql_db);
 			merge_arrays($page_parse_vars,array("CONTENT",$act->display(true),"PAGE_TITLE",$GLOBALS["LANGUAGE"]["LOGIN"]));
 		break;
