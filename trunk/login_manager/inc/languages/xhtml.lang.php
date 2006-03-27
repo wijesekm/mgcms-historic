@@ -49,8 +49,38 @@ $GLOBALS["HTML"]["BODY!"]="</body>\n";
 $GLOBALS["HTML"]["TITLE"]="<title>";
 $GLOBALS["HTML"]["TITLE!"]="</title>\n";
 
+//Body Tags
+$GLOBALS["HTML"]["BR"]="<br/>";
+
+//Link Tags
+$GLOBALS["HTML"]["A"]="<a {ATTRIB}>";
+$GLOBALS["HTML"]["A!"]="</a>";
+
+//H Tags
+$GLOBALS["HTML"]["H"]="<h{SIZE} {ATTRIB}>";
+$GLOBALS["HTML"]["H!"]="</h{SIZE}>";
+
+//HR TAG
+$GLOBALS["HTML"]["HR"]="<hr {ATTRIB}/>";
+
+//IMG Tag
+$GLOBALS["HTML"]["IMG"]="<img {ATTRIB} />";
+
+//LIST Tags
+$GLOBALS["HTML"]["UL"]="<ul {ATTRIB}>\n";
+$GLOBALS["HTML"]["UL!"]="</ul>\n";
+$GLOBALS["HTML"]["LI"]="<li {ATTRIB}>";
+$GLOBALS["HTML"]["LI!"]="</li>\n";
+//
+//Tag Groups
+//
+
 //Error Logger
 $GLOBALS["HTML"]["EHEAD"]=$GLOBALS["HTML"]["DOCTYPE"].$GLOBALS["HTML"]["HTML"].$GLOBALS["HTML"]["HEAD"].$GLOBALS["HTML"]["TITLE"];
 $GLOBALS["HTML"]["EBODY"]=$GLOBALS["HTML"]["TITLE!"].$GLOBALS["HTML"]["HEAD!"].$GLOBALS["HTML"]["BODY"];
 $GLOBALS["HTML"]["EEND"]=$GLOBALS["HTML"]["BODY!"].$GLOBALS["HTML"]["HTML!"];
+
+//chars
+$GLOBALS["HTML"]["SPACE"]="&nbsp;";
+
 ?>

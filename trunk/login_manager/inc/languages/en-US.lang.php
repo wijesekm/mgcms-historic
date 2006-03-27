@@ -49,6 +49,15 @@ $GLOBALS["LANGUAGE"]["ENCODING"]="iso-8859-1";
 $GLOBALS["LANGUAGE"]["INSTALLWARN"]="Mandrigo CMS is not setup.  Please run the installer or go to http://yourdomain/path/install/install.php for web based install.";
 $GLOBALS["LANGUAGE"]["INSTALLTITLE"]="Install";
 $GLOBALS["LANGUAGE"]["LOGIN"]="Login Manager";
-$GLOBALS["LANGUAGE"]["ERROR"]="Fatal Error".
-$GLOBALS["LANGUAGE"]["BAD_LOGIN"]="Username and password combination is incorrect".
+$GLOBALS["LANGUAGE"]["ERROR"]="Fatal Error";
+$GLOBALS["LANGUAGE"]["BAD_LOGIN"]="Username and password combination is incorrect";
+
+//Error Logger
+$GLOBALS["LANGUAGE"]["ETITLE"]="Fatal Error";
+$GLOBALS["LANGUAGE"]["ETITLE2"]="Error Log";
+$GLOBALS["LANGUAGE"]["EZERO"]="Fatal Error #0: The error logging script is either missing or in the wrong directory.  Please contact the webmaster to alert him/her of this issue";
+$GLOBALS["LANGUAGE"]["EONE"]="Fatal Error #1: The error logging script could not load the correct log ini files.  Please contact the webmaster to alert him/her of this issue";
+$GLOBALS["LANGUAGE"]["ETWO"]="Fatal Error #3: The error logging script could not load the template file";
+$GLOBALS["LANGUAGE"]["ETHREE"]="Fatal Error #1: The Error Log could not write the errors to the log.  Please contact the webmaster to alert him/her of this issue";
+
 ?>
