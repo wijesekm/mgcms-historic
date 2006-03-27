@@ -112,12 +112,8 @@ if($fail){
 //
 //HTTP_COOKIE Vars
 //
-$sesid = (isset($HTTP_COOKIE_VARS["SMX_SESID"]))?explode(":",clean_SESID($HTTP_COOKIE_VARS["SMX_SESID"])):array(0,"");
-$userid = (isset($HTTP_COOKIE_VARS["SMX_UID"]))?explode(":",clean_UID($HTTP_COOKIE_VARS["SMX_UID"])):array(0,1);
-$GLOBALS["HTTP_COOKIE"]["U_SESID"] = $sesid[0];
-$GLOBALS["HTTP_COOKIE"]["SESID"] = $sesid[1];
-$GLOBALS["HTTP_COOKIE"]["U_UID"] = $userid[0];
-$GLOBALS["HTTP_COOKIE"]["UID"] = $userid[1];
+$GLOBALS["HTTP_COOKIE"]["SESID"]=isset($HTTP_COOKIE_VARS["SMX_SESID"])?clean_SESID($HTTP_COOKIE_VARS[SESSION_COOKIE]):"";
+$GLOBALS["HTTP_COOKIE"]["UID"]=isset($HTTP_COOKIE_VARS["SMX_SESID"])?clean_SESID($HTTP_COOKIE_VARS[USER_COOKIE]):0;
 
 //{HTTP_COOKIE_ADD_IN}
 
