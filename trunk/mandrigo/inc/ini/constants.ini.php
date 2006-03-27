@@ -107,5 +107,7 @@ define("TMP_IMG","tmp");
 //
 define("MANDRIGO_CODE_BLOCK","<?MG_CODE>");
 define("BAD_DATA","&ERROR_IN_DATA;");
+define("SESSION_COOKIE","mg_sesid");
+define("USER_COOKIE","mg_uid");
 
 ?>
