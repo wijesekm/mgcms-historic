@@ -168,13 +168,13 @@ class _auth{
         return false;
     }    
     function auth_cleanusername($string){
-		if(!eregi("^[a-z0-9_-]+$",$string)){
+		if(!eregi("^[a-z0-9_.-]+$",$string)){
             return false;
         }
         return true;
 	}
 	function auth_cleanpassword($string){
-		if(!eregi("^[a-z0-9_-]+$",$string)){
+		if(!eregi("^[a-z0-9_.-]+$",$string)){
             return false;
         }
 		return true;	
