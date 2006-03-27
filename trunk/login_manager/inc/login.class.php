@@ -44,10 +44,10 @@ class login{
 	function login(&$error,&$sql){
 		$this->error_log=$error;
 	}
-	function display($login,$error=""){
+	function display($login=false,$error=""){
 		$tpl=new template();
 		if($login){
-			$this->login()
+			$this->check_login();
 		}
 		if(!$tpl->load($GLOBALS["MANDRIGO_CONFIG"]["TEMPLATE_PATH"].TPL_LOGIN)){
 					$this->error_log->add_error(31,"script");	
@@ -63,19 +63,22 @@ class login{
 		}
 		$pparse_vars=array("ACTION",$action,"USER_NAME",$GLOBALS["USER_DATA"]["USER_NAME"],"ERROR",$error);
 		$tpl->pparse($pparse_vars);
-		return $tpl->return_template()
+		return $tpl->return_template();
 
 	}
-	function login(){
+	function check_login(){
 		$auth=new auth($this->login_db);
 		if($uid=$auth->auth_validate($GLOBALS["HTTP_POST"]["USER_NAME"],$GLOBALS["HTTP_POST"]["USER_PASSWORD"],$GLOBALS["SITE_DATA"]["CRYPT_TYPE"])){
 			if($uid>1){
-				if(!$auth->auth_loguserin($uid,time(),$GLOBALS["USER_DATA"]["IP"])){
+				if(!$auth->auth_loguserin($uid,time(),$GLOBALS["USER_DATA"]["IP"],$GLOBALS["SITE_DATA"]["SESSION_LEN"],$GLOBALS["SITE_DATA"]["COOKIE_SECURE"],$GLOBALS["SITE_DATA"]["COOKIE_PATH"],$GLOBALS["SITE_DATA"]["COOKIE_DOMAINS"])){
 					$this->error_log->add_error(300,"script");	
 					die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
                 		$this->error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
 				}
-				header("Location: ".$GLOBALS["SITE_DATA"]["REDIRECT_PATH"]);
+				$chdir=ereg_replace("&q;","?",$GLOBALS["SITE_DATA"]["REDIRECT_PATH"]);
+				$chdir=ereg_replace("&s;","/",$GLOBALS["SITE_DATA"]["REDIRECT_PATH"]);
+				$chdir=ereg_replace("&a;","&",$GLOBALS["SITE_DATA"]["REDIRECT_PATH"]);
+				header("Location: ".$chdir);
 				die();
 			}
 		}
