@@ -87,9 +87,12 @@ class news_display{
 	                        ,"NEWS_MAIN_CONTENT",$sql_result["post_content"]);
 	                $last_time = $sql_result["post_time"];
 	                $cur_tpl= new template();
-	            	$cur_tpl->load(false,$this->tpl->return_template(1).$this->tpl->return_template(2));
+	            	$cur_tpl->load(false,$this->tpl->return_template(1)."<!--NEWS_DELIM-->".$this->tpl->return_template(2),"<!--NEWS_DELIM-->");
 	            	$cur_tpl->pparse($parse_vars,true,true,array($dd_date,true));
-	            	$post_content.=$cur_tpl->return_template();
+	            	if($dd_date){
+	            		$post_content.=$cur_tpl->return_template(0); 
+	            	}
+	            	$post_content.=$cur_tpl->return_template(1);
 	            }
 	            $start_post++;
 	        } 
