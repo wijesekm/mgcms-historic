@@ -7,4 +7,4 @@
 6) Applications can now make form_validation images to try to stop bots from doing stuff
 7) New database classes with improved database functionally.  User no longer enters in SQL Queries to the database.  user instead enters in variables which are parsed into SQL statements.  
 8) Support for mysql improved (with ssl), and pgsql
-
+9) Support for windows style paths
