@@ -35,11 +35,12 @@ if(!defined("START_MANDRIGO")){
             <h1>Forbidden</h1><hr width=\"300\" align=\"left\"/>\n<p>You do not have permission to access this file directly.</p>
         </html></body>");
 }
-if($GLOBALS["HTTP_POST"]["USER_NAME"]){
+if($GLOBALS["HTTP_POST"]["USER_NAME"]&&$GLOBALS["HTTP_POST"]["USER_NAME"]!=BAD_DATA){
     if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
     	$sql_result=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_USER_DATA,"",array(array("user_name","=",$GLOBALS["HTTP_POST"]["USER_NAME"])));
 	}
     else{
+      	echo $GLOBALS["HTTP_POST"]["USER_NAME"];
         if(!$sql_result=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_USER_DATA,"",array(array("user_name","=",$GLOBALS["HTTP_POST"]["USER_NAME"])))){
             $error_log->add_error(10,"sql");
             die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
@@ -47,7 +48,7 @@ if($GLOBALS["HTTP_POST"]["USER_NAME"]){
         }
     }
 }
-else if($GLOBALS["HTTP_COOKIE"]["UID"]){
+else if($GLOBALS["HTTP_COOKIE"]["UID"]&&$GLOBALS["HTTP_COOKIE"]["UID"]!=BAD_DATA){
     if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
     	$sql_result=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_USER_DATA,"",array(array("user_id","=",$GLOBALS["HTTP_COOKIE"]["UID"])));
 	}
