@@ -4,12 +4,13 @@
 		<h4>Login Manager</h4>
 	</div>
 	<div style="padding:3px;font-size: 13px; text-align:center;">
-			<form method="post" action="login_manager/login_router.php/a/li">
+			<form method="post" action={ACTION}">
+				<p style="color: #FF0000">{ERROR}</p>
 				<table align="center" style="width: 280px;" cellpadding="0" cellspacing="0">
 					<tr>
 						<td style="font-size: 6px;">&nbsp;</td>
 						<td style="font-size: 6px;">&nbsp;</td>
-						<td rowspan="4"><img src="images/mg_images/login.png" alt="Login!"/></td>
+						<td rowspan="4"><img src="http://kevinwijesekera.net/images/mg_images/login.png" alt="Login!"/></td>
 					</tr>
 					<tr>
 						<td>Username:</td>
