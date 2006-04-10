@@ -89,23 +89,23 @@ if($GLOBALS["MANDRIGO_CONFIG"]["SITE_STATUS"]||$GLOBALS["HTTP_GET"]["KEY"]==$GLO
 	switch($GLOBALS["HTTP_GET"]["ACTION"]){
 		case "lo":
 			$act=new logout($error_log,$sql_db);
-			merge_arrays($page_parse_vars,array("CONTENT",$act->display(),"PAGE_TITLE",$GLOBALS["LANGUAGE"]["LOGIN"]));
+			$page_parse_vars=merge_arrays($page_parse_vars,array("CONTENT",$act->display(),"PAGE_TITLE",$GLOBALS["LANGUAGE"]["LOGIN"]));
 		break;
 		case "rg":
 			$act=new regester($error_log,$sql_db);
-			merge_arrays($page_parse_vars,array("CONTENT",$act->display(),"PAGE_TITLE",$GLOBALS["LANGUAGE"]["LOGIN"]));
+			$page_parse_vars=merge_arrays($page_parse_vars,array("CONTENT",$act->display(),"PAGE_TITLE",$GLOBALS["LANGUAGE"]["LOGIN"]));
 		break;
 		case "pi":
 			$act=new reset($error_log,$sql_db);
-			merge_arrays($page_parse_vars,array("CONTENT",$act->display(),"PAGE_TITLE",$GLOBALS["LANGUAGE"]["LOGIN"]));
+			$page_parse_vars=merge_arrays($page_parse_vars,array("CONTENT",$act->display(),"PAGE_TITLE",$GLOBALS["LANGUAGE"]["LOGIN"]));
 		break;
 		case "li":
 			$act=new login($error_log,$sql_db);
-			merge_arrays($page_parse_vars,array("CONTENT",$act->display(true),"PAGE_TITLE",$GLOBALS["LANGUAGE"]["LOGIN"]));
+			$page_parse_vars=merge_arrays($page_parse_vars,array("CONTENT",$act->display(true),"PAGE_TITLE",$GLOBALS["LANGUAGE"]["LOGIN"]));
 		break;
 		default:
 			$act=new login($error_log,$sql_db);
-			merge_arrays($page_parse_vars,array("CONTENT",$act->display(),"PAGE_TITLE",$GLOBALS["LANGUAGE"]["LOGIN"]));
+			$page_parse_vars=merge_arrays($page_parse_vars,array("CONTENT",$act->display(),"PAGE_TITLE",$GLOBALS["LANGUAGE"]["LOGIN"]));
 		break;		 
 	};
 	$tpl->pparse($page_parse_vars);
