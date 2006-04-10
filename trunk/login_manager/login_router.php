@@ -1,8 +1,8 @@
 <?php
 /**********************************************************
-    index.php
+    login_router.php
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 11/04/05
+	Date Last Edited: 04/09/06
 
 	Copyright (C) 2005  Kevin Wijesekera
 
@@ -36,8 +36,8 @@ $GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]=dirname(__FILE__)."/";
 //
 require($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."config/extension.inc");
 require($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."config/config.login.$php_ex");
-require($GLOBALS["MANDRIGO_CONFIG"]["LOGIN_PATH"]."languages/".$lang["LANGUAGE"].".lang.$php_ex");
-require($GLOBALS["MANDRIGO_CONFIG"]["LOGIN_PATH"]."languages/".$lang["HTML_VER"].".lang.$php_ex");
+require($GLOBALS["MANDRIGO_CONFIG"]["LOGIN_PATH"]."languages{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}".$lang["LANGUAGE"].".lang.$php_ex");
+require($GLOBALS["MANDRIGO_CONFIG"]["LOGIN_PATH"]."languages{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}".$lang["HTML_VER"].".lang.$php_ex");
 
 //
 //Error Logger Init
@@ -57,10 +57,10 @@ $error_log = & new error_logger($log_config["LOG_LEVEL_1"],$log_config["LOG_LEVE
 // Cleans varables, loads requires packages and starts required classes.
 //
 if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-    require($GLOBALS["MANDRIGO_CONFIG"]["LOGIN_PATH"]."ini/login.ini.$php_ex");
+    require($GLOBALS["MANDRIGO_CONFIG"]["LOGIN_PATH"]."ini{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}login.ini.$php_ex");
 }
 else{
-    if(!(@include($GLOBALS["MANDRIGO_CONFIG"]["LOGIN_PATH"]."ini/login.ini.$php_ex"))){
+    if(!(@include($GLOBALS["MANDRIGO_CONFIG"]["LOGIN_PATH"]."ini{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}login.ini.$php_ex"))){
         $error_log->add_error(1,"script");
 	    die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
            $error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
