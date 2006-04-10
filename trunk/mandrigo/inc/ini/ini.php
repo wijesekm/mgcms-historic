@@ -109,10 +109,10 @@ if(!$GLOBALS["MANDRIGO_CONFIG"]["IS_INSTALLED"]){
 // Now we will start up SQL and connect to the server/database
 //
 if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-    require_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."sql/".$sql_config["SQL_TYPE"].".class.$php_ex");
+    require_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."sql{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}".$sql_config["SQL_TYPE"].".class.$php_ex");
 }
 else{
-    if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."sql/".$sql_config["SQL_TYPE"].".class.$php_ex"))){
+    if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."sql{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}".$sql_config["SQL_TYPE"].".class.$php_ex"))){
         $error_log->add_error(2,"script");
         die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
            $error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
@@ -136,22 +136,22 @@ else{
 //Now we will load a few essential packages such as constants
 //
 if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-    include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."ini/constants.ini.$php_ex");
-    include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."ini/clean_functions.ini.$php_ex");
+    include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."ini{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}constants.ini.$php_ex");
+    include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."ini{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}clean_functions.ini.$php_ex");
     include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."server_time.class.$php_ex");
-    include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."ini/funct.ini.$php_ex");
+    include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."ini{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}funct.ini.$php_ex");
 }
 else{
-    if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."ini/constants.ini.$php_ex"))){
+    if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."ini{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}constants.ini.$php_ex"))){
         $error_log->add_error(3,"script");
     }
-    if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."ini/clean_functions.ini.$php_ex"))){
+    if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."ini{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}clean_functions.ini.$php_ex"))){
         $error_log->add_error(4,"script");
     }
     if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."server_time.class.$php_ex"))){
         $error_log->add_error(5,"script");
     }
-    if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."ini/funct.ini.$php_ex"))){
+    if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."ini{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}funct.ini.$php_ex"))){
         $error_log->add_error(6,"script");
     }
     if($error_log->get_status()==2){
@@ -167,26 +167,26 @@ unset($log_config);
 unset($lang);
 
 if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-    include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."globals/site.globals.$php_ex");
-    include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."globals/server.globals.$php_ex");
-    include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."globals/user.globals.$php_ex");
-    include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."globals/page.globals.$php_ex");
-    include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."globals/script.globals.$php_ex");
+    include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."globals{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}site.globals.$php_ex");
+    include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."globals{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}server.globals.$php_ex");
+    include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."globals{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}user.globals.$php_ex");
+    include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."globals{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}page.globals.$php_ex");
+    include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."globals{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}script.globals.$php_ex");
 }
 else{
-    if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."globals/site.globals.$php_ex"))){
+    if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."globals{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}site.globals.$php_ex"))){
         $error_log->add_error(7,"script");
     }
-    if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."globals/server.globals.$php_ex"))){
+    if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."globals{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}server.globals.$php_ex"))){
         $error_log->add_error(8,"script");
     }
-    if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."globals/user.globals.$php_ex"))){
+    if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."globals{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}user.globals.$php_ex"))){
         $error_log->add_error(9,"script");
     }
-    if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."globals/page.globals.$php_ex"))){
+    if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."globals{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}page.globals.$php_ex"))){
         $error_log->add_error(10,"script");
     }
-    if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."globals/script.globals.$php_ex"))){
+    if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."globals{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}script.globals.$php_ex"))){
         $error_log->add_error(7,"script");
     }
     if($error_log->get_status()==2){
@@ -199,13 +199,13 @@ else{
 //Loads remaining classes and loads page display classes
 //
 if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-    include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."ini/package.ini.$php_ex");
+    include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."ini{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}package.ini.$php_ex");
     include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."page.class.$php_ex");
     include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."template.class.$php_ex");
     include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."word_filter.class.$php_ex");
 }
 else{
-    if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."ini/package.ini.$php_ex"))){
+    if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."ini{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}package.ini.$php_ex"))){
         $error_log->add_error(11,"script");
     }
     if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."page.class.$php_ex"))){
@@ -235,11 +235,11 @@ srand(((int)((double)microtime()*1000003)));
 //Stats and Banning
 //
 if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-    include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."ini/stats.ini.$php_ex");
+    include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."ini{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}stats.ini.$php_ex");
 
 }
 else{
-    if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."ini/stats.ini.$php_ex"))){
+    if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."ini{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}stats.ini.$php_ex"))){
         $error_log->add_error(15,"script");
     }
     if($error_log->get_status()==2){
