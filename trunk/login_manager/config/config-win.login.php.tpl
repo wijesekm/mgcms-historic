@@ -36,13 +36,23 @@ if(!defined("START_MANDRIGO")){
         </html></body>");
 }
 
+//
+//Root Path - path to the config directory on the main app: c:\www\htdocs\
+//
+$GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]=ereg_replace("[\\]login_manager[\\]config[\\]config.login.php","",__FILE__)."\\";
 
 //
-//Root Path - path to the config directory on the main app: /var/www/htdocs/
+//Login Path - path to the login_manager folder (usually a subdir of inc) ex: c:\www\htdocs\login_manager\
 //
-//Login Path - path to the login_manage4r folder (usually a subdir of inc) ex: /var/www/htdocs/login_manager/
+$GLOBALS["MANDRIGO_CONFIG"]["LOGIN_PATH"]=ereg_replace("[\\]config[\\]config.login.php","",__FILE__)."\\inc\\";
+
 //
-$GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]=ereg_replace("/login_manager/config/config.login.php","",__FILE__)."/";
-$GLOBALS["MANDRIGO_CONFIG"]["LOGIN_PATH"]=ereg_replace("/config/config.login.php","",__FILE__)."/inc/";
+//Login Router Name ex: login_manager.$php_ex
+//
 $GLOBALS["MANDRIGO_CONFIG"]["LOGIN"]="login_manager.$php_ex";
-require($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."config/config.ini.$php_ex");
+
+//
+//DO NOT EDIT BELOW THIS LINE!
+//
+require($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."config[\\]config.ini.$php_ex");
+?>
