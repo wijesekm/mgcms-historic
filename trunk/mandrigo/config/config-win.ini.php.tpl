@@ -142,7 +142,7 @@ $GLOBALS["MANDRIGO_CONFIG"]["IS_INSTALLED"]=true;
 //
 //Path Style for includes.  Set to either win or unix
 //
-$GLOBALS["MANDRIGO_CONFIG"]["PATH_STYLE"]="win";
+$path_style="win";
 
 //////////////////////
 // Language Config
@@ -157,4 +157,13 @@ $GLOBALS["MANDRIGO_CONFIG"]["PATH_STYLE"]="win";
 $lang["LANGUAGE"]="en-US";
 $lang["HTML_VER"]="xhtml_1_0_trans";
 
+//
+//DO NOT EDIT BELOW THIS
+//
+if($path_style=="win"){
+	$GLOBALS["MANDRIGO_CONFIG"]["PATH"]="\\";
+}
+else{
+	$GLOBALS["MANDRIGO_CONFIG"]["PATH"]="/";	
+}
 ?>
