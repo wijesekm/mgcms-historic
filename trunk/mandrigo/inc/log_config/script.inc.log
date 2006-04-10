@@ -2,7 +2,7 @@
 &split;1&split;Could not load the initialization script.  File may be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue.
 &split;2&split;Could not load the database package.  File may be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue.
 &split;3&split;Could not load the constants package.  File may be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue.
-&split;4&split;Could not load the varable cleaning functions package.  File may be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue.
+&split;4&split;Could not load the variable cleaning functions package.  File may be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue.
 &split;5&split;Could not load the server time package.  File may be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue.
 &split;6&split;Could not load the basic functions package.  File may be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue.
 &split;7&split;Could not load the main site data from the database.  Script may be missing or in the wrong directory or the database may be set up incorrectly.  Please contact the webmaster to alert them of this issue.
@@ -14,7 +14,7 @@
 &split;13&split;Could not load the page class.  Script may be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue.
 &split;14&split;Could not load the word filter class.  Script may be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue.
 &split;15&split;Could not load the stats script.  Script may be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue.
-&split;16&split;Could not load the form validator class.  Script may be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue.
+&split;16&split;Could not load the form validate class.  Script may be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue.
 &split;20&split;Could not set the session cookie.  Please contact the webmaster to alert them of this issue.
 &split;21&split;Could not set the user id cookie.  Please contact the webmaster to alert them of this issue.
 &split;30&split;Could not load the main page template.  The file could be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue
@@ -26,10 +26,9 @@
 &split;104&split;Could not load files associated with the site map script.  The files could be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue
 &split;105&split;Could not load files associated with the news script.  The files could be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue
 &split;106&split;Could not load files associated with the newssum script.  The files could be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue
-
 &split;200&split;Could not load the login class.  Script may be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue.
 &split;201&split;Could not load the logout class.  Script may be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue.
-&split;202&split;Could not load the regester class.  Script may be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue.
+&split;202&split;Could not load the register class.  Script may be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue.
 &split;203&split;Could not load the reset class.  Script may be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue.
 &split;204&split;Could not load the login globals script.  Script may be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue.
 &split;205&split;Could not load the session class.  Script may be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue.
