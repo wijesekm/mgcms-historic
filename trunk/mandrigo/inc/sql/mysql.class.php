@@ -48,7 +48,7 @@ class db extends _db{
     //returns true if connection and database selection successfull
     function db_connect($host,$port,$socket,$user,$password,$database,$persistant=true,$secure=false,$ssl=""){
         if($port){
-            $host=host.":".$port;
+            $host=$host.":".$port;
         }
         else if($socket){
 			$host=$host.":".$socket;
