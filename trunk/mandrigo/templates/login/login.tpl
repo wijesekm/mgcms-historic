@@ -4,7 +4,7 @@
 		<h4>Login Manager</h4>
 	</div>
 	<div style="padding:3px;font-size: 13px; text-align:center;">
-			<form method="post" action={ACTION}">
+			<form method="post" action="{ACTION}">
 				<p style="color: #FF0000">{ERROR}</p>
 				<table align="center" style="width: 280px;" cellpadding="0" cellspacing="0">
 					<tr>
