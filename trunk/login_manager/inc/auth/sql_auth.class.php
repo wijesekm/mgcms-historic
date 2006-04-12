@@ -37,48 +37,48 @@ if(!defined("START_MANDRIGO")){
 }
 
 class auth extends _auth{
-  
+  	
 	function auth($db){
 	 	$this->sql_db=$db; 
 		$this->session=new session($db);	 	
 	}
 	function auth_validate($user_name,$user_password,$crypt_type){
-	  
-	  	//username verification
-	  	if(!$this->auth_cleanusername($user_name)){
-			return false;
-		}
 		$user_data=$this->sql_db->db_fetcharray(TABLE_PREFIX.TABLE_USER_DATA,"",array(array("user_name","=",$user_name)));
 		if(!$user_data["user_id"]||$user_data["user_id"]==1){
 			return false;
 		}
-		
-		//password verification
-		if(!$this->auth_cleanpassword($user_password)){
+		if(!$user_password&&$user_password==BAD_DATA){
 			return false;
 		}
+		$status=false;
 		switch($crypt_type){
 			case 'smd5':
-				return $this->auth_smd5comp($user_password,$user_data["user_password"]);
+				$status=$this->auth_smd5comp($user_password,$user_data["user_password"]);
 			break;
 			case 'sha':
-				return $this->auth_shacomp($user_password,$user_data["user_password"]);
+				$status=$this->auth_shacomp($user_password,$user_data["user_password"]);
 			break;
 			case 'ssha':
-				return $this->auth_sshacomp($user_password,$user_data["user_password"]);
+				$status=$this->auth_sshacomp($user_password,$user_data["user_password"]);
 			break;			
 			case 'md5':
-				return $this->auth_md5comp($user_password,$user_data["user_password"]);
+				$status=$this->auth_md5comp($user_password,$user_data["user_password"]);
 			break;
 			default:
-				return $this->auth_cryptcomp($user_password,$user_data["user_password"],$crypt_type);
+				$status=$this->auth_cryptcomp($user_password,$user_data["user_password"],$crypt_type);
 			break;
 		};
-		return $user_data["user_id"];
+		if($status){
+			return $user_data["user_id"];
+		}
+		return false;
 	}
-	function auth_loguserin($uid,$ip,$timestamp){
-		$this->sql_db->db_update(DB_UPDATE,TABLE_PREFIX.TABLE_USER_DATA,array(array("user_last_login",$timestamp),array("user_last_ip",$ip)),array(array("user_id","=",$uid))));
-		return $this->session->session_start($uid);
+	function auth_loguserin($uid,$timestamp,$ip,$seslen,$secure,$path,$domains){
+		$this->sql_db->db_update(DB_UPDATE,TABLE_PREFIX.TABLE_USER_DATA,array(array("user_last_login",$timestamp),array("user_last_ip",$ip)),array(array("user_id","=",$uid)));
+		if($seslen!=0){
+			$seslen=$timestamp+$seslen;
+		}
+		return $this->session->session_start($uid,$seslen,$secure,$path,$domains);
 	}
 	function auth_loguserout($uid){
 		return $this->session->session_stop($uid);
