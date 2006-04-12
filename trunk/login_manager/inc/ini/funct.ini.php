@@ -1,4 +1,4 @@
- <?php
+<?php
 /**********************************************************
     login.ini.php
 	Last Edited By: Kevin Wijesekera
