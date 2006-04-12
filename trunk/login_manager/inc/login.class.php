@@ -47,24 +47,28 @@ class login{
 	function display($login=false,$error=""){
 		$tpl=new template();
 		if($login){
-			$this->check_login();
+			return $this->check_login();
 		}
 		if(!$tpl->load($GLOBALS["MANDRIGO_CONFIG"]["TEMPLATE_PATH"].TPL_LOGIN)){
-					$this->error_log->add_error(31,"script");	
-					die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
-                		$this->error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
+		  	if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
+				$this->error_log->add_error(31,"script");	
+				die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
+                	$this->error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
+            }
+            else{
+				die();
+			}
 		}
 		$action="";
 		if($GLOBALS["SITE_DATA"]["URL_FORMAT"]){
-			$action="href=\"".$GLOBALS["SITE_DATA"]["SITE_URL"].$GLOBALS["MANDRIGO_CONFIG"]["LOGIN"]."/a/li"; 
+			$action=$GLOBALS["SITE_DATA"]["LOGIN_URL"].$GLOBALS["MANDRIGO_CONFIG"]["LOGIN"]."/a/li"; 
 		}
 		else{
-	  		$action="href=\"".$GLOBALS["SITE_DATA"]["SITE_URL"].$GLOBALS["MANDRIGO_CONFIG"]["LOGIN"]."?a=li"; 
+	  		$action=$GLOBALS["SITE_DATA"]["LOGIN_URL"].$GLOBALS["MANDRIGO_CONFIG"]["LOGIN"]."?a=li"; 
 		}
 		$pparse_vars=array("ACTION",$action,"USER_NAME",$GLOBALS["USER_DATA"]["USER_NAME"],"ERROR",$error);
 		$tpl->pparse($pparse_vars);
 		return $tpl->return_template();
-
 	}
 	function check_login(){
 		$auth=new auth($this->login_db);
@@ -78,8 +82,11 @@ class login{
 				$chdir=ereg_replace("&q;","?",$GLOBALS["SITE_DATA"]["REDIRECT_PATH"]);
 				$chdir=ereg_replace("&s;","/",$GLOBALS["SITE_DATA"]["REDIRECT_PATH"]);
 				$chdir=ereg_replace("&a;","&",$GLOBALS["SITE_DATA"]["REDIRECT_PATH"]);
-				header("Location: ".$chdir);
+				//header("Location: ".$chdir);
 				die();
+			}
+			else{
+				return $this->display(false,$GLOBALS["LANGUAGE"]["BAD_LOGIN"]);
 			}
 		}
 		else{
