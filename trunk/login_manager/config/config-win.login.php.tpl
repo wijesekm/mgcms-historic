@@ -47,9 +47,9 @@ $GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]=ereg_replace("[\\]login_manager[\\]conf
 $GLOBALS["MANDRIGO_CONFIG"]["LOGIN_PATH"]=ereg_replace("[\\]config[\\]config.login.php","",__FILE__)."\\inc\\";
 
 //
-//Login Router Name ex: login_manager.$php_ex
+//Login Router Name ex: login_router.$php_ex
 //
-$GLOBALS["MANDRIGO_CONFIG"]["LOGIN"]="login_manager.$php_ex";
+$GLOBALS["MANDRIGO_CONFIG"]["LOGIN"]="login_router.$php_ex";
 
 //
 //DO NOT EDIT BELOW THIS LINE!
