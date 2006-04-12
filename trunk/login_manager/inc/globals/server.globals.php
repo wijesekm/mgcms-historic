@@ -43,15 +43,15 @@ if(!defined("START_MANDRIGO")){
 //0 = php style paths: index.php?p=hi&u=tmp
 //1 = http style paths: index.php/s/p=hi/u=tmp
 //
-$GLOBALS["HTTP_GET"]["MAIL_ADDR_SYS"]=false;
+
 if($GLOBALS["SITE_DATA"]["URL_FORMAT"] == 0){
     $GLOBALS["HTTP_GET"]["ACTION"]=(isset($HTTP_GET_VARS["a"]))?clean_action($HTTP_GET_VARS["a"]):DEFAULT_ACTION;
-    $GLOBALS["HTTP_GET"]["REDIRECT"]=(isset($HTTP_GET_VARS["chdir"]))?clean_string($HTTP_GET_VARS["chdir"]):$GLOBALS["MANDRIGO_CONFIG"]["INDEX"];
+    $GLOBALS["HTTP_GET"]["REDIRECT"]=(isset($HTTP_GET_VARS["chdir"]))?clean_string($HTTP_GET_VARS["chdir"]):$GLOBALS["SITE_DATA"]["SITE_URL"];
 }
 else{
     $url = array(null=>null);
-    if(ereg($GLOBALS["MANDRIGO_CONFIG"]["INDEX"]."/",$HTTP_SERVER_VARS["PHP_SELF"])){
-        $raw_url = eregi_replace("^.*\.$php_ex/p","p",$HTTP_SERVER_VARS["PHP_SELF"]);
+    if(ereg($GLOBALS["MANDRIGO_CONFIG"]["LOGIN"]."/",$HTTP_SERVER_VARS["PHP_SELF"])){
+        $raw_url = eregi_replace("^.*\.$php_ex/a","a",$HTTP_SERVER_VARS["PHP_SELF"]);
         $raw_url = explode("/",$raw_url);
         $array_url = array("null","null");
         for($i =0; $i < count($raw_url); $i++){
@@ -65,7 +65,7 @@ else{
         unset($array_url);
     }
     $GLOBALS["HTTP_GET"]["ACTION"] = (isset($url["a"]))?clean_action($url["a"]):DEFAULT_ACTION;
-    $GLOBALS["HTTP_GET"]["REDIRECT"]=(isset($url["chdir"]))?clean_string($url["chdir"]):$GLOBALS["MANDRIGO_CONFIG"]["INDEX"];
+    $GLOBALS["HTTP_GET"]["REDIRECT"]=(isset($url["chdir"]))?clean_string($url["chdir"]):$GLOBALS["SITE_DATA"]["SITE_URL"];
     
 }
 if(clean_num($GLOBALS["HTTP_GET"]["MAIL_ADDR"])!=BAD_DATA){
@@ -104,6 +104,5 @@ $GLOBALS["HTTP_COOKIE"]["UID"]=isset($HTTP_COOKIE_VARS["SMX_SESID"])?clean_SESID
 $GLOBALS["HTTP_POST"]["USER_NAME"]=isset($HTTP_POST_VARS["mg_user"])?clean_username($HTTP_POST_VARS["mg_user"]):"";
 $GLOBALS["HTTP_POST"]["USER_PASSWORD"]=isset($HTTP_POST_VARS["mg_password"])?clean_password($HTTP_POST_VARS["mg_password"]):"";
 $GLOBALS["HTTP_POST"]["RSESSION"]=($HTTP_POST_VARS["mg_session"])?true:false;
-
 $GLOBALS["USER_DATA"]["USER_IDENT"]=(isset($GLOBALS["HTTP_POST"]["USER_NAME"]))?"n".$GLOBALS["HTTP_POST"]["USER_NAME"]:$GLOBALS["HTTP_COOKIE"]["UID"];
 ?>
