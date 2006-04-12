@@ -43,15 +43,6 @@ class auth extends _auth{
 		$this->session=new session($db);
 	}
 	function auth_validate($user_name,$user_password,$crypt_type){
-	  
-	  	//username verification
-	  	if(!$this->auth_cleanusername($user_name)){
-			return false;
-		}
-		//password verification
-		if(!$this->auth_cleanpassword($user_password)){
-			return false;
-		}
 		if(pam_auth($user_name,get_magic_quotes_gpc()?stripslashes($user_password):$user_password){
 			return true;
 		}
