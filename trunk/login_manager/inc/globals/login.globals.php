@@ -37,32 +37,44 @@ if(!defined("START_MANDRIGO")){
 }
 //Gets User Data
 if($GLOBALS["HTTP_POST"]["USER_NAME"]&&$GLOBALS["HTTP_POST"]["USER_NAME"]!=BAD_DATA){
-    if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-    	$sql_result=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_USER_DATA,"",array(array("user_name","=",$GLOBALS["HTTP_POST"]["USER_NAME"])));
-	}
-    else{
-      	echo $GLOBALS["HTTP_POST"]["USER_NAME"];
-        if(!$sql_result=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_USER_DATA,"",array(array("user_name","=",$GLOBALS["HTTP_POST"]["USER_NAME"])))){
-            $error_log->add_error(10,"sql");
-            die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
-                $error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
-        }
+    if(!$sql_result=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_USER_DATA,"",array(array("user_name","=",$GLOBALS["HTTP_POST"]["USER_NAME"])))){
+        if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
+			$sql_result=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_USER_DATA,"",array(array("user_id","=","1")));	
+		}
+		else{
+			if(!$sql_result=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_USER_DATA,"",array(array("user_id","=","1")))){
+				$error_log->add_error(10,"sql");
+		    	die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
+		        	$error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
+			}
+		}
     }
 }
 else if($GLOBALS["HTTP_COOKIE"]["UID"]&&$GLOBALS["HTTP_COOKIE"]["UID"]!=BAD_DATA){
-    if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-    	$sql_result=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_USER_DATA,"",array(array("user_id","=",$GLOBALS["HTTP_COOKIE"]["UID"])));
-	}
-    else{
-        if(!$sql_result=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_USER_DATA,"",array(array("user_id","=",$GLOBALS["HTTP_COOKIE"]["UID"])))){
-            $error_log->add_error(10,"sql");
-            die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
-                $error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
-        }
+    if(!$sql_result=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_USER_DATA,"",array(array("user_id","=",$GLOBALS["HTTP_COOKIE"]["UID"])))){
+        if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
+			$sql_result=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_USER_DATA,"",array(array("user_id","=","1")));	
+		}
+		else{
+			if(!$sql_result=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_USER_DATA,"",array(array("user_id","=","1")))){
+				$error_log->add_error(10,"sql");
+		    	die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
+		        	$error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
+			}
+		}
     }
 }
 else{
-	$sql_result="";
+    if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
+		$sql_result=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_USER_DATA,"",array(array("user_id","=","1")));	
+	}
+	else{
+		if(!$sql_result=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_USER_DATA,"",array(array("user_id","=","1")))){
+			$error_log->add_error(10,"sql");
+		    die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
+		    	$error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
+		}
+	}
 }
 
 $GLOBALS["SITE_DATA"]["CRYPT_TYPE"]=($GLOBALS["SITE_DATA"]["UC_CRYPT_TYPE"]==1)?((isset($sql_result["user_crypt_type"]))?$sql_result["user_crypt_type"]:$GLOBALS["SITE_DATA"]["CRYPT_TYPE"]):$GLOBALS["SITE_DATA"]["CRYPT_TYPE"];
