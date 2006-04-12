@@ -38,10 +38,10 @@ if(!defined("START_MANDRIGO")){
 
 class session{
 
-	var $session_db;
+	var $sql_db;
 
 	function session($db){
-		$this->session_db=$db;
+		$this->sql_db=$db;
 	}
 	function session_start($uid,$expires,$secure,$path,$domains){
 	  	if($uid<=1){
@@ -57,17 +57,17 @@ class session{
 		  	if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
 				setcookie(SESSION_COOKIE,$sessionid,$expires,$path,$domains[$i],$secure);
 				setcookie(USER_COOKIE,$uid,$expires,$path,$domains[$i],$secure);
+				return false;
 			}	
 			else{
-				if(!(@setcookie(SESSION_COOKIE,$sessionid,$expires,$path,$domains[$i],$secure))){
+				if(!(setcookie(SESSION_COOKIE,$sessionid,$expires,$path,$domains[$i],$secure))){
 					return false;
 				}
-				if(!(@setcookie(USER_COOKIE,$uid,$expires,$path,$domains[$i],$secure))){
+				if(!(setcookie(USER_COOKIE,$uid,$expires,$path,$domains[$i],$secure))){
 					return false;
 				}				
 			}
 		}
-
 	  	return $sessionid;
 	}
 	function session_renew($sesid,$uid,$expires,$secure,$path,$domains,$db=false){
