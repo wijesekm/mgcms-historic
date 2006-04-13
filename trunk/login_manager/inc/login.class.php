@@ -2,7 +2,7 @@
 /**********************************************************
     login.class.php
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 03/20/06
+	Date Last Edited: 04/13/06
 
 	Copyright (C) 2006  Kevin Wijesekera
 
@@ -62,10 +62,10 @@ class login{
 		}
 		$action="";
 		if($GLOBALS["SITE_DATA"]["URL_FORMAT"]){
-			$action=$GLOBALS["SITE_DATA"]["LOGIN_URL"].$GLOBALS["MANDRIGO_CONFIG"]["LOGIN"]."/a/li"; 
+			$action=$GLOBALS["SITE_DATA"]["LOGIN_URL"].$GLOBALS["MANDRIGO_CONFIG"]["LOGIN"]."/a/li/chdir/".$GLOBALS["HTTP_GET"]["REDIRECT"]; 
 		}
 		else{
-	  		$action=$GLOBALS["SITE_DATA"]["LOGIN_URL"].$GLOBALS["MANDRIGO_CONFIG"]["LOGIN"]."?a=li"; 
+	  		$action=$GLOBALS["SITE_DATA"]["LOGIN_URL"].$GLOBALS["MANDRIGO_CONFIG"]["LOGIN"]."?a=li&amp;chdir=".$GLOBALS["HTTP_GET"]["REDIRECT"]; 
 		}
 		$pparse_vars=array("ACTION",$action,"USER_NAME",$GLOBALS["USER_DATA"]["USER_NAME"],"ERROR",$error);
 		$tpl->pparse($pparse_vars);
@@ -85,10 +85,16 @@ class login{
 	                		$this->error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
 	                	}
 				}
-				$chdir=ereg_replace("&q;","?",$GLOBALS["HTTP_GET"]["REDIRECT"]);
-				$chdir=ereg_replace("&s;","/",$GLOBALS["HTTP_GET"]["REDIRECT"]);
-				$chdir=ereg_replace("&a;","&",$GLOBALS["HTTP_GET"]["REDIRECT"]);
-				header("Location: ".$chdir);
+				if(ereg("&q;",$GLOBALS["HTTP_GET"]["REDIRECT"])){
+					$GLOBALS["HTTP_GET"]["REDIRECT"]=ereg_replace("&q;","?",$GLOBALS["HTTP_GET"]["REDIRECT"]);
+				}
+				if(ereg("&s;",$GLOBALS["HTTP_GET"]["REDIRECT"])){
+					$GLOBALS["HTTP_GET"]["REDIRECT"]=ereg_replace("&s;","/",$GLOBALS["HTTP_GET"]["REDIRECT"]);
+				}
+				if(ereg("&e;",$GLOBALS["HTTP_GET"]["REDIRECT"])){
+					$GLOBALS["HTTP_GET"]["REDIRECT"]=ereg_replace("&e;","=",$GLOBALS["HTTP_GET"]["REDIRECT"]);
+				}
+				header("Location: ".$GLOBALS["HTTP_GET"]["REDIRECT"]);
 				die();
 			}
 			else{
