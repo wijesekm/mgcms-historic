@@ -69,4 +69,7 @@ function clean_text($string){
 function clean_username($string){
     return (eregi("^[a-z0-9._-]+$",$string))?$string:BAD_DATA;
 }
+function clean_url($string){
+	return (eregi("[<|>[|]{|}]",$string))?BAD_DATA:$string;
+}
 ?>
