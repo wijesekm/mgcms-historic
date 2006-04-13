@@ -2,7 +2,7 @@
 /**********************************************************
     server.globals.php
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 03/20/06
+	Date Last Edited: 04/13/06
 
 	Copyright (C) 2006  Kevin Wijesekera
 
@@ -46,7 +46,7 @@ if(!defined("START_MANDRIGO")){
 
 if($GLOBALS["SITE_DATA"]["URL_FORMAT"] == 0){
     $GLOBALS["HTTP_GET"]["ACTION"]=(isset($HTTP_GET_VARS["a"]))?clean_action($HTTP_GET_VARS["a"]):DEFAULT_ACTION;
-    $GLOBALS["HTTP_GET"]["REDIRECT"]=(isset($HTTP_GET_VARS["chdir"]))?clean_string($HTTP_GET_VARS["chdir"]):$GLOBALS["SITE_DATA"]["SITE_URL"];
+    $GLOBALS["HTTP_GET"]["REDIRECT"]=(isset($HTTP_GET_VARS["chdir"]))?clean_url($HTTP_GET_VARS["chdir"]):$GLOBALS["SITE_DATA"]["SITE_URL"];
 }
 else{
     $url = array(null=>null);
@@ -64,8 +64,8 @@ else{
         }
         unset($array_url);
     }
-    $GLOBALS["HTTP_GET"]["ACTION"] = (isset($url["a"]))?clean_action($url["a"]):DEFAULT_ACTION;
-    $GLOBALS["HTTP_GET"]["REDIRECT"]=(isset($url["chdir"]))?clean_string($url["chdir"]):$GLOBALS["SITE_DATA"]["SITE_URL"];
+    $GLOBALS["HTTP_GET"]["ACTION"]=(isset($url["a"]))?clean_action($url["a"]):DEFAULT_ACTION;
+    $GLOBALS["HTTP_GET"]["REDIRECT"]=(isset($url["chdir"]))?clean_url($url["chdir"]):$GLOBALS["SITE_DATA"]["SITE_URL"];
     
 }
 if(clean_num($GLOBALS["HTTP_GET"]["MAIL_ADDR"])!=BAD_DATA){
@@ -105,4 +105,17 @@ $GLOBALS["HTTP_POST"]["USER_NAME"]=isset($HTTP_POST_VARS["mg_user"])?clean_usern
 $GLOBALS["HTTP_POST"]["USER_PASSWORD"]=isset($HTTP_POST_VARS["mg_password"])?clean_password($HTTP_POST_VARS["mg_password"]):"";
 $GLOBALS["HTTP_POST"]["RSESSION"]=($HTTP_POST_VARS["mg_session"])?true:false;
 $GLOBALS["USER_DATA"]["USER_IDENT"]=(isset($GLOBALS["HTTP_POST"]["USER_NAME"]))?"n".$GLOBALS["HTTP_POST"]["USER_NAME"]:$GLOBALS["HTTP_COOKIE"]["UID"];
+
+//
+//Converting redirect
+//
+if(ereg("\?",$GLOBALS["HTTP_GET"]["REDIRECT"])){
+	$GLOBALS["HTTP_GET"]["REDIRECT"]=ereg_replace("?","&q;",$GLOBALS["HTTP_GET"]["REDIRECT"]);
+}
+if(ereg("/",$GLOBALS["HTTP_GET"]["REDIRECT"])){
+	$GLOBALS["HTTP_GET"]["REDIRECT"]=ereg_replace("/","&s;",$GLOBALS["HTTP_GET"]["REDIRECT"]);
+}
+if(ereg("=",$GLOBALS["HTTP_GET"]["REDIRECT"])){
+	$GLOBALS["HTTP_GET"]["REDIRECT"]=ereg_replace("=","&e;",$GLOBALS["HTTP_GET"]["REDIRECT"]);
+}
 ?>
