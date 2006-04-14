@@ -58,20 +58,24 @@ if($GLOBALS["SITE_DATA"]["URL_FORMAT"] == 0){
 }
 else{
     $url = array(null=>null);
-    if(ereg($GLOBALS["MANDRIGO_CONFIG"]["INDEX"]."/",$HTTP_SERVER_VARS["PHP_SELF"])){
-        $raw_url = eregi_replace("^.*\.$php_ex/p","p",$HTTP_SERVER_VARS["PHP_SELF"]);
-        $raw_url = explode("/",$raw_url);
-        $array_url = array("null","null");
-        for($i =0; $i < count($raw_url); $i++){
-            $tmp = explode("=",$raw_url[$i]);
-            $array_url = array_merge_recursive($array_url,$tmp);
-        }
-        for($i=2; $i< count($array_url); $i=$i+2){
-              $tmp = array($array_url[$i]=>$array_url[$i+1]);
-              $url = array_merge_recursive($url, $tmp);
-        }
-        unset($array_url);
+    if(!ereg($GLOBALS["MANDRIGO_CONFIG"]["INDEX"]."/",$HTTP_SERVER_VARS["PHP_SELF"])){
+		$php_self=$GLOBALS["MANDRIGO_CONFIG"]["INDEX"].$HTTP_SERVER_VARS["PHP_SELF"];
     }
+	else{
+		$php_self=$HTTP_SERVER_VARS["PHP_SELF"];
+    }
+    $raw_url = eregi_replace("^.*\.$php_ex/p","p",$php_self);
+    $raw_url = explode("/",$raw_url);
+    $array_url = array("null","null");
+    for($i =0; $i < count($raw_url); $i++){
+        $tmp = explode("=",$raw_url[$i]);
+        $array_url = array_merge_recursive($array_url,$tmp);
+    }
+    for($i=2; $i< count($array_url); $i=$i+2){
+    	$tmp = array($array_url[$i]=>$array_url[$i+1]);
+        $url = array_merge_recursive($url, $tmp);
+    }
+    unset($array_url);
     $GLOBALS["HTTP_GET"]["PAGE"] = (isset($url["p"]))?clean_page($url["p"]): $GLOBALS["SITE_DATA"]["MAIN_PAGE"];
     $GLOBALS["HTTP_GET"]["ACTION"] = (isset($url["a"]))?clean_action($url["a"]):DEFAULT_ACTION;
     $GLOBALS["HTTP_GET"]["KEY"] = (isset($url["k"]))?clean_password($url["k"]):"";
