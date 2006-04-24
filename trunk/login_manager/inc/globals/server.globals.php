@@ -2,7 +2,7 @@
 /**********************************************************
     server.globals.php
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 04/13/06
+	Date Last Edited: 05/24/06
 
 	Copyright (C) 2006  Kevin Wijesekera
 
@@ -35,6 +35,12 @@ if(!defined("START_MANDRIGO")){
             <h1>Forbidden</h1><hr width=\"300\" align=\"left\"/>\n<p>You do not have permission to access this file directly.</p>
         </html></body>");
 }
+
+//array defs
+$GLOBALS["HTTP_COOKIE"]="";
+$GLOBALS["HTTP_GET"]="";
+$GLOBALS["HTTP_SERVER"]="";
+$GLOBALS["HTTP_POST"]="";
 
 //
 //HTTP_GET Global Vars
