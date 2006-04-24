@@ -35,6 +35,11 @@ if(!defined("START_MANDRIGO")){
             <h1>Forbidden</h1><hr width=\"300\" align=\"left\"/>\n<p>You do not have permission to access this file directly.</p>
         </html></body>");
 }
+//array defs
+$GLOBALS["HTTP_COOKIE"]="";
+$GLOBALS["HTTP_GET"]="";
+$GLOBALS["HTTP_SERVER"]="";
+$GLOBALS["HTTP_POST"]="";
 
 //
 //HTTP_GET Global Vars
@@ -116,9 +121,8 @@ if($fail){
 //
 //HTTP_COOKIE Vars
 //
-$GLOBALS["HTTP_COOKIE"]["SESID"]=isset($HTTP_COOKIE_VARS["SMX_SESID"])?clean_SESID($HTTP_COOKIE_VARS[SESSION_COOKIE]):"";
-$GLOBALS["HTTP_COOKIE"]["UID"]=isset($HTTP_COOKIE_VARS["SMX_SESID"])?clean_SESID($HTTP_COOKIE_VARS[USER_COOKIE]):0;
-
+$GLOBALS["HTTP_COOKIE"]["SESID"]=isset($HTTP_COOKIE_VARS[SESSION_COOKIE])?$HTTP_COOKIE_VARS[SESSION_COOKIE]:"";
+$GLOBALS["HTTP_COOKIE"]["UID"]=isset($HTTP_COOKIE_VARS[USER_COOKIE])?($HTTP_COOKIE_VARS[USER_COOKIE]):0;
 //{HTTP_COOKIE_ADD_IN}
 
 //
