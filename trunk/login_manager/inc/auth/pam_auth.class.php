@@ -46,6 +46,9 @@ class auth extends _auth{
 		if(pam_auth($user_name,get_magic_quotes_gpc()?stripslashes($user_password):$user_password){
 			return true;
 		}
+		if(!$this->sql_db->db_fetchresult(TABLE_PREFIX.TABLE_USER_DATA,"",array(array("user_id","=",$uid)))){
+			return 2;
+		}
 		return false;
 	}
 	function auth_loguserin($uid,$ip,$timestamp){
