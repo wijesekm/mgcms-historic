@@ -49,6 +49,7 @@ define("TABLE_RESTRICTED_PAGE_DATA","restricted_page_data");
 define("TABLE_PACKAGE_DATA","packages");
 define("TABLE_SITE_STATS","site_stats");
 define("TABLE_TEMP","tmp");
+define("TABLE_SERVER_GLOBALS","server_globals");
 
 //
 //DB Constants
