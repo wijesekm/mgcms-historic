@@ -29,6 +29,7 @@
 //site manager definition
 //
 define("START_MANDRIGO",true);
+define("CORE_NAME","mg_core");
 $GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]=dirname(__FILE__)."/";
 
 //
