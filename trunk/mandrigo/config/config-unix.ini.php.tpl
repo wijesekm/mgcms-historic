@@ -166,5 +166,6 @@ if($path_style=="win"){
 else{
 	$GLOBALS["MANDRIGO_CONFIG"]["PATH"]="/";	
 }
+define("CORE_NAME","mg_core");
 ?>
 
