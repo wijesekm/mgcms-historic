@@ -48,91 +48,18 @@ $GLOBALS["HTTP_POST"]="";
 //0 = php style paths: index.php?p=hi&u=tmp
 //1 = http style paths: index.php/s/p=hi/u=tmp
 //
-$GLOBALS["HTTP_GET"]["MAIL_ADDR_SYS"]=false;
 if($GLOBALS["SITE_DATA"]["URL_FORMAT"] == 0){
-    $GLOBALS["HTTP_GET"]["PAGE"] = (isset($HTTP_GET_VARS["p"]))?clean_page($HTTP_GET_VARS["p"]): $GLOBALS["SITE_DATA"]["MAIN_PAGE"];
-    $GLOBALS["HTTP_GET"]["ACTION"] = (isset($HTTP_GET_VARS["a"]))?clean_action($HTTP_GET_VARS["a"]):DEFAULT_ACTION;
-    $GLOBALS["HTTP_GET"]["KEY"]  = (isset($HTTP_GET_VARS["k"]))?clean_password($HTTP_GET_VARS["k"]):"";
-    $GLOBALS["HTTP_GET"]["MAIL_ADDR"] = (isset($HTTP_GET_VARS["mail"]))?clean_email($HTTP_GET_VARS["mail"]):$GLOBALS["SITE_DATA"]["WEBMASTER_EMAIL"];
-    $GLOBALS["HTTP_GET"]["ID"] = (isset($HTTP_GET_VARS["id"]))?clean_id($HTTP_GET_VARS["id"]):DEFAULT_ID;
-	$GLOBALS["HTTP_GET"]["PAGE_NUMBER"] = (isset($HTTP_GET_VARS["n"]))?clean_num($HTTP_GET_VARS["n"]):DEFAULT_PN;
-    if(eregi(BAD_DATA,$GLOBALS["HTTP_GET"]["MAIL_ADDR"])){
-        $GLOBALS["HTTP_GET"]["MAIL_ADDR"] = clean_num($HTTP_GET_VARS["mail"]);
-    }
-    //{HTTP_GET_0_ADD_IN}
+	$soa=$sql_db->db_numrows(TABLE_PREFIX.TABLE_SERVER_GLOBALS,array(array("var_core_name","=",CORE_NAME)));
+	$j=0;
+	for($i=0;$j<$soa;$i++){
+		if($parse_=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_SERVER_GLOBALS,"",array(array("var_core_name","=",CORE_NAME)))){
+			$j++;
+			
+		}
+	}
+	
 }
 else{
-    $url = array(null=>null);
-    if(!ereg($GLOBALS["MANDRIGO_CONFIG"]["INDEX"]."/",$HTTP_SERVER_VARS["PHP_SELF"])){
-		$php_self=$GLOBALS["MANDRIGO_CONFIG"]["INDEX"].$HTTP_SERVER_VARS["PHP_SELF"];
-    }
-	else{
-		$php_self=$HTTP_SERVER_VARS["PHP_SELF"];
-    }
-    $raw_url = eregi_replace("^.*\.$php_ex/p","p",$php_self);
-    $raw_url = explode("/",$raw_url);
-    $array_url = array("null","null");
-    for($i =0; $i < count($raw_url); $i++){
-        $tmp = explode("=",$raw_url[$i]);
-        $array_url = array_merge_recursive($array_url,$tmp);
-    }
-    for($i=2; $i< count($array_url); $i=$i+2){
-    	$tmp = array($array_url[$i]=>$array_url[$i+1]);
-        $url = array_merge_recursive($url, $tmp);
-    }
-    unset($array_url);
-    $GLOBALS["HTTP_GET"]["PAGE"] = (isset($url["p"]))?clean_page($url["p"]): $GLOBALS["SITE_DATA"]["MAIN_PAGE"];
-    $GLOBALS["HTTP_GET"]["ACTION"] = (isset($url["a"]))?clean_action($url["a"]):DEFAULT_ACTION;
-    $GLOBALS["HTTP_GET"]["KEY"] = (isset($url["k"]))?clean_password($url["k"]):"";
-    $GLOBALS["HTTP_GET"]["MAIL_ADDR"] = (isset($url["mail"]))?clean_email($url["mail"]):$GLOBALS["SITE_DATA"]["WEBMASTER_EMAIL"];
-    $GLOBALS["HTTP_GET"]["ID"] = (isset($url["id"]))?clean_id($url["id"]):DEFAULT_ID;
-    $GLOBALS["HTTP_GET"]["PAGE_NUMBER"] = (isset($url["n"]))?clean_num($url["n"]):DEFAULT_PN;
-    if(eregi(BAD_DATA,$GLOBALS["HTTP_GET"]["MAIL_ADDR"])){
-        $GLOBALS["HTTP_GET"]["MAIL_ADDR"] = clean_num($url["mail"]);
-    }
-    
-    //{HTTP_GET_1_ADD_IN}
+
 }
-if(clean_num($GLOBALS["HTTP_GET"]["MAIL_ADDR"])!=BAD_DATA){
-    $GLOBALS["HTTP_GET"]["MAIL_ADDR_SYS"]=true;
-}
-
-//
-//URI
-//
-$GLOBALS["HTTP_SERVER"]["URI"]=substr($HTTP_SERVER_VARS["REQUEST_URI"],1);
-
-//
-//if any illegal inputs were used will will add an error to prevent page generation
-//this is done to help prevent users from 'fishing' for script weaknesses
-//
-$fail = false;
-while( list($k, $v) = each($GLOBALS["HTTP_GET"])){
-    if($GLOBALS["HTTP_GET"][$k]===BAD_DATA){
-        $GLOBALS["HTTP_GET"][$k] = "";
-        $fail = true;
-    }
-}
-reset($GLOBALS["HTTP_GET"]);
-if($fail){
-    $error_log->add_error(3,"display");
-}
-
-//
-//HTTP_COOKIE Vars
-//
-$GLOBALS["HTTP_COOKIE"]["SESID"]=isset($HTTP_COOKIE_VARS[SESSION_COOKIE])?$HTTP_COOKIE_VARS[SESSION_COOKIE]:"";
-$GLOBALS["HTTP_COOKIE"]["UID"]=isset($HTTP_COOKIE_VARS[USER_COOKIE])?($HTTP_COOKIE_VARS[USER_COOKIE]):0;
-//{HTTP_COOKIE_ADD_IN}
-
-//
-//HTTP_POST Vars
-//
-$GLOBALS["HTTP_POST"]["M_USER_NAME"]=(!empty($HTTP_POST_VARS["u_name"]))?clean_name($HTTP_POST_VARS["u_name"]):"";
-$GLOBALS["HTTP_POST"]["M_USER_EMAIL"]=(!empty($HTTP_POST_VARS["u_addr"]))?clean_email($HTTP_POST_VARS["u_addr"]):"";
-$GLOBALS["HTTP_POST"]["M_SUBJECT"]=(!empty($HTTP_POST_VARS["u_subj"]))?clean_text($HTTP_POST_VARS["u_subj"]):"";
-$GLOBALS["HTTP_POST"]["M_MESSAGE"]=(!empty($HTTP_POST_VARS["u_message"]))?clean_text($HTTP_POST_VARS["u_message"]):"";
-$GLOBALS["HTTP_POST"]["S_CODE"]=(!empty($HTTP_POST_VARS["s_code"]))?clean_text($HTTP_POST_VARS["s_code"]):"";
-//{HTTP_POST_ADD_IN}
-
 ?>
