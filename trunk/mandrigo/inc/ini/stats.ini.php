@@ -36,7 +36,7 @@ if(!defined("START_MANDRIGO")){
         </html></body>");
 }
 
-if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
+/*if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
 	$cur=$sql_db->db_fetchresult(TABLE_PREFIX.TABLE_SITE_STATS,"total_hits",array(array("page_id","=",$GLOBALS["PAGE_DATA"]["ID"])));
 	$cur++;
 	$sql_db->db_update(DB_UPDATE,TABLE_PREFIX.TABLE_SITE_STATS,array(array("total_hits",$cur,"time_last",time())),array(array("page_id","=",$GLOBALS["PAGE_DATA"]["ID"])));
@@ -47,6 +47,6 @@ else if(!$error_log->get_status()){
 	if(!$sql_db->db_update(DB_UPDATE,TABLE_PREFIX.TABLE_SITE_STATS,array(array("total_hits",$cur,"time_last",$GLOBALS["SITE_DATA"]["SERVER_TIME"])),array(array("page_id","=",$GLOBALS["PAGE_DATA"]["ID"])))){
 	 	$error_log->add_error(15,"sql");  
 	}
-}
+}*/
 
 ?>
