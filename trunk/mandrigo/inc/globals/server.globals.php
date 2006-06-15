@@ -70,36 +70,79 @@ for($i=0;$j<$soa;$i++){
 		$j++;
 		switch($parse["var_protocol"]){
 			case METHOD_GET:
-					$get_names=explode(";",$parse["var_get_names"]);
-					$clean_functs=explode(";",$parse["var_clean_functs"]);
-					$defaults=explode("&split;",$parse["var_defaults"]);
-					$soc=count($get_names);
-					for($k=0;$k<$soc;$k++){
-						if(!$GLOBALS["HTTP_GET"][$parse["var_store_name"]]||$GLOBALS["HTTP_GET"][$parse["var_store_name"]]==BAD_DATA){
-							if($GLOBALS["SITE_DATA"]["URL_FORMAT"]==0){
-								$tmp_=$HTTP_GET_VARS[$get_names[$k]];	
-							}
-							else if($GLOBALS["SITE_DATA"]["URL_FORMAT"]==1){
-								$tmp_=$url[$get_names[$k]];	
-							}
-							if(isset($tmp_)){
-								$tmp=clean_var($tmp_,$clean_functs[$k]);
-							}
-							else{
-								eval($defaults[$k]);
-							}
-							$GLOBALS["HTTP_GET"][$parse["var_store_name"]]=$tmp;
+				$get_names=explode(";",$parse["var_get_names"]);
+				$clean_functs=explode(";",$parse["var_clean_functs"]);
+				$defaults=explode("&split;",$parse["var_defaults"]);
+				$soc=count($get_names);
+				for($k=0;$k<$soc;$k++){
+					if(!$GLOBALS["HTTP_GET"][$parse["var_store_name"]]||$GLOBALS["HTTP_GET"][$parse["var_store_name"]]==BAD_DATA){
+						if($GLOBALS["SITE_DATA"]["URL_FORMAT"]==0){
+							$tmp_=$HTTP_GET_VARS[$get_names[$k]];	
 						}
-
+						else if($GLOBALS["SITE_DATA"]["URL_FORMAT"]==1){
+							$tmp_=$url[$get_names[$k]];	
+						}
+						if(isset($tmp_)){
+							$tmp=clean_var($tmp_,$clean_functs[$k]);
+						}
+						else{
+							eval($defaults[$k]);
+						}
+						$GLOBALS["HTTP_GET"][$parse["var_store_name"]]=$tmp;
 					}
+				}
 			break;
 			case METHOD_POST:
-			
+				$get_names=explode(";",$parse["var_get_names"]);
+				$clean_functs=explode(";",$parse["var_clean_functs"]);
+				$defaults=explode("&split;",$parse["var_defaults"]);
+				$soc=count($get_names);
+				for($k=0;$k<$soc;$k++){
+					if(!$GLOBALS["HTTP_POST"][$parse["var_store_name"]]||$GLOBALS["HTTP_POST"][$parse["var_store_name"]]==BAD_DATA){
+						if(isset($HTTP_POST_VARS[$get_names[$k]])){
+							$tmp=clean_var($HTTP_POST_VARS[$get_names[$k]],$clean_functs[$k]);
+						}
+						else{
+							eval($defaults[$k]);
+						}
+						$GLOBALS["HTTP_POST"][$parse["var_store_name"]]=$tmp;
+					}
+				}			
 			break;
 			case METHOD_COOKIE:
-			
+				$get_names=explode(";",$parse["var_get_names"]);
+				$clean_functs=explode(";",$parse["var_clean_functs"]);
+				$defaults=explode("&split;",$parse["var_defaults"]);
+				$soc=count($get_names);
+				for($k=0;$k<$soc;$k++){
+					if(!$GLOBALS["HTTP_COOKIE"][$parse["var_store_name"]]||$GLOBALS["HTTP_POST"][$parse["var_store_name"]]==BAD_DATA){
+						if(isset($HTTP_COOKIE_VARS[$get_names[$k]])){
+							$tmp=clean_var($HTTP_COOKIE_VARS[$get_names[$k]],$clean_functs[$k]);
+						}
+						else{
+							eval($defaults[$k]);
+						}
+						$GLOBALS["HTTP_COOKIE"][$parse["var_store_name"]]=$tmp;
+					}
+				}			
 			break;
-			
+			case METHOD_SERVER;
+				$get_names=explode(";",$parse["var_get_names"]);
+				$clean_functs=explode(";",$parse["var_clean_functs"]);
+				$defaults=explode("&split;",$parse["var_defaults"]);
+				$soc=count($get_names);
+				for($k=0;$k<$soc;$k++){
+					if(!$GLOBALS["HTTP_SERVER"][$parse["var_store_name"]]||$GLOBALS["HTTP_SERVER"][$parse["var_store_name"]]==BAD_DATA){
+						if(isset($HTTP_SERVER_VARS[$get_names[$k]])){
+							$tmp=clean_var($HTTP_SERVER_VARS[$get_names[$k]],$clean_functs[$k]);
+						}
+						else{
+							eval($defaults[$k]);
+						}
+						$GLOBALS["HTTP_SERVER"][$parse["var_store_name"]]=$tmp;
+					}
+				}
+			break;
 			default:
 			break;
 		};
