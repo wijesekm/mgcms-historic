@@ -2,9 +2,9 @@
 /**********************************************************
     constants.ini.php
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 11/24/05
+	Date Last Edited: 05/08/06
 
-	Copyright (C) 2005  Kevin Wijesekera
+	Copyright (C) 2006  Kevin Wijesekera
 
     ##########################################################
 	This program is free software; you can redistribute it and/or
@@ -83,6 +83,15 @@ define("TPL_OFF_SITE","off_site.".TPL_EXT);
 define("TPL_AUTH_SITE","auth_site.".TPL_EXT);
 define("TPL_MAIN_SITE","main_site.".TPL_EXT);
 define("TPL_OFF_PAGE","off_page.".TPL_EXT);
+
+//
+//Server Globals
+//
+define("METHOD_GET","http_get");
+define("METHOD_POST","http_post");
+define("METHOD_COOKIE","http_cookie");
+define("METHOD_SERVER","http_server");
+define("CORE_PACKAGES","package_core");
 
 //
 //Hooks
