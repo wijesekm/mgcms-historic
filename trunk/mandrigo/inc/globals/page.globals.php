@@ -51,8 +51,10 @@ else{
 }
 
 $GLOBALS["PAGE_DATA"]["ID"] = $page_data["page_id"];
-if($GLOBALS["PAGE_DATA"]["ID"]==0&&!$error_log->get_status()){
-    $error_log->add_error(2,"access");
+if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
+	if($GLOBALS["PAGE_DATA"]["ID"]==0&&!$error_log->get_status()){
+	    $error_log->add_error(2,"access");
+	}
 }
 $GLOBALS["PAGE_DATA"]["NAME"] = $page_data["page_name"];
 
