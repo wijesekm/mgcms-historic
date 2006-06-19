@@ -203,10 +203,14 @@ if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
     include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."page.class.$php_ex");
     include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."template.class.$php_ex");
     include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."word_filter.class.$php_ex");
+    include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."globals{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}package.globals.$php_ex");
 }
 else{
     if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."ini{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}package.ini.$php_ex"))){
         $error_log->add_error(11,"script");
+    }
+    if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."globals{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}package.globals.$php_ex"))){
+        $error_log->add_error(8,"script");
     }
     if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."page.class.$php_ex"))){
         $error_log->add_error(12,"script");
