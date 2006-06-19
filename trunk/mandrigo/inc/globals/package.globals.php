@@ -36,12 +36,16 @@ if(!defined("START_MANDRIGO")){
         </html></body>");
 }
 $soa=0;
+$cond_array=array(array("var_core_name","=",CORE_PACKAGES,DB_AND,2));
 for($i=0;$i<count($GLOBALS["PAGE_DATA"]["HOOKS"]);$i++){
-	$soa+=$sql_db->db_numrows(TABLE_PREFIX.TABLE_SERVER_GLOBALS,array(array("var_core_name","=",CORE_PACKAGES,DB_AND),array("var_app_name","=",$GLOBALS["PAGE_DATA"]["HOOKS"][$i]))); 
+	$cond_array=array_merge_recursive($cond_array,array(array("var_app_id","=",$GLOBALS["PAGE_DATA"]["HOOKS"][$i],DB_OR,4)));
 }
+$soa=$sql_db->db_numrows(TABLE_PREFIX.TABLE_SERVER_GLOBALS,array_merge_recursive($cond_array,array(array("var_app_id","=","0","",4))));
+$cond_array=array_merge_recursive($cond_array,array(array("var_app_id","=","0",DB_AND,4)));
 $j=0;
 for($i=0;$j<$soa;$i++){
-	if($parse=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_SERVER_GLOBALS,"",array(array("var_core_name","=",CORE_PACKAGES,DB_AND),array("var_id","=",$i,DB_AND),array("var_app_name","<>","mandrigo")))){
+  	$n_cond_array=array_merge_recursive($cond_array,array(array("var_id","=",$i,"",6)));
+	if($parse=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_SERVER_GLOBALS,"",$n_cond_array)){
 		$j++;
 		switch($parse["var_protocol"]){
 			case METHOD_GET:
@@ -127,5 +131,6 @@ unset($get_names);
 unset($clean_functs);
 unset($defaults);
 unset($url);
-
+unset($cond_array);
+unset($n_cond_array);
 ?>
