@@ -440,6 +440,8 @@ class db extends _db{
 			$new_table="`".mysql_real_escape_string($table)."`";
 		}
 		$qstring="SELECT ".$new_field." FROM ".$new_table;
+		$last_group=0;
+		$set=false;
         if($params){
           	$qstring.=" WHERE";
             for($i=0;$i<count($params);$i++){
@@ -460,7 +462,16 @@ class db extends _db{
 								
               	  	break;
 				 	default:  
+				 		if($params[$i][4]&&$params[$i][4]!=$last_group){
+							$qstring.=" (";
+							$set=true;
+							$last_group=$params[$i][4];	
+						}
 						$qstring.=" `".mysql_real_escape_string($params[$i][0])."`".$params[$i][1]."'".mysql_real_escape_string($params[$i][2])."'";
+				 		if(($params[$i+1][4]&&$params[$i+1][4]!=$last_group)||($set&&($i+1)==count($params))){
+							$qstring.=" )";
+							$set=false;
+						}
 				    break;
 				};
             	switch($params[$i][3]){
