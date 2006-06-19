@@ -86,7 +86,7 @@ if(!defined("START_MANDRIGO")){
         return $data;
     }
     //simple function to a value to an array
-    function add_array($array, $key, $val,$act=1){
+    function add_array($array, $key, $val){
       	if($act==1){
 			$tmp = array("$key"=>"$val");    
 		}
