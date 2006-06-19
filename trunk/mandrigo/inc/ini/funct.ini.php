@@ -86,8 +86,13 @@ if(!defined("START_MANDRIGO")){
         return $data;
     }
     //simple function to a value to an array
-    function add_array($array, $key, $val){
-        $tmp = array("$key"=>"$val");
+    function add_array($array, $key, $val,$act=1){
+      	if($act==1){
+			$tmp = array("$key"=>"$val");    
+		}
+		else(
+			$tmp = array("$key","$val");
+		)
         $array = array_merge_recursive($array, $tmp);
         return $array;
     }
