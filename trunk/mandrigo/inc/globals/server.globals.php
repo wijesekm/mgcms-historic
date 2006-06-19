@@ -2,7 +2,7 @@
 /**********************************************************
     server.globals.php
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 05/08/06
+	Date Last Edited: 06/14/06
 
 	Copyright (C) 2006  Kevin Wijesekera
 
@@ -35,6 +35,7 @@ if(!defined("START_MANDRIGO")){
             <h1>Forbidden</h1><hr width=\"300\" align=\"left\"/>\n<p>You do not have permission to access this file directly.</p>
         </html></body>");
 }
+
 //array defs
 $GLOBALS["HTTP_COOKIE"]="";
 $GLOBALS["HTTP_GET"]="";
@@ -62,6 +63,8 @@ if($GLOBALS["SITE_DATA"]["URL_FORMAT"]==1){
         $url = array_merge_recursive($url, $tmp);
     }
     unset($array_url);
+    unset($tmp);
+    unset($raw_url);
 }
 $soa=$sql_db->db_numrows(TABLE_PREFIX.TABLE_SERVER_GLOBALS,array(array("var_core_name","=",CORE_NAME)));
 $j=0;
@@ -148,5 +151,9 @@ for($i=0;$j<$soa;$i++){
 		};
 	}
 }
+unset($parse);
+unset($get_names);
+unset($clean_functs);
+unset($defaults);
 
 ?>
