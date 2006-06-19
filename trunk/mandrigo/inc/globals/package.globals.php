@@ -35,11 +35,13 @@ if(!defined("START_MANDRIGO")){
             <h1>Forbidden</h1><hr width=\"300\" align=\"left\"/>\n<p>You do not have permission to access this file directly.</p>
         </html></body>");
 }
-
-$soa=$sql_db->db_numrows(TABLE_PREFIX.TABLE_SERVER_GLOBALS,array(array("var_core_name","=",CORE_PACKAGES)));
+$soa=0;
+for($i=0;$i<count($GLOBALS["PAGE_DATA"]["HOOKS"]);$i++){
+	$soa+=$sql_db->db_numrows(TABLE_PREFIX.TABLE_SERVER_GLOBALS,array(array("var_core_name","=",CORE_PACKAGES,DB_AND),array("var_app_name","=",$GLOBALS["PAGE_DATA"]["HOOKS"][$i]))); 
+}
 $j=0;
 for($i=0;$j<$soa;$i++){
-	if($parse=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_SERVER_GLOBALS,"",array(array("var_core_name","=",CORE_PACKAGES,DB_AND),array("var_id","=",$i)))){
+	if($parse=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_SERVER_GLOBALS,"",array(array("var_core_name","=",CORE_PACKAGES,DB_AND),array("var_id","=",$i,DB_AND),array("var_app_name","<>","mandrigo")))){
 		$j++;
 		switch($parse["var_protocol"]){
 			case METHOD_GET:
@@ -124,5 +126,6 @@ for($i=0;$j<$soa;$i++){
 unset($get_names);
 unset($clean_functs);
 unset($defaults);
+unset($url);
 
 ?>
