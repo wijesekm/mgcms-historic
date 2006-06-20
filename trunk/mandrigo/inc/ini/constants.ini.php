@@ -50,6 +50,8 @@ define("TABLE_PACKAGE_DATA","packages");
 define("TABLE_SITE_STATS","site_stats");
 define("TABLE_TEMP","tmp");
 define("TABLE_SERVER_GLOBALS","server_globals");
+define("TABLE_LANG","lang_")
+define("TABLE_LANG_MAIN","langsets")
 
 //
 //DB Constants
