@@ -154,8 +154,8 @@ $path_style="unix";
 //Html Version - html version that the script is in (ex xhtml)
 //
 
-$lang["LANGUAGE"]="en-US";
-$lang["HTML_VER"]="xhtml_1_0_trans";
+$default_lang["LANGUAGE"]="en-US";
+$default_lang["HTML_VER"]="xhtml_1_0_trans";
 
 //
 //DO NOT EDIT BELOW THIS
