@@ -62,7 +62,11 @@ if(!$lang_id=$sql_db->db_fetchresult(TABLE_PREFIX.TABLE_LANG_MAIN,"lang_id",arra
 }
 
 //populates the language array
-$soa=$sql_db->db_numrows(TABLE_PREFIX.TABLE_LANG.$lang_id);
+if(!$soa=$sql_db->db_numrows(TABLE_PREFIX.TABLE_LANG.$lang_id)){
+	if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
+        $error_log->add_error(31,"sql");		  
+	}	
+}
 $j=0;
 for($i=0;$j<$soa;$i++){
 	if($result=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_LANG.$lang_id,"",array(array("lang_id","=",$i)))){
