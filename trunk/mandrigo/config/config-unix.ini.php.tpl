@@ -57,6 +57,7 @@ if(!defined("START_MANDRIGO")){
 //Use ssl is set to true if you wish to use a secure connection.  This is only available for the mysqli package
 //
 
+$sql_config="";
 $sql_config["SQL_TYPE"]="mysql";
 $sql_config["SQL_HOST"]="localhost";
 $sql_config["SQL_PORT"]="";
@@ -83,6 +84,8 @@ $sql_config["SSL"]=array("KEY"=>"",
 //
 //Archive - date format on the log files (ex m_d_h will archive by hour, m_d will archive by day)
 //
+
+$log_config="";
 $log_config["LOG_LEVEL_1"]=true;
 $log_config["LOG_LEVEL_2"]=true;
 $log_config["ARCHIVE"]="m_d_h";
@@ -154,6 +157,7 @@ $path_style="unix";
 //Html Version - html version that the script is in (ex xhtml)
 //
 
+$default_lang="";
 $default_lang["LANGUAGE"]="en-US";
 $default_lang["HTML_VER"]="xhtml_1_0_trans";
 
