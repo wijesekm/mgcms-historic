@@ -36,7 +36,11 @@ if(!defined("START_MANDRIGO")){
         </html></body>");
 }
 $GLOBALS["LANGUAGE"]="";
+$GLOBALS["HTML"]="";
 
+//
+//Language Section
+//
 //to set the content/type charset header
 if(!$lang=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_LANG_MAIN,"",array(array("lang_name","=",$langname)))){
 	if(!$lang=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_LANG_MAIN,"",array(array("lang_name","=",$this->sys_lang)))){
@@ -75,4 +79,29 @@ for($i=0;$j<$soa;$i++){
 	}
 }
 
+//
+//HTML Section
+//$default_lang["HTML_VER"]
+
+//to get the name of the lang table
+if(!$lang_id=$sql_db->db_fetchresult(TABLE_PREFIX.TABLE_LANG_MAIN,"lang_id",array(array("lang_name","=",$default_lang["HTML_VER"])))){
+	if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
+        $error_log->add_error(30,"sql");		  
+	}		
+}
+
+//populates the language array
+if(!$soa=$sql_db->db_numrows(TABLE_PREFIX.TABLE_LANG.$lang_id)){
+	if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
+        $error_log->add_error(31,"sql");		  
+	}	
+}
+$j=0;
+for($i=0;$j<$soa;$i++){
+	if($result=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_LANG.$lang_id,"",array(array("lang_id","=",$i)))){
+		$j++;
+		$GLOBALS["HTML"][$result["lang_callname"]]=$result["lang_value"];
+	}
+}
+unset($default_lang["HTML_VER"]);
 ?>
