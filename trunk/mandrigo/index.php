@@ -2,9 +2,9 @@
 /**********************************************************
     index.php
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 11/04/05
+	Date Last Edited: 06/24/06
 
-	Copyright (C) 2005  Kevin Wijesekera
+	Copyright (C) 2006  Kevin Wijesekera
 
     ##########################################################
 	This program is free software; you can redistribute it and/or
@@ -34,12 +34,11 @@ $GLOBALS["MANDRIGO_CONFIG"]="";
 $GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]=dirname(__FILE__)."/";
 
 //
-//Initial includes (php extension, config vars, language array, html array)
+//Initial includes (php extension, config vars, elog lang arays)
 //
 require($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."config/extension.inc");
+require($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."config/elog.globals.$php_ex");
 require($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."config/config.ini.$php_ex");
-require($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."languages{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}".$lang["LANGUAGE"].".lang.$php_ex");
-require($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."languages{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}".$lang["HTML_VER"].".lang.$php_ex");
 
 //
 //Error Logger Init
@@ -49,8 +48,8 @@ if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
 }
 else{
     if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."error_logger.class.$php_ex"))){
-	   die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
-           $GLOBALS["LANGUAGE"]["EZERO"].$GLOBALS["HTML"]["EEND"]);
+	   die($GLOBALS["ELOG"]["HTMLHEAD"].$GLOBALS["ELOG"]["TITLE"].$GLOBALS["ELOG"]["HTMLBODY"].
+           $GLOBALS["ELOG"]["ZERO"].$GLOBALS["ELOG"]["HTMLEND"]);
     }
 }
 $error_log = & new error_logger($log_config["LOG_LEVEL_1"],$log_config["LOG_LEVEL_2"],$log_config["ARCHIVE"]);
@@ -64,8 +63,8 @@ if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
 else{
     if(!(@include($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."ini{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}ini.$php_ex"))){
         $error_log->add_error(1,"script");
-	    die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
-           $error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
+	   	die($GLOBALS["ELOG"]["HTMLHEAD"].$GLOBALS["ELOG"]["TITLE"].$GLOBALS["ELOG"]["HTMLBODY"].
+        	$error_log->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);
     }
 }
 
@@ -76,10 +75,13 @@ $current_page = new page($error_log,$sql_db);
 
 //one final check for errors
 if($error_log->get_status()==2){
-    die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
-        $error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
+	die($GLOBALS["ELOG"]["HTMLHEAD"].$GLOBALS["ELOG"]["TITLE"].$GLOBALS["ELOG"]["HTMLBODY"].
+    	$error_log->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);
 }
 
+//
+//Displays the current page.  Will display an off site page if the site is set to off and the bypass code is incorrect.
+//
 if($GLOBALS["MANDRIGO_CONFIG"]["SITE_STATUS"]||$GLOBALS["HTTP_GET"]["KEY"]==$GLOBALS["SITE_DATA"]["BYPASS_CODE"]){
     echo $current_page->display();
 }
