@@ -49,8 +49,8 @@ if(user_is_logged_in($GLOBALS["HTTP_COOKIE"]["SESID"],$GLOBALS["HTTP_COOKIE"]["U
         else{
             if(!(@setcookie("SMX_SESID",$GLOBALS["HTTP_COOKIE"]["U_SESID"].":".$GLOBALS["HTTP_COOKIE"]["SESID"],$GLOBALS["SCRIPT"]["LOCAL_TIME"]+$GLOBALS["HTTP_COOKIE"]["U_SESID"],"/"))){
                 $error_log->add_error(20,"script");
-                die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
-                    $error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
+	   			die($GLOBALS["ELOG"]["HTMLHEAD"].$GLOBALS["ELOG"]["TITLE"].$GLOBALS["ELOG"]["HTMLBODY"].
+           			$error_log->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);
             }
         }
     }
@@ -61,8 +61,8 @@ if(user_is_logged_in($GLOBALS["HTTP_COOKIE"]["SESID"],$GLOBALS["HTTP_COOKIE"]["U
         else{
             if(!(@setcookie("SMX_UID",$GLOBALS["HTTP_COOKIE"]["U_UID"].":".$GLOBALS["HTTP_COOKIE"]["UID"],$GLOBALS["SCRIPT"]["LOCAL_TIME"]+$GLOBALS["HTTP_COOKIE"]["U_UID"],"/"))){
                  $error_log->add_script_error(21,"script");
-                 die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
-                    $error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
+	   			die($GLOBALS["ELOG"]["HTMLHEAD"].$GLOBALS["ELOG"]["TITLE"].$GLOBALS["ELOG"]["HTMLBODY"].
+           			$error_log->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);
             }
         }
     }
@@ -74,8 +74,8 @@ if($GLOBALS["SCRIPT"]["AUTHENTICATED"]){
     else{
         if(!$sql_result=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_USER_DATA,"",array(array("user_id","=",$GLOBALS["HTTP_COOKIE"]["UID"])))){
             $error_log->add_error(10,"sql");
-            die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
-                $error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
+	   		die($GLOBALS["ELOG"]["HTMLHEAD"].$GLOBALS["ELOG"]["TITLE"].$GLOBALS["ELOG"]["HTMLBODY"].
+           		$error_log->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);
         }
     }
 }
@@ -87,8 +87,8 @@ else{
     else{
         if(!$sql_result=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_USER_DATA,"",array(array("user_id","=",1)))){
             $error_log->add_error(10,"sql");
-            die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
-                $error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
+	   		die($GLOBALS["ELOG"]["HTMLHEAD"].$GLOBALS["ELOG"]["TITLE"].$GLOBALS["ELOG"]["HTMLBODY"].
+           		$error_log->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);
         }
     }
 }
@@ -120,8 +120,8 @@ for($i=0;$i<count($GLOBALS["USER_DATA"]["GROUPS"]);$i++){
     if(!$sql_result=$sql_result=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_USER_GROUPS,"",array(array("group_id","=",$GLOBALS["USER_DATA"]["GROUPS"]["$i"])))){
         if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
             $error_log->add_error(11,"sql");
-            die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
-                $error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
+	   		die($GLOBALS["ELOG"]["HTMLHEAD"].$GLOBALS["ELOG"]["TITLE"].$GLOBALS["ELOG"]["HTMLBODY"].
+           		$error_log->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);
         }
     }
     else{
