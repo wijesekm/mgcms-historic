@@ -37,10 +37,10 @@ if(!defined("START_MANDRIGO")){
 }
 
 //array defs
-$GLOBALS["HTTP_COOKIE"]="";
-$GLOBALS["HTTP_GET"]="";
-$GLOBALS["HTTP_SERVER"]="";
-$GLOBALS["HTTP_POST"]="";
+$GLOBALS["HTTP_COOKIE"]=array();
+$GLOBALS["HTTP_GET"]=array();
+$GLOBALS["HTTP_SERVER"]=array();
+$GLOBALS["HTTP_POST"]=array();
 
 //makes the URL array for type 1 urls only
 if($GLOBALS["SITE_DATA"]["URL_FORMAT"]==1){
@@ -62,14 +62,14 @@ if($GLOBALS["SITE_DATA"]["URL_FORMAT"]==1){
     	$tmp = array($array_url[$i]=>$array_url[$i+1]);
         $url = array_merge_recursive($url, $tmp);
     }
-    unset($array_url);
-    unset($tmp);
-    unset($raw_url);
+    $array_url=array();
+    $tmp=array();
+    $raw_url=array();
 }
-$soa=$sql_db->db_numrows(TABLE_PREFIX.TABLE_SERVER_GLOBALS,array(array("var_core_name","=",CORE_NAME)));
+$soa=$sql_db->db_numrows(TABLE_PREFIX.TABLE_SERVER_GLOBALS,array(array("var_core_name","=",CORE_NAME,DB_OR),array("var_core_name","=","all")));
 $j=0;
 for($i=0;$j<$soa;$i++){
-	if($parse=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_SERVER_GLOBALS,"",array(array("var_core_name","=",CORE_NAME,DB_AND),array("var_id","=",$i)))){
+	if($parse=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_SERVER_GLOBALS,"",array(array("var_core_name","=",CORE_NAME,DB_OR,1),array("var_core_name","=","all",1,DB_AND),array("var_id","=",$i,2)))){
 		$j++;
 		switch($parse["var_protocol"]){
 			case METHOD_GET:
@@ -151,9 +151,9 @@ for($i=0;$j<$soa;$i++){
 		};
 	}
 }
-unset($parse);
-unset($get_names);
-unset($clean_functs);
-unset($defaults);
+$parse=array();
+$get_names=array();
+$clean_functs=array();
+$defaults=array();
 
 ?>
