@@ -35,8 +35,8 @@ if(!defined("START_MANDRIGO")){
             <h1>Forbidden</h1><hr width=\"300\" align=\"left\"/>\n<p>You do not have permission to access this file directly.</p>
         </html></body>");
 }
-$GLOBALS["LANGUAGE"]="";
-$GLOBALS["HTML"]="";
+$GLOBALS["LANGUAGE"]=array();
+$GLOBALS["HTML"]=array();
 
 //
 //Language Section
@@ -64,16 +64,24 @@ if(!$lang_id=$sql_db->db_fetchresult(TABLE_PREFIX.TABLE_LANG_MAIN,"lang_id",arra
 		}
 	}			
 }
+//makes the lang conditional statements and gets the size of the lang array.
+$cond_array=array(array("lang_core","=","all",DB_OR,2),array("lang_core","=","display",DB_AND,2));
+for($i=0;$i<count($GLOBALS["PAGE_DATA"]["HOOKS"]);$i++){
+	$cond_array=array_merge_recursive($cond_array,array(array("lang_app_id","=",$GLOBALS["PAGE_DATA"]["HOOKS"][$i],DB_OR,4)));
+}
+$soa=$sql_db->db_numrows(TABLE_PREFIX.TABLE_LANG.$lang_id,array_merge_recursive($cond_array,array(array("lang_app_id","=","0","",4))));
+$cond_array=array_merge_recursive($cond_array,array(array("lang_app_id","=","0",DB_AND,4)));
 
 //populates the language array
-if(!$soa=$sql_db->db_numrows(TABLE_PREFIX.TABLE_LANG.$lang_id)){
+if(!$soa){
 	if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
         $error_log->add_error(31,"sql");		  
 	}	
 }
 $j=0;
 for($i=0;$j<$soa;$i++){
-	if($result=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_LANG.$lang_id,"",array(array("lang_id","=",$i)))){
+  	$n_cond_array=array_merge_recursive($cond_array,array(array("lang_id","=",$i,"",6)));
+	if($result=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_LANG.$lang_id,"",$n_cond_array)){
 		$j++;
 		$GLOBALS["LANGUAGE"][$result["lang_callname"]]=$result["lang_value"];
 	}
@@ -90,18 +98,30 @@ if(!$lang_id=$sql_db->db_fetchresult(TABLE_PREFIX.TABLE_LANG_MAIN,"lang_id",arra
 	}		
 }
 
+//makes the lang conditional statements and gets the size of the lang array.
+$cond_array=array(array("lang_core","=","all",DB_OR,2),array("lang_core","=","display",DB_AND,2));
+for($i=0;$i<count($GLOBALS["PAGE_DATA"]["HOOKS"]);$i++){
+	$cond_array=array_merge_recursive($cond_array,array(array("lang_app_id","=",$GLOBALS["PAGE_DATA"]["HOOKS"][$i],DB_OR,4)));
+}
+$soa=$sql_db->db_numrows(TABLE_PREFIX.TABLE_LANG.$lang_id,array_merge_recursive($cond_array,array(array("lang_app_id","=","0","",4))));
+$cond_array=array_merge_recursive($cond_array,array(array("lang_app_id","=","0",DB_AND,4)));
+
 //populates the language array
-if(!$soa=$sql_db->db_numrows(TABLE_PREFIX.TABLE_LANG.$lang_id)){
+if(!$soa){
 	if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
         $error_log->add_error(31,"sql");		  
 	}	
 }
 $j=0;
 for($i=0;$j<$soa;$i++){
-	if($result=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_LANG.$lang_id,"",array(array("lang_id","=",$i)))){
+  	$n_cond_array=array_merge_recursive($cond_array,array(array("lang_id","=",$i,"",6)));
+	if($result=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_LANG.$lang_id,"",$n_cond_array)){
 		$j++;
 		$GLOBALS["HTML"][$result["lang_callname"]]=$result["lang_value"];
 	}
 }
-unset($default_lang["HTML_VER"]);
+$default_lang=array();
+$n_cond_array=array();
+$cond_array=array();
+$result=array();
 ?>
