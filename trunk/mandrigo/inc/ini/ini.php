@@ -2,9 +2,9 @@
 /**********************************************************
     ini.php
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 12/14/05
+	Date Last Edited: 06/24/06
 
-	Copyright (C) 2005  Kevin Wijesekera
+	Copyright (C) 2006  Kevin Wijesekera
 
     ##########################################################
 	This program is free software; you can redistribute it and/or
@@ -114,8 +114,8 @@ if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
 else{
     if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."sql{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}".$sql_config["SQL_TYPE"].".class.$php_ex"))){
         $error_log->add_error(2,"script");
-        die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
-           $error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
+	   	die($GLOBALS["ELOG"]["HTMLHEAD"].$GLOBALS["ELOG"]["TITLE"].$GLOBALS["ELOG"]["HTMLBODY"].
+        	$GLOBALS["ELOG"]["ZERO"].$GLOBALS["ELOG"]["HTMLEND"]);
     }
 }
 $sql_db = & new db();
@@ -128,7 +128,8 @@ else{
     if(!$sql_db->db_connect($sql_config["SQL_HOST"],$sql_config["SQL_PORT"],$sql_config["SQL_SOCKET"],$sql_config["SQL_USER"],
 		$sql_config["SQL_PASSWORD"],$sql_config["SQL_DATABASE"],true,$sql_config["USE_SSL"],$sql_config["SSL"])){
         $error_log->add_error(1,"sql");
-        die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].$error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
+	   	die($GLOBALS["ELOG"]["HTMLHEAD"].$GLOBALS["ELOG"]["TITLE"].$GLOBALS["ELOG"]["HTMLBODY"].
+        	$GLOBALS["ELOG"]["ZERO"].$GLOBALS["ELOG"]["HTMLEND"]);
     }
 }
 
@@ -155,8 +156,8 @@ else{
         $error_log->add_error(6,"script");
     }
     if($error_log->get_status()==2){
-        die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
-           $error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
+	   	die($GLOBALS["ELOG"]["HTMLHEAD"].$GLOBALS["ELOG"]["TITLE"].$GLOBALS["ELOG"]["HTMLBODY"].
+        	$GLOBALS["ELOG"]["ZERO"].$GLOBALS["ELOG"]["HTMLEND"]);
     }
 }
 //
@@ -225,8 +226,8 @@ else{
         $error_log->add_error(16,"script");
     }
     if($error_log->get_status()==2){
-        die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
-           $error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
+	   	die($GLOBALS["ELOG"]["HTMLHEAD"].$GLOBALS["ELOG"]["TITLE"].$GLOBALS["ELOG"]["HTMLBODY"].
+           	$GLOBALS["ELOG"]["ZERO"].$GLOBALS["ELOG"]["HTMLEND"]);
     }
 }
 
@@ -247,8 +248,8 @@ else{
         $error_log->add_error(15,"script");
     }
     if($error_log->get_status()==2){
-        die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
-           $error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
+	   	die($GLOBALS["ELOG"]["HTMLHEAD"].$GLOBALS["ELOG"]["TITLE"].$GLOBALS["ELOG"]["HTMLBODY"].
+           	$GLOBALS["ELOG"]["ZERO"].$GLOBALS["ELOG"]["HTMLEND"]);
     }
 }
 ?>
