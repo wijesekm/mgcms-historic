@@ -44,7 +44,7 @@ $GLOBALS["HTML"]=array();
 //to set the content/type charset header
 if(!$lang=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_LANG_MAIN,"",array(array("lang_name","=",$langname)))){
 	if(!$lang=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_LANG_MAIN,"",array(array("lang_name","=",$this->sys_lang)))){
-		if(!$lang=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_LANG_MAIN,"",array(array("lang_name","=",0)){
+		if(!$lang=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_LANG_MAIN,"",array(array("lang_name","=",0)))){
 			if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
         		$error_log->add_error(30,"sql");		  
 			}

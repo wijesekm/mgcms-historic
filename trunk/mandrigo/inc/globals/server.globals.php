@@ -69,7 +69,7 @@ if($GLOBALS["SITE_DATA"]["URL_FORMAT"]==1){
 $soa=$sql_db->db_numrows(TABLE_PREFIX.TABLE_SERVER_GLOBALS,array(array("var_core_name","=",CORE_NAME,DB_OR),array("var_core_name","=","all")));
 $j=0;
 for($i=0;$j<$soa;$i++){
-	if($parse=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_SERVER_GLOBALS,"",array(array("var_core_name","=",CORE_NAME,DB_OR,1),array("var_core_name","=","all",1,DB_AND),array("var_id","=",$i,2)))){
+	if($parse=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_SERVER_GLOBALS,"",array(array("var_core_name","=",CORE_NAME,DB_OR,1),array("var_core_name","=","all",DB_AND,1),array("var_id","=",$i,"",5)))){
 		$j++;
 		switch($parse["var_protocol"]){
 			case METHOD_GET:
