@@ -2,7 +2,7 @@
 /**********************************************************
     constants.ini.php
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 05/08/06
+	Date Last Edited: 06/27/06
 
 	Copyright (C) 2006  Kevin Wijesekera
 
@@ -50,8 +50,8 @@ define("TABLE_PACKAGE_DATA","packages");
 define("TABLE_SITE_STATS","site_stats");
 define("TABLE_TEMP","tmp");
 define("TABLE_SERVER_GLOBALS","server_globals");
-define("TABLE_LANG","lang_")
-define("TABLE_LANG_MAIN","langsets")
+define("TABLE_LANG","lang_");
+define("TABLE_LANG_MAIN","langsets");
 
 //
 //DB Constants

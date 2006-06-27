@@ -2,9 +2,9 @@
 /**********************************************************
     funct.ini.php
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 11/14/05
+	Date Last Edited: 06/27/06
 
-	Copyright (C) 2005  Kevin Wijesekera
+	Copyright (C) 2006  Kevin Wijesekera
 
     ##########################################################
 	This program is free software; you can redistribute it and/or
@@ -86,13 +86,8 @@ if(!defined("START_MANDRIGO")){
         return $data;
     }
     //simple function to a value to an array
-    function add_array($array, $key, $val){
-      	if($act==1){
-			$tmp = array("$key"=>"$val");    
-		}
-		else(
-			$tmp = array("$key","$val");
-		)
+    function add_array($array, $key){
+      	$tmp = array("$key"=>"$val"); 
         $array = array_merge_recursive($array, $tmp);
         return $array;
     }

@@ -2,7 +2,7 @@
 /**********************************************************
     ini.php
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 06/24/06
+	Date Last Edited: 06/27/06
 
 	Copyright (C) 2006  Kevin Wijesekera
 
@@ -173,6 +173,7 @@ if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
     include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."globals{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}user.globals.$php_ex");
     include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."globals{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}page.globals.$php_ex");
     include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."globals{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}script.globals.$php_ex");
+    include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."globals{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}lang.globals.$php_ex");
 }
 else{
     if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."globals{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}site.globals.$php_ex"))){
@@ -190,6 +191,9 @@ else{
     if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."globals{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}script.globals.$php_ex"))){
         $error_log->add_error(7,"script");
     }
+    if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."globals{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}lang.globals.$php_ex"))){
+        $error_log->add_error(17,"script");
+    }    
     if($error_log->get_status()==2){
 	   	die($GLOBALS["ELOG"]["HTMLHEAD"].$GLOBALS["ELOG"]["TITLE"].$GLOBALS["ELOG"]["HTMLBODY"].
            	$error_log->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);
