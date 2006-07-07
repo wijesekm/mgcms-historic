@@ -41,51 +41,15 @@ class form_validator{
   	var $db;
   	var $config;
 
-	function form_validator(&$sql,$len){
+	function form_validator(&$sql,$config){
 		$this->db=$sql;
-		$this->config["len"]=$len;
-
+		//$this->config=$config;
+		$this->config=array("chars"=>4,
+							"websafecolors"=>false,
+							"noise"=>4
+							)
 	}  
-	function make($id,$app){
-		$rnd=$this->random_string();
-		
-		$image = ImageCreate(20*$this->config["len"]+20,30);	
-		$background_color = imagecolorallocate($image, 255, 255, 255);
-		for($i=0;$i<$this->config["len"];$i++){
-			$col=$this->rand_color();	
-			imagechar($image, imageloadfont($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"].$this->rand_font()), (20*$i)+5+$this->rand_offset(), 1+$this->rand_offset(),$rnd[$i], imagecolorallocate($image,$col[0],$col[1],$col[2]));
-		}
-		imagepng($image,$GLOBALS["MANDRIGO_CONFIG"]["IMG_PATH"].TMP_IMG."/".$app."_".$id.".png");
-		imagedestroy($image);
-		if(!$this->db->db_update(DB_INSERT,TABLE_PREFIX.TABLE_TEMP,array("$app.$id",$rnd))){
-			return false;
-		}
-		return true;
-	}
-	function rand_color(){
-		return array(rand(0,200),rand(0,200),rand(0,200));
-	}
-	function rand_offset(){
-		return rand(0,10);		
-	}
-	function rand_font(){
-		$rn=rand(0,3);
-		switch($rn){
-			case 0:
-				$file="fonts/Arial10.gdf";
-			break;
-			case 1:
-				$file="fonts/Arial12.gdf";
-			break;
-			case 2:
-				$file="fonts/Arial14.gdf";
-			break;
-			default:
-				$file="fonts/Arial16.gdf";
-			break;	
-		};
-		return $file;
-	}
+
 	function check($str,$id,$app){
 		if(!$db_str=$this->db->db_fetchresult(TABLE_PREFIX.TABLE_TEMP,"field_value",array(array("field_name","=","$app.$id")))){
 			return false;
@@ -98,91 +62,121 @@ class form_validator{
 		}	
 		return true;
 	}
-	function random_string(){
-		$string="";
-		for($i=0;$i<$this->config["len"];$i++){
-			$rn=rand(0,25);
-			switch($rn){
-				case 0:
-					$string.="A";
-				break;
-				case 1:
-					$string.="B";
-				break;
-				case 2:
-					$string.="C";
-				break;
-				case 3:
-					$string.="D";
-				break;
-				case 4:
-					$string.="E";
-				break;	
-				case 5:
-					$string.="F";
-				break;
-				case 6:
-					$string.="G";
-				break;
-				case 7:
-					$string.="H";
-				break;
-				case 8:
-					$string.="I";
-				break;
-				case 9:
-					$string.="J";
-				break;	
-				case 10:
-					$string.="K";
-				break;
-				case 11:
-					$string.="L";
-				break;
-				case 12:
-					$string.="M";
-				break;
-				case 13:
-					$string.="N";
-				break;
-				case 14:
-					$string.="O";
-				break;	
-				case 15:
-					$string.="P";
-				break;
-				case 16:
-					$string.="Q";
-				break;
-				case 17:
-					$string.="R";
-				break;
-				case 18:
-					$string.="S";
-				break;
-				case 19:
-					$string.="T";
-				break;	
-				case 20:
-					$string.="U";
-				break;
-				case 21:
-					$string.="V";
-				break;
-				case 22:
-					$string.="W";
-				break;
-				case 23:
-					$string.="X";
-				break;		
-				case 24:
-					$string.="Y";
-				break;
-				default:
-					$string.="Z";
-				break;		
-			};
+	function fv_makecaptcha($app,$id){
+		$private_key = $this->generate_private();
+			
+		// create Image and set the apropriate function depending on GD-Version & websafecolor-value
+		if($this->fv_gdversion() >= 2 && !$this->config["websafecolors"]){
+			$func1 = 'imagecreatetruecolor';
+			$func2 = 'imagecolorallocate';
 		}
-		return $string;
+		else{
+			$func1 = 'imageCreate';
+			$func2 = 'imagecolorclosest';
+		}
+		$image = $func1($this->config["x"],$this->config["y"]);
+
+		// Set Backgroundcolor
+		$colors=$this->fv_randomcolor(224, 255);
+		$back =  @imagecolorallocate($image, $colors["r"], $colors["g"], $colors["b"]);
+		@ImageFilledRectangle($image,0,0,$this->config["x"],$this->config["y"],$back);
+
+		// allocates the 216 websafe color palette to the image
+		if($this->fv_gdversion() < 2 || $this->config["websafecolors"]) $this->makeWebsafeColors($image);
+		if($this->config["noise"] > 0){
+			// random characters in background with random position, angle, color
+			for($i=0; $i < $this->config["noise"]; $i++){
+				srand((double)microtime()*1000000);
+				$size	= intval(rand((int)($this->minsize / 2.3), (int)($this->maxsize / 1.7)));
+				srand((double)microtime()*1000000);
+				$angle	= intval(rand(0, 360));
+				srand((double)microtime()*1000000);
+				$x=intval(rand(0, $this->config["x"]));
+				srand((double)microtime()*1000000);
+				$y=intval(rand(0, (int)($this->config["y"] - ($size / 5))));
+				$colors=$this->fv_randomcolor(160, 224);
+				$color=$func2($image, $colors["r"], $colors["g"], $colors["b"]);
+				srand((double)microtime()*1000000);
+				$text=chr(intval(rand(45,250)));
+				@ImageTTFText($image, $size, $angle, $x, $y, $color, $this->change_TTF(), $text);
+			}
+		}
+		else{
+			for($i=0; $i < $this->lx; $i += (int)($this->minsize / 1.5)){
+				$this->random_color(160, 224);
+				$color=$func2($image, $this->r, $this->g, $this->b);
+				@imageline($image, $i, 0, $i, $this->ly, $color);
+			}
+			for($i=0 ; $i < $this->ly; $i += (int)($this->minsize / 1.8)){
+				$this->random_color(160, 224);
+				$color=$func2($image, $this->r, $this->g, $this->b);
+				@imageline($image, 0, $i, $this->lx, $i, $color);
+			}
+		}
+		for($i=0, $x = intval(rand($this->minsize,$this->maxsize)); $i < $this->chars; $i++){
+			$text=strtoupper(substr($private_key, $i, 1));
+			srand((double)microtime()*1000000);
+			$angle=intval(rand(($this->maxrotation * -1), $this->maxrotation));
+			srand((double)microtime()*1000000);
+			$size=intval(rand($this->minsize, $this->maxsize));
+			srand((double)microtime()*1000000);
+			$y=intval(rand((int)($size * 1.5), (int)($this->ly - ($size / 7))));
+			$this->random_color(0, 127);
+			$color=$func2($image, $this->r, $this->g, $this->b);
+			$this->random_color(0, 127);
+			$shadow=$func2($image, $this->r + 127, $this->g + 127, $this->b + 127);
+			@ImageTTFText($image, $size, $angle, $x + (int)($size / 15), $y, $shadow, $this->change_TTF(), $text);
+			@ImageTTFText($image, $size, $angle, $x, $y - (int)($size / 15), $color, $this->TTF_file, $text);
+			$x += (int)($size + ($this->minsize / 5));
+		}
+		@ImageJPEG($image, $GLOBALS["MANDRIGO_CONFIG"]["IMG_PATH"].TMP_IMG."/".$app."_".$id.".jpg", $this->jpegquality);
+		@ImageDestroy($image);
+		if(!$this->db->db_update(DB_INSERT,TABLE_PREFIX.TABLE_TEMP,array("$app.$id",$rnd))){
+			return false;
+		}
+		return true;
 	}
+	function fv_randomcolor($min,$max){
+	  	$colors=array();
+		srand((double)microtime() * 1000000);
+		$colors["r"] = intval(rand($min,$max));
+		srand((double)microtime() * 1000000);
+		$colors["g"] = intval(rand($min,$max));
+		srand((double)microtime() * 1000000);
+		$colors["b"] = intval(rand($min,$max));
+		return $colors;
+		//echo " (".$this->r."-".$this->g."-".$this->b.") ";
+	}
+	function makeWebsafeColors(&$image){
+		//$a = array();
+		for($r = 0; $r <= 255; $r += 51){
+			for($g = 0; $g <= 255; $g += 51){
+				for($b = 0; $b <= 255; $b += 51){
+					$color = imagecolorallocate($image, $r, $g, $b);
+					//$a[$color] = array('r'=>$r,'g'=>$g,'b'=>$b);
+				}
+			}
+		}
+	}
+	function fv_generatekey($public,$key){
+		$key = substr(md5($key.$public), 16 - $this->config["chars"] / 2, $this->config["chars"]);
+		return $key;
+	}
+	function fv_gdversion(){
+		static $gd_version_number = null;
+		if($gd_version_number === null){
+			ob_start();
+			phpinfo(8);
+			$module_info = ob_get_contents();
+			ob_end_clean();
+			if(preg_match("/\bgd\s+version\b[^\d\n\r]+?([\d\.]+)/i", $module_info, $matches)){
+				$gd_version_number = $matches[1];
+			}
+			else{
+				$gd_version_number = 0;
+			}
+		}
+		return $gd_version_number;
+	}
+
 }
