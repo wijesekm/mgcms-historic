@@ -41,9 +41,20 @@ $GLOBALS["HTML"]=array();
 //
 //Language Section
 //
+
+//to get the name of the lang table
+$langname=(isset($GLOBALS["USER_DATA"]["LANGUAGE"]))?$GLOBALS["USER_DATA"]["LANGUAGE"]:$default_lang["LANGUAGE"];
+if(!$lang_id=$sql_db->db_fetchresult(TABLE_PREFIX.TABLE_LANG_MAIN,"lang_id",array(array("lang_name","=",$langname)))){
+	if(!$lang_id=$sql_db->db_fetchresult(TABLE_PREFIX.TABLE_LANG_MAIN,"lang_id",array(array("lang_name","=",$default_lang["LANGUAGE"])))){
+		if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
+        	$error_log->add_error(30,"sql");		  
+		}
+	}			
+}
+
 //to set the content/type charset header
 if(!$lang=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_LANG_MAIN,"",array(array("lang_name","=",$langname)))){
-	if(!$lang=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_LANG_MAIN,"",array(array("lang_name","=",$this->sys_lang)))){
+	if(!$lang=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_LANG_MAIN,"",array(array("lang_name","=",$default_lang["LANGUAGE"])))){
 		if(!$lang=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_LANG_MAIN,"",array(array("lang_name","=",0)))){
 			if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
         		$error_log->add_error(30,"sql");		  
@@ -55,15 +66,6 @@ $GLOBALS["LANGUAGE"]["CHARSET"]=$lang["lang_charset"];
 $GLOBALS["LANGUAGE"]["ENCODING"]=$lang["lang_encoding"];
 header("Content-type: text/html; charset=".$GLOBALS["LANG"]["CHARSET"]);
 
-//to get the name of the lang table
-$langname=(isset($GLOBALS["USER_DATA"]["LANGUAGE"]))?$GLOBALS["USER_DATA"]["LANGUAGE"]:$default_lang["LANGUAGE"];
-if(!$lang_id=$sql_db->db_fetchresult(TABLE_PREFIX.TABLE_LANG_MAIN,"lang_id",array(array("lang_name","=",$langname)))){
-	if(!$lang_id=$$sql_db->db_fetchresult(TABLE_PREFIX.TABLE_LANG_MAIN,"lang_id",array(array("lang_name","=",$default_lang["LANGUAGE"])))){
-		if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-        	$error_log->add_error(30,"sql");		  
-		}
-	}			
-}
 //makes the lang conditional statements and gets the size of the lang array.
 $cond_array=array(array("lang_core","=","all",DB_OR,2),array("lang_core","=","display",DB_AND,2));
 for($i=0;$i<count($GLOBALS["PAGE_DATA"]["HOOKS"]);$i++){
