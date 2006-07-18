@@ -1,11 +1,11 @@
 <?php
 /**********************************************************
     display.pkg.php
-    p_content ver 1.0
+    title ver 0.6.0
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 12/24/05
+	Date Last Edited: 7-17-06
 
-	Copyright (C) 2005  Kevin Wijesekera
+	Copyright (C) 2006  Kevin Wijesekera
 
     ##########################################################
 	This program is free software; you can redistribute it and/or
@@ -29,12 +29,12 @@
 //
 //To prevent direct script access
 //
-if(!defined("START_MANDRIGO")){
-    die("<html><head>
+if(!defined('START_MANDRIGO')){
+    die('<html><head>
             <title>Forbidden</title>
         </head><body>
-            <h1>Forbidden</h1><hr width=\"300\" align=\"left\"/>\n<p>You do not have permission to access this file directly.</p>
-        </html></body>");
+            <h1>Forbidden</h1><hr width="300" align="left"/>\n<p>You do not have permission to access this file directly.</p>
+        </html></body>');
 }
 
 class title{
@@ -46,47 +46,48 @@ class title{
         $this->db=$sql;
     }
     function display($i){
-        $data="";
-        switch($this->config["t_type"]){
+        $data='';
+        switch($this->config['t_type']){
             case 0:
-                $h=ereg_replace("{SIZE}",$this->config["h_size"],$GLOBALS["HTML"]["H"]);
-                $h=ereg_replace("{ATTRIB}",$this->config["h_attrib"],$h);
-                $endh=ereg_replace("{SIZE}",$this->config["h_size"],$GLOBALS["HTML"]["H!"]);
-                $data=$h.$this->config["title"].$endh."\n";
+                $h=ereg_replace('{SIZE}',$this->config['h_size'],$GLOBALS['HTML']['H']);
+                $h=ereg_replace('{ATTRIB}',$this->config['h_attrib'],$h);
+                $endh=ereg_replace('{SIZE}',$this->config['h_size'],$GLOBALS['HTML']['H!']);
+                $data=$h.$this->config['title'].$endh.'\n';
             break;
             case 1:
-                $h=ereg_replace("{SIZE}",$this->config["h_size"],$GLOBALS["HTML"]["H"]);
-                $h=ereg_replace("{ATTRIB}",$this->config["h_attrib"],$h);
-                $endh=ereg_replace("{SIZE}",$this->config["h_size"],$GLOBALS["HTML"]["H!"]);
-                $hr=ereg_replace("{ATTRIB}",$this->config["hr_attrib"],$GLOBALS["HTML"]["HR"]);
-                $data=$h.$this->config["title"].$endh.$hr."\n";
+                $h=ereg_replace('{SIZE}',$this->config['h_size'],$GLOBALS['HTML']['H']);
+                $h=ereg_replace('{ATTRIB}',$this->config['h_attrib'],$h);
+                $endh=ereg_replace('{SIZE}',$this->config['h_size'],$GLOBALS['HTML']['H!']);
+                $hr=ereg_replace('{ATTRIB}',$this->config['hr_attrib'],$GLOBALS['HTML']['HR']);
+                $data=$h.$this->config['title'].$endh.$hr.'\n';
             break;
             case 2:
-                $attrib="src=\"".$this->config["i_url"]."\" alt=\"".$this->config["title"]."\"";
-                $img=ereg_replace("{ATTRIB}",$attrib,$GLOBALS["HTML"]["IMG"]);
-                $data=$img."\n";
+                $attrib='src="'.$this->config['i_url'].'" alt="'.$this->config['title'].'"';
+                $img=ereg_replace('{ATTRIB}',$attrib,$GLOBALS['HTML']['IMG']);
+                $data=$img.'\n';
             break;
             case 3:
-                $attrib="src=\"".$this->config["i_url"]."\" alt=\"".$this->config["title"]."\"";
-                $img=ereg_replace("{ATTRIB}",$attrib,$GLOBALS["HTML"]["IMG"]);
-                $hr=ereg_replace("{ATTRIB}",$this->config["hr_attrib"],$GLOBALS["HTML"]["HR"]);
-                $data=$img.$hr."\n";
+                $attrib='src="'.$this->config['i_url'].'" alt="'.$this->config['title'].'"';
+                $img=ereg_replace('{ATTRIB}',$attrib,$GLOBALS['HTML']['IMG']);
+                $hr=ereg_replace('{ATTRIB}',$this->config['hr_attrib'],$GLOBALS['HTML']['HR']);
+                $data=$img.$hr.'\n';
             break;
         }
         return $data;
     }
     function load($i){
       	
-        if(!$sql_result=$this->db->db_fetcharray(TABLE_PREFIX.TABLE_TITLE_DATA,"",array(array("page_id","=",$GLOBALS["PAGE_DATA"]["ID"],DB_AND),array("part_id","=",$i)))){
+        if(!$sql_result=$this->db->db_fetcharray(TABLE_PREFIX.TABLE_TITLE_DATA,'',array(array('page_id','=',$GLOBALS['PAGE_DATA']['ID'],DB_AND),array('part_id','=',$i)))){
+            $GLOBALS['error_log']->add_error(20,'sql');
             return false;
         }
-        $this->config["title"]=isset($sql_result{"title"})?$sql_result{"title"}:$GLOBALS["PAGE_DATA"]["RNAME"];
-        $this->config["t_type"]=$sql_result["title_type"];
-        $this->config["h_size"]=$sql_result["h_size"];
-        $this->config["h_attrib"]=$sql_result["h_attrib"];
-        $this->config["i_url"]=$sql_result["img_url"];
-        $this->config["i_attrib"]=$sql_result["img_attrib"];
-        $this->config["hr_attrib"]=$sql_result["hr_attrib"];
+        $this->config['title']=isset($sql_result{'title'})?$sql_result{'title'}:$GLOBALS['PAGE_DATA']['RNAME'];
+        $this->config['t_type']=$sql_result['title_type'];
+        $this->config['h_size']=$sql_result['h_size'];
+        $this->config['h_attrib']=$sql_result['h_attrib'];
+        $this->config['i_url']=$sql_result['img_url'];
+        $this->config['i_attrib']=$sql_result['img_attrib'];
+        $this->config['hr_attrib']=$sql_result['hr_attrib'];
         return true;
     }
 }

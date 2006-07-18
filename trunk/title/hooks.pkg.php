@@ -1,11 +1,11 @@
 <?php
 /**********************************************************
     hooks.pkg.php
-    p_content ver 1.0
+    title ver 0.6.0
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 12/24/05
+	Date Last Edited: 7-17-06
 
-	Copyright (C) 2005  Kevin Wijesekera
+	Copyright (C) 2006  Kevin Wijesekera
 
     ##########################################################
 	This program is free software; you can redistribute it and/or
@@ -29,28 +29,25 @@
 //
 //To prevent direct script access
 //
-if(!defined("START_MANDRIGO")){
-    die("<html><head>
+if(!defined('START_MANDRIGO')){
+    die('<html><head>
             <title>Forbidden</title>
         </head><body>
-            <h1>Forbidden</h1><hr width=\"300\" align=\"left\"/>\n<p>You do not have permission to access this file directly.</p>
-        </html></body>");
+            <h1>Forbidden</h1><hr width="300" align="left"/>\n<p>You do not have permission to access this file directly.</p>
+        </html></body>');
 }
 class title_hook{
-    function title_display_hook(&$sql,&$error_log,$i){
+    function title_display_hook(&$sql,$i){
         $title=new title($sql);
         if(!$title->load($i)){
-            if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-                $error_log->add_error(20,"sql");
-            }
             return false;
         }
         return $title->display($i);
     }
-    function title_vars_hook(&$sql,&$error_log,$i){
+    function title_vars_hook(&$sql,$i){
         return false;
     }
-    function title_admin_hook(&$sql,&$error_log,$i){
+    function title_admin_hook(&$sql,$i){
 
     }
 }

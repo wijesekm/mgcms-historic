@@ -1,7 +1,7 @@
 <?php
 /**********************************************************
     globals.pkg.php
-    title ver 1.0
+    title ver 0.6.0
 	Last Edited By: Kevin Wijesekera
 	Date Last Edited: 12/24/05
 
@@ -29,14 +29,14 @@
 //
 //To prevent direct script access
 //
-if(!defined("START_MANDRIGO")){
-    die("<html><head>
+if(!defined('START_MANDRIGO')){
+    die('<html><head>
             <title>Forbidden</title>
         </head><body>
-            <h1>Forbidden</h1><hr width=\"300\" align=\"left\"/>\n<p>You do not have permission to access this file directly.</p>
-        </html></body>");
+            <h1>Forbidden</h1><hr width="300" align="left"/>\n<p>You do not have permission to access this file directly.</p>
+        </html></body>');
 }
 
-define("TABLE_TITLE_DATA","title_data");
+define('TABLE_TITLE_DATA','title_data');
 
 ?>
