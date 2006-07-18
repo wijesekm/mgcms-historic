@@ -47,7 +47,9 @@ $langname=(isset($GLOBALS["USER_DATA"]["LANGUAGE"]))?$GLOBALS["USER_DATA"]["LANG
 if(!$lang_id=$sql_db->db_fetchresult(TABLE_PREFIX.TABLE_LANG_MAIN,"lang_id",array(array("lang_name","=",$langname)))){
 	if(!$lang_id=$sql_db->db_fetchresult(TABLE_PREFIX.TABLE_LANG_MAIN,"lang_id",array(array("lang_name","=",$default_lang["LANGUAGE"])))){
 		if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-        	$GLOBALS["error_log"]->add_error(30,"sql");		  
+        	$GLOBALS["error_log"]->add_error(30,"sql");	
+			die($GLOBALS["ELOG"]["HTMLHEAD"].$GLOBALS["ELOG"]["TITLE"].$GLOBALS["ELOG"]["HTMLBODY"].
+        		$GLOBALS["error_log"]->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);	  
 		}
 	}			
 }
@@ -57,7 +59,9 @@ if(!$lang=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_LANG_MAIN,"",array(array("la
 	if(!$lang=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_LANG_MAIN,"",array(array("lang_name","=",$default_lang["LANGUAGE"])))){
 		if(!$lang=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_LANG_MAIN,"",array(array("lang_name","=",0)))){
 			if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-        		$GLOBALS["error_log"]->add_error(30,"sql");		  
+        		$GLOBALS["error_log"]->add_error(30,"sql");	
+				die($GLOBALS["ELOG"]["HTMLHEAD"].$GLOBALS["ELOG"]["TITLE"].$GLOBALS["ELOG"]["HTMLBODY"].
+        			$GLOBALS["error_log"]->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);						  
 			}
 		}
 	}			
@@ -77,7 +81,9 @@ $cond_array=array_merge_recursive($cond_array,array(array("lang_app_id","=","0",
 //populates the language array
 if(!$soa){
 	if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-        $GLOBALS["error_log"]->add_error(31,"sql");		  
+        $GLOBALS["error_log"]->add_error(31,"sql");	
+		die($GLOBALS["ELOG"]["HTMLHEAD"].$GLOBALS["ELOG"]["TITLE"].$GLOBALS["ELOG"]["HTMLBODY"].
+        	$GLOBALS["error_log"]->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);		  
 	}	
 }
 $j=0;
@@ -96,7 +102,9 @@ for($i=0;$j<$soa;$i++){
 //to get the name of the lang table
 if(!$lang_id=$sql_db->db_fetchresult(TABLE_PREFIX.TABLE_LANG_MAIN,"lang_id",array(array("lang_name","=",$default_lang["HTML_VER"])))){
 	if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-        $GLOBALS["error_log"]->add_error(30,"sql");		  
+        $GLOBALS["error_log"]->add_error(30,"sql");	
+		die($GLOBALS["ELOG"]["HTMLHEAD"].$GLOBALS["ELOG"]["TITLE"].$GLOBALS["ELOG"]["HTMLBODY"].
+        	$GLOBALS["error_log"]->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);		  
 	}		
 }
 
@@ -111,7 +119,9 @@ $cond_array=array_merge_recursive($cond_array,array(array("lang_app_id","=","0",
 //populates the language array
 if(!$soa){
 	if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-        $GLOBALS["error_log"]->add_error(31,"sql");		  
+        $GLOBALS["error_log"]->add_error(31,"sql");	
+		die($GLOBALS["ELOG"]["HTMLHEAD"].$GLOBALS["ELOG"]["TITLE"].$GLOBALS["ELOG"]["HTMLBODY"].
+        	$GLOBALS["error_log"]->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);		  
 	}	
 }
 $j=0;
