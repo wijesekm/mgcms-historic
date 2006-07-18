@@ -1,9 +1,9 @@
 <?php
 /**********************************************************
     hooks.pkg.php
-    site_map ver 1.0
+    site_map ver 0.6.0
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 1/26/06
+	Date Last Edited: 7-17-06
 
 	Copyright (C) 2006 Kevin Wijesekera
 
@@ -29,27 +29,27 @@
 //
 //To prevent direct script access
 //
-if(!defined("START_MANDRIGO")){
-    die("<html><head>
+if(!defined('START_MANDRIGO')){
+    die('<html><head>
             <title>Forbidden</title>
         </head><body>
-            <h1>Forbidden</h1><hr width=\"300\" align=\"left\"/>\n<p>You do not have permission to access this file directly.</p>
-        </html></body>");
+            <h1>Forbidden</h1><hr width="300" align="left"/>\n<p>You do not have permission to access this file directly.</p>
+        </html></body>');
 }
 
 
 class site_map_hook{
-    function site_map_display_hook(&$sql,&$error_log,$i){
+    function site_map_display_hook(&$sql,$i){
         $map = new site_map_display($sql);
         if(!$map->load($i)){
 			return false;
 		}
 		return $map->display($i);
     }
-    function site_map_vars_hook(&$sql,&$error_log,$i){
+    function site_map_vars_hook(&$sql,$i){
         return array();
     }
-    function site_map_admin_hook(&$sql,&$error_log,$i){
+    function site_map_admin_hook(&$sql,$i){
         return true;
     }
 }
