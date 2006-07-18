@@ -113,6 +113,7 @@ define("DEFAULT_PN",0);
 //Paths
 //
 define("TMP_IMG","tmp");
+define("ICONS_IMG","icons");
 
 //
 //Misc
