@@ -1,9 +1,9 @@
 <?php
 /**********************************************************
     globals.pkg.php
-    profile ver 1.0
+    profile ver 0.6.0
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 2-17-06
+	Date Last Edited: 7-17-06
 
 	Copyright (C) 2006 Kevin Wijesekera
 
@@ -40,5 +40,5 @@ if(!defined("START_MANDRIGO")){
 define("TPL_PROFILE","_profile");
 define("TPL_GROUP_PROFILE","_gprofile");
 define("TABLE_EMAIL_LIST","email_list");
-
+define("BLANK_ICON","blank.png");
 ?>

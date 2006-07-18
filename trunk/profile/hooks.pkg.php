@@ -1,9 +1,9 @@
 <?php
 /**********************************************************
     hooks.pkg.php
-    profile ver 1.0
+    profile ver 0.6.0
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 2-17-06
+	Date Last Edited: 7-17-06
 
 	Copyright (C) 2006 Kevin Wijesekera
 
@@ -38,7 +38,7 @@ if(!defined("START_MANDRIGO")){
 }
 
 class profile_hook{
-    function profile_display_hook(&$sql,&$error_log,$i){
+    function profile_display_hook(&$sql,$i){
       	$cur_profile=new profile_display($sql);
       	$string="";
       	if(ereg("g",$GLOBALS["HTTP_GET"]["ID"])){
@@ -51,10 +51,10 @@ class profile_hook{
 		}
 		return $string;
     }
-    function profile_vars_hook(&$sql,&$error_log,$i){
+    function profile_vars_hook(&$sql,$i){
         return array();
     }
-    function profile_admin_hook(&$sql,&$error_log,$i){
+    function profile_admin_hook(&$sql,$i){
 
     }
 }
