@@ -1,6 +1,7 @@
 0.6.0
-1) lang and tempalte data is now drawn from the sql database
-2) server varables are now drawn from the sql database
+1) lang and template data is now drawn from the sql database
+2) server variables are now drawn from the sql database
+3) $error_log is now a global variable
 
 0.5.0
 1) hook system now used to register display packages and other addins
