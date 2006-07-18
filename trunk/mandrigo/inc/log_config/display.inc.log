@@ -2,3 +2,5 @@
 &split;1&split;The requested URL {SITE_URL}{REQUESTED_URI} does not exist on this server. If you're having trouble locating a destination, try visiting the home page. 
 &split;2&split;The requested page {CURRENT_PAGE} exists but it either has no data or had errors during the page generation process.  Please contact the webmaster to alert them of this issue.
 &split;3&split;The requested URL contained illegal inputs. For security reasons certain characters are not permitted to be entered as script inputs through the browser bar. If you're having trouble locating a destination, try visiting the home page. If you think this message is in error please e-mail the webmaster to alert him/her of this issue.
+&split;4&split;Could not load the template file for the profile page.
+&split;5&split;Could not generate site map because the script detected that a subpage loops back to one of its parent pages.  This request is impossible to fulfill.
