@@ -30,15 +30,15 @@
 //To prevent direct script access
 //
 if(!defined("START_MANDRIGO")){
-    die("<html><head>
+    die('<html><head>
             <title>Forbidden</title>
         </head><body>
-            <h1>Forbidden</h1><hr width=\"300\" align=\"left\"/>\n<p>You do not have permission to access this file directly.</p>
-        </html></body>");
+            <h1>Forbidden</h1><hr width="300" align="left"/>\n<p>You do not have permission to access this file directly.</p>
+        </html></body>');
 }
 
-define("TPL_PROFILE","_profile");
-define("TPL_GROUP_PROFILE","_gprofile");
-define("TABLE_EMAIL_LIST","email_list");
-define("BLANK_ICON","blank.png");
+define('TPL_PROFILE','_profile');
+define('TPL_GROUP_PROFILE','_gprofile');
+define('TABLE_EMAIL_LIST','email_list');
+define('BLANK_ICON','blank.png');
 ?>

@@ -29,24 +29,24 @@
 //
 //To prevent direct script access
 //
-if(!defined("START_MANDRIGO")){
-    die("<html><head>
+if(!defined('START_MANDRIGO')){
+    die('<html><head>
             <title>Forbidden</title>
         </head><body>
-            <h1>Forbidden</h1><hr width=\"300\" align=\"left\"/>\n<p>You do not have permission to access this file directly.</p>
-        </html></body>");
+            <h1>Forbidden</h1><hr width="300" align="left"/>\n<p>You do not have permission to access this file directly.</p>
+        </html></body>');
 }
 
 class profile_hook{
     function profile_display_hook(&$sql,$i){
       	$cur_profile=new profile_display($sql);
-      	$string="";
-      	if(ereg("g",$GLOBALS["HTTP_GET"]["ID"])){
-			$GLOBALS["HTTP_GET"]["ID"]=substr($GLOBALS["HTTP_GET"]["ID"],1);	
+      	$string='';
+      	if(ereg('g',$GLOBALS['HTTP_GET']['ID'])){
+			$GLOBALS['HTTP_GET']['ID']=substr($GLOBALS['HTTP_GET']['ID'],1);	
 			$string=$cur_profile->display_group($i);
 		}
 		else{
-			$GLOBALS["HTTP_GET"]["ID"]=substr($GLOBALS["HTTP_GET"]["ID"],1);
+			$GLOBALS['HTTP_GET']['ID']=substr($GLOBALS['HTTP_GET']['ID'],1);
 			$string=$cur_profile->display_user($i);
 		}
 		return $string;
