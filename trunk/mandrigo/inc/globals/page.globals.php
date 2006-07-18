@@ -46,14 +46,14 @@ if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
 }
 else{
     if(!$page_data=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_PAGE_DATA,"",array(array($page_input_type,"=",$GLOBALS["HTTP_GET"]["PAGE"])))){
-        $error_log->add_error(1,"display");
+        $GLOBALS["error_log"]->add_error(1,"display");
     }
 }
 
 $GLOBALS["PAGE_DATA"]["ID"] = $page_data["page_id"];
 if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-	if($GLOBALS["PAGE_DATA"]["ID"]==0&&!$error_log->get_status()){
-	    $error_log->add_error(2,"access");
+	if($GLOBALS["PAGE_DATA"]["ID"]==0&&!$GLOBALS["error_log"]->get_status()){
+	    $GLOBALS["error_log"]->add_error(2,"access");
 	}
 }
 $GLOBALS["PAGE_DATA"]["NAME"] = $page_data["page_name"];
@@ -65,11 +65,11 @@ $GLOBALS["USER_DATA"]["PERMISSIONS"]["EDIT"]=false;
 $GLOBALS["USER_DATA"]["PERMISSIONS"]["CHANGE_DATA"]=false;
 $GLOBALS["USER_DATA"]["PERMISSIONS"]["FULL_CONTROL"]=false;
 
-if(!$error_log->get_status()){
+if(!$GLOBALS["error_log"]->get_status()){
     for($i=0;$i<count($GLOBALS["USER_DATA"]["GROUPS"]);$i++){
         if(!$sql_result=$sql_result=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_GROUP_PERMISSIONS,"",array(array("group_id","=",$GLOBALS["USER_DATA"]["GROUPS"]["$i"],DB_AND),array("page_id","=",$GLOBALS["PAGE_DATA"]["ID"])))){
             if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-                $error_log->add_error(1,"access");
+                $GLOBALS["error_log"]->add_error(1,"access");
                 break;
             }
         }
@@ -95,7 +95,7 @@ if(!$error_log->get_status()){
         }
     }
 }
-if(!$error_log->get_status()){
+if(!$GLOBALS["error_log"]->get_status()){
     if(!($r_page_data=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_RESTRICTED_PAGE_DATA,"",array(array("page_id","=",$GLOBALS["PAGE_DATA"]["ID"]))))||!$GLOBALS["USER_DATA"]["PERMISSIONS"]["READ_RESTRICTED"]){
         $GLOBALS["PAGE_DATA"]["AUTH_PAGE"]=false;
         $GLOBALS["PAGE_DATA"]["RNAME"]=$page_data["page_rname"];

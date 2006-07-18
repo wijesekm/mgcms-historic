@@ -52,7 +52,7 @@ else{
            $GLOBALS["ELOG"]["ZERO"].$GLOBALS["ELOG"]["HTMLEND"]);
     }
 }
-$error_log = & new error_logger($log_config["LOG_LEVEL_1"],$log_config["LOG_LEVEL_2"],$log_config["ARCHIVE"]);
+$GLOBALS["error_log"] = & new error_logger($log_config["LOG_LEVEL_1"],$log_config["LOG_LEVEL_2"],$log_config["ARCHIVE"]);
 
 //
 // Cleans varables, loads requires packages and starts required classes.
@@ -62,21 +62,21 @@ if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
 }
 else{
     if(!(@include($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."ini{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}ini.$php_ex"))){
-        $error_log->add_error(1,"script");
+        $GLOBALS["error_log"]->add_error(1,"script");
 	   	die($GLOBALS["ELOG"]["HTMLHEAD"].$GLOBALS["ELOG"]["TITLE"].$GLOBALS["ELOG"]["HTMLBODY"].
-        	$error_log->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);
+        	$GLOBALS["error_log"]->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);
     }
 }
 
 //
 //sets up the page
 //
-$current_page = new page($error_log,$sql_db);
+$current_page = new page($sql_db);
 
 //one final check for errors
-if($error_log->get_status()==2){
+if($GLOBALS["error_log"]->get_status()==2){
 	die($GLOBALS["ELOG"]["HTMLHEAD"].$GLOBALS["ELOG"]["TITLE"].$GLOBALS["ELOG"]["HTMLBODY"].
-    	$error_log->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);
+    	$GLOBALS["error_log"]->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);
 }
 
 //

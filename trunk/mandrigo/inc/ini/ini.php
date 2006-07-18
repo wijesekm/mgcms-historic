@@ -113,9 +113,9 @@ if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
 }
 else{
     if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."sql{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}".$sql_config["SQL_TYPE"].".class.$php_ex"))){
-        $error_log->add_error(2,"script");
+        $GLOBALS["error_log"]->add_error(2,"script");
 	   	die($GLOBALS["ELOG"]["HTMLHEAD"].$GLOBALS["ELOG"]["TITLE"].$GLOBALS["ELOG"]["HTMLBODY"].
-           	$error_log->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);
+           	$GLOBALS["error_log"]->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);
     }
 }
 $sql_db = & new db();
@@ -127,9 +127,9 @@ if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
 else{
     if(!$sql_db->db_connect($sql_config["SQL_HOST"],$sql_config["SQL_PORT"],$sql_config["SQL_SOCKET"],$sql_config["SQL_USER"],
 		$sql_config["SQL_PASSWORD"],$sql_config["SQL_DATABASE"],true,$sql_config["USE_SSL"],$sql_config["SSL"])){
-        $error_log->add_error(1,"sql");
+        $GLOBALS["error_log"]->add_error(1,"sql");
 	   	die($GLOBALS["ELOG"]["HTMLHEAD"].$GLOBALS["ELOG"]["TITLE"].$GLOBALS["ELOG"]["HTMLBODY"].
-           	$error_log->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);
+           	$GLOBALS["error_log"]->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);
     }
 }
 
@@ -144,20 +144,20 @@ if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
 }
 else{
     if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."ini{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}constants.ini.$php_ex"))){
-        $error_log->add_error(3,"script");
+        $GLOBALS["error_log"]->add_error(3,"script");
     }
     if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."ini{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}clean_functions.ini.$php_ex"))){
-        $error_log->add_error(4,"script");
+        $GLOBALS["error_log"]->add_error(4,"script");
     }
     if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."server_time.class.$php_ex"))){
-        $error_log->add_error(5,"script");
+        $GLOBALS["error_log"]->add_error(5,"script");
     }
     if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."ini{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}funct.ini.$php_ex"))){
-        $error_log->add_error(6,"script");
+        $GLOBALS["error_log"]->add_error(6,"script");
     }
-    if($error_log->get_status()==2){
+    if($GLOBALS["error_log"]->get_status()==2){
 	   	die($GLOBALS["ELOG"]["HTMLHEAD"].$GLOBALS["ELOG"]["TITLE"].$GLOBALS["ELOG"]["HTMLBODY"].
-           	$error_log->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);
+           	$GLOBALS["error_log"]->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);
     }
 }
 //
@@ -177,26 +177,26 @@ if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
 }
 else{
     if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."globals{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}site.globals.$php_ex"))){
-        $error_log->add_error(7,"script");
+        $GLOBALS["error_log"]->add_error(7,"script");
     }
     if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."globals{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}server.globals.$php_ex"))){
-        $error_log->add_error(8,"script");
+        $GLOBALS["error_log"]->add_error(8,"script");
     }
     if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."globals{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}user.globals.$php_ex"))){
-        $error_log->add_error(9,"script");
+        $GLOBALS["error_log"]->add_error(9,"script");
     }
     if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."globals{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}page.globals.$php_ex"))){
-        $error_log->add_error(10,"script");
+        $GLOBALS["error_log"]->add_error(10,"script");
     }
     if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."globals{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}script.globals.$php_ex"))){
-        $error_log->add_error(7,"script");
+        $GLOBALS["error_log"]->add_error(7,"script");
     }
     if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."globals{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}lang.globals.$php_ex"))){
-        $error_log->add_error(17,"script");
+        $GLOBALS["error_log"]->add_error(17,"script");
     }    
-    if($error_log->get_status()==2){
+    if($GLOBALS["error_log"]->get_status()==2){
 	   	die($GLOBALS["ELOG"]["HTMLHEAD"].$GLOBALS["ELOG"]["TITLE"].$GLOBALS["ELOG"]["HTMLBODY"].
-           	$error_log->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);
+           	$GLOBALS["error_log"]->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);
     }
 }
 
@@ -212,26 +212,26 @@ if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
 }
 else{
     if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."ini{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}package.ini.$php_ex"))){
-        $error_log->add_error(11,"script");
+        $GLOBALS["error_log"]->add_error(11,"script");
     }
     if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."globals{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}package.globals.$php_ex"))){
-        $error_log->add_error(8,"script");
+        $GLOBALS["error_log"]->add_error(8,"script");
     }
     if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."page.class.$php_ex"))){
-        $error_log->add_error(12,"script");
+        $GLOBALS["error_log"]->add_error(12,"script");
     }
     if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."template.class.$php_ex"))){
-        $error_log->add_error(13,"script");
+        $GLOBALS["error_log"]->add_error(13,"script");
     }
     if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."word_filter.class.$php_ex"))){
-        $error_log->add_error(14,"script");
+        $GLOBALS["error_log"]->add_error(14,"script");
     }
     if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."form_validator.class.$php_ex"))){
-        $error_log->add_error(16,"script");
+        $GLOBALS["error_log"]->add_error(16,"script");
     }
-    if($error_log->get_status()==2){
+    if($GLOBALS["error_log"]->get_status()==2){
 		die($GLOBALS["ELOG"]["HTMLHEAD"].$GLOBALS["ELOG"]["TITLE"].$GLOBALS["ELOG"]["HTMLBODY"].
-           	$error_log->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);
+           	$GLOBALS["error_log"]->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);
     }
 }
 
@@ -249,11 +249,11 @@ if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
 }
 else{
     if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."ini{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}stats.ini.$php_ex"))){
-        $error_log->add_error(15,"script");
+        $GLOBALS["error_log"]->add_error(15,"script");
     }
-    if($error_log->get_status()==2){
+    if($GLOBALS["error_log"]->get_status()==2){
 	   	die($GLOBALS["ELOG"]["HTMLHEAD"].$GLOBALS["ELOG"]["TITLE"].$GLOBALS["ELOG"]["HTMLBODY"].
-           	$error_log->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);
+           	$GLOBALS["error_log"]->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);
     }
 }
 ?>

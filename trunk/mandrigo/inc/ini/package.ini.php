@@ -41,9 +41,9 @@ for($i=0;$i<count($GLOBALS["PAGE_DATA"]["HOOKS"]);$i++){
       	
         if(!($sql_result=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_PACKAGE_DATA,"",array(array("package_id","=",$GLOBALS["PAGE_DATA"]["HOOKS"][$i]))))){
             if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-                $error_log->add_error(14,"sql");
+                $GLOBALS["error_log"]->add_error(14,"sql");
 	   			die($GLOBALS["ELOG"]["HTMLHEAD"].$GLOBALS["ELOG"]["TITLE"].$GLOBALS["ELOG"]["HTMLBODY"].
-           			$error_log->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);
+           			$GLOBALS["error_log"]->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);
             }
         }
         else{
@@ -54,19 +54,19 @@ for($i=0;$i<count($GLOBALS["PAGE_DATA"]["HOOKS"]);$i++){
             }
             else{
                 if(!@include_once($GLOBALS["MANDRIGO_CONFIG"]["PLUGIN_PATH"].$sql_result["package_name"]."/hooks.pkg.$php_ex")){
-                    $error_log->add_error($sql_result["package_noload_error"],"script");
+                    $GLOBALS["error_log"]->add_error($sql_result["package_noload_error"],"script");
 	   				die($GLOBALS["ELOG"]["HTMLHEAD"].$GLOBALS["ELOG"]["TITLE"].$GLOBALS["ELOG"]["HTMLBODY"].
-           				$error_log->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);
+           				$GLOBALS["error_log"]->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);
                 }
                 if(!@include_once($GLOBALS["MANDRIGO_CONFIG"]["PLUGIN_PATH"].$sql_result["package_name"]."/display.pkg.$php_ex")){
-                    $error_log->add_error($sql_result["package_noload_error"],"script");
+                    $GLOBALS["error_log"]->add_error($sql_result["package_noload_error"],"script");
 	   				die($GLOBALS["ELOG"]["HTMLHEAD"].$GLOBALS["ELOG"]["TITLE"].$GLOBALS["ELOG"]["HTMLBODY"].
-           				$error_log->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);
+           				$GLOBALS["error_log"]->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);
                 }
                 if(!@include_once($GLOBALS["MANDRIGO_CONFIG"]["PLUGIN_PATH"].$sql_result["package_name"]."/globals.pkg.$php_ex")){
-                    $error_log->add_error($sql_result["package_noload_error"],"script");
+                    $GLOBALS["error_log"]->add_error($sql_result["package_noload_error"],"script");
 	   				die($GLOBALS["ELOG"]["HTMLHEAD"].$GLOBALS["ELOG"]["TITLE"].$GLOBALS["ELOG"]["HTMLBODY"].
-           				$error_log->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);
+           				$GLOBALS["error_log"]->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);
                 }
             }
             $GLOBALS["PAGE_DATA"]["DISPLAY_HOOK"]=$sql_result["package_name"].".display_hook();";

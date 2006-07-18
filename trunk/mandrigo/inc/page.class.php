@@ -38,14 +38,12 @@ if(!defined("START_MANDRIGO")){
 
 class page{
 
-    var $page_error_logger;
     var $page_db;
     var $page_parse_vars;
 
-    function page(&$error_logger,&$db){
-        $this->page_error_logger=$error_logger;
+    function page(&$db){
+        
         $this->page_db=$db;
-
         $this->page_parse_vars = array(
             "REQUESTED_URI",$GLOBALS["HTTP_SERVER"]["URI"]
             ,"SITE_NAME",$GLOBALS["SITE_DATA"]["SITE_NAME"]
@@ -67,9 +65,9 @@ class page{
             if(!$tpl->load($GLOBALS["MANDRIGO_CONFIG"]["TEMPLATE_PATH"].TPL_AUTH_SITE)){
                 if(!$tpl->load($GLOBALS["MANDRIGO_CONFIG"]["TEMPLATE_PATH"].TPL_MAIN_SITE)){
                     if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-                        $this->page_error_logger->add_error(30,"script");
+                        $GLOBALS["error_log"]->add_error(30,"script");
 	   					die($GLOBALS["ELOG"]["HTMLHEAD"].$GLOBALS["ELOG"]["TITLE"].$GLOBALS["ELOG"]["HTMLBODY"].
-           					$this->page_error_logger->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);
+           					$GLOBALS["error_log"]->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);
                     }
                 }
             }
@@ -77,24 +75,24 @@ class page{
         else{
             if(!$tpl->load($GLOBALS["MANDRIGO_CONFIG"]["TEMPLATE_PATH"].TPL_MAIN_SITE)){
                 if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-                    $this->page_error_logger->add_error(30,"script");
+                    $GLOBALS["error_log"]->add_error(30,"script");
 	   				die($GLOBALS["ELOG"]["HTMLHEAD"].$GLOBALS["ELOG"]["TITLE"].$GLOBALS["ELOG"]["HTMLBODY"].
-           				$this->page_error_logger->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);
+           				$GLOBALS["error_log"]->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);
                 }
             }
         }
-        if($this->page_error_logger->get_status()!=0){
-                    $this->page_parse_vars=$this->merge_arrays(array("CONTENT",$this->page_error_logger->generate_report(),"PAGE_TITLE",$GLOBALS["LANGUAGE"]["ETITLE2"]),$this->page_parse_vars);
+        if($GLOBALS["error_log"]->get_status()!=0){
+                    $this->page_parse_vars=$this->merge_arrays(array("CONTENT",$GLOBALS["error_log"]->generate_report(),"PAGE_TITLE",$GLOBALS["LANGUAGE"]["ETITLE2"]),$this->page_parse_vars);
         }
         else if($GLOBALS["PAGE_DATA"]["PAGE_STATUS"]||$GLOBALS["HTTP_GET"]["KEY"]==$GLOBALS["SITE_DATA"]["BYPASS_CODE"]){
                 if($GLOBALS["PAGE_DATA"]["AUTH_PAGE"]&&!($GLOBALS["USER_DATA"]["PERMISSIONS"]["READ_RESTRICTED"]||$GLOBALS["USER_DATA"]["PERMISSIONS"]["FULL_CONTROL"])){
-                    $this->page_error_logger->add_error(1,"access");
+                    $GLOBALS["error_log"]->add_error(1,"access");
                     if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
                         die($GLOBALS["ELOG"]["PERMISSION"]);
                     }
                 }
                 if(!$GLOBALS["PAGE_DATA"]["AUTH_PAGE"]&&!($GLOBALS["USER_DATA"]["PERMISSIONS"]["READ"]||$GLOBALS["USER_DATA"]["PERMISSIONS"]["FULL_CONTROL"])){
-                    $this->page_error_logger->add_error(1,"access");
+                    $GLOBALS["error_log"]->add_error(1,"access");
                     if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
                         die($GLOBALS["ELOG"]["PERMISSION"]);
                     }
@@ -102,12 +100,12 @@ class page{
             $content=$this->gen_content();
             if(!$content){
                 if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-                    $this->page_error_logger->add_error(2,"display");
+                    $GLOBALS["error_log"]->add_error(2,"display");
                 }
             }
             if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-                if($this->page_error_logger->get_status()!=0){
-                    $this->page_parse_vars=$this->merge_arrays(array("CONTENT",$this->page_error_logger->generate_report(),"PAGE_TITLE",$GLOBALS["LANGUAGE"]["ETITLE2"]),$this->page_parse_vars);
+                if($GLOBALS["error_log"]->get_status()!=0){
+                    $this->page_parse_vars=$this->merge_arrays(array("CONTENT",$GLOBALS["error_log"]->generate_report(),"PAGE_TITLE",$GLOBALS["LANGUAGE"]["ETITLE2"]),$this->page_parse_vars);
                 }
                 else{
                   	//echo "<pre>";print_r($this->page_parse_vars);
@@ -121,9 +119,9 @@ class page{
         }
         else{
             if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-                if($this->page_error_logger->get_status()==2){
+                if($GLOBALS["error_log"]->get_status()==2){
 	   				die($GLOBALS["ELOG"]["HTMLHEAD"].$GLOBALS["ELOG"]["TITLE"].$GLOBALS["ELOG"]["HTMLBODY"].
-           				$this->page_error_logger->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);
+           				$GLOBALS["error_log"]->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);
                     return false;
                 }
                 else{
@@ -148,9 +146,9 @@ class page{
             if(!empty($GLOBALS["PAGE_DATA"]["HOOKS"][$i])){
                 if(!($sql_result=$this->page_db->db_fetcharray(TABLE_PREFIX.TABLE_PACKAGE_DATA,"",array(array("package_id","=",$GLOBALS["PAGE_DATA"]["HOOKS"][$i]))))){
                     if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-                        $this->page_error_logger->add_error(14,"sql");
+                        $GLOBALS["error_log"]->add_error(14,"sql");
 	   					die($GLOBALS["ELOG"]["HTMLHEAD"].$GLOBALS["ELOG"]["TITLE"].$GLOBALS["ELOG"]["HTMLBODY"].
-           					$this->page_error_logger->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);
+           					$GLOBALS["error_log"]->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);
 
                     }
                 }
