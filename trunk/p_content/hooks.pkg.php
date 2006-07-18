@@ -1,11 +1,11 @@
 <?php
 /**********************************************************
     hooks.pkg.php
-    p_content ver 1.0
+    p_content ver 0.6.0
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 12/24/05
-
-	Copyright (C) 2005  Kevin Wijesekera
+	Date Last Edited: 7-17-06
+	
+	Copyright (C) 2006  Kevin Wijesekera
 
     ##########################################################
 	This program is free software; you can redistribute it and/or
@@ -29,23 +29,24 @@
 //
 //To prevent direct script access
 //
-if(!defined("START_MANDRIGO")){
-    die("<html><head>
+if(!defined('START_MANDRIGO')){
+    die('<html><head>
             <title>Forbidden</title>
         </head><body>
-            <h1>Forbidden</h1><hr width=\"300\" align=\"left\"/>\n<p>You do not have permission to access this file directly.</p>
-        </html></body>");
+            <h1>Forbidden</h1><hr width="300" align="left"/>\n<p>You do not have permission to access this file directly.</p>
+        </html></body>');
 }
+
 class p_content_hook{
-    function p_content_display_hook(&$sql,&$error_log,$i){
+    function p_content_display_hook(&$sql,$i){
         $tpl=new template();
-        $tpl->load($GLOBALS["MANDRIGO_CONFIG"]["TEMPLATE_PATH"].$GLOBALS["PAGE_DATA"]["DATAPATH"].$GLOBALS["PAGE_DATA"]["ID"]."_".$i.".".TPL_EXT);
+        $tpl->load($GLOBALS['MANDRIGO_CONFIG']['TEMPLATE_PATH'].$GLOBALS['PAGE_DATA']['DATAPATH'].$GLOBALS['PAGE_DATA']['ID'].'_'.$i.'.'.TPL_EXT);
         return $tpl->return_template();
     }
-    function p_content_vars_hook(&$sql,&$error_log,$i){
+    function p_content_vars_hook(&$sql,$i){
         return false;
     }
-    function p_content_admin_hook(&$sql,&$error_log,$i){
+    function p_content_admin_hook(&$sql,$i){
 
     }
 }
