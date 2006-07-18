@@ -81,7 +81,7 @@ class error_logger{
     function generate_report(){
         //loads error log inc from file
         if(!$log_inc=$this->error_log_init()){
-            return $GLOBALS["LANGUAGE"]["EONE"];
+            return $GLOBALS["ELOG"]["ONE"];
         }
         //loads template to the $tpl var
         if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
@@ -89,7 +89,7 @@ class error_logger{
         }
         else{
             if(!(@$f=fopen($GLOBALS["MANDRIGO_CONFIG"]["TEMPLATE_PATH"]."error_log.tpl","r"))){
-                return $GLOBALS["LANGUAGE"]["ETWO"];
+                return $GLOBALS["ELOG"]["TWO"]];
             }
         }
         $tpl="";
@@ -183,7 +183,7 @@ class error_logger{
             if(!(@$f=fopen($GLOBALS["MANDRIGO_CONFIG"]["LOG_PATH"]."log_".date($this->format).".log","x"))){
                 if(!(@$f=fopen($GLOBALS["MANDRIGO_CONFIG"]["LOG_PATH"]."log_".date($this->format).".log","a"))){
                     die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
-                        $GLOBALS["LANGUAGE"]["ETHREE"].$GLOBALS["HTML"]["EEND"]);
+                        $GLOBALS["ELOG"]["THREE"].$GLOBALS["HTML"]["EEND"]);
                 }
             }
         }
