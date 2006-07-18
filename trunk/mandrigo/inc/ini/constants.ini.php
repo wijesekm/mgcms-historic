@@ -98,8 +98,8 @@ define("CORE_PACKAGES","package_core");
 //
 //Hooks
 //
-define("HOOK_DISPLAY","_display_hook($"."this->page_db,$"."this->page_error_logger,$"."i);");
-define("HOOK_VARS","_vars_hook($"."this->page_db,$"."this->page_error_logger,$"."i);");
+define("HOOK_DISPLAY","_display_hook($"."this->page_db,$"."i);");
+define("HOOK_VARS","_vars_hook($"."this->page_db,$"."i);");
 define("HOOK_CLASS","_hook();");
 
 //
