@@ -1,9 +1,9 @@
 <?php
 /**********************************************************
     globals.pkg.php
-    newssum ver 1.0
+    newssum ver 0.6.0
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 03/16/05
+	Date Last Edited: 7-17-06
 
 	Copyright (C) 2006 Kevin Wijesekera
 
@@ -29,19 +29,19 @@
 //
 //To prevent direct script access
 //
-if(!defined("START_MANDRIGO")){
-    die("<html><head>
+if(!defined('START_MANDRIGO')){
+    die('<html><head>
             <title>Forbidden</title>
         </head><body>
-            <h1>Forbidden</h1><hr width=\"300\" align=\"left\"/>\n<p>You do not have permission to access this file directly.</p>
-        </html></body>");
+            <h1>Forbidden</h1><hr width="300" align="left"/>\n<p>You do not have permission to access this file directly.</p>
+        </html></body>');
 }
 
-define("TABLE_NEWS_SUM_DATA","newssum_data");
-define("TABLE_NEWSSUM","newssum");
-define("TABLE_NEWS","news");
-define("TPL_NEWSSUM","newssum");
-define("TPL_NEWSSUM_MINI","_newssum_mini");
-define("SKIN_MINI","mini");
-$GLOBALS["LANGUAGE"]["NOFEEDS"]="There are no feeds setup.";
+define('TABLE_NEWS_SUM_DATA','newssum_data');
+define('TABLE_NEWSSUM','newssum');
+define('TABLE_NEWS','news');
+define('TPL_NEWSSUM','newssum');
+define('TPL_NEWSSUM_MINI','_newssum_mini');
+define('SKIN_MINI','mini');
+
 ?>

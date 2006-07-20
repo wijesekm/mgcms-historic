@@ -1,9 +1,9 @@
 <?php
 /**********************************************************
     hooks.pkg.php
-    newssum ver 1.0
+    newssum ver 0.6.0
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 03/16/05
+	Date Last Edited: 7-17-06
 
 	Copyright (C) 2006 Kevin Wijesekera
 
@@ -29,27 +29,26 @@
 //
 //To prevent direct script access
 //
-if(!defined("START_MANDRIGO")){
-    die("<html><head>
+if(!defined('START_MANDRIGO')){
+    die('<html><head>
             <title>Forbidden</title>
         </head><body>
-            <h1>Forbidden</h1><hr width=\"300\" align=\"left\"/>\n<p>You do not have permission to access this file directly.</p>
-        </html></body>");
+            <h1>Forbidden</h1><hr width="300" align="left"/>\n<p>You do not have permission to access this file directly.</p>
+        </html></body>');
 }
-
 class newssum_hook{
   	var $pparse_vars;
     
-	function newssum_display_hook(&$sql,&$error_log,$i){
+	function newssum_display_hook(&$sql,$i){
 	  	$cur_newssum=new newssum_display($sql);
 	  	$string=$cur_newssum->display($i);
 	  	$this->pparse_vars=$cur_newssum->return_vars();
 		return $string;
     }
-    function newssum_vars_hook(&$sql,&$error_log,$i){
+    function newssum_vars_hook(&$sql,$i){
 		return $this->pparse_vars;
     }
-    function newssum_admin_hook(&$sql,&$error_log,$i){
+    function newssum_admin_hook(&$sql,$i){
 
     }
 }
