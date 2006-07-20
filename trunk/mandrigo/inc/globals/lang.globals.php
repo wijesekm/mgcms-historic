@@ -68,8 +68,9 @@ if(!$lang=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_LANG_MAIN,"",array(array("la
 }
 $GLOBALS["LANGUAGE"]["CHARSET"]=$lang["lang_charset"];
 $GLOBALS["LANGUAGE"]["ENCODING"]=$lang["lang_encoding"];
-header("Content-type: text/html; charset=".$GLOBALS["LANG"]["CHARSET"]);
-
+if(!$GLOBALS["HTTP_GET"]["IS_FEED"]){
+	header("Content-type: text/html; charset=".$GLOBALS["LANG"]["CHARSET"]);
+}
 //makes the lang conditional statements and gets the size of the lang array.
 $cond_array=array(array("lang_core","=","all",DB_OR,2),array("lang_core","=","display",DB_AND,2));
 for($i=0;$i<count($GLOBALS["PAGE_DATA"]["HOOKS"]);$i++){
