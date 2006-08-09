@@ -66,9 +66,11 @@ if(!$lang=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_LANG_MAIN,"",array(array("la
 		}
 	}			
 }
+$GLOBALS["LANGUAGE"]["NAME"]=$lang["lang_name"];
 $GLOBALS["LANGUAGE"]["CHARSET"]=$lang["lang_charset"];
 $GLOBALS["LANGUAGE"]["ENCODING"]=$lang["lang_encoding"];
-$GLOBALS["LANGUAGE"]["CONTENT_TYPE"]='text/html;';
+$GLOBALS["LANGUAGE"]["CONTENT_TYPE"]="text/html;";
+$GLOBALS["LANGUAGE"]["SET_ENCODING"]=true;
 $GLOBALS["LANGUAGE"]["REG"]=false;
 
 //makes the lang conditional statements and gets the size of the lang array.
