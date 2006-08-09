@@ -42,6 +42,11 @@ define("TABLE_NEWS","news");
 define("TABLE_NEWS_COMMENTS","news_com");
 define("TPL_NEWS","news");
 define("TPL_NEWS_SINGLE","news_post");
-define("FEED","feed");
-
+define("FEED_RSS092","rss0.92");
+define("FEED_RSS1","rss1.0");
+define("FEED_RSS2","rss2.0");
+define("FEED_ATOM","atom");
+define("FEED_PATH","/news/feed_templates/");
+define("RSS_CONTENTTYPE","application/xml");
+define("ATOM_CONTENTTYPE","application/atom+xml");
 ?>

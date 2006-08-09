@@ -44,7 +44,7 @@ class news_hook{
 	  	$cur_news=new news_display($sql);
 	  	$string="";
 	  	if($GLOBALS["HTTP_GET"]["IS_FEED"]){
-			if(!$cur_news->nd_load($i,FEED)){
+			if(!$cur_news->nd_load($i,$GLOBALS["HTTP_GET"]["FEED_TYPE"])){
 				return false;
 			}
 			$string=$cur_news->nd_displayfeed($i);

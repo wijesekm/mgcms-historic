@@ -58,12 +58,12 @@ class news_display{
 	//Loads necessary variables and templates
 	//
 	function nd_load($i,$type){
-	  
+	  	$this->tpl=new template();
 		if(!$sql_result=$this->news_db->db_fetcharray(TABLE_PREFIX.TABLE_NEWS_DATA,"",array(array("page_id","=",$GLOBALS["PAGE_DATA"]["ID"],DB_AND),array("part_id","=",$i)))){
             $GLOBALS['error_log']->add_error(100,'sql');
 			return false;
         }
-        if($type!=FEED){
+        if($type==TPL_NEWS_SINGLE||$type==TPL_NEWS){
 	        $this->config["num_per_page"]=$sql_result["num_per_page"];
 	        $this->config["date_struct"]=$sql_result["date_struct"];
 	        $this->config["time_struct"]=$sql_result["time_struct"];
@@ -77,15 +77,22 @@ class news_display{
 			if($this->config["com_per_page"]==0&&$this->config["allow_comments"]){
 				$this->config["com_per_page"]=1;
 			}
-	        
-	        $this->tpl=new template();
 	        if(!$this->tpl->load($GLOBALS["MANDRIGO_CONFIG"]["TEMPLATE_PATH"].$GLOBALS["PAGE_DATA"]["DATAPATH"].$GLOBALS["PAGE_DATA"]["ID"]."_".$i."_$type.".TPL_EXT,"","<!--NEWS_DELIM-->")){
 				$GLOBALS['error_log']->add_error(6,'display');
 				return false;
 			}
 		}
 		else{
-			
+		  	$this->config["num_per_page"]=$sql_result["num_per_page"];
+		  	$this->config["allow_comments"]=$sql_result["allow_comments"];
+		  	$this->config["com_per_page"]=$sql_result["com_per_page"];
+		  	$this->config["feed_allow"]=$sql_result["feed_allow"];
+		  	$this->config["feed_ttl"]=$sql_result["feed_ttl"];
+		  	$this->config["feed_ud_freq"]=$sql_result["feed_ud_freq"];
+	        if(!$this->tpl->load($GLOBALS["MANDRIGO_CONFIG"]["PLUGIN_PATH"].FEED_PATH.$type.".".TPL_EXT,"","<!--FEED_DELIM-->")){
+				$GLOBALS['error_log']->add_error(6,'display');
+				return false;
+			}				
 		}
         return true;
 	}
@@ -331,8 +338,96 @@ class news_display{
 	//
 	//displays an rss or atom feed
 	//
-	function nd_displayfeed(){
-	  
+	function nd_displayfeed($id){
+	  	
+		if(ereg("rss",$GLOBALS["HTTP_GET"]["FEED_TYPE"])){
+			$GLOBALS["LANGUAGE"]["CONTENT_TYPE"]=RSS_CONTENTTYPE;
+			$GLOBALS["LANGUAGE"]["SET_ENCODING"]=false;
+		}
+		else{
+			$GLOBALS["LANGUAGE"]["CONTENT_TYPE"]=ATOM_CONTENTTYPE;
+			$GLOBALS["LANGUAGE"]["SET_ENCODING"]=false;			
+		}
+		
+	  	$feed_url=$GLOBALS["SITE_DATA"]["SITE_URL"].$GLOBALS["MANDRIGO_CONFIG"]["INDEX"];
+	  	if($GLOBALS["SITE_DATA"]["URL_FORMAT"]==1){
+		    $feed_url.="/p/".$GLOBALS["HTTP_GET"]["PAGE"];
+		}
+		else{
+		    $feed_url.="?p=".$GLOBALS["HTTP_GET"]["PAGE"];
+		}
+	  	$atom_url=$GLOBALS["SITE_DATA"]["SITE_URL"].$GLOBALS["MANDRIGO_CONFIG"]["INDEX"];
+	  	if($GLOBALS["SITE_DATA"]["URL_FORMAT"]==1){
+		    $atom_url.="/p/".$GLOBALS["HTTP_GET"]["PAGE"]."/fd/1/fdt/atom";
+		}
+		else{
+		    $atom_url.="?p=".$GLOBALS["HTTP_GET"]["PAGE"]."&amp;fd=1&amp;fdt=atom";
+		}
+		$total_posts=$this->news_db->db_numrows(TABLE_PREFIX.TABLE_NEWS."_".$GLOBALS["PAGE_DATA"]["ID"]."_".$id,"");
+		$id_array=$this->nd_postid($id,$total_posts);
+		if($total_posts<$this->config["num_per_page"]){
+			$soq=$total_posts;
+		}
+		else{
+			$soq=$this->config["num_per_page"];
+		}
+		$last_updated="";
+		$posts="";
+		$seq="";
+		for($i=1;$i<=$soq;$i++){
+	    	if($sql_result=$this->news_db->db_fetcharray(TABLE_PREFIX.TABLE_NEWS."_".$GLOBALS["PAGE_DATA"]["ID"]."_".$id,"",array(array("post_id","=",$id_array[$i])))){
+				if(!$sql_result2=$this->news_db->db_fetcharray(TABLE_PREFIX.TABLE_USER_DATA,"",array(array("user_id","=",$sql_result["post_author"])))){
+					return false;
+				}
+				if($i==1){
+					$last_updated=$this->nd_mkfeeddate($sql_result["post_time"]);	
+				}
+				$cur_tpl=new template();
+				$cur_tpl->load("",$this->tpl->return_template(1));
+
+				$post_url="";
+	  			if($GLOBALS["SITE_DATA"]["URL_FORMAT"]==1){
+		    		$post_url=$feed_url."/id/".$sql_result["post_id"];
+				}
+				else{
+		    		$post_url=$feed_url."&id=".$sql_result["post_id"];
+				}
+				if($this->tpl->return_template(2)){
+					$seq_tpl=new template();
+					$seq_tpl->load("",$this->tpl->return_template(2));
+					$seq_tpl->pparse(array("POST_URL",$post_url));
+					$seq.=$seq_tpl->return_template();
+				}				
+				$parse=array("POST_URL",$post_url
+							,"POST_TITLE",$sql_result["post_title"]
+							,"POST_DATE",$this->nd_mkfeeddate($sql_result["post_time"])
+							,"POST_USERNAME",$sql_result2["user_name"]
+							,"POST_USER_URL",$sql_result2["user_website"]
+							,"CONTENT",$sql_result["post_content"]
+							,"SITE_URL",$GLOBALS["SITE_DATA"]["SITE_URL"]
+							,"POST_ID",$sql_result["post_id"]
+							,"CONTENT_ENCODED",htmlspecialchars($sql_result["post_content"],ENT_QUOTES,$GLOBALS["LANGUAGE"]["CHARSET"])
+							,"CONTENT_NOHTML",strip_tags($sql_result["post_content"]));
+				$cur_tpl->pparse($parse);
+				$posts.=$cur_tpl->return_template();
+	    	}	
+		}	
+		$feedparse=array("ENCODING",$GLOBALS["LANGUAGE"]["ENCODING"]
+						,"MANDRIGO_VERSION",$GLOBALS["SITE_DATA"]["MANDRIGO_VER"]
+						,"FEED_LANG",$GLOBALS["LANGUAGE"]["NAME"]
+						,"FEED_TITLE",$GLOBALS["PAGE_DATA"]["RNAME"]." - ".$GLOBALS["SITE_DATA"]["SITE_NAME"]
+						,"FEED_DESCRIPTION",$GLOBALS["PAGE_DATA"]["RNAME"]
+						,"FEED_URL",$feed_url
+						,"UPDATE_PERIOD",$this->nd_convttl($this->config["feed_ttl"])
+						,"TTL",$this->config["feed_ttl"]
+						,"UPDATE_FREQ",$this->config["feed_ud_freq"]
+						,"ATOM_URL",$atom_url
+						,"LAST_UPDATED",$last_updated
+						,"POSTS",$posts
+						,"FEED_OVERVIEW",$seq);
+		$this->tpl->pparse($feedparse);
+		echo $this->tpl->return_template();
+		die();
 	}
 	
 	//
@@ -498,6 +593,32 @@ class news_display{
 			$link=$url_data;	
 		}
 	    return ereg_replace("{ATTRIB}","href=\"$link\"",$GLOBALS["HTML"]["A"]).$name.$GLOBALS["HTML"]["A!"];
+	}
+	
+	//
+	//private function nd_convttl($ttl);
+	//
+	//converts the TTL into an update period
+	//	
+	function nd_convttl($ttl){
+		return "hourly";
+	}
+	
+	function nd_mkfeeddate($timestamp){
+		switch($GLOBALS["HTTP_GET"]["FEED_TYPE"]){
+			case FEED_RSS092:
+				return false;
+			break;
+			case FEED_RSS1:
+				return date("Y-m-d",$timestamp)."T".date("H:i:sO",$timestamp);	
+			break;
+			case FEED_ATOM:
+				return date("Y-m-d",$timestamp)."T".date("H:i:sO",$timestamp);
+			break;
+			default:
+				return date("D, d M Y H:i:s O",$timestamp);
+			break;
+		};		
 	}
 }
 ?>
