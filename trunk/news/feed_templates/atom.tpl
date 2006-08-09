@@ -2,7 +2,7 @@
 <!-- generator="mandrigoCMS/{MANDRIGO_VERSION}" -->
 <feed xml:lang="{FEED_LANG}" xmlns="http://www.w3.org/2005/Atom">
 	<title>{FEED_TITLE}</title>
-	<link rel="alternate" type="text/html" href="{FEED_URL} />
+	<link rel="alternate" type="text/html" href="{FEED_URL}" />
 	<link rel="self" type="text/html" href="{ATOM_URL}" />
 	<id>{ATOM_URL}</id>
 	<subtitle>{FEED_DESCRIPTION}</subtitle>
