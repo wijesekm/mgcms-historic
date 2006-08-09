@@ -1,9 +1,9 @@
 <?php
 /**********************************************************
     display.pkg.php
-    news ver 1.0
+    news ver 0.6.0
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 02/09/05
+	Date Last Edited: 07-20-06
 
 	Copyright (C) 2006 Kevin Wijesekera
 
@@ -40,16 +40,69 @@ if(!defined("START_MANDRIGO")){
 
 class news_display{
 
+
+	//private vars
 	var $news_db;
 	var $tpl;
 	var $config;
 	var $pparse_vars;
 
+	//Constructor
     function news_display(&$db){
 		$this->news_db=$db;
     }
+	
+	//
+	//public function nd_load($i,$type);
+	//
+	//Loads necessary variables and templates
+	//
+	function nd_load($i,$type){
+	  
+		if(!$sql_result=$this->news_db->db_fetcharray(TABLE_PREFIX.TABLE_NEWS_DATA,"",array(array("page_id","=",$GLOBALS["PAGE_DATA"]["ID"],DB_AND),array("part_id","=",$i)))){
+            $GLOBALS['error_log']->add_error(100,'sql');
+			return false;
+        }
+        if($type!=FEED){
+	        $this->config["num_per_page"]=$sql_result["num_per_page"];
+	        $this->config["date_struct"]=$sql_result["date_struct"];
+	        $this->config["time_struct"]=$sql_result["time_struct"];
+	        $this->config["allow_comments"]=$sql_result["allow_comments"];
+	        $this->config["allow_a_comments"]=$sql_result["allow_a_comments"];
+	        $this->config["show_rep_time"]=$sql_result["show_rep_time"];
+	        $this->config["com_per_page"]=$sql_result["com_per_page"];
+	        if($this->config["num_per_page"]==0){
+	        	$this->config["num_per_page"]=1; 	
+			}
+			if($this->config["com_per_page"]==0&&$this->config["allow_comments"]){
+				$this->config["com_per_page"]=1;
+			}
+	        
+	        $this->tpl=new template();
+	        if(!$this->tpl->load($GLOBALS["MANDRIGO_CONFIG"]["TEMPLATE_PATH"].$GLOBALS["PAGE_DATA"]["DATAPATH"].$GLOBALS["PAGE_DATA"]["ID"]."_".$i."_$type.".TPL_EXT,"","<!--NEWS_DELIM-->")){
+				$GLOBALS['error_log']->add_error(6,'display');
+				return false;
+			}
+		}
+		else{
+			
+		}
+        return true;
+	}
+	    
+	//#################################
+	//
+	// PUBLIC FUNCTIONS
+	//
+	//#################################
     
-    function display_full($i){
+	
+	//
+	//public function nd_displayfull($i);
+	//
+	//Displays the main new page
+	//
+    function nd_displayfull($i){
     	if(!$this->config){
 			return false;
 		}  
@@ -57,33 +110,33 @@ class news_display{
         //The start_post is equal to the current page number multiplied by the total number of posts per page plus one
         //The end post is equal to the current page number plus one multiplied by the number of posts per page
         //
-        $start_post = ($GLOBALS["HTTP_GET"]["PAGE_NUMBER"]*$this->config["num_per_page"])+1;
-        $end_post = ($GLOBALS["HTTP_GET"]["PAGE_NUMBER"]+1)*$this->config["num_per_page"];
+        $start_post=($GLOBALS["HTTP_GET"]["PAGE_NUMBER"]*$this->config["num_per_page"])+1;
+        $end_post=($GLOBALS["HTTP_GET"]["PAGE_NUMBER"]+1)*$this->config["num_per_page"];
         //total posts in the system
         $total_posts=$this->news_db->db_numrows(TABLE_PREFIX.TABLE_NEWS."_".$GLOBALS["PAGE_DATA"]["ID"]."_".$i,"");
         //prevents system from exceding the max number of posts
-        if($end_post > $total_posts){
-            $end_post = $total_posts;
+        if($end_post>$total_posts){
+            $end_post=$total_posts;
         }
 		//$start_post--;     
         //forms array of post id's from most current to oldest
-        $id_array=$this->post_id_array($i,$total_posts);
+        $id_array=$this->nd_postid($i,$total_posts);
         $last_time=0;
         $dd_date=true;
         $post_content="";
         //generates the content string
         if($total_posts!=0){
-	        while($start_post <= $end_post){
+	        while($start_post<=$end_post){
 	            if($sql_result=$this->news_db->db_fetcharray(TABLE_PREFIX.TABLE_NEWS."_".$GLOBALS["PAGE_DATA"]["ID"]."_".$i,"",array(array("post_id","=",$id_array[$start_post])))){
 	                $dd_date=true;
-					if($this->same_day($sql_result["post_time"],$last_time)&&$this->config["show_rep_time"]==0){
+					if($this->nd_sameday($sql_result["post_time"],$last_time)&&$this->config["show_rep_time"]==0){
 	                    $dd_date=false;
 	                }
 	                $parse_vars = array(
-	                        "NEWS_MAIN_TITLE",$sql_result["post_title"]
+	                         "NEWS_MAIN_TITLE",$sql_result["post_title"]
 	                        ,"NEWS_MAIN_DATE",date($this->config["date_struct"],$sql_result["post_time"])
-	                        ,"NEWS_MAIN_TIME",$this->gen_link_internal($GLOBALS["HTTP_GET"]["PAGE"],$id_array[$start_post],date($this->config["time_struct"],$sql_result["post_time"]),"id")
-	                        ,"NEWS_MAIN_USER",$this->gen_user($sql_result["post_author"])
+	                        ,"NEWS_MAIN_TIME",$this->nd_genlink(array("p",$GLOBALS["HTTP_GET"]["PAGE"],"id",$id_array[$start_post]),date($this->config["time_struct"],$sql_result["post_time"]))
+	                        ,"NEWS_MAIN_USER",$this->nd_genuser($sql_result["post_author"])
 	                        ,"NEWS_MAIN_CONTENT",$sql_result["post_content"]);
 	                $last_time = $sql_result["post_time"];
 	                $cur_tpl= new template();
@@ -95,8 +148,8 @@ class news_display{
 	            	$post_content.=$cur_tpl->return_template(1);
 	            }
 	            $start_post++;
-	        } 
-			$nav=$this->nav_gen($total_posts);
+	        }
+			$nav=$this->nd_navgen($total_posts);
 			$tpl=$this->tpl->return_template(0).$this->tpl->return_template(3).$this->tpl->return_template(4);
 			if(!$nav){
 				$tpl=$this->tpl->return_template(0).$this->tpl->return_template(3);
@@ -113,7 +166,14 @@ class news_display{
 		}
 		return $tpl;
 	}
-	function display_post($i){
+	
+	
+	//
+	//public function nd_displaypost($i);
+	//
+	//Displays an individual post
+	//
+	function nd_displaypost($i,$etype=0,$error=""){
     	if(!$this->config){
 			return false;
 		} 
@@ -121,7 +181,6 @@ class news_display{
 		$template=$this->tpl->return_template();
 		$post_content="";
 		$post_add="";
-		$post_error="";
 		$act="";
 		
 		if($this->config["allow_comments"]){
@@ -135,14 +194,14 @@ class news_display{
 				$start_post=0;
 			}
 
-	        $id_array = $this->post_id_array($i,$total_posts,TABLE_NEWS_COMMENTS,$GLOBALS["HTTP_GET"]["ID"]);
+	        $id_array = $this->nd_postid($i,$total_posts,TABLE_NEWS_COMMENTS,$GLOBALS["HTTP_GET"]["ID"]);
 	        while($start_post <= $end_post){
 	            if($sql_result1=$this->news_db->db_fetcharray(TABLE_PREFIX.TABLE_NEWS_COMMENTS."_".$GLOBALS["PAGE_DATA"]["ID"]."_".$i,"",array(array("post_id","=",$GLOBALS["HTTP_GET"]["ID"],DB_AND),array("com_id","=",$id_array[$start_post])))){
 					if($sql_result1["user_id"]){
 						$user=$this->gen_user($sql_result1["user_id"]);	
 					}
 					else{
-						$user=$this->gen_link_internal($GLOBALS["SITE_DATA"]["FORM_MAIL_PAGE"],$sql_result1["user_email"],$sql_result1["user_name"],"mail");	
+						$user=$this->nd_genlink(array("p",$GLOBALS["SITE_DATA"]["FORM_MAIL_PAGE"],"mail",$sql_result1["user_email"]),$sql_result1["user_name"]);	
 					}
 					
 					$parse_vars = array(
@@ -178,75 +237,182 @@ class news_display{
 		if(!$sql_result=$this->news_db->db_fetcharray(TABLE_PREFIX.TABLE_NEWS."_".$GLOBALS["PAGE_DATA"]["ID"]."_".$i,"",array(array("post_id","=",$GLOBALS["HTTP_GET"]["ID"])))){
 			return $GLOBALS["LANGUAGE"]["NO_POST"];  
 		}
+		$e2="";
 		if(!$post_content){
-			$post_error=$GLOBALS["LANGUAGE"]["NO_COM"].$GLOBALS["HTML"]["BR"].$GLOBALS["HTML"]["BR"];
+		  	$e2=$GLOBALS["LANGUAGE"]["NEWS_NO_COM"];			
+		}
+		$log="";
+		if($error){
+			if($etype==0){
+				$log.=ereg_replace("{ATTRIB}"," style=\"color: #FF0000;\"",$GLOBALS["HTML"]["P"]);
+			}
+			else if($etype==1){
+				$log.=ereg_replace("{ATTRIB}"," style=\"color: #00FF00;\"",$GLOBALS["HTML"]["P"]);
+			}
+			else{
+				$log.=ereg_replace("{ATTRIB}","",$GLOBALS["HTML"]["P"]);	
+			}
+			$soq=count($error);
+			for($i=0;$i<$soq;$i++){
+				$log.=$error[$i].$GLOBALS["HTML"]["BR"];
+			}
+			$log.=$GLOBALS["HTML"]["!P"];
+			if($e2){
+				$log.=ereg_replace("{ATTRIB}","",$GLOBALS["HTML"]["P"]).$e2.$GLOBALS["HTML"]["!P"];
+			}
 		}
 		$this->pparse_vars=array("NEWS_MAIN_DATE",date($this->config["date_struct"],$sql_result["post_time"])
 								,"NEWS_MAIN_TITLE",$sql_result["post_title"]
 								,"NEWS_MAIN_TIME",date($this->config["time_struct"],$sql_result["post_time"])
-								,"NEWS_MAIN_USER",$this->gen_user($sql_result["post_author"])
+								,"NEWS_MAIN_USER",$this->nd_genuser($sql_result["post_author"])
 								,"NEWS_MAIN_CONTENT",$sql_result["post_content"]
 								,"NEWS_COM",$post_content
-								,"NEWS_COM_ERROR",$post_error
+								,"NEWS_COM_ERROR",$log
 								,"NEWS_COM_ADD_COMMENT",$post_add
 								,"NEWS_COM_ACTION",$act);
 		return $template;			
 	}
-	function return_vars(){
+	
+	//
+	//public function nd_addcomment($id);
+	//
+	//adds a user comment
+	//
+	function nd_addcomment($id){
+	  	$halt=false;
+	  	$errors=array();
+		if($this->config["allow_comments"]){
+			if($GLOBALS["USER_DATA"]["AUTHENTICATED"]){
+			  	if(!$GLOBALS["HTTP_POST"]["NEWS_COMMENT"]||$GLOBALS["HTTP_POST"]["NEWS_COMMENT"]===BAD_DATA){
+					$halt=true;
+					$errors=array_merge($errors,array($GLOBALS["LANGUAGE"]["NEWS_BAD_POST"]));
+				}
+			  	$items=array($GLOBALS["HTTP_GET"]["ID"]
+							,time()
+							,$GLOBALS["USER_DATA"]["ID"]
+							,$GLOBALS["USER_DATA"]["NAME"]
+							,$GLOBALS["USER_DATA"]["EMAIL"]
+							,$GLOBALS["HTTP_POST"]["NEWS_COMMENT"]);
+			}
+			else if($this->config["allow_a_comments"]&&!$GLOBALS["USER_DATA"]["AUTHENTICATED"]){
+			  	if(!$GLOBALS["HTTP_POST"]["NEWS_COM_NAME"]||$GLOBALS["HTTP_POST"]["NEWS_COM_NAME"]===BAD_DATA){
+					$halt=true;
+					$errors=array_merge($errors,array($GLOBALS["LANGUAGE"]["NEWS_BAD_NAME"]));
+				}
+			  	if(!$GLOBALS["HTTP_POST"]["NEWS_COM_EMAIL"]||$GLOBALS["HTTP_POST"]["NEWS_COM_EMAIL"]===BAD_DATA){
+					$halt=true;
+					$errors=array_merge($errors,array($GLOBALS["LANGUAGE"]["NEWS_BAD_EMAIL"]));
+				}
+			  	if(!$GLOBALS["HTTP_POST"]["NEWS_COMMENT"]||$GLOBALS["HTTP_POST"]["NEWS_COMMENT"]===BAD_DATA){
+					$halt=true;
+					$errors=array_merge($errors,array($GLOBALS["LANGUAGE"]["NEWS_BAD_POST"]));
+				}
+			  	$items=array($GLOBALS["HTTP_GET"]["ID"]
+							,time()
+							,0
+							,$GLOBALS["HTTP_POST"]["NEWS_COM_NAME"]
+							,$GLOBALS["HTTP_POST"]["NEWS_COM_EMAIL"]
+							,$GLOBALS["HTTP_POST"]["NEWS_COMMENT"]);			
+			}
+			if(!$halt){
+				if(!$this->news_db->db_update(DB_INSERT,TABLE_PREFIX.TABLE_NEWS_COMMENTS."_".$GLOBALS["PAGE_DATA"]["ID"]."_".$id,$items,array("post_id","com_time","user_id","user_name","user_email","comment"))){
+					$GLOBALS['error_log']->add_error(101,'sql');
+					return false;	
+				}
+				return $this->nd_displaypost($id,1,array($GLOBALS["LANGUAGE"]["NEWS_COM_SUCCESS"]));
+			}
+			else{
+				return $this->nd_displaypost($id,0,$errors);
+			}
+		}
+	}	
+	//
+	//public function nd_displayfeed();
+	//
+	//displays an rss or atom feed
+	//
+	function nd_displayfeed(){
+	  
+	}
+	
+	//
+	//public function nd_returnvars();
+	//
+	//returns any page parse vars
+	//
+	function nd_returnvars(){
 		return $this->pparse_vars;
 	}
-	function post_id_array($part_id,$total_posts,$table=TABLE_NEWS,$post_id=""){
-        $i = $total_posts;
+	
+	//#################################
+	//
+	// PRIVATE FUNCTIONS
+	//
+	//#################################
+
+	//
+	//private function nd_navgen($total_length);
+	//
+	//generates the bottom navigational bar
+	//
+	function nd_postid($pid,$total_posts,$table=TABLE_NEWS,$poid=""){
+        $i=$total_posts;
         if($i==0){
 			return false;
 		}
-        $j = 0;
+        $j=0;
         $post_id_array=array();
         while($i>0){
-          	if(!$post_id){
-	            if($sql_result=$this->news_db->db_fetcharray(TABLE_PREFIX.$table."_".$GLOBALS["PAGE_DATA"]["ID"]."_".$part_id,"",array(array("post_id","=",$j)))){
+          	if(!$poid){
+	            if($sql_result=$this->news_db->db_fetcharray(TABLE_PREFIX.$table."_".$GLOBALS["PAGE_DATA"]["ID"]."_".$pid,"",array(array("post_id","=",$j)))){
 					$post_id_array[$i] = $j;
 	                $i--;
 	            }
 	        }
 	        else{     	
-	        	if($sql_result=$this->news_db->db_fetcharray(TABLE_PREFIX.$table."_".$GLOBALS["PAGE_DATA"]["ID"]."_".$part_id,"",array(array("post_id","=",$post_id,DB_AND),array("com_id","=",$j)))){
-					$post_id_array[$i] = $j;
+	        	if($sql_result=$this->news_db->db_fetcharray(TABLE_PREFIX.$table."_".$GLOBALS["PAGE_DATA"]["ID"]."_".$pid,"",array(array("post_id","=",$poid,DB_AND),array("com_id","=",$j)))){
+					$post_id_array[$i]=$j;
 	                $i--;
 	            }			
 			}
             $j++;
         }
         return $post_id_array;
-    }
-    function nav_gen($total_length){
+    } 
+	
+	//
+	//private function nd_navgen($total_length);
+	//
+	//generates the bottom navigational bar
+	//
+    function nd_navgen($total_length){
         $nav[0]="";
         $nav[1]="";
         if($total_length==0){
-            $pages = 0;
+            $pages=0;
         }
         else{
-            $pages = ceil(($total_length / ($this->config["num_per_page"])));
+            $pages=ceil(($total_length/($this->config["num_per_page"])));
         }
         $pages-=1;
-        if($pages!=0){
-            $i = 0;
-            while($i <= $pages){
-              	$nav[0].=$this->gen_link_internal($GLOBALS["HTTP_GET"]["PAGE"],$i,($i+1));
+        if($pages>0){
+            $i=0;
+            while($i<=$pages){
+              	$nav[0].=$this->nd_genlink(array("p",$GLOBALS["HTTP_GET"]["PAGE"],"n",$i),($i+1));
      		    $i++;
-                if($i <= $pages){
+                if($i<=$pages){
                     $nav[0].=",";
                 }
             }
             if($GLOBALS["HTTP_GET"]["PAGE_NUMBER"]==0){
-              	$nav[1].=$this->gen_link_internal($GLOBALS["HTTP_GET"]["PAGE"],($GLOBALS["HTTP_GET"]["PAGE_NUMBER"]+1),"Next");
+              	$nav[1].=$this->nd_genlink(array("p",$GLOBALS["HTTP_GET"]["PAGE"],"n",($GLOBALS["HTTP_GET"]["PAGE_NUMBER"]+1)),"Next");
             }
             else if($GLOBALS["HTTP_GET"]["PAGE_NUMBER"]==$pages){
-              	$nav[1].=$this->gen_link_internal($GLOBALS["HTTP_GET"]["PAGE"],($GLOBALS["HTTP_GET"]["PAGE_NUMBER"]-1),"Prev");
+              	$nav[1].=$this->nd_genlink(array("p",$GLOBALS["HTTP_GET"]["PAGE"],"n",($GLOBALS["HTTP_GET"]["PAGE_NUMBER"]-1)),"Prev");
             }
             else{
-              	$nav[1].=$this->gen_link_internal($GLOBALS["HTTP_GET"]["PAGE"],($GLOBALS["HTTP_GET"]["PAGE_NUMBER"]+1),"Next");
-              	$nav[1].=$this->gen_link_internal($GLOBALS["HTTP_GET"]["PAGE"],($GLOBALS["HTTP_GET"]["PAGE_NUMBER"]-1),"Prev");
+              	$nav[1].=$this->nd_genlink(array("p",$GLOBALS["HTTP_GET"]["PAGE"],"n",($GLOBALS["HTTP_GET"]["PAGE_NUMBER"]+1)),"Next");
+              	$nav[1].=$this->nd_genlink(array("p",$GLOBALS["HTTP_GET"]["PAGE"],"n",($GLOBALS["HTTP_GET"]["PAGE_NUMBER"]-1)),"Prev");
             }
         }
         else{
@@ -254,57 +420,84 @@ class news_display{
         }
         return $nav;
     }
-    function same_day($cur_time,$last_time){
-        if($last_time == 0){
+    
+	//
+	//private function nd_sameday($cur_time,$last_time);
+	//
+	//returns true if the timestamps are on the same day and false if they are not
+	//
+    function nd_sameday($cur_time,$last_time){
+        if($last_time==0){
             return false;
         }
-        if(date("d",$cur_time)==date("d",$last_time)){
+        if(date("d",$cur_time)===date("d",$last_time)){
             return true;
         }
         return false;
     }
-    function gen_user($uid){
+    
+	//
+	//private function nd_genuser($uid);
+	//
+	//Loads necessary variables and templates
+	//
+    function nd_genuser($uid){
         if(!@$sql_result=$this->news_db->db_fetcharray(TABLE_PREFIX.TABLE_USER_DATA,"",array(array("user_id","=",$uid)))){
+        	$GLOBALS['error_log']->add_error(10,'sql');
             return false;
         }
-        return $this->gen_link_internal($GLOBALS["SITE_DATA"]["PROFILE_PAGE"],"u".$uid,$sql_result["user_name"],"id");
+        return $this->nd_genlink(array("p",$GLOBALS["SITE_DATA"]["PROFILE_PAGE"],"id","u".$uid),$sql_result["user_name"]);
     }
-   	function pad_end_line($str){
+    
+	//
+	//private function nd_genlink($str);
+	//
+	//Replaces all \n's with <br/>'s for input data
+	//
+   	function nd_pad($str){
         return ereg_replace("\n","<br/>",$str);
     }
-    function gen_link_internal($page,$uid,$name,$form="n"){
-        if($GLOBALS["SITE_DATA"]["URL_FORMAT"]==1){
-            $link = $GLOBALS["SITE_DATA"]["SITE_URL"].$GLOBALS["MANDRIGO_CONFIG"]["INDEX"]."/p/".$page."/$form/".$uid;
-        }
-        else{
-            $link = $GLOBALS["SITE_DATA"]["SITE_URL"].$GLOBALS["MANDRIGO_CONFIG"]["INDEX"]."?p=".$page."&amp;$form=".$uid;
-        }	
-        return ereg_replace("{ATTRIB}","href=\"$link\"",$GLOBALS["HTML"]["A"]).$name.$GLOBALS["HTML"]["A!"];
-	}
-	function load($i,$type){
-	  
-		if(!$sql_result=$this->news_db->db_fetcharray(TABLE_PREFIX.TABLE_NEWS_DATA,"",array(array("page_id","=",$GLOBALS["PAGE_DATA"]["ID"],DB_AND),array("part_id","=",$i)))){
-            return false;
-        }
-        $this->config["num_per_page"]=$sql_result["num_per_page"];
-        $this->config["date_struct"]=$sql_result["date_struct"];
-        $this->config["time_struct"]=$sql_result["time_struct"];
-        $this->config["allow_comments"]=$sql_result["allow_comments"];
-        $this->config["allow_a_comments"]=$sql_result["allow_a_comments"];
-        $this->config["show_rep_time"]=$sql_result["show_rep_time"];
-        $this->config["com_per_page"]=$sql_result["com_per_page"];
-        if($this->config["num_per_page"]==0){
-			return false;
+    
+	//
+	//private function nd_genlink($url_data,$name,$type="internal");
+	//
+	//Loads necessary variables and templates
+	//
+    function nd_genlink($url_data,$name,$type="internal"){
+      	$link="";
+    	if($type=="internal"){
+    	  	$soq=count($url_data);
+    	  	$link.=$GLOBALS["SITE_DATA"]["SITE_URL"].$GLOBALS["MANDRIGO_CONFIG"]["INDEX"];
+    	  	for($i=0;$i<$soq;$i+=2){
+    	  	  	
+    	  	  	if($i==0){
+					if($GLOBALS["SITE_DATA"]["URL_FORMAT"]==1){
+						$link.="/";
+					}
+					else{
+						$link.="?";
+					}
+				}
+		        if($GLOBALS["SITE_DATA"]["URL_FORMAT"]==1){
+		            $link.=$url_data[$i]."/".$url_data[$i+1];
+		        }
+		        else{
+		          	$link.=$url_data[$i]."=".$url_data[$i+1];
+		        }
+				if($i+1<$soq){
+					if($GLOBALS["SITE_DATA"]["URL_FORMAT"]==1){
+						$link.="/";
+					}
+					else{
+						$link.="&amp;";
+					}					
+				}	
+		    }
+	    }
+	    else if($type=="external"){
+			$link=$url_data;	
 		}
-		if($this->config["com_per_page"]==0&&$this->config["allow_comments"]){
-			return false;
-		}
-        
-        $this->tpl=new template();
-        if(!$this->tpl->load($GLOBALS["MANDRIGO_CONFIG"]["TEMPLATE_PATH"].$GLOBALS["PAGE_DATA"]["DATAPATH"].$GLOBALS["PAGE_DATA"]["ID"]."_".$i."_$type.".TPL_EXT,"","<!--NEWS_DELIM-->")){
-			return false;
-		}
-        return true;
+	    return ereg_replace("{ATTRIB}","href=\"$link\"",$GLOBALS["HTML"]["A"]).$name.$GLOBALS["HTML"]["A!"];
 	}
 }
 ?>

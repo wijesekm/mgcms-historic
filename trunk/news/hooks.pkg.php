@@ -40,25 +40,41 @@ if(!defined("START_MANDRIGO")){
 class news_hook{
   	var $pparse_vars;
     
-	function news_display_hook(&$sql,&$error_log,$i){
+	function news_display_hook(&$sql,$i){
 	  	$cur_news=new news_display($sql);
 	  	$string="";
-		if($GLOBALS["HTTP_GET"]["ID"]!=DEFAULT_ID){
-			$cur_news->load($i,TPL_NEWS_SINGLE);
-			$string=$cur_news->display_post($i);
-			$this->pparse_vars=$cur_news->return_vars();	
+	  	if($GLOBALS["HTTP_GET"]["IS_FEED"]){
+			if(!$cur_news->nd_load($i,FEED)){
+				return false;
+			}
+			$string=$cur_news->nd_displayfeed($i);
+			$this->pparse_vars=$cur_news->nd_returnvars();			
+		}
+		else if($GLOBALS["HTTP_GET"]["ID"]!=DEFAULT_ID){
+			if(!$cur_news->nd_load($i,TPL_NEWS_SINGLE)){
+				return false;
+			}
+			if($GLOBALS["HTTP_GET"]["ACTION"]=="p"){
+				$string=$cur_news->nd_addcomment($i);	
+			}
+			else{
+				$string=$cur_news->nd_displaypost($i);
+			}
+			$this->pparse_vars=$cur_news->nd_returnvars();	
 		}
 		else{
-			$cur_news->load($i,TPL_NEWS);
-			$string=$cur_news->display_full($i);
-			$this->pparse_vars=$cur_news->return_vars();
+			if(!$cur_news->nd_load($i,TPL_NEWS)){
+				return false;
+			}
+			$string=$cur_news->nd_displayfull($i);
+			$this->pparse_vars=$cur_news->nd_returnvars();
 		}
 		return $string;
     }
-    function news_vars_hook(&$sql,&$error_log,$i){
+    function news_vars_hook(&$sql,$i){
 		return $this->pparse_vars;
     }
-    function news_admin_hook(&$sql,&$error_log,$i){
+    function news_admin_hook(&$sql,$i){
 
     }
 }

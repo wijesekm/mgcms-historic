@@ -42,5 +42,6 @@ define("TABLE_NEWS","news");
 define("TABLE_NEWS_COMMENTS","news_com");
 define("TPL_NEWS","news");
 define("TPL_NEWS_SINGLE","news_post");
+define("FEED","feed");
 
 ?>
