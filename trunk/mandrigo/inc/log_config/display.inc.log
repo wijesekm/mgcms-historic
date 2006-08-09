@@ -4,3 +4,4 @@
 &split;3&split;The requested URL contained illegal inputs. For security reasons certain characters are not permitted to be entered as script inputs through the browser bar. If you're having trouble locating a destination, try visiting the home page. If you think this message is in error please e-mail the webmaster to alert him/her of this issue.
 &split;4&split;Could not load the template file for the profile page.
 &split;5&split;Could not generate site map because the script detected that a subpage loops back to one of its parent pages.  This request is impossible to fulfill.
+&split;6&split;Could not load a template for the news script.  Please contact the webmaster to alert them of this issue.

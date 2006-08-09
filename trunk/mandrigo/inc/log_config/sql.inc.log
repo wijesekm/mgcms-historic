@@ -9,6 +9,6 @@
 &split;20&split;Could not access the title data table.  Please contact the webmaster and alert them of this issue.
 &split;30&split;Could not load main language data.  Table may be missing or language information may have been incorrectly given.  Please contact the webmaster and alert them of this issue.
 &split;31&split;Could not load language data.  Table may be missing or language information may have been incorrectly given.  Please contact the webmaster and alert them of this issue.
-
-
+&split;100&split;Could not load news main data table.  Table may be missing or incomplete.  Please contact the webmaster to alert them of this issue.
+&split;101&split;Could not access new comment table.  Table may be missing or incomplete.
 
