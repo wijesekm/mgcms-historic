@@ -123,7 +123,12 @@ class template{
     }
     function regester_type(){
 		if(!$GLOBALS["LANGUAGE"]["REG"]){
-			header("Content-type: ".$GLOBALS["LANGUAGE"]["CONTENT_TYPE"]." charset=".$GLOBALS["LANG"]["CHARSET"]);
+		  	if($GLOBALS["LANGUAGE"]["SET_ENCODING"]){
+				header("Content-type: ".$GLOBALS["LANGUAGE"]["CONTENT_TYPE"]." charset=".$GLOBALS["LANG"]["CHARSET"]);
+			}
+			else{
+				header("Content-type: ".$GLOBALS["LANGUAGE"]["CONTENT_TYPE"]);
+			}
 			$GLOBALS["LANGUAGE"]["REG"]=true;
 		}
 	}
