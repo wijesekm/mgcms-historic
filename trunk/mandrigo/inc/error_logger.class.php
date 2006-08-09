@@ -89,7 +89,7 @@ class error_logger{
         }
         else{
             if(!(@$f=fopen($GLOBALS["MANDRIGO_CONFIG"]["TEMPLATE_PATH"]."error_log.tpl","r"))){
-                return $GLOBALS["ELOG"]["TWO"]];
+                return $GLOBALS["ELOG"]["TWO"];
             }
         }
         $tpl="";
