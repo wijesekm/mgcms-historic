@@ -20,7 +20,7 @@
 			<title>{POST_TITLE}</title>
 			<link>{POST_URL}</link>
 			<pubDate>{POST_DATE}</pubDate>
-			<guid isPermaLink="false">{POST_ID}@{SITE_URL}</guid>
+			<guid isPermaLink="false">{POST_ID}@{SITE_URL}{SITE_PAGE}</guid>
 			<description>{CONTENT_NOHTML}</description>
 			<content:encoded>{CONTENT_ENCODED}</content:encoded>
 			<comments>{POST_URL}</comments>

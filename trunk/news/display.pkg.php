@@ -405,6 +405,7 @@ class news_display{
 							,"POST_USER_URL",$sql_result2["user_website"]
 							,"CONTENT",$sql_result["post_content"]
 							,"SITE_URL",$GLOBALS["SITE_DATA"]["SITE_URL"]
+							,"SITE_PAGE",$GLOBALS["PAGE_DATA"]["RNAME"]
 							,"POST_ID",$sql_result["post_id"]
 							,"CONTENT_ENCODED",htmlspecialchars($sql_result["post_content"],ENT_QUOTES,$GLOBALS["LANGUAGE"]["CHARSET"])
 							,"CONTENT_NOHTML",strip_tags($sql_result["post_content"]));
