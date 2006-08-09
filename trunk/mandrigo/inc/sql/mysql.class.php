@@ -161,7 +161,14 @@ class db extends _db{
 				}
 			break;
 			case DB_INSERT:
-				$qstring.="INSERT INTO `".mysql_real_escape_string($table)."` VALUES (";
+				$qstring.="INSERT INTO `".mysql_real_escape_string($table)."` (";
+				for($i=0;$i<count($params);$i++){
+					$qstring.=mysql_real_escape_string($params[$i]);
+					if($i<count($set)-1){
+						$qstring.=",";	
+					}					
+				}		
+				$qstring.=") VALUES (";
 				for($i=0;$i<count($set);$i++){
 					$qstring.="'".mysql_real_escape_string($set[$i])."'";	
 					if($i<count($set)-1){
