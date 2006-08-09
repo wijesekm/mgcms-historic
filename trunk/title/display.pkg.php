@@ -52,25 +52,25 @@ class title{
                 $h=ereg_replace('{SIZE}',$this->config['h_size'],$GLOBALS['HTML']['H']);
                 $h=ereg_replace('{ATTRIB}',$this->config['h_attrib'],$h);
                 $endh=ereg_replace('{SIZE}',$this->config['h_size'],$GLOBALS['HTML']['H!']);
-                $data=$h.$this->config['title'].$endh.'\n';
+                $data=$h.$this->config['title'].$endh;
             break;
             case 1:
                 $h=ereg_replace('{SIZE}',$this->config['h_size'],$GLOBALS['HTML']['H']);
                 $h=ereg_replace('{ATTRIB}',$this->config['h_attrib'],$h);
                 $endh=ereg_replace('{SIZE}',$this->config['h_size'],$GLOBALS['HTML']['H!']);
                 $hr=ereg_replace('{ATTRIB}',$this->config['hr_attrib'],$GLOBALS['HTML']['HR']);
-                $data=$h.$this->config['title'].$endh.$hr.'\n';
+                $data=$h.$this->config['title'].$endh.$hr;
             break;
             case 2:
                 $attrib='src="'.$this->config['i_url'].'" alt="'.$this->config['title'].'"';
                 $img=ereg_replace('{ATTRIB}',$attrib,$GLOBALS['HTML']['IMG']);
-                $data=$img.'\n';
+                $data=$img;
             break;
             case 3:
                 $attrib='src="'.$this->config['i_url'].'" alt="'.$this->config['title'].'"';
                 $img=ereg_replace('{ATTRIB}',$attrib,$GLOBALS['HTML']['IMG']);
                 $hr=ereg_replace('{ATTRIB}',$this->config['hr_attrib'],$GLOBALS['HTML']['HR']);
-                $data=$img.$hr.'\n';
+                $data=$img.$hr;
             break;
         }
         return $data;
