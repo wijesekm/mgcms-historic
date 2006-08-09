@@ -62,7 +62,7 @@ function clean_var($string,$method){
 			return (eregi("^[a-z0-9._-]+$",$string))?$string:BAD_DATA;
 		break;
 		case "name":
-			return (eregi("[[:space:]a-z.,]",$string))?$string:BAD_DATA;
+			return (eregi("^[[:space:]a-z.,]+$",$string))?$string:BAD_DATA;
 		break;
 		case "text":
 			return (!eregi("[<|>]",$string))?$string:BAD_DATA;
@@ -72,6 +72,9 @@ function clean_var($string,$method){
 		break;
 		case "url":
 			return (eregi("[<|>[|]{|}]",$string))?BAD_DATA:$string;
+		break;
+		case "feed":
+			return (eregi("^[a-z0-9.]+$",$string))?$string:BAD_DATA; 
 		break;
 	};
 }
