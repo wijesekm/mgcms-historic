@@ -125,15 +125,15 @@ class news_display{
 		  	$atom_url=$GLOBALS["SITE_DATA"]["SITE_URL"].$GLOBALS["MANDRIGO_CONFIG"]["INDEX"];
 		  	if($GLOBALS["SITE_DATA"]["URL_FORMAT"]==1){
 			    $atom_url.="/p/".$GLOBALS["HTTP_GET"]["PAGE"]."/fd/1/fdt/atom";
-			    $rss92_url="/p/".$GLOBALS["HTTP_GET"]["PAGE"]."/fd/1/fdt/rss0.92";
-			    $rss10_url="/p/".$GLOBALS["HTTP_GET"]["PAGE"]."/fd/1/fdt/rss1.0";
-				$rss20_url="/p/".$GLOBALS["HTTP_GET"]["PAGE"]."/fd/1/fdt/rss1.0";
+			    $rss92_url.="/p/".$GLOBALS["HTTP_GET"]["PAGE"]."/fd/1/fdt/rss0.92";
+			    $rss10_url.="/p/".$GLOBALS["HTTP_GET"]["PAGE"]."/fd/1/fdt/rss1.0";
+				$rss20_url.="/p/".$GLOBALS["HTTP_GET"]["PAGE"]."/fd/1/fdt/rss2.0";
 			}
 			else{
 			    $atom_url.="?p=".$GLOBALS["HTTP_GET"]["PAGE"]."&amp;fd=1&amp;fdt=atom";
-			    $rss92_url="?p=".$GLOBALS["HTTP_GET"]["PAGE"]."&amp;fd=1&amp;fdt=rss0.92";
-			    $rss10_url="?p=".$GLOBALS["HTTP_GET"]["PAGE"]."&amp;fd=1&amp;fdt=rss1.0";
-				$rss20_url="?p=".$GLOBALS["HTTP_GET"]["PAGE"]."&amp;fd=1&amp;fdt=rss1.0";
+			    $rss92_url.="?p=".$GLOBALS["HTTP_GET"]["PAGE"]."&amp;fd=1&amp;fdt=rss0.92";
+			    $rss10_url.="?p=".$GLOBALS["HTTP_GET"]["PAGE"]."&amp;fd=1&amp;fdt=rss1.0";
+				$rss20_url.="?p=".$GLOBALS["HTTP_GET"]["PAGE"]."&amp;fd=1&amp;fdt=rss2.0";
 			}
 			$feed_template=new template();
 			$feed_template->load("",$this->tpl->return_template(5));
@@ -642,10 +642,14 @@ class news_display{
 				return false;
 			break;
 			case FEED_RSS1:
-				return date("Y-m-d",$timestamp)."T".date("H:i:sO",$timestamp);	
+				$diff_=date("O",$timestamp);
+				$diff=substr($diff_,0,3).":".substr($diff_,3,2);
+				return date("Y-m-d",$timestamp)."T".date("H:i:s",$timestamp).$diff;	
 			break;
 			case FEED_ATOM:
-				return date("Y-m-d",$timestamp)."T".date("H:i:sO",$timestamp);
+				$diff_=date("O",$timestamp);
+				$diff=substr($diff_,0,3).":".substr($diff_,3,2);
+				return date("Y-m-d",$timestamp)."T".date("H:i:s",$timestamp).$diff;	
 			break;
 			default:
 				return date("D, d M Y H:i:s O",$timestamp);
