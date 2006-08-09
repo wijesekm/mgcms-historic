@@ -84,6 +84,7 @@ class template{
 	            }			    
 			}
         }
+        $this->regester_type();
         return true;
     }
     function return_template($pos=0){
@@ -120,6 +121,12 @@ class template{
             }
         return $string;
     }
+    function regester_type(){
+		if(!$GLOBALS["LANGUAGE"]["REG"]){
+			header("Content-type: ".$GLOBALS["LANGUAGE"]["CONTENT_TYPE"]." charset=".$GLOBALS["LANG"]["CHARSET"]);
+			$GLOBALS["LANGUAGE"]["REG"]=true;
+		}
+	}
 }
 
 ?>
