@@ -71,6 +71,7 @@ class news_display{
 	        $this->config["allow_a_comments"]=$sql_result["allow_a_comments"];
 	        $this->config["show_rep_time"]=$sql_result["show_rep_time"];
 	        $this->config["com_per_page"]=$sql_result["com_per_page"];
+	        $this->config["feed_allow"]=$sql_result["feed_allow"];
 	        if($this->config["num_per_page"]==0){
 	        	$this->config["num_per_page"]=1; 	
 			}
@@ -113,6 +114,32 @@ class news_display{
     	if(!$this->config){
 			return false;
 		}  
+		//
+		//generates the rss/atom links for further use
+		//
+		$feed_template=new template();
+		if($this->config["feed_allow"]){
+			$rss10_url=$GLOBALS["SITE_DATA"]["SITE_URL"].$GLOBALS["MANDRIGO_CONFIG"]["INDEX"];
+			$rss92_url=$GLOBALS["SITE_DATA"]["SITE_URL"].$GLOBALS["MANDRIGO_CONFIG"]["INDEX"];
+			$rss20_url=$GLOBALS["SITE_DATA"]["SITE_URL"].$GLOBALS["MANDRIGO_CONFIG"]["INDEX"];
+		  	$atom_url=$GLOBALS["SITE_DATA"]["SITE_URL"].$GLOBALS["MANDRIGO_CONFIG"]["INDEX"];
+		  	if($GLOBALS["SITE_DATA"]["URL_FORMAT"]==1){
+			    $atom_url.="/p/".$GLOBALS["HTTP_GET"]["PAGE"]."/fd/1/fdt/atom";
+			    $rss92_url="/p/".$GLOBALS["HTTP_GET"]["PAGE"]."/fd/1/fdt/rss0.92";
+			    $rss10_url="/p/".$GLOBALS["HTTP_GET"]["PAGE"]."/fd/1/fdt/rss1.0";
+				$rss20_url="/p/".$GLOBALS["HTTP_GET"]["PAGE"]."/fd/1/fdt/rss1.0";
+			}
+			else{
+			    $atom_url.="?p=".$GLOBALS["HTTP_GET"]["PAGE"]."&amp;fd=1&amp;fdt=atom";
+			    $rss92_url="?p=".$GLOBALS["HTTP_GET"]["PAGE"]."&amp;fd=1&amp;fdt=rss0.92";
+			    $rss10_url="?p=".$GLOBALS["HTTP_GET"]["PAGE"]."&amp;fd=1&amp;fdt=rss1.0";
+				$rss20_url="?p=".$GLOBALS["HTTP_GET"]["PAGE"]."&amp;fd=1&amp;fdt=rss1.0";
+			}
+			$feed_template=new template();
+			$feed_template->load("",$this->tpl->return_template(5));
+			$feed_template->pparse(array("RSS1.0_LINK",$rss10_url,"RSS0.92_LINK",$rss92_url,"RSS2.0_LINK",$rss20_url,"ATOM_LINK",$atom_url));
+		}
+		
 		//
         //The start_post is equal to the current page number multiplied by the total number of posts per page plus one
         //The end post is equal to the current page number plus one multiplied by the number of posts per page
@@ -163,13 +190,15 @@ class news_display{
 			} 
 			$this->pparse_vars=array("NEWS_POSTS",$post_content
 									,"NEWS_PAGE_LIST",$nav[0]
-									,"NEWS_NAV",$nav[1]); 
+									,"NEWS_NAV",$nav[1]
+									,"RSS_ATOM",$feed_template->return_template()); 
 		}
 		else{
 		  	$tpl=$this->tpl->return_template(0).$this->tpl->return_template(3);
 			$this->pparse_vars=array("NEWS_POSTS",$GLOBALS["LANGUAGE"]["NO_POSTS"]
 									,"NEWS_PAGE_LIST",""
-									,"NEWS_NAV",""); 			
+									,"NEWS_NAV",""
+									,"RSS_ATOM",$feed_template->return_template()); 			
 		}
 		return $tpl;
 	}
@@ -339,7 +368,9 @@ class news_display{
 	//displays an rss or atom feed
 	//
 	function nd_displayfeed($id){
-	  	
+	  	if(!$this->config["feed_allow"]){
+			return false;
+		}
 		if(ereg("rss",$GLOBALS["HTTP_GET"]["FEED_TYPE"])){
 			$GLOBALS["LANGUAGE"]["CONTENT_TYPE"]=RSS_CONTENTTYPE;
 			$GLOBALS["LANGUAGE"]["SET_ENCODING"]=false;
