@@ -3,10 +3,12 @@
     globals.pkg.php
     news ver 1.0
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 02/09/05
+	Date Last Edited: 08/09/06
 
 	Copyright (C) 2006 Kevin Wijesekera
-
+	
+	MandrigoCMS is Copyright (C) 2005-2006 the MandrigoCMS Group
+	
     ##########################################################
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
@@ -29,24 +31,24 @@
 //
 //To prevent direct script access
 //
-if(!defined("START_MANDRIGO")){
-    die("<html><head>
+if(!defined('START_MANDRIGO')){
+    die('<html><head>
             <title>Forbidden</title>
         </head><body>
-            <h1>Forbidden</h1><hr width=\"300\" align=\"left\"/>\n<p>You do not have permission to access this file directly.</p>
-        </html></body>");
+            <h1>Forbidden</h1><hr width="300" align="left"/>\n<p>You do not have permission to access this file directly.</p>
+        </html></body>');
 }
 
-define("TABLE_NEWS_DATA","news_data");
-define("TABLE_NEWS","news");
-define("TABLE_NEWS_COMMENTS","news_com");
-define("TPL_NEWS","news");
-define("TPL_NEWS_SINGLE","news_post");
-define("FEED_RSS092","rss0.92");
-define("FEED_RSS1","rss1.0");
-define("FEED_RSS2","rss2.0");
-define("FEED_ATOM","atom");
-define("FEED_PATH","/news/feed_templates/");
-define("RSS_CONTENTTYPE","application/xml");
-define("ATOM_CONTENTTYPE","application/atom+xml");
+define('TABLE_NEWS_DATA','news_data');
+define('TABLE_NEWS','news');
+define('TABLE_NEWS_COMMENTS','news_com');
+define('TPL_NEWS','news');
+define('TPL_NEWS_SINGLE','news_post');
+define('FEED_RSS092','rss0.92');
+define('FEED_RSS1','rss1.0');
+define('FEED_RSS2','rss2.0');
+define('FEED_ATOM','atom');
+define('FEED_PATH','/news/feed_templates/');
+define('RSS_CONTENTTYPE','application/xml');
+define('ATOM_CONTENTTYPE','application/atom+xml');
 ?>
