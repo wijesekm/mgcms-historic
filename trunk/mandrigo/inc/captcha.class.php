@@ -46,21 +46,35 @@ class captcha{
 	var $config;
 	var $app;
 	
-	function captcha(&$sql_db,$app,$conf=false){
+	function captcha(&$sql_db,$id){
 		$this->ca_db=$sql_db;
-		$default_conf=array("chars"=>5,
+		if(!$sql_result=$this->ca_db->db_fetcharray(TABLE_PREFIX.TABLE_CAPTCHA_DATA,"",array(array("page_id","=",$GLOBALS["PAGE_DATA"]["ID"],DB_AND),array("part_id","=",$id)))){
+			$this->config=array("chars"=>5,
 							"websafecolors"=>false,
 							"nb_noise"=>4,
 							"maxtry"=>3,
-							"ttf_range"=>"comic.ttf",
+							"ttf_range"=>array(),
 							"minsize"=>20,
 							"maxsize"=>30,
 							"maxrotation"=>20,
 							"jpgquality"=>80);
-		$this->config=($conf)?$conf:$default_conf;
+		}
+		else{
+		$this->config=array("chars"=>$sql_result["chars"],
+							"websafecolors"=>$sql_result["websafecolors"],
+							"nb_noise"=>$sql_result["nb_noise"],
+							"maxtry"=>$sql_result["maxtry"],
+							"ttf_range"=>explode(";",$sql_result["ttf_range"]),
+							"minsize"=>$sql_result["minsize"],
+							"maxsize"=>$sql_result["maxsize"],
+							"maxrotation"=>$sql_result["maxrotation"],
+							"jpgquality"=>$sql_result["jpgquality"]);			
+		}
 		$this->config["x"]=($this->confg["chars"]+1)*(int)(($this->config["maxsize"]+$this->config["minsize"])/ 1.5);
 		$this->config["y"]=(int)(2.4*$this->config["maxsize"]);
-		$this->app=$app;
+		$this->config["x"]=($this->config["chars"]+1)*(int)(($this->config["maxsize"]+$this->config["minsize"])/1.5);
+		$this->config["y"]=(int)($this->config["maxsize"]*2.4);
+		$this->app=$sql_result["app_name"];
 	}
 	
 	function ca_genca(){
@@ -139,11 +153,26 @@ class captcha{
 			imagettftext($image,$size,$angle,$x,$y-(int)($size/15),$color,$ttf_file,$text);
 			$x+=(int)($size+($this->config["minsize"]/5));
 		}
-		imagejpeg($image,$GLOBALS["MANDRIGO_CONFIG"]["IMG_PATH"].TMP_IMG."/".$this->app."_".$id.".jpg",$this->config["jpgquality"]);
+		imagejpeg($image,$GLOBALS["MANDRIGO_CONFIG"]["IMG_PATH"].TMP_IMG.$this->app."_".$id.".jpg",$this->config["jpgquality"]);
 		imagedestroy($image);
-		if(!$this->ca_db->db_update(DB_INSERT,TABLE_PREFIX.TABLE_CAPTCHA,array($app."_".$id,$rnd_text),array("ca_id","ca_string"))){
+		if(!$this->ca_db->db_update(DB_INSERT,TABLE_PREFIX.TABLE_CAPTCHA,array($this->app."_".$id,$rnd_text),array("ca_id","ca_string"))){
 			return false;
 		}
+		return $this->app."_".$id;
+	}
+	function ca_checkca(){
+		if(!$sql_result=$this->ca_db->db_fetcharray(TABLE_PREFIX.TABLE_CAPTCHA,"",array(array("ca_id","=",$GLOBALS["HTTP_POST"]["CA_ID"])))){
+			return false;
+		}
+		
+		//cleanup
+		@unlink($GLOBALS["MANDRIGO_CONFIG"]["IMG_PATH"].TMP_IMG.$GLOBALS["HTTP_POST"]["CA_ID"].".jpg");
+		$this->ca_db->db_update(DB_REMOVE,TABLE_PREFIX.TABLE_CAPTCHA,"",array(array("ca_id","=",$GLOBALS["HTTP_POST"]["CA_ID"])));	
+		
+		if($sql_result["ca_string"]===$GLOBALS["HTTP_POST"]["CA_STRING"]){
+			return true;
+		}
+		return false;
 	}
 	
 	//#################################
@@ -161,11 +190,11 @@ class captcha{
 	  	$ttf_file="";
 		if(is_array($this->config["ttf_range"])){
 			srand((float)microtime() * 10000000);
-			$key = array_rand($this->TTF_RANGE);
-			$ttf_file=TTF_FOLDER.$this->TTF_RANGE[$key];
+			$key = array_rand($this->config["ttf_range"]);
+			$ttf_file=$GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"].TTF_FOLDER.$this->config["ttf_range"][$key];
 		}
 		else{
-			$ttf_file=TTF_FOLDER.$this->config["ttf_range"];
+			$ttf_file=$GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"].TTF_FOLDER.$this->config["ttf_range"];
 		}
 		return $ttf_file;
 	}
@@ -232,7 +261,7 @@ class captcha{
 	//			
 	function ca_genid(){
 	  	$raw_key=rand(0,999999);
-		$enc_key = substr(md5($raw_key),16-$this->config["chars"]/2,$this->config["chars"]);
+		$enc_key = substr(md5($raw_key),16-($this->config["chars"])/2,15);
 		return $enc_key;
 	}
 }
