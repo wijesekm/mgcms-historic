@@ -3,9 +3,11 @@
     globals.pkg.php
     profile ver 0.6.0
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 7-17-06
+	Date Last Edited: 08/09/06
 
 	Copyright (C) 2006 Kevin Wijesekera
+	
+	MandrigoCMS is Copyright (C) 2005-2006 the MandrigoCMS Group
 
     ##########################################################
 	This program is free software; you can redistribute it and/or
@@ -29,14 +31,13 @@
 //
 //To prevent direct script access
 //
-if(!defined("START_MANDRIGO")){
+if(!defined('START_MANDRIGO')){
     die('<html><head>
             <title>Forbidden</title>
         </head><body>
-            <h1>Forbidden</h1><hr width="300" align="left"/>\n<p>You do not have permission to access this file directly.</p>
+            <h1>Forbidden</h1><hr width="300" align="left"/><p>You do not have permission to access this file directly.</p>
         </html></body>');
 }
-
 define('TPL_PROFILE','_profile');
 define('TPL_GROUP_PROFILE','_gprofile');
 define('TABLE_EMAIL_LIST','email_list');
