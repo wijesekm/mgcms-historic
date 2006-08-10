@@ -209,6 +209,7 @@ if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
     include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."template.class.$php_ex");
     include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."word_filter.class.$php_ex");
     include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."globals{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}package.globals.$php_ex");
+    include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."captcha.class.$php_ex");
 }
 else{
     if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."ini{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}package.ini.$php_ex"))){
@@ -226,7 +227,7 @@ else{
     if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."word_filter.class.$php_ex"))){
         $GLOBALS["error_log"]->add_error(14,"script");
     }
-    if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."form_validator.class.$php_ex"))){
+    if(!(include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."captcha.class.$php_ex"))){
         $GLOBALS["error_log"]->add_error(16,"script");
     }
     if($GLOBALS["error_log"]->get_status()==2){

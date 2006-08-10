@@ -48,7 +48,7 @@ define("TABLE_PAGE_DATA","page_data");
 define("TABLE_RESTRICTED_PAGE_DATA","restricted_page_data");
 define("TABLE_PACKAGE_DATA","packages");
 define("TABLE_SITE_STATS","site_stats");
-define("TABLE_TEMP","tmp");
+define("TABLE_CAPTCHA","captcha");
 define("TABLE_SERVER_GLOBALS","server_globals");
 define("TABLE_LANG","lang_");
 define("TABLE_LANG_MAIN","langsets");
@@ -112,7 +112,8 @@ define("DEFAULT_PN",0);
 //
 //Paths
 //
-define("TMP_IMG","tmp");
+define("TMP_IMG","tmp/");
+define("TTF_FOLDER","fonts/")
 define("ICONS_IMG","icons");
 
 //
