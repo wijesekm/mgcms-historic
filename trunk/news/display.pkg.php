@@ -35,7 +35,7 @@ if(!defined('START_MANDRIGO')){
     die('<html><head>
             <title>Forbidden</title>
         </head><body>
-            <h1>Forbidden</h1><hr width="300" align="left"/>\n<p>You do not have permission to access this file directly.</p>
+            <h1>Forbidden</h1><hr width="300" align="left"/><p>You do not have permission to access this file directly.</p>
         </html></body>');
 }
 
@@ -59,9 +59,9 @@ class news_display{
 	//
 	//Loads necessary variables and templates
 	//
-	function nd_load($i,$type){
+	function nd_load($id,$type){
 	  	$this->tpl=new template();
-		if(!$sql_result=$this->news_db->db_fetcharray(TABLE_PREFIX.TABLE_NEWS_DATA,'',array(array('page_id','=',$GLOBALS['PAGE_DATA']['ID'],DB_AND),array('part_id','=',$i)))){
+		if(!$sql_result=$this->news_db->db_fetcharray(TABLE_PREFIX.TABLE_NEWS_DATA,'',array(array('page_id','=',$GLOBALS['PAGE_DATA']['ID'],DB_AND),array('part_id','=',$id)))){
             $GLOBALS['error_log']->add_error(100,'sql');
 			return false;
         }
@@ -74,13 +74,14 @@ class news_display{
 	        $this->config['show_rep_time']=$sql_result['show_rep_time'];
 	        $this->config['com_per_page']=$sql_result['com_per_page'];
 	        $this->config['feed_allow']=$sql_result['feed_allow'];
+	        $this->config['use_captcha']=$sql_result['use_captcha'];
 	        if($this->config['num_per_page']==0){
 	        	$this->config['num_per_page']=1; 	
 			}
 			if($this->config['com_per_page']==0&&$this->config['allow_comments']){
 				$this->config['com_per_page']=1;
 			}
-	        if(!$this->tpl->load($GLOBALS['MANDRIGO_CONFIG']['TEMPLATE_PATH'].$GLOBALS['PAGE_DATA']['DATAPATH'].$GLOBALS['PAGE_DATA']['ID'].'_'.$i.'_$type.'.TPL_EXT,'','<!--NEWS_DELIM-->')){
+	        if(!$this->tpl->load($GLOBALS['MANDRIGO_CONFIG']['TEMPLATE_PATH'].$GLOBALS['PAGE_DATA']['DATAPATH'].$GLOBALS['PAGE_DATA']['ID'].'_'.$id.'_'.$type.'.'.TPL_EXT,'','<!--NEWS_DELIM-->')){
 				$GLOBALS['error_log']->add_error(6,'display');
 				return false;
 			}
@@ -108,11 +109,11 @@ class news_display{
     
 	
 	//
-	//public function nd_displayfull($i);
+	//public function nd_displayfull($id);
 	//
 	//Displays the main new page
 	//
-    function nd_displayfull($i){
+    function nd_displayfull($id){
     	if(!$this->config){
 			return false;
 		}  
@@ -149,21 +150,21 @@ class news_display{
         $start_post=($GLOBALS['HTTP_GET']['PAGE_NUMBER']*$this->config['num_per_page'])+1;
         $end_post=($GLOBALS['HTTP_GET']['PAGE_NUMBER']+1)*$this->config['num_per_page'];
         //total posts in the system
-        $total_posts=$this->news_db->db_numrows(TABLE_PREFIX.TABLE_NEWS.'_'.$GLOBALS['PAGE_DATA']['ID'].'_'.$i,'');
+        $total_posts=$this->news_db->db_numrows(TABLE_PREFIX.TABLE_NEWS.'_'.$GLOBALS['PAGE_DATA']['ID'].'_'.$id,'');
         //prevents system from exceding the max number of posts
         if($end_post>$total_posts){
             $end_post=$total_posts;
         }
 		//$start_post--;     
         //forms array of post id's from most current to oldest
-        $id_array=$this->nd_postid($i,$total_posts);
+        $id_array=$this->nd_postid($id,$total_posts);
         $last_time=0;
         $dd_date=true;
         $post_content='';
         //generates the content string
         if($total_posts!=0){
 	        while($start_post<=$end_post){
-	            if($sql_result=$this->news_db->db_fetcharray(TABLE_PREFIX.TABLE_NEWS.'_'.$GLOBALS['PAGE_DATA']['ID'].'_'.$i,'',array(array('post_id','=',$id_array[$start_post])))){
+	            if($sql_result=$this->news_db->db_fetcharray(TABLE_PREFIX.TABLE_NEWS.'_'.$GLOBALS['PAGE_DATA']['ID'].'_'.$id,'',array(array('post_id','=',$id_array[$start_post])))){
 	                $dd_date=true;
 					if($this->nd_sameday($sql_result['post_time'],$last_time)&&$this->config['show_rep_time']==0){
 	                    $dd_date=false;
@@ -207,11 +208,11 @@ class news_display{
 	
 	
 	//
-	//public function nd_displaypost($i);
+	//public function nd_displaypost($id,$etype=0,$error='');
 	//
 	//Displays an individual post
 	//
-	function nd_displaypost($i,$etype=0,$error=''){
+	function nd_displaypost($id,$etype=0,$error=''){
     	if(!$this->config){
 			return false;
 		} 
@@ -224,7 +225,7 @@ class news_display{
 		if($this->config['allow_comments']){
 	        $start_post = ($GLOBALS['HTTP_GET']['PAGE_NUMBER']*$this->config['com_per_page'])+1;
 	        $end_post = ($GLOBALS['HTTP_GET']['PAGE_NUMBER']+1)*$this->config['com_per_page'];
-	    	$total_posts=$this->news_db->db_numrows(TABLE_PREFIX.TABLE_NEWS_COMMENTS.'_'.$GLOBALS['PAGE_DATA']['ID'].'_'.$i,array(array('post_id','=',$GLOBALS['HTTP_GET']['ID'])));
+	    	$total_posts=$this->news_db->db_numrows(TABLE_PREFIX.TABLE_NEWS_COMMENTS.'_'.$GLOBALS['PAGE_DATA']['ID'].'_'.$id,array(array('post_id','=',$GLOBALS['HTTP_GET']['ID'])));
 	        if($end_post > $total_posts){
 	            $end_post = $total_posts;
 	        }
@@ -232,9 +233,9 @@ class news_display{
 				$start_post=0;
 			}
 
-	        $id_array = $this->nd_postid($i,$total_posts,TABLE_NEWS_COMMENTS,$GLOBALS['HTTP_GET']['ID']);
+	        $id_array = $this->nd_postid($id,$total_posts,TABLE_NEWS_COMMENTS,$GLOBALS['HTTP_GET']['ID']);
 	        while($start_post <= $end_post){
-	            if($sql_result1=$this->news_db->db_fetcharray(TABLE_PREFIX.TABLE_NEWS_COMMENTS.'_'.$GLOBALS['PAGE_DATA']['ID'].'_'.$i,'',array(array('post_id','=',$GLOBALS['HTTP_GET']['ID'],DB_AND),array('com_id','=',$id_array[$start_post])))){
+	            if($sql_result1=$this->news_db->db_fetcharray(TABLE_PREFIX.TABLE_NEWS_COMMENTS.'_'.$GLOBALS['PAGE_DATA']['ID'].'_'.$id,'',array(array('post_id','=',$GLOBALS['HTTP_GET']['ID'],DB_AND),array('com_id','=',$id_array[$start_post])))){
 					if($sql_result1['user_id']){
 						$user=$this->gen_user($sql_result1['user_id']);	
 					}
@@ -272,7 +273,7 @@ class news_display{
 			}
 		}
 		//gets the post from the database
-		if(!$sql_result=$this->news_db->db_fetcharray(TABLE_PREFIX.TABLE_NEWS.'_'.$GLOBALS['PAGE_DATA']['ID'].'_'.$i,'',array(array('post_id','=',$GLOBALS['HTTP_GET']['ID'])))){
+		if(!$sql_result=$this->news_db->db_fetcharray(TABLE_PREFIX.TABLE_NEWS.'_'.$GLOBALS['PAGE_DATA']['ID'].'_'.$id,'',array(array('post_id','=',$GLOBALS['HTTP_GET']['ID'])))){
 			return $GLOBALS['LANGUAGE']['NO_POST'];  
 		}
 		$e2='';
@@ -299,6 +300,16 @@ class news_display{
 				$log.=ereg_replace('{ATTRIB}','',$GLOBALS['HTML']['P']).$e2.$GLOBALS['HTML']['!P'];
 			}
 		}
+		$captcha='';
+		if($this->config['use_captcha']&&!$GLOBALS['USER_DATA']['AUTHENTICATED']){
+			$ca=new captcha($this->news_db,$id);
+			$cid=$ca->ca_genca();
+			unset($ca);
+			$ca_tpl=new template();
+			$ca_tpl->load('',$this->tpl->return_template(7));
+			$ca_tpl->pparse(array('CA_IMG_PATH',$GLOBALS["SITE_DATA"]["IMG_URL"].TMP_IMG.$cid.'.jpg','CA_ID',$cid));
+			$captcha=$ca_tpl->return_template();
+		}
 		$this->pparse_vars=array('NEWS_MAIN_DATE',date($this->config['date_struct'],$sql_result['post_time'])
 								,'NEWS_MAIN_TITLE',$sql_result['post_title']
 								,'NEWS_MAIN_TIME',date($this->config['time_struct'],$sql_result['post_time'])
@@ -307,7 +318,8 @@ class news_display{
 								,'NEWS_COM',$post_content
 								,'NEWS_COM_ERROR',$log
 								,'NEWS_COM_ADD_COMMENT',$post_add
-								,'NEWS_COM_ACTION',$act);
+								,'NEWS_COM_ACTION',$act
+								,'NEWS_CAPTCHA',$captcha);
 		return $template;			
 	}
 	
@@ -344,6 +356,13 @@ class news_display{
 			  	if(!$GLOBALS['HTTP_POST']['NEWS_COMMENT']||$GLOBALS['HTTP_POST']['NEWS_COMMENT']===BAD_DATA){
 					$halt=true;
 					$errors=array_merge($errors,array($GLOBALS['LANGUAGE']['NEWS_BAD_POST']));
+				}
+				if($this->config['use_captcha']){
+					$ca=new captcha($this->news_db,$id);
+					if(!$ca->ca_checkca()){
+						$halt=true;
+						$errors=array_merge($errors,array($GLOBALS['LANGUAGE']['NEWS_INVALID_CAPTCHA']));
+					}	
 				}
 			  	$items=array($GLOBALS['HTTP_GET']['ID']
 							,time()
@@ -626,7 +645,7 @@ class news_display{
 	    else if($type=='external'){
 			$link=$url_data;	
 		}
-	    return ereg_replace('{ATTRIB}','href=\'$link\'',$GLOBALS['HTML']['A']).$name.$GLOBALS['HTML']['A!'];
+	    return ereg_replace('{ATTRIB}','href="'.$link.'"',$GLOBALS['HTML']['A']).$name.$GLOBALS['HTML']['A!'];
 	}
 	
 	//
