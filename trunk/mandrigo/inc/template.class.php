@@ -124,7 +124,7 @@ class template{
     function regester_type(){
 		if(!$GLOBALS["LANGUAGE"]["REG"]){
 		  	if($GLOBALS["LANGUAGE"]["SET_ENCODING"]){
-				header("Content-type: ".$GLOBALS["LANGUAGE"]["CONTENT_TYPE"]." charset=".$GLOBALS["LANG"]["CHARSET"]);
+				header("Content-type: ".$GLOBALS["LANGUAGE"]["CONTENT_TYPE"]." charset=".$GLOBALS["LANGUAGE"]["CHARSET"]);
 			}
 			else{
 				header("Content-type: ".$GLOBALS["LANGUAGE"]["CONTENT_TYPE"]);
