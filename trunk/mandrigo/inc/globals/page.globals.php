@@ -65,36 +65,61 @@ $GLOBALS["USER_DATA"]["PERMISSIONS"]["EDIT"]=false;
 $GLOBALS["USER_DATA"]["PERMISSIONS"]["CHANGE_DATA"]=false;
 $GLOBALS["USER_DATA"]["PERMISSIONS"]["FULL_CONTROL"]=false;
 
+$default_permissions="";
+$page_permissions="";
 if(!$GLOBALS["error_log"]->get_status()){
     for($i=0;$i<count($GLOBALS["USER_DATA"]["GROUPS"]);$i++){
-        if(!$sql_result=$sql_result=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_GROUP_PERMISSIONS,"",array(array("group_id","=",$GLOBALS["USER_DATA"]["GROUPS"]["$i"],DB_AND),array("page_id","=",$GLOBALS["PAGE_DATA"]["ID"])))){
-            if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
+        if(!$page_permissions=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_GROUP_PERMISSIONS,"",array(array("group_id","=",$GLOBALS["USER_DATA"]["GROUPS"]["$i"],DB_AND),array("page_id","=",$GLOBALS["PAGE_DATA"]["ID"])))){
+			$default_permissions=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_GROUP_PERMISSIONS,"",array(array("group_id","=",$GLOBALS["USER_DATA"]["GROUPS"]["$i"],DB_AND),array("page_id","=",0)));
+			if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]&&!$default_permissions){
                 $GLOBALS["error_log"]->add_error(1,"access");
                 break;
             }
+			else{
+	            if($default_permissions["read"]){
+	                $GLOBALS["USER_DATA"]["PERMISSIONS"]["READ"]=true;
+	            }
+	            if($default_permissions["read_restricted"]){
+	                $GLOBALS["USER_DATA"]["PERMISSIONS"]["READ_RESTRICTED"]=true;
+	            }
+	            if($default_permissions["post_to"]){
+	                $GLOBALS["USER_DATA"]["PERMISSIONS"]["POST_TO"]=true;
+	            }
+	            if($default_permissions["edit"]){
+	                $GLOBALS["USER_DATA"]["PERMISSIONS"]["EDIT"]=true;
+	            }
+	            if($default_permissions["change_data"]){
+	                $GLOBALS["USER_DATA"]["PERMISSIONS"]["CHANGE_DATA"]=true;
+	            }
+	            if($default_permissions["full_control"]){
+	                $GLOBALS["USER_DATA"]["PERMISSIONS"]["FULL_CONTROL"]=true;
+	            }
+			}
         }
         else{
-            if($sql_result["read"]){
+            if($page_permissions["read"]){
                 $GLOBALS["USER_DATA"]["PERMISSIONS"]["READ"]=true;
             }
-            if($sql_result["read_restricted"]){
+            if($page_permissions["read_restricted"]){
                 $GLOBALS["USER_DATA"]["PERMISSIONS"]["READ_RESTRICTED"]=true;
             }
-            if($sql_result["post_to"]){
+            if($page_permissions["post_to"]){
                 $GLOBALS["USER_DATA"]["PERMISSIONS"]["POST_TO"]=true;
             }
-            if($sql_result["edit"]){
+            if($page_permissions["edit"]){
                 $GLOBALS["USER_DATA"]["PERMISSIONS"]["EDIT"]=true;
             }
-            if($sql_result["change_data"]){
+            if($page_permissions["change_data"]){
                 $GLOBALS["USER_DATA"]["PERMISSIONS"]["CHANGE_DATA"]=true;
             }
-            if($sql_result["full_control"]){
+            if($page_permissions["full_control"]){
                 $GLOBALS["USER_DATA"]["PERMISSIONS"]["FULL_CONTROL"]=true;
             }
         }
     }
 }
+$page_permissions=array();
+$default_permissions=array();
 if(!$GLOBALS["error_log"]->get_status()){
     if(!($r_page_data=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_RESTRICTED_PAGE_DATA,"",array(array("page_id","=",$GLOBALS["PAGE_DATA"]["ID"]))))||!$GLOBALS["USER_DATA"]["PERMISSIONS"]["READ_RESTRICTED"]){
         $GLOBALS["PAGE_DATA"]["AUTH_PAGE"]=false;
@@ -121,5 +146,6 @@ if(!$GLOBALS["error_log"]->get_status()){
         $GLOBALS["PAGE_DATA"]["PAGE_STATUS"]=$r_page_data["page_status"];
     }
 }
-
+$r_page_data=array();
+$page_data=array();
 ?>
