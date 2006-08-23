@@ -151,6 +151,9 @@ class news_display{
         $end_post=($GLOBALS['HTTP_GET']['PAGE_NUMBER']+1)*$this->config['num_per_page'];
         //total posts in the system
         $total_posts=$this->news_db->db_numrows(TABLE_PREFIX.TABLE_NEWS.'_'.$GLOBALS['PAGE_DATA']['ID'].'_'.$id,'');
+        if($total_posts==0){
+			return $GLOBALS["LANGUAGE"]["NEWS_NO_POSTS"];
+		}
         //prevents system from exceding the max number of posts
         if($end_post>$total_posts){
             $end_post=$total_posts;
@@ -548,7 +551,10 @@ class news_display{
             while($i<=$pages){
               	$nav[0].=$this->nd_genlink(array('p',$GLOBALS['HTTP_GET']['PAGE'],'n',$i),($i+1));
      		    $i++;
-                if($i<=$pages){
+     		    if($i<=$pages&&$i%20){
+					$nav[0].=']'.$GLOBALS['HTML']['BR'].'[';
+				}
+                else if($i<=$pages){
                     $nav[0].=',';
                 }
             }
