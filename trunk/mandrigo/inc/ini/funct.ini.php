@@ -91,5 +91,16 @@ if(!defined("START_MANDRIGO")){
         $array = array_merge_recursive($array, $tmp);
         return $array;
     }
+    function unset_var($var){
+		if(is_array($var)){
+			$ak=array_keys($var);
+			$soq=count($ak);
+			for($i=0;$i<$soq;$i++){
+				@unset($var[$ak[$i]]);
+			}
+		}
+		@unset($var);
+		return true;
+	}
 
 ?>
