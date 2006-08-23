@@ -2,9 +2,9 @@
 /**********************************************************
     page.class.php
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 12/24/05
+	Date Last Edited: 08/23/06
 
-	Copyright (C) 2005  Kevin Wijesekera
+	Copyright (C) 2006 Kevin Wijesekera
 
     ##########################################################
 	This program is free software; you can redistribute it and/or
@@ -84,7 +84,7 @@ class page{
         if($GLOBALS["error_log"]->get_status()!=0){
                     $this->page_parse_vars=$this->merge_arrays(array("CONTENT",$GLOBALS["error_log"]->generate_report(),"PAGE_TITLE",$GLOBALS["LANGUAGE"]["ETITLE2"]),$this->page_parse_vars);
         }
-        else if($GLOBALS["PAGE_DATA"]["PAGE_STATUS"]||$GLOBALS["HTTP_GET"]["KEY"]==$GLOBALS["SITE_DATA"]["BYPASS_CODE"]){
+        else if($GLOBALS["PAGE_DATA"]["PAGE_STATUS"]==="1"||($GLOBALS["HTTP_GET"]["KEY"]==$GLOBALS["SITE_DATA"]["BYPASS_CODE"]&&$GLOBALS["SITE_DATA"]["BYPASS_CODE"])){
                 if($GLOBALS["PAGE_DATA"]["AUTH_PAGE"]&&!($GLOBALS["USER_DATA"]["PERMISSIONS"]["READ_RESTRICTED"]||$GLOBALS["USER_DATA"]["PERMISSIONS"]["FULL_CONTROL"])){
                     $GLOBALS["error_log"]->add_error(1,"access");
                     if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
@@ -108,7 +108,6 @@ class page{
                     $this->page_parse_vars=$this->merge_arrays(array("CONTENT",$GLOBALS["error_log"]->generate_report(),"PAGE_TITLE",$GLOBALS["LANGUAGE"]["ETITLE2"]),$this->page_parse_vars);
                 }
                 else{
-                  	//echo "<pre>";print_r($this->page_parse_vars);
                     $this->page_parse_vars=$this->merge_arrays(array("CONTENT",$content,"PAGE_TITLE",$GLOBALS["PAGE_DATA"]["TITLE"]),$this->page_parse_vars);
                 }
             }
@@ -125,14 +124,16 @@ class page{
                     return false;
                 }
                 else{
-                    $tmp_tpl=new template($GLOBALS["MANDRIGO_CONFIG"]["TEMPLATE_PATH"].TPL_OFF_PAGE);
+                    $tmp_tpl=new template();
+                    $tmp_tpl->load($GLOBALS["MANDRIGO_CONFIG"]["TEMPLATE_PATH"].TPL_OFF_PAGE);
                     $content=$tmp_tpl->return_template();
                     $this->page_parse_vars=$this->merge_arrays(array("CONTENT",$content,"PAGE_TITLE",$GLOBALS["LANGUAGE"]["OPTITLE"]),$this->page_parse_vars);
                 }
             }
             else{
-                $tmp_tpl=new template($GLOBALS["MANDRIGO_CONFIG"]["TEMPLATE_PATH"].TPL_OFF_PAGE);
-                $content=$tmp_tpl->return_template();
+                $tmp_tpl=new template();
+                $tmp_tpl->load($GLOBALS["MANDRIGO_CONFIG"]["TEMPLATE_PATH"].TPL_OFF_PAGE);
+				$content=$tmp_tpl->return_template();
                 $this->page_parse_vars=$this->merge_arrays(array("CONTENT",$content,"PAGE_TITLE",$GLOBALS["LANGUAGE"]["OPTITLE"]),$this->page_parse_vars);
             }
         }
