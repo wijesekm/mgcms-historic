@@ -42,11 +42,11 @@ if(!defined('START_MANDRIGO')){
 class menu_hook{
     function menu_display_hook(&$sql,$i){
         $menu = new menu_display($sql);
-        if(!$menu->load($i)){
+        if(!$menu->md_load($i)){
 			$GLOBALS["error_log"]->add_error(7,"display");
 			return false;
 		}
-		$string=$menu->display($i);
+		$string=$menu->md_display();
 		unset($menu);
         return $string;
     }

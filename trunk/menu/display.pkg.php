@@ -49,7 +49,19 @@ class menu_display{
     function menu_display(&$sql){
         $this->sql_db=$sql;
     }
-    function display($i){
+    
+	//#################################
+	//
+	// PUBLIC FUNCTIONS
+	//
+	//#################################
+
+	//
+	//public function md_display();
+	//
+	//Displays the menu
+	//
+    function md_display(){
 		$link_string='';
 		$soa=count($this->config['menu_items']);
 		for($i=0;$i<$soa;$i++){
@@ -75,27 +87,45 @@ class menu_display{
 		$this->tpl->pparse(array('MENU_STR',$link_string));
 		return $this->tpl->return_template();	  
 	}
-	function gen_url($page,$page_name){
-		if($GLOBALS['SITE_DATA']['URL_FORMAT']){
-			$attr='href=\''.$GLOBALS['SITE_DATA']['SITE_URL'].$GLOBALS['MANDRIGO_CONFIG']['INDEX'].'/p/$page\' '.$this->config['link_attrib']; 
-		}
-		else{
-	  		$attr='href=\''.$GLOBALS['SITE_DATA']['SITE_URL'].$GLOBALS['MANDRIGO_CONFIG']['INDEX'].'?p=$page\' '.$this->config['link_attrib']; 
-		}
-		return ereg_replace('{ATTRIB}',$attr,$GLOBALS['HTML']['A']).$page_name.$GLOBALS['HTML']['A!'];
-	}
-	function load($i){
+	
+	//
+	//public function md_load($id);
+	//
+	//Loads data for the current page given the part_id
+	//
+	function md_load($id){
 	  	
-		if(!$sql_result=$this->sql_db->db_fetcharray(TABLE_PREFIX.TABLE_MENU_DATA,'',array(array('page_id','=',$GLOBALS['PAGE_DATA']['ID'],DB_AND),array('part_id','=',$i)))){
+		if(!$sql_result=$this->sql_db->db_fetcharray(TABLE_PREFIX.TABLE_MENU_DATA,'',array(array('page_id','=',$GLOBALS['PAGE_DATA']['ID'],DB_AND),array('part_id','=',$id)))){
             return false;
         }
         $this->config['menu_items']=explode(';',$sql_result['menu_items']);
         $this->config['link_attrib']=$sql_result['link_attrib'];
         $this->tpl=new template();
-        if(!$this->tpl->load($GLOBALS['MANDRIGO_CONFIG']['TEMPLATE_PATH'].$GLOBALS['PAGE_DATA']['DATAPATH'].$GLOBALS['PAGE_DATA']['ID'].'_'.$i.'_menu.'.TPL_EXT,'','<!--LINK_DELIM-->')){
+        if(!$this->tpl->load($GLOBALS['MANDRIGO_CONFIG']['TEMPLATE_PATH'].$GLOBALS['PAGE_DATA']['DATAPATH'].$GLOBALS['PAGE_DATA']['ID'].'_'.$id.'_menu.'.TPL_EXT,'','<!--LINK_DELIM-->')){
 			return false;
 		}
         return true;
+	}
+	
+	//#################################
+	//
+	// PRIVATE FUNCTIONS
+	//
+	//#################################
+	
+	//
+	//private function md_genurl($page,$page_name);
+	//
+	//Generates a navigation URL given the page and the page_name
+	//	
+	function md_genurl($page,$page_name){
+		if($GLOBALS['SITE_DATA']['URL_FORMAT']){
+			$attr='href=\''.$GLOBALS['SITE_DATA']['SITE_URL'].$GLOBALS['MANDRIGO_CONFIG']['INDEX'].'/p/'.$page.'\' '.$this->config['link_attrib']; 
+		}
+		else{
+	  		$attr='href=\''.$GLOBALS['SITE_DATA']['SITE_URL'].$GLOBALS['MANDRIGO_CONFIG']['INDEX'].'?p='.$page.'\' '.$this->config['link_attrib']; 
+		}
+		return ereg_replace('{ATTRIB}',$attr,$GLOBALS['HTML']['A']).$page_name.$GLOBALS['HTML']['A!'];
 	}
 }
 ?>
