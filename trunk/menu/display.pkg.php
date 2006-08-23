@@ -81,7 +81,7 @@ class menu_display{
 				else{
 					$page=$name;
 				}
-				$link_string.=ereg_replace('{LINK}',$this->gen_url($page,$subpage_sql['page_rname']),$this->tpl->return_template(1));	
+				$link_string.=ereg_replace('{LINK}',$this->md_genurl($page,$subpage_sql['page_rname']),$this->tpl->return_template(1));	
 			}
 		}
 		$this->tpl->pparse(array('MENU_STR',$link_string));
