@@ -1,12 +1,14 @@
 <?php
 /**********************************************************
     admin.pkg.php
-    menu ver 1.0
+    menu ver 0.6.0
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 1/25/2006
+	Date Last Edited: 08/23/06
 
 	Copyright (C) 2006 Kevin Wijesekera
-
+	
+	MandrigoCMS is Copyright (C) 2005-2006 the MandrigoCMS Group
+	
     ##########################################################
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
@@ -29,12 +31,12 @@
 //
 //To prevent direct script access
 //
-if(!defined("START_MANDRIGO")){
-    die("<html><head>
+if(!defined('START_MANDRIGO')){
+    die('<html><head>
             <title>Forbidden</title>
         </head><body>
-            <h1>Forbidden</h1><hr width=\"300\" align=\"left\"/>\n<p>You do not have permission to access this file directly.</p>
-        </html></body>");
+            <h1>Forbidden</h1><hr width="300" align="left"/><p>You do not have permission to access this file directly.</p>
+        </html></body>');
 }
 
 //this file will contain admin functionality which will be called by the
