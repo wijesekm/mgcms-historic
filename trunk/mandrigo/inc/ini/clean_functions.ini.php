@@ -47,7 +47,7 @@ function clean_var($string,$method){
 			return (eregi("^[0-9]+$",$string))?$string:BAD_DATA;
 		break;
 		case "email":
-			return (eregi("^[a-z0-9._-]+@[a-z0-9-]+\.[a-z.]{2,5}$",$string))?$string:BAD_DATA;
+			return (eregi("^[a-z0-9._-]+@[a-z.0-9-]+\.[a-z.]{2,5}$",$string))?$string:BAD_DATA;
 		break;
 		case "id":
 			return (eregi("^[a-z]{0,1}[0-9]+$",$string))?$string:BAD_DATA;
