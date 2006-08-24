@@ -243,7 +243,7 @@ class phpmailer{
 			return false;
 		}
 		$header="";
-		$header.=$this->pm_headerline("Date",date("D, j M Y H:i:S O"));
+		$header.=$this->pm_headerline("Date",date("D, j M Y H:i:s O"));
 		$header.=$this->pm_headerline("Return-Path",$this->pm_formataddr($sender[0][0],$sender[0][1]));
 		
         // To be created automatically by mail()
