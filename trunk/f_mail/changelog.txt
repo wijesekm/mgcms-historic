@@ -1,3 +1,6 @@
+0.6.0
+1) Updated to work with mandrigo version 0.6.0
+
 1.0
 1) First revision of the form mail script
 2) Supports the php mail command (smtp mailer in a later version)

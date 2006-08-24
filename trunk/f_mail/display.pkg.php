@@ -1,12 +1,14 @@
 <?php
 /**********************************************************
     display.pkg.php
-    f_mail ver 1.0
+    f_mail ver 0.6.0
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 12/29/05
+	Date Last Edited: 08/24/06
 
-	Copyright (C) 2005 Kevin Wijesekera
-
+	Copyright (C) 2006 Kevin Wijesekera
+	
+	MandrigoCMS is Copyright (C) 2005-2006 the MandrigoCMS Group
+	
     ##########################################################
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
@@ -29,45 +31,38 @@
 //
 //To prevent direct script access
 //
-if(!defined("START_MANDRIGO")){
-    die("<html><head>
+if(!defined('START_MANDRIGO')){
+    die('<html><head>
             <title>Forbidden</title>
         </head><body>
-            <h1>Forbidden</h1><hr width=\"300\" align=\"left\"/>\n<p>You do not have permission to access this file directly.</p>
-        </html></body>");
+            <h1>Forbidden</h1><hr width="300" align="left"/><p>You do not have permission to access this file directly.</p>
+        </html></body>');
 }
-//this file will contain display functionality which will be called by the
-//{packagename}_display_hook and {packagename}_vars_hook function which you will write.
-//Basically do what ever you want with it.
 
 class f_mail_display{
 
     var $config;
     var $db;
-    var $fv;
     var $pparse_vars;
     var $def_error;
 
     function f_mail_display(&$sql_db){
         $this->db=$sql_db;
-        $attrib="src=\"".$GLOBALS["SITE_DATA"]["IMG_URL"]."dot.jpg\" alt=\"*\" border=\"0\"";
-        $this->config["STAR"]=ereg_replace("{ATTRIB}",$attrib,$GLOBALS["HTML"]["IMG"]);
-        $this->fv=new form_validator($this->db,4);
+        $attrib='src="'.$GLOBALS['SITE_DATA']['IMG_URL'].'dot.jpg" alt="*" border="0"';
+        $this->config['STAR']=ereg_replace('{ATTRIB}',$attrib,$GLOBALS['HTML']['IMG']);
 	}
-	function id(){
-		return rand(0,999999);
-	}
-    function display($id,$errors=array("FAIL"=>false,"MAIL"=>false)){
-      	$message_id=$this->id();
-      	if($this->config["FORM_VALIDATE"]==1){
-	      	if(!$this->fv->make("$message_id","fm")){
+    function fm_display($id,$errors=array()){
+      	if($this->config['FORM_VALIDATE']==1){
+      	 	$validate=new captcha($this->db,$id);
+	      	if(!$validate->ca_genca()){
 				return false;
 			}
       	}
+      	
         //gets the email address and name to mail to
-        $to_name=false;
-        $to_email=false;
-        $r_email=false;
+        $to_name="";
+        $to_email="";
+        $r_email="";
         
         if(!$sql_result=$this->db->db_fetcharray(TABLE_PREFIX.TABLE_EMAIL_LIST,"",array(array("email_id","=",$GLOBALS["HTTP_GET"]["MAIL_ADDR"])))){
             if(!$sql_result=$this->db->db_fetcharray(TABLE_PREFIX.TABLE_EMAIL_LIST,"",array(array("user_email","=",$GLOBALS["HTTP_GET"]["MAIL_ADDR"])))){
@@ -172,14 +167,12 @@ class f_mail_display{
 		}
         $tmp = new template();
         $tmp->load($GLOBALS["MANDRIGO_CONFIG"]["TEMPLATE_PATH"].$GLOBALS["PAGE_DATA"]["DATAPATH"].$GLOBALS["PAGE_DATA"]["ID"]."_".$id."_email.".TPL_EXT);
-        //echo "<pre>";print_r($this->pparse_vars);
 		return $tmp->return_template();
     }
-    function return_vars(){
-      	//echo "<pre>";print_r($this->pparse_vars);
+    function fm_retvars(){
         return $this->pparse_vars;
     }
-    function mail($id){
+    function fm_mail($id){
         $errors=array();
 
         //Error Level: 0 - dont fail on anything
@@ -207,8 +200,9 @@ class f_mail_display{
             return false;
         }
         if($this->config["FORM_VALIDATE"]==1){
-	        if(!$this->fv->check($GLOBALS["HTTP_POST"]["S_CODE"],$GLOBALS["HTTP_GET"]["ID"],"fm")){
-				$errors["MAIL_STAR5"]=true;
+         	$validate=new captcha($this->db,$id);
+         	if(!$validate->ca_checkca()){
+				$errors["MAIL_STAR5"]=true;	
 			}
 		}
         //if we have any errors go back to display screen and show errors
@@ -218,8 +212,8 @@ class f_mail_display{
             return $this->display($id,$errors);
         }
         //gets e-mail addr for user who is getting the e-mail sent to
-        $rc_email=false;
-        $rc_fullname=false;
+        $rc_email='';
+        $rc_fullname='';
         if($GLOBALS["HTTP_GET"]["MAIL_ADDR_SYS"]){
             if(!$sql_result=$this->db->db_fetcharray(TABLE_PREFIX.TABLE_EMAIL_LIST,"",array(array("email_id","=",$GLOBALS["HTTP_GET"]["MAIL_ADDR"])))){
                 return false;
@@ -245,29 +239,18 @@ class f_mail_display{
             $rc_email=$GLOBALS["HTTP_GET"]["MAIL_ADDR"];
             $rc_fullname=$GLOBALS["HTTP_GET"]["MAIL_ADDR"];
         }
-        //
-        //Form mail data strings
-        //
+        //makes the message and then sends it
+        $ev=new envelope($id);
+        
         //subject
         $subj=$this->config["SUBJ_PREFIX"]." ".((isset($GLOBALS["HTTP_POST"]["M_SUBJECT"]))?$GLOBALS["HTTP_POST"]["M_SUBJECT"]:$sql_result["default_subj"]);
-        $subj=ereg_replace("\n","",$subj);
-        //to
-        $send_to="$rc_fullname <$rc_email>";
+        $ev->ev_addsubject(ereg_replace("\n","",$subj));
         
-        //header
-        $header="From: ".$GLOBALS["HTTP_POST"]["M_USER_NAME"]." <".$GLOBALS["HTTP_POST"]["M_USER_EMAIL"].">\r\n";
-        $header.="Reply-To: ".$GLOBALS["HTTP_POST"]["M_USER_NAME"]." <".$GLOBALS["HTTP_POST"]["M_USER_EMAIL"].">\r\n";
-        if($this->config["SEND_TYPE"]==1){
-            $header.="Content-Type: multipart/mixed;\r\n";
-            $send_msg=$GLOBALS["HTTP_POST"]["M_MESSAGE"];
-        }
-        else if($this->config["SEND_TYPE"]==2){
-            $header.="MIME-Version: 1.0\r\n";
-            $header.="Content-type: text/html; charset=iso-8859-1\r\n";
-            $send_msg=ereg_replace("\n","<br/>\n",$GLOBALS["HTTP_POST"]["M_MESSAGE"]);
-            $send_msg=$send_msg;
-        }
-        $tpl=new template();
+        //to
+        $ev->ev_addrecipient($rc_email,$rc_fullname)
+        $ev->ev_addsender($GLOBALS["HTTP_POST"]["M_USER_EMAIL"],$GLOBALS["HTTP_POST"]["M_USER_NAME"]);
+
+		$tpl=new template();
         $tpl->load("",$this->config["EMAIL_MSG"]);
         $eparse_vars = array("MESSAGE",$send_msg
 							,"SITE_NAME",$GLOBALS["SITE_DATA"]["SITE_NAME"]
@@ -280,12 +263,13 @@ class f_mail_display{
 							);
         $tpl->pparse($eparse_vars,false);
         $send_msg=$tpl->return_template();
-        if(!@mail($send_to,$subj,$send_msg,$header)){
-            return false;
-        }
-        return $this->display($id,array("FAIL"=>false,"MAIL"=>true));
+        $ev->ev_addbody($send_msg);
+        if(!$ev->ev_send()){
+			return false;
+		}
+		return true;
     }
-    function load($i){
+    function fm_load($i){
       	if(!$sql_result=$this->db->db_fetcharray(TABLE_PREFIX.TABLE_EMAIL_DATA,"",array(array("page_id","=",$GLOBALS["PAGE_DATA"]["ID"],DB_AND),array("part_id","=",$i)))){
             return false;
         }

@@ -1,12 +1,14 @@
 <?php
 /**********************************************************
     hooks.pkg.php
-    f_mail ver 1.0
+    f_mail ver 0.6.0
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 12/29/05
+	Date Last Edited: 08/24/06
 
-	Copyright (C) 2005 Kevin Wijesekera
-
+	Copyright (C) 2006 Kevin Wijesekera
+	
+	MandrigoCMS is Copyright (C) 2005-2006 the MandrigoCMS Group
+	
     ##########################################################
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
@@ -29,34 +31,36 @@
 //
 //To prevent direct script access
 //
-if(!defined("START_MANDRIGO")){
-    die("<html><head>
+if(!defined('START_MANDRIGO')){
+    die('<html><head>
             <title>Forbidden</title>
         </head><body>
-            <h1>Forbidden</h1><hr width=\"300\" align=\"left\"/>\n<p>You do not have permission to access this file directly.</p>
-        </html></body>");
+            <h1>Forbidden</h1><hr width="300" align="left"/><p>You do not have permission to access this file directly.</p>
+        </html></body>');
 }
+
 
 class f_mail_hook{
 
     var $pparse_vars;
 
-    function f_mail_display_hook(&$sql,&$error_log,$i){
+    function f_mail_display_hook(&$sql,$i){
         $email = new f_mail_display($sql);
+        $string=""
         $email->load($i);
-        if($GLOBALS["HTTP_GET"]["ACTION"]=="D"){
-            $tmp=$email->display($i);
+        if($GLOBALS['HTTP_GET']['ACTION']=='D'){
+            $string=$email->fm_display($i);
         }
         else{
-            $tmp=$email->mail($i);
+            $string=$email->fm_mail($i);
         }
-        $this->pparse_vars=$email->return_vars();
-        return $tmp;
+        $this->pparse_vars=$email->fm_retvars();
+        return $string;
     }
-    function f_mail_vars_hook(&$sql,&$error_log,$i){
+    function f_mail_vars_hook(&$sql,$i){
         return $this->pparse_vars;
     }
-    function f_mail_admin_hook(&$sql,&$error_log,$i){
+    function f_mail_admin_hook(&$sql,$i){
         return "";
     }
 }
