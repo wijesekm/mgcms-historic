@@ -211,6 +211,7 @@ if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
     include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."globals{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}package.globals.$php_ex");
     include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."captcha.class.$php_ex");
     include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."phpmailer.class.$php_ex");
+    include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."envelope.class.$php_ex");
 }
 else{
     if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."ini{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}package.ini.$php_ex"))){
@@ -232,7 +233,10 @@ else{
         $GLOBALS["error_log"]->add_error(16,"script");
     }
     if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."phpmailer.class.$php_ex"))){
-        $GLOBALS["error_log"]->add_error(17,"script");
+        $GLOBALS["error_log"]->add_error(18,"script");
+    }
+    if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."envelope.class.$php_ex"))){
+        $GLOBALS["error_log"]->add_error(19,"script");
     }
     if($GLOBALS["error_log"]->get_status()==2){
 		die($GLOBALS["ELOG"]["HTMLHEAD"].$GLOBALS["ELOG"]["TITLE"].$GLOBALS["ELOG"]["HTMLBODY"].
