@@ -318,7 +318,7 @@ class phpmailer{
                 $result.=$this->pm_encodestring($body, $this->config["encoding"]);
             break;
             case "attachments":
-            	$result .= $this->pm_formatboundary($this->config["b1"]);
+            	$result .= $this->pm_formatboundary($this->config["b1"],"");
                 $result .= $this->pm_encodestring($body, $this->config["encoding"]);
                 $result .= $this->config["lf"];
                 $result .= $this->pm_attach($attachments);
@@ -428,7 +428,9 @@ class phpmailer{
 	function pm_attach($attachments){
     	// Return text of body
         $mime = array();
-
+		if(!$attachments){
+			return false;
+		}
         // Add all attachments
         for($i=0;$i<count($attachments);$i++){
             // Check for string attachment
