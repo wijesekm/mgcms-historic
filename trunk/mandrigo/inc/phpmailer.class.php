@@ -40,18 +40,10 @@ if(!defined('START_MANDRIGO')){
         </html></body>');
 }
 
-define("MULTIPART_ALT","multipart/alternative");
-define("TEXT_PLAIN","text/plain");
-define("TEXT_HTML","text/html");
-define("MULTI_ALT","multipart/alternative");
-
 class phpmailer{
-	  
-	function phpmailer(){
-	  
-		$host=explode("/",ereg_replace("^[a-z]+://","",$GLOBALS["SITE_DATA"]["SITE_URL"]));
-	  	$this->config=array("sendmail"=>"/usr/sbin/sendmail"
-		  					,"lf"=>"\n"
+ 
+	var $this->config=array("sendmail"=>"/usr/sbin/sendmail"
+			  				,"lf"=>"\n"
 							,"crlf"=>"\r\n"
 							,"mailer"=>"mail"
 							,"hostname"=>$host[0]
@@ -59,6 +51,11 @@ class phpmailer{
 							,"dctype"=>TEXT_PLAIN
 							,"wrap"=>40
 							,"priority"=>3);
+	
+	function phpmailer($conf=""){
+		if($conf){
+			$this->config=array_merge($this->config,$conf);
+		}
 	}
 	
 	//#################################
@@ -151,7 +148,7 @@ class phpmailer{
 	//	
 	function pm_sendmail($body,$headers,$sender){
         if ($sender!=""){
-			$sendmail=sprintf("%s -oi -f %s -t", $this->config["sendmail"], $sender);	
+			$sendmail=sprintf("%s -oi -f %s -t", $this->config["sendmail"], $sender[0][1]);	
 		}
         else{
 			$sendmail=sprintf("%s -oi -t", $this->config["sendmail"]);
