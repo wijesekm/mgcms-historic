@@ -53,6 +53,7 @@ define("TABLE_SERVER_GLOBALS","server_globals");
 define("TABLE_LANG","lang_");
 define("TABLE_LANG_MAIN","langsets");
 define("TABLE_CAPTCHA_DATA","captcha_data");
+define("TABLE_ENVELOPE_DATA","envelope_data");
 
 //
 //DB Constants
