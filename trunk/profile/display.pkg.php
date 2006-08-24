@@ -132,8 +132,9 @@ class profile_display{
 		return $tpl->return_template();	
 	}
 	function gen_email($id,$name,$email){
-		if($eid=$this->profile_db->db_fetchresult(TABLE_PREFIX.TABLE_EMAIL_LIST,'email_id',array(array('user_id','=',$id)))&&$GLOBALS['SITE_DATA']['FORM_MAIL_PAGE']){
-			return $this->gen_link_internal($GLOBALS['SITE_DATA']['FORM_MAIL_PAGE'],$name,'mail',$eid);
+		$fmid=$this->profile_db->db_fetchresult(TABLE_PREFIX.TABLE_EMAIL_LIST,'email_id',array(array('user_id','=',$id)));
+		if($fmid&&$GLOBALS['SITE_DATA']['FORM_MAIL_PAGE']){
+			return $this->gen_link_internal($GLOBALS['SITE_DATA']['FORM_MAIL_PAGE'],$name,'mail',$fmid);
 		}
 		else{
 			$link='href="#" onclick="document.location=\'mai\'+\'lto:';
