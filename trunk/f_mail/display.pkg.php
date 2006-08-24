@@ -51,10 +51,25 @@ class f_mail_display{
         $attrib='src="'.$GLOBALS['SITE_DATA']['IMG_URL'].'dot.jpg" alt="*" border="0"';
         $this->config['STAR']=ereg_replace('{ATTRIB}',$attrib,$GLOBALS['HTML']['IMG']);
 	}
+    function fm_load($i){
+      	if(!$sql_result=$this->db->db_fetcharray(TABLE_PREFIX.TABLE_EMAIL_DATA,"",array(array("page_id","=",$GLOBALS["PAGE_DATA"]["ID"],DB_AND),array("part_id","=",$i)))){
+            return false;
+        }
+        $this->config["SUBJ_PREFIX"]=$sql_result["subj_prefix"];
+        $this->config["DEFAULT_SUBJ"]=$sql_result["default_subj"];
+        $this->config["HTML_ON"]=$sql_result["html_on"];
+        $this->config["BBCODE_ON"]=$sql_result["bbcode_on"];
+        $this->config["EMAIL_MSG"]=$sql_result["email_msg"];
+        $this->config["E_LEVEL"]=$sql_result["error_level"];
+        $this->config["SEND_TYPE"]=$sql_result["send_type"];
+        $this->config["FORM_VALIDATE"]=$sql_result["form_validate"];
+        $this->config["ALERT_STYLE"]=$sql_result["alert_style"];
+        $this->config["DATE_FORMAT"]=$sql_result["date_format"];
+    }
     function fm_display($id,$errors=array()){
       	if($this->config['FORM_VALIDATE']==1){
       	 	$validate=new captcha($this->db,$id);
-	      	if(!$validate->ca_genca()){
+	      	if(!$ca_id=$validate->ca_genca()){
 				return false;
 			}
       	}
@@ -110,60 +125,65 @@ class f_mail_display{
             $this->pparse_vars = array("MAIL_S_NAME",$to_name
                                 ,"MAIL_S_FORM_EMAIL",$to_email
                                 ,"MAIL_S_DISP_EMAIL",$r_email
-								,"MAIL_FORM_ID","$message_id"
-								,"MAIL_IMG",$GLOBALS["SITE_DATA"]["IMG_URL"].TMP_IMG."/"."fm_".$message_id.".png");
+								,"MAIL_CAID",(string)$ca_id
+								,"MAIL_IMG",$GLOBALS["SITE_DATA"]["IMG_URL"].TMP_IMG.$ca_id.".jpg");
         if($errors["FAIL"]&&!$errors["MAIL"]){
 			if($errors["MAIL_STAR1"]){
-				$this->pparse_vars=$this->merge_array(array("MAIL_STAR1",$this->config["STAR"]),$this->pparse_vars);  
+				$this->pparse_vars=$this->fm_mergearray(array("MAIL_STAR1",$this->config["STAR"]),$this->pparse_vars);  
 			}
 			else{
-			 	$this->pparse_vars=$this->merge_array(array("MAIL_STAR1",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars);   
+			 	$this->pparse_vars=$this->fm_mergearray(array("MAIL_STAR1",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars);   
 			}
 			if($errors["MAIL_STAR2"]){
-				$this->pparse_vars=$this->merge_array(array("MAIL_STAR2",$this->config["STAR"]),$this->pparse_vars);  
+				$this->pparse_vars=$this->fm_mergearray(array("MAIL_STAR2",$this->config["STAR"]),$this->pparse_vars);  
 			}
 			else{
-				$this->pparse_vars=$this->merge_array(array("MAIL_STAR2",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars);    
+				$this->pparse_vars=$this->fm_mergearray(array("MAIL_STAR2",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars);    
 			}
 			if($errors["MAIL_STAR3"]){
-			 	$this->pparse_vars=$this->merge_array(array("MAIL_STAR3",$this->config["STAR"]),$this->pparse_vars); 
+			 	$this->pparse_vars=$this->fm_mergearray(array("MAIL_STAR3",$this->config["STAR"]),$this->pparse_vars); 
 			}
 			else{
-				$this->pparse_vars=$this->merge_array(array("MAIL_STAR3",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars);    
+				$this->pparse_vars=$this->fm_mergearray(array("MAIL_STAR3",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars);    
 			}
 			if($errors["MAIL_STAR4"]){
-				$this->pparse_vars=$this->merge_array(array("MAIL_STAR4",$this->config["STAR"]),$this->pparse_vars);
+				$this->pparse_vars=$this->fm_mergearray(array("MAIL_STAR4",$this->config["STAR"]),$this->pparse_vars);
 			}
 			else{
-				$this->pparse_vars=$this->merge_array(array("MAIL_STAR4",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars);    
+				$this->pparse_vars=$this->fm_mergearray(array("MAIL_STAR4",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars);    
 			}
 			if($errors["MAIL_STAR5"]){
-				$this->pparse_vars=$this->merge_array(array("MAIL_STAR5",$this->config["STAR"]),$this->pparse_vars);
+				$this->pparse_vars=$this->fm_mergearray(array("MAIL_STAR5",$this->config["STAR"]),$this->pparse_vars);
 			}
 			else{
-				$this->pparse_vars=$this->merge_array(array("MAIL_STAR5",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars);    
+				$this->pparse_vars=$this->fm_mergearray(array("MAIL_STAR5",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars);    
 			}
-			$this->pparse_vars=$this->merge_array(array("MAIL_TOP_ERROR",$GLOBALS["LANGUAGE"]["F_MAIL_ERROR_ALERT"].$GLOBALS["HTML"]["BR"]),$this->pparse_vars);
+			if(!$errors["UNKNOWN"]){
+				$this->pparse_vars=$this->fm_mergearray(array("MAIL_TOP_ERROR",$GLOBALS["LANGUAGE"]["F_MAIL_ERROR_ALERT"].$GLOBALS["HTML"]["BR"]),$this->pparse_vars);	
+			}
+			else{
+				$this->pparse_vars=$this->fm_mergearray(array("MAIL_TOP_ERROR",$GLOBALS["LANGUAGE"]["F_MAIL_INTERNAL"].$GLOBALS["HTML"]["BR"]),$this->pparse_vars);
+			}
 			$vars=array("MAIL_U_NAME",$GLOBALS["HTTP_POST"]["M_USER_NAME"]
                         ,"MAIL_U_EMAIL",$GLOBALS["HTTP_POST"]["M_USER_EMAIL"]
                         ,"MAIL_SUBJECT",$GLOBALS["HTTP_POST"]["M_SUBJECT"]
                         ,"MAIL_MESSAGE",$GLOBALS["HTTP_POST"]["M_MESSAGE"]);
-            $this->pparse_vars=$this->merge_array($vars,$this->pparse_vars);
+            $this->pparse_vars=$this->fm_mergearray($vars,$this->pparse_vars);
 		}
 		else if(!$errors["FAIL"]&&$errors["MAIL"]){
-			$this->pparse_vars=$this->merge_array(array("MAIL_TOP_ERROR",$GLOBALS["LANGUAGE"]["F_MAIL_SENT"].$GLOBALS["HTML"]["BR"]),$this->pparse_vars);	
-			$this->pparse_vars=$this->merge_array(array("MAIL_STAR1",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars); 
-			$this->pparse_vars=$this->merge_array(array("MAIL_STAR2",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars); 
-			$this->pparse_vars=$this->merge_array(array("MAIL_STAR3",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars); 
-			$this->pparse_vars=$this->merge_array(array("MAIL_STAR4",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars); 	
-			$this->pparse_vars=$this->merge_array(array("MAIL_STAR5",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars); 	
+			$this->pparse_vars=$this->fm_mergearray(array("MAIL_TOP_ERROR",$GLOBALS["LANGUAGE"]["F_MAIL_SENT"].$GLOBALS["HTML"]["BR"]),$this->pparse_vars);	
+			$this->pparse_vars=$this->fm_mergearray(array("MAIL_STAR1",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars); 
+			$this->pparse_vars=$this->fm_mergearray(array("MAIL_STAR2",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars); 
+			$this->pparse_vars=$this->fm_mergearray(array("MAIL_STAR3",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars); 
+			$this->pparse_vars=$this->fm_mergearray(array("MAIL_STAR4",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars); 	
+			$this->pparse_vars=$this->fm_mergearray(array("MAIL_STAR5",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars); 	
 		}
 		else{
-			$this->pparse_vars=$this->merge_array(array("MAIL_STAR1",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars); 
-			$this->pparse_vars=$this->merge_array(array("MAIL_STAR2",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars); 
-			$this->pparse_vars=$this->merge_array(array("MAIL_STAR3",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars); 
-			$this->pparse_vars=$this->merge_array(array("MAIL_STAR4",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars); 	
-			$this->pparse_vars=$this->merge_array(array("MAIL_STAR5",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars); 	
+			$this->pparse_vars=$this->fm_mergearray(array("MAIL_STAR1",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars); 
+			$this->pparse_vars=$this->fm_mergearray(array("MAIL_STAR2",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars); 
+			$this->pparse_vars=$this->fm_mergearray(array("MAIL_STAR3",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars); 
+			$this->pparse_vars=$this->fm_mergearray(array("MAIL_STAR4",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars); 	
+			$this->pparse_vars=$this->fm_mergearray(array("MAIL_STAR5",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars); 	
 		}
         $tmp = new template();
         $tmp->load($GLOBALS["MANDRIGO_CONFIG"]["TEMPLATE_PATH"].$GLOBALS["PAGE_DATA"]["DATAPATH"].$GLOBALS["PAGE_DATA"]["ID"]."_".$id."_email.".TPL_EXT);
@@ -209,12 +229,12 @@ class f_mail_display{
         if(count($errors)){
             $errors["FAIL"]=true;
             $errors["MAIL"]=false;
-            return $this->display($id,$errors);
+            return $this->fm_display($id,$errors);
         }
         //gets e-mail addr for user who is getting the e-mail sent to
         $rc_email='';
         $rc_fullname='';
-        if($GLOBALS["HTTP_GET"]["MAIL_ADDR_SYS"]){
+        if(!eregi("@",$GLOBALS["HTTP_GET"]["MAIL_ADDR"])){
             if(!$sql_result=$this->db->db_fetcharray(TABLE_PREFIX.TABLE_EMAIL_LIST,"",array(array("email_id","=",$GLOBALS["HTTP_GET"]["MAIL_ADDR"])))){
                 return false;
             }
@@ -239,20 +259,22 @@ class f_mail_display{
             $rc_email=$GLOBALS["HTTP_GET"]["MAIL_ADDR"];
             $rc_fullname=$GLOBALS["HTTP_GET"]["MAIL_ADDR"];
         }
-        //makes the message and then sends it
-        $ev=new envelope($id);
         
+        //makes the message and then sends it
+        $ev=new envelope($id,$this->db);
+
         //subject
         $subj=$this->config["SUBJ_PREFIX"]." ".((isset($GLOBALS["HTTP_POST"]["M_SUBJECT"]))?$GLOBALS["HTTP_POST"]["M_SUBJECT"]:$sql_result["default_subj"]);
         $ev->ev_addsubject(ereg_replace("\n","",$subj));
         
         //to
-        $ev->ev_addrecipient($rc_email,$rc_fullname)
+        $ev->ev_addrecipient((string)$rc_email,(string)$rc_fullname);
         $ev->ev_addsender($GLOBALS["HTTP_POST"]["M_USER_EMAIL"],$GLOBALS["HTTP_POST"]["M_USER_NAME"]);
 
 		$tpl=new template();
         $tpl->load("",$this->config["EMAIL_MSG"]);
-        $eparse_vars = array("MESSAGE",$send_msg
+        $eparse_vars = array("MESSAGE",$GLOBALS["HTTP_POST"]["M_MESSAGE"]
+        					,"MANDRIGO_VERSION",$GLOBALS["SITE_DATA"]["MANDRIGO_VER"]
 							,"SITE_NAME",$GLOBALS["SITE_DATA"]["SITE_NAME"]
 							,"SITE_URL",$GLOBALS["SITE_DATA"]["SITE_URL"]
 							,"TO",$rc_fullname
@@ -263,28 +285,13 @@ class f_mail_display{
 							);
         $tpl->pparse($eparse_vars,false);
         $send_msg=$tpl->return_template();
-        $ev->ev_addbody($send_msg);
+        $ev->ev_addbody((string)$send_msg);
         if(!$ev->ev_send()){
-			return false;
+			return $this->fm_display($id,array("FAIL"=>true,"MAIL"=>false,"UNKNOWN"=>true));
 		}
-		return true;
+		return $this->fm_display($id,array("FAIL"=>false,"MAIL"=>true));
     }
-    function fm_load($i){
-      	if(!$sql_result=$this->db->db_fetcharray(TABLE_PREFIX.TABLE_EMAIL_DATA,"",array(array("page_id","=",$GLOBALS["PAGE_DATA"]["ID"],DB_AND),array("part_id","=",$i)))){
-            return false;
-        }
-        $this->config["SUBJ_PREFIX"]=$sql_result["subj_prefix"];
-        $this->config["DEFAULT_SUBJ"]=$sql_result["default_subj"];
-        $this->config["HTML_ON"]=$sql_result["html_on"];
-        $this->config["BBCODE_ON"]=$sql_result["bbcode_on"];
-        $this->config["EMAIL_MSG"]=$sql_result["email_msg"];
-        $this->config["E_LEVEL"]=$sql_result["error_level"];
-        $this->config["SEND_TYPE"]=$sql_result["send_type"];
-        $this->config["FORM_VALIDATE"]=$sql_result["form_validate"];
-        $this->config["ALERT_STYLE"]=$sql_result["alert_style"];
-        $this->config["DATE_FORMAT"]=$sql_result["date_format"];
-    }
-    function merge_array($a1,$a2){
+    function fm_mergearray($a1,$a2){
 		$new_array=array();
 		$j=0;
 		for($i=0;$i<count($a1);$i++){

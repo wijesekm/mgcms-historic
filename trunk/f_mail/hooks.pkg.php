@@ -46,8 +46,8 @@ class f_mail_hook{
 
     function f_mail_display_hook(&$sql,$i){
         $email = new f_mail_display($sql);
-        $string=""
-        $email->load($i);
+        $string="";
+        $email->fm_load($i);
         if($GLOBALS['HTTP_GET']['ACTION']=='D'){
             $string=$email->fm_display($i);
         }
