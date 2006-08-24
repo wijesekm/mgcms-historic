@@ -73,16 +73,16 @@ class phpmailer{
 	//	
 	function pm_mail($recipients,$sender,$subject,$body,$attachments=array(),$alt=true){
 	  	$subject=strip_tags($subject);
+	  	print_r($attachments);
 	  	$ctype=$this->config["dctype"];
 	  	$mtype="";
 		if((count($recipients["to"])+count($recipients["cc"])+count($recipients["bcc"]))<1){
             return false;
         }
-		$alen=count($attachments);
 		if($alt){
 			$ctype=MULTIPART_ALT;
 		}	
-		if($alen>0){
+		if($attachments[1]){
 			if($alt){
 				$mtype="alt_attachments";
 			}
@@ -99,13 +99,14 @@ class phpmailer{
 		$headers=$this->pm_makeheader($recipients,$sender,$subject,$attachments,$ctype,$mtype);
 		$body=$this->pm_makebody($body,$attachments,$mtype);
 		$send_to=$this->pm_mkaddr($recipients["to"],"",false);
+		
 		switch($this->config["mailer"]){
 			case "sendmail":
-				return $this->pm_sendmail($body,$headers,$sender);
+				return $this->pm_sendmail($body,$headers,$sender[0][1]);
 			break;
 			case "mail":
 			default:
-				return $this->pm_phpmail($send_to,$subject,$body,$headers,$sender);
+				return $this->pm_phpmail($send_to,$subject,$body,$headers,$sender[0][1]);
 			break;
 		};  
 		return false;
@@ -126,8 +127,8 @@ class phpmailer{
 	  	$params="";
 		if($sender!=""&&strlen(ini_get("safe_mode"))<1){
 		    $old_from = ini_get("sendmail_from");
-            ini_set("sendmail_from", $sender[0][1]);
-            $params = sprintf("-oi -f %s", $sender[0][1]);
+            ini_set("sendmail_from", $sender);
+            $params = sprintf("-oi -f %s", $sender);
 		}
         if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
 			mail($send_to, $this->pm_encodeheader($subject), $body, $header,$params);
@@ -150,7 +151,7 @@ class phpmailer{
 	//	
 	function pm_sendmail($body,$headers,$sender){
         if ($sender!=""){
-			$sendmail=sprintf("%s -oi -f %s -t", $this->config["sendmail"], $sender[0][1]);	
+			$sendmail=sprintf("%s -oi -f %s -t", $this->config["sendmail"], $sender);	
 		}
         else{
 			$sendmail=sprintf("%s -oi -t", $this->config["sendmail"]);

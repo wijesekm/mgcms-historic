@@ -62,6 +62,9 @@ class envelope extends phpmailer{
       	if(!$sql_result=$this->db->db_fetcharray(TABLE_PREFIX.TABLE_ENVELOPE_DATA,"",array(array("page_id","=",$GLOBALS["PAGE_DATA"]["ID"],DB_AND),array("part_id","=",$i)))){
             return false;
         }	
+        if($sql_result['alt']){
+			$this->ev_setalt(true);
+		}
 		return array("sendmail"=>$sql_result['sendmail']
 						,"mailer"=>$sql_result['mailer']
 						,"encoding"=>$sql_result['encoding']
