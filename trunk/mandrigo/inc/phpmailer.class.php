@@ -42,17 +42,19 @@ if(!defined('START_MANDRIGO')){
 
 class phpmailer{
  
-	var $this->config=array("sendmail"=>"/usr/sbin/sendmail"
+	var $config=array("sendmail"=>"/usr/sbin/sendmail"
 			  				,"lf"=>"\n"
 							,"crlf"=>"\r\n"
 							,"mailer"=>"mail"
-							,"hostname"=>$host[0]
+							,"hostname"=>""
 							,"encoding"=>"8bit"
 							,"dctype"=>TEXT_PLAIN
 							,"wrap"=>40
 							,"priority"=>3);
 	
 	function phpmailer($conf=""){
+	 	$host=explode("/",ereg_replace("^[a-z]+://","",$GLOBALS["SITE_DATA"]["SITE_URL"]));
+	 	$this->config["hostname"]=$host[0];
 		if($conf){
 			$this->config=array_merge($this->config,$conf);
 		}
