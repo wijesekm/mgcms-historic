@@ -16,6 +16,8 @@
 &split;15&split;Could not load the stats script.  Script may be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue.
 &split;16&split;Could not load the captcha class.  Script may be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue.
 &split;17&split;Could not load the lang globals.  Script may be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue.
+&split;18&split;Could not load the phpmailer class.  Script may be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue.
+&split;19&split;Could not load the envelope class.  Script may be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue.
 &split;20&split;Could not set the session cookie.  Please contact the webmaster to alert them of this issue.
 &split;21&split;Could not set the user id cookie.  Please contact the webmaster to alert them of this issue.
 &split;30&split;Could not load the main page template.  The file could be missing or in the wrong directory.  Please contact the webmaster to alert them of this issue
