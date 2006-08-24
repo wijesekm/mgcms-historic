@@ -48,12 +48,12 @@ class envelope extends phpmailer{
 	var $attachment="";
 	var $subject="";
 	var $alt=false;
+	var $db;
 	
-	function envelope($id){
+	function envelope($id,&$sql_db){
+	 	$this->db=$sql_db;
 	 	$conf=$this->ev_load($id);
-		if($conf){
-			$this->config=array_merge($this->config,$conf);
-		}
+	 	$this->phpmailer($conf);
 		$this->recipients["to"]=array();
 		$this->recipients["cc"]=array();
 		$this->recipients["bcc"]=array();
