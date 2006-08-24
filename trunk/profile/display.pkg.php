@@ -154,7 +154,7 @@ class profile_display{
 				$string.=$this->gen_link_external($array[$i+1],'aim:goim?screenname='.$array[$i+1]);
 			}
 			else if(eregi('YIM',$array[$i])){
-				$string.=$this->gen_link_external($array[$i+1],'http://edit.yahoo.com/config/send_webmesg?.target='.$array[$i+1].'&.src=pg');	
+				$string.=$this->gen_link_external($array[$i+1],'http://edit.yahoo.com/config/send_webmesg?.target='.$array[$i+1].'&amp;.src=pg');	
 			}
 			else if(eregi('ICQ',$array[$i])){
 				$string.=$this->gen_link_external($array[$i+1],'http://wwp.icq.com/scripts/search.dll?to='.$array[$i+1]);					
