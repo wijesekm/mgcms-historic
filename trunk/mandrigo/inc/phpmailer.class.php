@@ -133,7 +133,7 @@ class phpmailer{
 			mail($send_to, $this->pm_encodeheader($subject), $body, $header,$params);
 		}
 		else{
-		 	if(!(@mail($send_to, $this->EncodeHeader($subject), $body, $header, $params))){
+		 	if(!(@mail($send_to, $this->pm_encodeheader($subject), $body, $header, $params))){
 				return false;
 			}
 		}
@@ -228,7 +228,6 @@ class phpmailer{
 		}
 		return false;
 	}
-	//date("D, j M Y H:i:S O")
 	//
 	//private function pm_formataddr($name,$address,$encode=true);
 	//
