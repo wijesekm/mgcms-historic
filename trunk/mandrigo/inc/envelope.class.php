@@ -49,7 +49,8 @@ class envelope extends phpmailer{
 	var $subject="";
 	var $alt=false;
 	
-	function envelope($conf=""){
+	function envelope($id){
+	 	$conf=$this->ev_load($id);
 		if($conf){
 			$this->config=array_merge($this->config,$conf);
 		}
@@ -57,7 +58,17 @@ class envelope extends phpmailer{
 		$this->recipients["cc"]=array();
 		$this->recipients["bcc"]=array();
 	}
-	
+	function ev_load($id){
+      	if(!$sql_result=$this->db->db_fetcharray(TABLE_PREFIX.TABLE_ENVELOPE_DATA,"",array(array("page_id","=",$GLOBALS["PAGE_DATA"]["ID"],DB_AND),array("part_id","=",$i)))){
+            return false;
+        }	
+		return array("sendmail"=>$sql_result['sendmail']
+						,"mailer"=>$sql_result['mailer']
+						,"encoding"=>$sql_result['encoding']
+						,"dctype"=>$sql_result['dctype']
+						,"wrap"=>$sql_result['wrap']
+						,"priority"=>$sql_result['priority']);
+	}
 	//#################################
 	//
 	// PUBLIC FUNCTIONS
