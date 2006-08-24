@@ -74,7 +74,7 @@ class envelope extends phpmailer{
 			return false;
 		}
 	 	if($alt_addr){
-			$this->sender=array(array($sender_name,$sender_addr),array($sender_name,$alt_addr))		
+			$this->sender=array(array($sender_name,$sender_addr),array($sender_name,$alt_addr));		
 		}
 		else{
 			$this->sender=array(array($sender_name,$sender_addr));	
