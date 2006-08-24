@@ -53,6 +53,9 @@ class envelope extends phpmailer{
 		if($conf){
 			$this->config=array_merge($this->config,$conf);
 		}
+		$this->recipients["to"]=array();
+		$this->recipients["cc"]=array();
+		$this->recipients["bcc"]=array();
 	}
 	
 	//#################################
@@ -102,7 +105,7 @@ class envelope extends phpmailer{
 	}
 	function ev_addattachment($params,$atype="misc",$encoding="base64",$type="application/octet-stream"){
     	if($atype!='string'){
-			if(!@is_file($params["path"]){
+			if(!@is_file($params["path"])){
 	            return false;
 	        }	
         	$params["filename"]=basename($params["path"]);
