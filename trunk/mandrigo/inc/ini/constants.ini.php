@@ -124,5 +124,9 @@ define("MANDRIGO_CODE_BLOCK","<?MG_CODE>");
 define("BAD_DATA","&ERROR_IN_DATA;");
 define("SESSION_COOKIE","mg_sesid");
 define("USER_COOKIE","mg_uid");
+define("MULTIPART_ALT","multipart/alternative");
+define("TEXT_PLAIN","text/plain");
+define("TEXT_HTML","text/html");
+define("MULTI_ALT","multipart/alternative");
 
 ?>
