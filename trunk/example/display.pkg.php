@@ -6,7 +6,9 @@
 	Date Last Edited: {date}
 
 	Copyright (C) {year} {yourname}
-
+	
+	MandrigoCMS is Copyright (C) 2005-2006 the MandrigoCMS Group
+	
     ##########################################################
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
@@ -29,28 +31,28 @@
 //
 //To prevent direct script access
 //
-if(!defined("START_MANDRIGO")){
-    die("<html><head>
+if(!defined('START_MANDRIGO')){
+    die('<html><head>
             <title>Forbidden</title>
         </head><body>
-            <h1>Forbidden</h1><hr width=\"300\" align=\"left\"/>\n<p>You do not have permission to access this file directly.</p>
-        </html></body>");
+            <h1>Forbidden</h1><hr width="300" align="left"/><p>You do not have permission to access this file directly.</p>
+        </html></body>');
 }
 
 //this file will contain display functionality which will be called by the
 //{packagename}_display_hook and {packagename}_vars_hook function which you will write.
 //Basically do what ever you want with it.
-
+//as far as formatting goes please follow the mandrigo coding guidelines
 class example_display{
-
+	
     function example_display{
         return true;
     }
-    function display(){
-        return "hi";
+    function ex_display(){
+        return '';
     }
-    function return_vars(){
-        return array("var","value");
+    function ex_retvars(){
+        return array('var','va');
     }
 }
 ?>

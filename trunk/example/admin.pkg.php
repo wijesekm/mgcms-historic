@@ -6,7 +6,9 @@
 	Date Last Edited: {date}
 
 	Copyright (C) {year} {yourname}
-
+	
+	MandrigoCMS is Copyright (C) 2005-2006 the MandrigoCMS Group
+	
     ##########################################################
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
@@ -29,12 +31,12 @@
 //
 //To prevent direct script access
 //
-if(!defined("START_MANDRIGO")){
-    die("<html><head>
+if(!defined('START_MANDRIGO')){
+    die('<html><head>
             <title>Forbidden</title>
         </head><body>
-            <h1>Forbidden</h1><hr width=\"300\" align=\"left\"/>\n<p>You do not have permission to access this file directly.</p>
-        </html></body>");
+            <h1>Forbidden</h1><hr width="300" align="left"/><p>You do not have permission to access this file directly.</p>
+        </html></body>');
 }
 
 //this file will contain admin functionality which will be called by the
@@ -46,7 +48,7 @@ class example_admin{
         return true;
     }
     function admin(){
-        return "hi";
+        return '';
     }
 }
 ?>
