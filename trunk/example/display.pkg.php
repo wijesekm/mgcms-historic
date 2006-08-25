@@ -45,7 +45,7 @@ if(!defined('START_MANDRIGO')){
 //as far as formatting goes please follow the mandrigo coding guidelines
 class example_display{
 	
-    function example_display{
+    function example_display(){
         return true;
     }
     function ex_display(){
