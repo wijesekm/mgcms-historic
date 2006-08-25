@@ -167,15 +167,9 @@ class phpmailer{
 
         @fputs($mail, $headers);
         @fputs($mail, $body);
-		if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-			$result = pclose($mail) >> 8 & 0xFF;
-		}
-		else{
-		  	@$result=pclose($mail) >> 8 & 0xFF;
-		 	if(!$result){
-				return false;
-			}
-		}        
+
+		@$result=pclose($mail) >> 8 & 0xFF;
+      
         return true;
 	}
 	
