@@ -44,7 +44,7 @@ $db=new db();
 $db->db_connect($sql_config["SQL_HOST"],$sql_config["SQL_PORT"],$sql_config["SQL_SOCKET"],$sql_config["SQL_USER"],
 						$sql_config["SQL_PASSWORD"],$sql_config["SQL_DATABASE"],true,$sql_config["USE_SSL"],$sql_config["SSL"]);
 #tmp_dir cleaning
-$db->db_dbcommands(DB_TRUNCATE,"","",TABLE_PREFIX.TABLE_TEMP);
+$db->db_dbcommands(DB_TRUNCATE,"","",TABLE_PREFIX.TABLE_CAPTCHA);
 
 #tmp image cleaning
 function remove_dir($dir) {
