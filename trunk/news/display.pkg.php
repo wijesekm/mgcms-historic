@@ -445,7 +445,7 @@ class news_display{
 		    		$post_url=$feed_url.'/id/'.$sql_result['post_id'];
 				}
 				else{
-		    		$post_url=$feed_url.'&id='.$sql_result['post_id'];
+		    		$post_url=$feed_url.'&amp;id='.$sql_result['post_id'];
 				}
 				if($this->tpl->return_template(2)){
 					$seq_tpl=new template();
