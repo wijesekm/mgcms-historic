@@ -2,7 +2,7 @@
 /**********************************************************
     mysql.class.php
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 3/03/06
+	Date Last Edited: 09/23/06
 
 	Copyright (C) 2005  Kevin Wijesekera
 
@@ -40,12 +40,17 @@ if(!defined("START_MANDRIGO")){
 
 class db extends _db{
 
+	//#################################
+	//
+	// PUBLIC CONNECTION FUNCTIONS
+	//
+	//#################################
+	
     //
-    //Connection Commands
+    //public function db_connect($host,$port,$socket,$user,$password,$database,$persistant=true,$secure=false,$ssl="");
     //
-    
-    //connects to the database server and selects the initial database
-    //returns true if connection and database selection successfull
+    //Connects to a mysql db server using the information supplied.  Does not work with ssl.
+    //
     function db_connect($host,$port,$socket,$user,$password,$database,$persistant=true,$secure=false,$ssl=""){
         if($port){
             $host=$host.":".$port;
@@ -80,7 +85,11 @@ class db extends _db{
         return true;
     }
     
-    //closes the current sql connection
+    //
+    //public function db_close();
+    //
+    //Closes the current connection
+    //
     function db_close(){
         if($this->db_id){
             if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
@@ -91,13 +100,54 @@ class db extends _db{
             }
         }
     }
-
-    //
-    //Query Commands
-    //
     
-    //function to find a result in a query
-    //returns the result value
+    //
+    //public function db_switchdatabase($new_database);
+    //
+    //switches to a different database
+    //
+    function db_switchdatabase($new_database){
+        if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
+            mysql_select_db($new_database,$this->db_id);
+        }
+        else{
+            if(!(@mysql_select_db($new_database,$this->db_id))){
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    //
+    //public function db_switchdatabase($new_database);
+    //
+    //returns true if the current connection is ok
+    //
+    function db_checkstatus(){
+       	if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
+	        if(!mysql_ping($this->db_id)){
+	            return false;
+	        }
+        }
+        else{
+			if(!@mysql_ping($this->db_id)){
+	            return false;
+	        }	
+		}
+		return true;
+    }
+
+	//#################################
+	//
+	// PUBLIC QUERY FUNCTIONS
+	//
+	//#################################
+    
+	//
+    //public db_fetchresult($table,$fields,$params,$row=0);
+    //
+    //returns the result of a SELECT db query given by the params
+    //
     function db_fetchresult($table,$fields,$params,$row=0){
 		$tmp_value="";
         $result=$this->db_query($this->db_formfetchquery($table,$fields,$params));
@@ -113,10 +163,14 @@ class db extends _db{
         return $tmp_value;
 	}
     
-    //function to find an array of values from the database
-    //returns the array of values
-    function db_fetcharray($table,$fields,$params="",$type="ASSOC"){
-		$tmp_value="";	
+	//
+    //public db_fetcharray($table,$fields,$params="",$type="ASSOC",$rows="");
+    //
+    //returns an array of values given from a SELECT query if no rows are specified.
+    //if rows are specified returns a matrix to the nth row
+    //
+    function db_fetcharray($table,$fields,$params="",$type="ASSOC",$rows=""){
+		$tmp_value=array();	
         $result=$this->db_query($this->db_formfetchquery($table,$fields,$params));
         if($type="ASSOC"){
 			$type=MYSQL_ASSOC;
@@ -126,21 +180,39 @@ class db extends _db{
 		}
 		else{
 			$type=MYSQL_BOTH;
-		}       
-        if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-            $tmp_value=mysql_fetch_array($result,$type);
-        }
-        else{
-            if(!(@$tmp_value=mysql_fetch_array($result,$type))){
-                return false;
-            }
-        }
+		}     
+		if(!$rows){
+	    	if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
+	        	$tmp_value=mysql_fetch_array($result,$type);
+	    	}
+	    	else{
+	            if(!(@$tmp_value=mysql_fetch_array($result,$type))){
+	                return false;
+	            }
+	        }		
+		}
+		else{
+			for($i=1;$i<$rows;$i++){
+		        if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
+		            $tmp_value[$i-1]=mysql_fetch_array($result,$type);
+		        }
+		        else{
+		            if(!(@$tmp_value[$i-1]=mysql_fetch_array($result,$type))){
+		                return false;
+		            }
+		        }
+				@mysql_data_seek($result,$i);
+			}		
+		}
         $this->db_freeresult($result);
         return $tmp_value;
 	}
-	
-	//function to execute non-get db querys
-	//returns true if the query was successful
+    
+	//
+    //public db_update($q_type,$table,$set,$params="");
+    //
+    //returns the result from a db UPDATE, INSERT, or DELETE query
+    //
 	function db_update($q_type,$table,$set,$params=""){
 		$qstring="";
 		switch($q_type){
@@ -201,9 +273,12 @@ class db extends _db{
 		}
 		return false;
 	}
-	
-	//function to preform DROP, CREATE, ALTER, and TRUNCATE sql statements
-	//returns true if query is a success
+	    
+	//
+    //public db_dbcommands($c_type,$q_type,$db,$table="",$fields="",$params="");
+    //
+    //returns the result from a db DROP, CREATE, ALTER, or TRUNCATE query
+    //
 	function db_dbcommands($c_type,$q_type,$db,$table="",$fields="",$params=""){
 	  	$qstring.="";
 		switch($c_type){
@@ -318,8 +393,11 @@ class db extends _db{
 		return false;
 	}
 
-   //function to find the number of rows in a query
-    //returns the number of rows
+	//
+    //public db_dbcommands($c_type,$q_type,$db,$table="",$fields="",$params="");
+    //
+    //returns the number of rows from a SELECT query
+    //
     function db_numrows($table,$params){
         $num_rows=0;
         $result=$this->db_query($this->db_formfetchquery($table,"",$params));
@@ -335,8 +413,11 @@ class db extends _db{
         return $num_rows;
     }
     
-    //function to find the number of fields in a query
-    //returns the number of fields
+	//
+    //public db_dbcommands($c_type,$q_type,$db,$table="",$fields="",$params="");
+    //
+    //returns the number of fields from a SELECT query
+    //
 	function db_numfields($table,$params){
 		$num_cols=0;
         $result=$this->db_query($this->db_formfetchquery($table,"",$params));
@@ -352,7 +433,17 @@ class db extends _db{
         return $num_cols;			
 	}
 	
-    //internal only query function.  Should only be called by functions in the db class!!
+	//#################################
+	//
+	// PRIVATE FUNCTIONS
+	//
+	//#################################
+	
+	//
+    //private db_query($string);
+    //
+    //returns the query id gathered from a query
+    //	
     function db_query($string){
         $result="";
         if($GLOBALS["MANDRIGO_CONFIG"]["SQL_PRINT_MODE"]){
@@ -368,41 +459,12 @@ class db extends _db{
         }
         return $result;
     }
-    //
-    //Misc Commands
-    //
-
-    //change the current database
-    //returns true if database selection successfull
-    function db_switchdatabase($new_database){
-        if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-            mysql_select_db($new_database,$this->db_id);
-        }
-        else{
-            if(!(@mysql_select_db($new_database,$this->db_id))){
-                return false;
-            }
-        }
-        return true;
-    }
     
-    //checks the current status of the connection
-    //returns true if the connection is ok
-    function db_checkstatus(){
-       	if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-	        if(!mysql_ping($this->db_id)){
-	            return false;
-	        }
-        }
-        else{
-			if(!@mysql_ping($this->db_id)){
-	            return false;
-	        }	
-		}
-		return true;
-    }
-
-    //frees the current result. Internal only!
+	//
+    //private db_freeresult($result);
+    //
+    //frees the query id given
+    //	
     function db_freeresult($result){
         if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
             mysql_free_result($result);
@@ -412,8 +474,11 @@ class db extends _db{
         }
     }
     
-    //Internal function to form querys for select statements
-    //returns the query string
+	//
+    //private db_formfetchquery($table,$fields,$params;
+    //
+    //forms a query string based on the params passed in
+    //	
     function db_formfetchquery($table,$fields,$params){
 		$new_field="";
 		$new_table="";
