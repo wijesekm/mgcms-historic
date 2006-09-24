@@ -2,9 +2,9 @@
 /**********************************************************
     server_time.class.php
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 11/05/05
+	Date Last Edited: 09/23/06
 
-	Copyright (C) 2005  Kevin Wijesekera
+	Copyright (C) 2006  Kevin Wijesekera
 
     ##########################################################
 	This program is free software; you can redistribute it and/or
@@ -28,30 +28,90 @@
 //
 //To prevent direct script access
 //
-if(!defined("START_MANDRIGO")){
-    die("<html><head>
+if(!defined('START_MANDRIGO')){
+    die('<html><head>
             <title>Forbidden</title>
         </head><body>
-            <h1>Forbidden</h1><hr width=\"300\" align=\"left\"/>\n<p>You do not have permission to access this file directly.</p>
-        </html></body>");
+            <h1>Forbidden</h1><hr width="300" align="left"/><p>You do not have permission to access this file directly.</p>
+        </html></body>');
 }
 
-class server_time{
-    var $gmt;
 
-    //sets the current GMT
-    function server_time($server_zone,$server_dst){
-        //gmmktime wasnt working for some reason
-        $this->gmt=time()-$this->dst($server_zone,$server_dst)*3600;
+class server_time{
+ 
+    var $gmt;
+    var $server_time;
+    var $client_time;
+
+    
+    function server_time($client_zone,$client_dst){
+    	$this->server_time=time();
+    	$this->st_mkgmt();
+    	$this->st_mkct($client_zone,$client_dst);
     }
-    //returns the current GMT
-    function gmt(){
-        return $this->gmt;
-    }
-    //
-    //changes the zone offset for Daylight Savings Time
-    //
-    function dst($zone,$dst){
+    
+	//#################################
+	//
+	// PUBLIC FUNCTIONS
+	//
+	//#################################   
+	 
+	//
+	//public function st_returngmt();
+	//
+	//returns the gmt time
+	//
+	function st_returngmt(){
+		return $this->gmt;
+	}
+	
+	//
+	//public function st_returnst();
+	//
+	//returns the server time
+	//
+	function st_returnst(){
+		return $this->server_time;
+	}
+	
+	//
+	//public function st_returnct();
+	//
+	//returns the client time
+	//
+	function st_returnct(){
+		return $this->client_time;
+	}
+	//#################################
+	//
+	// PRIVATE FUNCTIONS
+	//
+	//#################################
+	
+	//
+	//private function st_mkgmt();
+	//
+	//sets the gmt time stamp
+	//
+	function st_mkgmt(){
+		$this->gmt=$server_time + date("Z",$server_time);
+	}
+	
+	//
+	//private function st_mkct($c_zone,$c_dst);
+	//
+	//sets the client time stamp
+	//
+	function st_mkct($c_zone,$c_dst){
+		$this->client_time=$this->gmt + $this->st_dst($c_zone,$c_dst)
+	}
+	
+	//
+	//private function st_dst($zone,$dst);
+	//
+	//returns the time offset from GMT adjusted for DST
+	//
+    function st_dst($zone,$dst){
         $time_stamp_dst_april = 0;
         $time_stamp_dst_october = 0;
         for($i=1; $i < 31; $i++){
@@ -67,13 +127,9 @@ class server_time{
             }
         }
         if(time()>=$time_stamp_dst_april&&time()<=$time_stamp_dst_october&&$dst==1){
-            return $zone+1;
+            return ($zone+1)*3600;
         }
-        return $zone;
-    }
-    //Gets the users local time
-    function local_time($local_zone,$local_dst){
-        return $this->gmt + $this->dst($local_zone,$local_dst)*3600;
+        return ($zone)*3600;
     }
 }
 
