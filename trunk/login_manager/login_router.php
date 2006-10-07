@@ -30,15 +30,14 @@
 //
 define("START_MANDRIGO",true);
 define("CORE_NAME","mg_login");
-$GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]=dirname(__FILE__)."/";
+$GLOBALS["MANDRIGO_CONFIG"]["LOGIN_PATH"]=dirname(__FILE__)."/";
 
 //
 //Initial includes (php extension, config vars, language array, html array)
 //
-require($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."config/extension.inc");
-require($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."config/config.login.$php_ex");
-require($GLOBALS["MANDRIGO_CONFIG"]["LOGIN_PATH"]."languages{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}".$lang["LANGUAGE"].".lang.$php_ex");
-require($GLOBALS["MANDRIGO_CONFIG"]["LOGIN_PATH"]."languages{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}".$lang["HTML_VER"].".lang.$php_ex");
+require($GLOBALS["MANDRIGO_CONFIG"]["LOGIN_PATH"]."config/extension.inc");
+require($GLOBALS["MANDRIGO_CONFIG"]["LOGIN_PATH"]."config/config.login.$php_ex");
+require($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."config/elog.globals.$php_ex");
 
 //
 //Error Logger Init
@@ -48,30 +47,32 @@ if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
 }
 else{
     if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."error_logger.class.$php_ex"))){
-	   die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
-           $GLOBALS["LANGUAGE"]["EZERO"].$GLOBALS["HTML"]["EEND"]);
+	   die($GLOBALS["ELOG"]["HTMLHEAD"].$GLOBALS["ELOG"]["TITLE"].$GLOBALS["ELOG"]["HTMLBODY"].
+           $GLOBALS["ELOG"]["ZERO"].$GLOBALS["ELOG"]["HTMLEND"]);
     }
 }
-$error_log = & new error_logger($log_config["LOG_LEVEL_1"],$log_config["LOG_LEVEL_2"],$log_config["ARCHIVE"]);
+$GLOBALS["error_log"] = & new error_logger($log_config["LOG_LEVEL_1"],$log_config["LOG_LEVEL_2"],$log_config["ARCHIVE"]);
 
 //
 // Cleans varables, loads requires packages and starts required classes.
 //
 if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-    require($GLOBALS["MANDRIGO_CONFIG"]["LOGIN_PATH"]."ini{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}login.ini.$php_ex");
+    require($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."ini{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}login.ini.$php_ex");
 }
 else{
-    if(!(@include($GLOBALS["MANDRIGO_CONFIG"]["LOGIN_PATH"]."ini{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}login.ini.$php_ex"))){
-        $error_log->add_error(1,"script");
-	    die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
-           $error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
+    if(!(@include($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."ini{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}login.ini.$php_ex"))){
+        $GLOBALS["error_log"]->add_error(1,"script");
+	   	die($GLOBALS["ELOG"]["HTMLHEAD"].$GLOBALS["ELOG"]["TITLE"].$GLOBALS["ELOG"]["HTMLBODY"].
+        	$GLOBALS["error_log"]->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);
     }
 }
+
 //one final check for errors
 if($error_log->get_status()==2){
     die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
         $error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
 }
+
 if($GLOBALS["MANDRIGO_CONFIG"]["SITE_STATUS"]||$GLOBALS["HTTP_GET"]["KEY"]==$GLOBALS["SITE_DATA"]["BYPASS_CODE"]){
   	$tpl=new template();
 	if(!$tpl->load($GLOBALS["MANDRIGO_CONFIG"]["TEMPLATE_PATH"].TPL_MAIN_SITE)){
