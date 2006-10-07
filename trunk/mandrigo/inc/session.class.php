@@ -44,11 +44,11 @@ class session{
 		$this->db=$sql;
 	}
 	function session_start($uid,$expires,$secure,$path,$domains){
-	  	if($uid<=1){
+	  	if((int)$uid<=1){
 			return false;
 		}
 		$sessionid=md5(uniqid(rand(),true));
-		if(!$this->sql_db->db_update(DB_UPDATE,TABLE_PREFIX.TABLE_USER_DATA,array(array("user_session",$sessionid)),array(array("user_id","=",$uid)))){
+		if(!$this->db->db_update(DB_UPDATE,TABLE_PREFIX.TABLE_USER_DATA,array(array("user_session",$sessionid)),array(array("user_id","=",$uid)))){
 			return false;
 		}
 		
@@ -70,11 +70,20 @@ class session{
 		}
 	  	return $sessionid;
 	}
+	function session_check($uid,$sesid){
+		if((int)$uid<=1||!$sesid){
+			return false
+		}
+		if((int)$sesid===$this->session_id($uid)){
+			return true;
+		}
+		return false;
+	}
 	function session_renew($sesid,$uid,$expires,$secure,$path,$domains){
 	 	if($uid<=1||!$sesid){
 			return false;
 		}
-		if(!$this->sql_db->db_update(DB_UPDATE,TABLE_PREFIX.TABLE_USER_DATA,array(array("user_session",$sesid)),array(array("user_id","=",$uid)))){
+		if(!$this->db->db_update(DB_UPDATE,TABLE_PREFIX.TABLE_USER_DATA,array(array("user_session",$sesid)),array(array("user_id","=",$uid)))){
 			return false;
 		}		
 		$domains=explode(";",$domains);
@@ -95,16 +104,16 @@ class session{
 		return true;		
 	}
 	function session_stop($uid){
-	  	if($uid<=1){
+	  	if((int)$uid<=1){
 			return false;
 		}
-		if(!$this->sql_db->db_update(DB_UPDATE,TABLE_PREFIX.TABLE_USER_DATA,array(array("user_session","")),array(array("user_id","=",$uid)))){
+		if(!$this->db->db_update(DB_UPDATE,TABLE_PREFIX.TABLE_USER_DATA,array(array("user_session","")),array(array("user_id","=",$uid)))){
 			return false;
 		}	
 		return true;	  
 	}
 	function session_id($uid){
-		return $this->sql_db->db_fetchresult(TABLE_PREFIX.TABLE_USER_DATA,"user_session",array(array("user_id","=",$uid)));  
+		return (int)$this->db->db_fetchresult(TABLE_PREFIX.TABLE_USER_DATA,"user_session",array(array("user_id","=",$uid)));  
 	} 
 }
 
