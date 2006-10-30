@@ -81,6 +81,7 @@ define("DB_AUTO_INC","AUTO");
 //
 //Templates
 //
+define("PHP_EXT",$php_ex);
 define("TPL_EXT",$tpl_ex);
 define("TPL_ERROR_LOG","error_log.".TPL_EXT);
 define("TPL_OFF_SITE","off_site.".TPL_EXT);
