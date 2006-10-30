@@ -47,7 +47,37 @@ if(!defined('START_MANDRIGO')){
 class phpical_display{
 	
 	var $config
-	
+	function phpical_display(){
+		$config_default('default_view'=>'day'
+    			,'minical_view'=>'current'
+       			,'default_cal'=>'all'
+       			,'week_start_day'=>'Sunday'
+       			,'week_length'=>'7'
+       			,'day_start'=>'0700'
+       			,'day_end'=>'2300'
+       			,'gridlength'=>'15'
+       			,'num_gears'=>'1'
+			    ,'month_event_lines'=>'1'
+				,'tomorrows_events_lines'=>'1'
+		       	,'allday_week_lines'=>'1'
+		      	,'week_events_lines'=>'1'
+		        ,'seconds_offset'=>''
+		        ,'bleed_time'=>'-1'
+		        ,'allow_webcals'=>'no'
+		        ,'this_months_events'=>'yes'
+		        ,'enable_rss'=>'yes'
+		        ,'show_search'=>'yes'
+		        ,'allow_preferences'=>'no'
+		        ,'printview_default'=>'no'
+		        ,'show_todos'=>'no'
+		        ,'show_completed'=>'no'
+		        ,'support_ical'=>'no'
+		        ,'recursive_path'=>'no'
+		        ,'save_parsed_cals'=>'yes'
+		        ,'webcal_hours'=>'4'
+		        ,'unique_colors'=>'7'
+		        ,'phpicalendar_publishing'=>'');
+	}
     function phpical_day($i){
 		if(isset($GLOBALS['HTTP_GET']['JUMPTO_DAY'])){
 			$jumpto_day_time = strtotime($GLOBALS['HTTP_GET']['JUMPTO_DAY']);
@@ -59,16 +89,20 @@ class phpical_display{
 			}
 		}
 		if (!isset($getdate)) {
-			if (isset($_GET['getdate']) && ($_GET['getdate'] !== '')) {
-				$getdate = $_GET['getdate'];
-			} else {
+			if(isset($GLOBALS['HTTP_GET']['GETDATE']) && ($GLOBALS['HTTP_GET']['GETDATE'] !== '')){
+				$getdate = $GLOBALS['HTTP_GET']['GETDATE'];
+			} 
+			else{
 				$getdate = date('Ymd', time() + $second_offset);
 			}
 		}
 		$current_view = 'day';
-		require_once($GLOBALS["MANDRIGO_CONFIG"]["PLUGIN_PATH"].ICAL_BASE_PATH.'ical_parser.'.TPL_EXT);
-		require_once($GLOBALS["MANDRIGO_CONFIG"]["PLUGIN_PATH"].ICAL_BASE_PATH.'list_functions.'.TPL_EXT);
-		require_once($GLOBALS["MANDRIGO_CONFIG"]["PLUGIN_PATH"].ICAL_BASE_PATH.'template.'.TPL_EXT);
+		include_once($GLOBALS["MANDRIGO_CONFIG"]["PLUGIN_PATH"].ICAL_BASE_PATH.'date_functions.'.PHP_EXT);
+		include_once($GLOBALS["MANDRIGO_CONFIG"]["PLUGIN_PATH"].ICAL_BASE_PATH.'draw_functions.'.PHP_EXT);
+		include_once($GLOBALS["MANDRIGO_CONFIG"]["PLUGIN_PATH"].ICAL_BASE_PATH.'overlapping_events.'.PHP_EXT);
+		require_once($GLOBALS["MANDRIGO_CONFIG"]["PLUGIN_PATH"].ICAL_BASE_PATH.'ical_parser.'.PHP_EXT);
+		require_once($GLOBALS["MANDRIGO_CONFIG"]["PLUGIN_PATH"].ICAL_BASE_PATH.'list_functions.'.PHP_EXT);
+		require_once($GLOBALS["MANDRIGO_CONFIG"]["PLUGIN_PATH"].ICAL_BASE_PATH.'template.'.PHP_EXT);
 
 		if ($this->config['minical_view'] == 'current')}{
 			$this->config['minical_view'] = 'day';	
@@ -79,10 +113,12 @@ class phpical_display{
 		$next_day		= date('Ymd', strtotime("+1 day",  $unix_time));
 		$prev_day 		= date('Ymd', strtotime("-1 day",  $unix_time));
 		
-		$display_date = localizeDate($dateFormat_day, $unix_time);
-		$sidebar_date = localizeDate($dateFormat_week_list, $unix_time);
+		$display_date = localizeDate($GLOBALS['LANGUAGE']['ICAL_FORMAT_DAY'], $unix_time);//fix $dateFormat_day
+		$sidebar_date = localizeDate($GLOBALS['LANGUAGE']['ICAL_FORMAT_WEEKLIST'], $unix_time);//fix $dateFormat_week_list
 		$start_week_time = strtotime(dateOfWeek($getdate, $this->config['week_start_day']));
 		
+		$username='';
+		$password='';
 		
 		// select for calendars
 		$list_icals 	= display_ical_list(availableCalendars($username, $password, $ALL_CALENDARS_COMBINED));
@@ -92,20 +128,19 @@ class phpical_display{
 		$list_jumps 	= list_jumps();
 		$list_calcolors = list_calcolors();
 		$list_icals_pick = display_ical_list(availableCalendars($username, $password, $ALL_CALENDARS_COMBINED), TRUE);
-		
-		$page = new ical_page(BASE.'templates/'.$template.'/day.tpl');
+		$tpl = new ical_page($GLOBALS['MANDRIGO_CONFIG']['TEMPLATE_PATH'].$GLOBALS['PAGE_DATA']['DATAPATH'].$GLOBALS['PAGE_DATA']['ID'].'_'.$i.'_day'.TPL_EXT);
 		
 		$page->replace_files(array(
-			'header'			=> BASE.'templates/'.$template.'/header.tpl',
-			'event_js'			=> BASE.'functions/event.js',
-			'footer'			=> BASE.'templates/'.$template.'/footer.tpl',
-		    'sidebar'           => BASE.'templates/'.$template.'/sidebar.tpl',
-		    'search_box'        => BASE.'templates/'.$template.'/search_box.tpl'
+			'header'			=> $GLOBALS['MANDRIGO_CONFIG']['TEMPLATE_PATH'].$GLOBALS['PAGE_DATA']['DATAPATH'].$GLOBALS['PAGE_DATA']['ID'].'_'.$i.'_header'.TPL_EXT,
+			'event_js'			=> $GLOBALS['MANDRIGO_CONFIG']['TEMPLATE_PATH'].$GLOBALS['PAGE_DATA']['DATAPATH'].$GLOBALS['PAGE_DATA']['ID'].'_'.$i.'_event.js',
+			'footer'			=> $GLOBALS['MANDRIGO_CONFIG']['TEMPLATE_PATH'].$GLOBALS['PAGE_DATA']['DATAPATH'].$GLOBALS['PAGE_DATA']['ID'].'_'.$i.'_footer'.TPL_EXT,
+		    'sidebar'           => $GLOBALS['MANDRIGO_CONFIG']['TEMPLATE_PATH'].$GLOBALS['PAGE_DATA']['DATAPATH'].$GLOBALS['PAGE_DATA']['ID'].'_'.$i.'_sidebar'.TPL_EXT,
+		    'search_box'        => $GLOBALS['MANDRIGO_CONFIG']['TEMPLATE_PATH'].$GLOBALS['PAGE_DATA']['DATAPATH'].$GLOBALS['PAGE_DATA']['ID'].'_'.$i.'_search_box'.TPL_EXT
 			));
 		
 		$page->replace_tags(array(
-			'version'			=> $phpicalendar_version,
-			'charset'			=> $charset,
+			'version'			=> ICAL_VERSION,
+			'charset'			=> $GLOBALS["LANGUAGE"]["CHARSET"],
 			'default_path'		=> '',
 			'template'			=> $template,
 			'cal'				=> $cal,
@@ -116,19 +151,13 @@ class phpical_display{
 			'current_view'		=> $current_view,
 			'display_date'		=> $display_date,
 			'sidebar_date'		=> $sidebar_date,
-			'rss_powered'	 	=> $rss_powered,
-			'rss_available' 	=> '',
-			'rss_valid' 		=> '',
+			'rss_powered'	 	=> '',//todo
+			'rss_available' 	=> '',//todo
+			'rss_valid' 		=> '',//todo
 			'show_search' 		=> $show_search,
 			'next_day' 			=> $next_day,
 			'prev_day'	 		=> $prev_day,
 			'show_goto' 		=> '',
-			'show_user_login'	=> $show_user_login,
-			'invalid_login'		=> $invalid_login,
-			'login_querys'		=> $login_querys,
-			'is_logged_in' 		=> $is_logged_in,
-			'username'			=> $username,
-			'logout_querys'		=> $logout_querys,
 			'list_icals' 		=> $list_icals,
 			'list_icals_pick' 	=> $list_icals_pick,
 			'list_years' 		=> $list_years,
@@ -137,29 +166,25 @@ class phpical_display{
 			'list_jumps' 		=> $list_jumps,
 			'legend'	 		=> $list_calcolors,
 			'style_select' 		=> $style_select,
-			'l_goprint'			=> $lang['l_goprint'],
-			'l_preferences'		=> $lang['l_preferences'],
-			'l_calendar'		=> $lang['l_calendar'],
-			'l_legend'			=> $lang['l_legend'],
-			'l_tomorrows'		=> $lang['l_tomorrows'],
-			'l_jump'			=> $lang['l_jump'],
-			'l_todo'			=> $lang['l_todo'],
-			'l_day'				=> $lang['l_day'],
-			'l_week'			=> $lang['l_week'],
-			'l_month'			=> $lang['l_month'],
-			'l_year'			=> $lang['l_year'],
-			'l_pick_multiple'	=> $lang['l_pick_multiple'],
-			'l_powered_by'		=> $lang['l_powered_by'],
-			'l_subscribe'		=> $lang['l_subscribe'],
-			'l_download'		=> $lang['l_download'],
-			'l_search'			=> $lang['l_search'],
-			'l_this_site_is'	=> $lang['l_this_site_is']
-			));		
-		if ($allow_preferences != 'yes') {
-			$page->replace_tags(array(
+			'l_goprint'			=> $GLOBALS['LANGUAGE']['ICAL_GOPRINT'],
+			'l_preferences'		=> '',
+			'l_calendar'		=> $GLOBALS['LANGUAGE']['ICAL_CALENDAR'],
+			'l_legend'			=> $GLOBALS['LANGUAGE']['ICAL_LENGEND'],
+			'l_tomorrows'		=> $GLOBALS['LANGUAGE']['ICAL_TOMORROWS'],
+			'l_jump'			=> $GLOBALS['LANGUAGE']['ICAL_JUMP'],
+			'l_todo'			=> $GLOBALS['LANGUAGE']['ICAL_TODO'],
+			'l_day'				=> $GLOBALS['LANGUAGE']['ICAL_DAY'],
+			'l_week'			=> $GLOBALS['LANGUAGE']['ICAL_WEEK'],
+			'l_month'			=> $GLOBALS['LANGUAGE']['ICAL_MONTH'],
+			'l_year'			=> $GLOBALS['LANGUAGE']['ICAL_YEAR'],
+			'l_pick_multiple'	=> $GLOBALS['LANGUAGE']['ICAL_PICK_MULTIPLE'],
+			'l_powered_by'		=> $GLOBALS['LANGUAGE']['ICAL_POWERED_BY'],
+			'l_subscribe'		=> $GLOBALS['LANGUAGE']['ICAL_SUBSCRIBE'],
+			'l_download'		=> $GLOBALS['LANGUAGE']['ICAL_DOWNLOAD'],
+			'l_search'			=> $GLOBALS['LANGUAGE']['ICAL_SEARCH'],
+			'l_this_site_is'	=> $GLOBALS['LANGUAGE']['ICAL_THIS_SITE'],
 			'allow_preferences'	=> ''
-			));
-		}
+			));		
 		if ($show_search != 'yes') {
 			$page->nosearch($page);
 		}
@@ -169,6 +194,13 @@ class phpical_display{
 		$page->get_vtodo($page);
 		$page->draw_subscribe($page);
 		return $page->output();
+	}
+	function ical_init(){
+		$GLOBALS['LANGUAGE']['ICAL_DAYSOFWEEK']=explode(",",$GLOBALS['LANGUAGE']['ICAL_DAYSOFWEEK']);
+ 		$GLOBALS['LANGUAGE']['ICAL_DAYSOFWEEK_SHORT']=explode(",",$GLOBALS['LANGUAGE']['ICAL_DAYSOFWEEK_SHORT']);
+ 		$GLOBALS['LANGUAGE']['ICAL_DAYSOFWEEK_RSHORT']=explode(",",$GLOBALS['LANGUAGE']['ICAL_DAYSOFWEEK_RSHORT']);
+ 		$GLOBALS['LANGUAGE']['ICAL_MONTHS']=explode(",",$GLOBALS['LANGUAGE']['ICAL_MONTHS']);
+ 		$GLOBALS['LANGUAGE']['ICAL_MONTHS_SHORT']=explode(",",$GLOBALS['LANGUAGE']['ICAL_MONTHS_SHORT']);
 	}
 	function ical_calinit(){
 		$cal_filenames = array();
