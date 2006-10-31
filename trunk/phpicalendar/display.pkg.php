@@ -40,17 +40,16 @@ if(!defined('START_MANDRIGO')){
         </html></body>');
 }
 
-//this file will contain display functionality which will be called by the
-//{packagename}_display_hook and {packagename}_vars_hook function which you will write.
-//Basically do what ever you want with it.
-//as far as formatting goes please follow the mandrigo coding guidelines
 class phpical_display{
 	
 	var $config
-	function phpical_display(){
-		$config_default('default_view'=>'day'
+	var $ALL_CALENDARS_COMBINED = 'all_calendars_combined971';
+	
+	function phpical_display($i){
+	 	
+		$config_default=array('default_view'=>'day'
     			,'minical_view'=>'current'
-       			,'default_cal'=>'all'
+       			,'default_cal'=>$this->ALL_CALENDARS_COMBINED;
        			,'week_start_day'=>'Sunday'
        			,'week_length'=>'7'
        			,'day_start'=>'0700'
@@ -76,9 +75,16 @@ class phpical_display{
 		        ,'save_parsed_cals'=>'yes'
 		        ,'webcal_hours'=>'4'
 		        ,'unique_colors'=>'7'
-		        ,'phpicalendar_publishing'=>'');
+		        ,'phpicalendar_publishing'=>''
+				,'blacklisted_cals'=>array()
+				,'list_webcals'=>array());
 	}
     function phpical_day($i){
+     	
+     	$this->ical_init($i);
+     	$cal_data=$this->ical_calinit();
+     	$cal=$cal_data[0];
+     	$cal_displaynames=$cal_data[1];
 		if(isset($GLOBALS['HTTP_GET']['JUMPTO_DAY'])){
 			$jumpto_day_time = strtotime($GLOBALS['HTTP_GET']['JUMPTO_DAY']);
 			if ($jumpto_day_time == -1){
@@ -97,14 +103,8 @@ class phpical_display{
 			}
 		}
 		$current_view = 'day';
-		include_once($GLOBALS["MANDRIGO_CONFIG"]["PLUGIN_PATH"].ICAL_BASE_PATH.'date_functions.'.PHP_EXT);
-		include_once($GLOBALS["MANDRIGO_CONFIG"]["PLUGIN_PATH"].ICAL_BASE_PATH.'draw_functions.'.PHP_EXT);
-		include_once($GLOBALS["MANDRIGO_CONFIG"]["PLUGIN_PATH"].ICAL_BASE_PATH.'overlapping_events.'.PHP_EXT);
-		require_once($GLOBALS["MANDRIGO_CONFIG"]["PLUGIN_PATH"].ICAL_BASE_PATH.'ical_parser.'.PHP_EXT);
-		require_once($GLOBALS["MANDRIGO_CONFIG"]["PLUGIN_PATH"].ICAL_BASE_PATH.'list_functions.'.PHP_EXT);
-		require_once($GLOBALS["MANDRIGO_CONFIG"]["PLUGIN_PATH"].ICAL_BASE_PATH.'template.'.PHP_EXT);
 
-		if ($this->config['minical_view'] == 'current')}{
+		if ($this->config['minical_view'] == 'current'){
 			$this->config['minical_view'] = 'day';	
 		}
 		$weekstart 		= 1;
@@ -117,9 +117,6 @@ class phpical_display{
 		$sidebar_date = localizeDate($GLOBALS['LANGUAGE']['ICAL_FORMAT_WEEKLIST'], $unix_time);//fix $dateFormat_week_list
 		$start_week_time = strtotime(dateOfWeek($getdate, $this->config['week_start_day']));
 		
-		$username='';
-		$password='';
-		
 		// select for calendars
 		$list_icals 	= display_ical_list(availableCalendars($username, $password, $ALL_CALENDARS_COMBINED));
 		$list_years 	= list_years();
@@ -127,7 +124,7 @@ class phpical_display{
 		$list_weeks 	= list_weeks();
 		$list_jumps 	= list_jumps();
 		$list_calcolors = list_calcolors();
-		$list_icals_pick = display_ical_list(availableCalendars($username, $password, $ALL_CALENDARS_COMBINED), TRUE);
+		$list_icals_pick = display_ical_list(availableCalendars($username,$ALL_CALENDARS_COMBINED), TRUE);
 		$tpl = new ical_page($GLOBALS['MANDRIGO_CONFIG']['TEMPLATE_PATH'].$GLOBALS['PAGE_DATA']['DATAPATH'].$GLOBALS['PAGE_DATA']['ID'].'_'.$i.'_day'.TPL_EXT);
 		
 		$page->replace_files(array(
@@ -201,37 +198,32 @@ class phpical_display{
  		$GLOBALS['LANGUAGE']['ICAL_DAYSOFWEEK_RSHORT']=explode(",",$GLOBALS['LANGUAGE']['ICAL_DAYSOFWEEK_RSHORT']);
  		$GLOBALS['LANGUAGE']['ICAL_MONTHS']=explode(",",$GLOBALS['LANGUAGE']['ICAL_MONTHS']);
  		$GLOBALS['LANGUAGE']['ICAL_MONTHS_SHORT']=explode(",",$GLOBALS['LANGUAGE']['ICAL_MONTHS_SHORT']);
+ 		
+		include_once($GLOBALS["MANDRIGO_CONFIG"]["PLUGIN_PATH"].ICAL_BASE_PATH.'date_functions.'.PHP_EXT);
+		include_once($GLOBALS["MANDRIGO_CONFIG"]["PLUGIN_PATH"].ICAL_BASE_PATH.'calendar_functions.'.PHP_EXT);
+		include_once($GLOBALS["MANDRIGO_CONFIG"]["PLUGIN_PATH"].ICAL_BASE_PATH.'draw_functions.'.PHP_EXT);
+		include_once($GLOBALS["MANDRIGO_CONFIG"]["PLUGIN_PATH"].ICAL_BASE_PATH.'overlapping_events.'.PHP_EXT);
+		require_once($GLOBALS["MANDRIGO_CONFIG"]["PLUGIN_PATH"].ICAL_BASE_PATH.'ical_parser.'.PHP_EXT);
+		require_once($GLOBALS["MANDRIGO_CONFIG"]["PLUGIN_PATH"].ICAL_BASE_PATH.'list_functions.'.PHP_EXT);
+		require_once($GLOBALS["MANDRIGO_CONFIG"]["PLUGIN_PATH"].ICAL_BASE_PATH.'template.'.PHP_EXT);
 	}
 	function ical_calinit(){
 		$cal_filenames = array();
-		if (isset($_GET['cal'])) {
+		if(isset($GLOBALS['HTTP_GET']['CAL'])){
 			// If the cal value is not an array, split it into an array on
 			// commas.
-			if (!is_array($_GET['cal']))
-				$_GET['cal'] = explode(',', $_GET['cal']);
+			if (!is_array($GLOBALS['HTTP_GET']['CAL']))
+				$GLOBALS['HTTP_GET']['CAL'] = explode(',', $GLOBALS['HTTP_GET']['CAL']);
 			
 			// Grab the calendar filenames off the cal value array.
-			$cal_filenames = $_GET['cal'];
-		} else {
-			if (isset($default_cal_check)) {
-				if ($default_cal_check != $ALL_CALENDARS_COMBINED) {
-					$calcheck = $calendar_path.'/'.$default_cal_check.'.ics';
-					$calcheckopen = @fopen($calcheck, "r");
-					if ($calcheckopen == FALSE) {
-						$cal_filenames[0] = $default_cal;
-					} else {
-						$cal_filenames[0] = $default_cal_check;
-					}
-				} else {
-					$cal_filenames[0] = $ALL_CALENDARS_COMBINED;
-				}
-			} else {
-				$cal_filenames[0] = $default_cal;
-			}
+			$cal_filenames = $GLOBALS['HTTP_GET']['CAL'];
+		} 
+		else{
+			$cal_filenames[0] = $default_cal;
 		}
 		//load cal_filenames if $ALL_CALENDARS_COMBINED
-		if ($cal_filenames[0] == $ALL_CALENDARS_COMBINED){
-			$cal_filenames = availableCalendars($username, $password, $ALL_CALENDARS_COMBINED);
+		if ($cal_filenames[0] == $this->ALL_CALENDARS_COMBINED){
+			$cal_filenames = availableCalendars($username,$this->ALL_CALENDARS_COMBINED,$this->config,$this->ALL_CALENDARS_COMBINED);
 		}
 		// Separate the calendar identifiers into web calendars and local
 		// calendars.
@@ -252,8 +244,8 @@ class phpical_display{
 			// Otherwise it is a local calendar.
 			else {
 				// Check blacklisted.
-				if (in_array($cal_filename, $blacklisted_cals)  && $cal_filename !='') {
-					exit(error($lang['l_error_restrictedcal'], $cal_filename));
+				if (in_array($cal_filename, $this->config['blacklisted_cals'])  && $cal_filename !='') {
+					return false;
 				}
 				$local_cals[] = urldecode(str_replace(".ics", '', basename($cal_filename)));
 			}
@@ -274,11 +266,11 @@ class phpical_display{
 			// (as defined by $allow_webcals) or if the web calendar shows up in the
 			// list of web calendars defined in config.inc.php.
 			if ($allow_webcals != 'yes' &&
-				!in_array($cal_webcalPrefix, $list_webcals) &&
-				!in_array($cal_httpPrefix, $list_webcals) &&
-				!in_array($cal_httpsPrefix, $list_webcals))
+				!in_array($cal_webcalPrefix, $this->config['list_webcals']) &&
+				!in_array($cal_httpPrefix, $this->config['list_webcals']) &&
+				!in_array($cal_httpsPrefix, $this->config['list_webcals']))
 			{
-				exit(error($lang['l_error_remotecal'], $web_cal));
+				return false;
 			}
 			
 			// Pull the display name off the URL.
@@ -295,37 +287,14 @@ class phpical_display{
 		
 		// Process the local calendars.
 		if (count($local_cals) > 0) {
-			$local_cals = availableCalendars($username, $password, $local_cals);
+			$local_cals = availableCalendars($username, $local_cals);
 			foreach ($local_cals as $local_cal) {
-				$cal_displaynames[] = str_replace('32', ' ', getCalendarName($local_cal));
+				$cal_displaynames[] = str_replace('32', ' ', getCalendarName($local_cal,$this->config));
 			}
 			$cal_filelist = array_merge($cal_filelist, $local_cals);
 			$cals = array_merge($cals, array_map("urlencode", array_map("getCalendarName", $local_cals)));
-			
-			// Set the download and subscribe paths from the config, if there is
-			// only one calendar being displayed and those paths are defined.
-			if (count($local_cals) == 1) {
-				$filename = $local_cals[0];
-				if (($download_uri == '') && (preg_match('/(^\/|\.\.\/)/', $filename) == 0)) {
-					$subscribe_path = 'webcal://'.$_SERVER['SERVER_NAME'].dirname($_SERVER['PHP_SELF']).'/'."$cpath/".$filename;
-					$download_filename = $filename;
-				} elseif ($download_uri != '') {
-					$newurl = eregi_replace("^(http://)", "", $download_uri); 
-						$subscribe_path = 'webcal://'.$newurl.'/'."$cpath/".basename($filename);
-						$download_filename = $download_uri.'/'."$cpath/".basename($filename);
-				} else {
-					$subscribe_path = "$cpath/";
-					$download_filename = "$cpath/";
-				}
-			}
 		}
 		
-		// We should only allow a download filename and subscribe path if there is
-		// only one calendar being displayed.
-		if (count($cal_filelist) > 1) {
-			$subscribe_path = '';
-			$download_filename = '';
-		}
 		
 		// Build the final cal list. This is a comma separated list of the
 		// url-encoded calendar names and web calendar URLs.
@@ -334,6 +303,7 @@ class phpical_display{
 		// Build the final display name used for template substitution.
 		asort($cal_displaynames);
 		$cal_displayname = implode(', ', $cal_displaynames);
+		return array($cal,$cal_displayname);
 	}
 }
 ?>
