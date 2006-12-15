@@ -115,6 +115,7 @@ $GLOBALS["MANDRIGO_CONFIG"]["PLUGIN_PATH"]=ereg_replace("/config/config.ini.php"
 $GLOBALS["MANDRIGO_CONFIG"]["TEMPLATE_PATH"]=ereg_replace("/config/config.ini.php","",__FILE__)."/templates/";
 $GLOBALS["MANDRIGO_CONFIG"]["LOG_PATH"]=ereg_replace("/config/config.ini.php","",__FILE__)."/logs/";
 $GLOBALS["MANDRIGO_CONFIG"]["IMG_PATH"]=ereg_replace("/config/config.ini.php","",__FILE__)."/htdocs/images/mg_images/";
+$GLOBALS["MANDRIGO_CONFIG"]["TMP_PATH"]="/tmp/mandrigo/";
 
 //
 //Site Status - false if you want to redirect to the off_site page, true if you want
