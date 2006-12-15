@@ -115,7 +115,7 @@ define("DEFAULT_PN",0);
 //
 //Paths
 //
-define("TMP_IMG","/tmp/");
+define("TMP_IMG","/img/");
 define("TTF_FOLDER","/fonts/");
 define("ICONS_IMG","icons");
 
