@@ -166,7 +166,7 @@ class captcha{
 		}
 		
 		//cleanup
-		@unlink($GLOBALS["MANDRIGO_CONFIG"]["TMP_PATH"].TMP_IMG.$GLOBALS["HTTP_POST"]["CA_ID"].".jpg");
+		@unlink($GLOBALS["MANDRIGO_CONFIG"]["IMG_PATH"].TMP_IMG.$GLOBALS["HTTP_POST"]["CA_ID"].".jpg");
 		$this->ca_db->db_update(DB_REMOVE,TABLE_PREFIX.TABLE_CAPTCHA,"",array(array("ca_id","=",$GLOBALS["HTTP_POST"]["CA_ID"])));	
 		
 		if($sql_result["ca_string"]===$GLOBALS["HTTP_POST"]["CA_STRING"]){
