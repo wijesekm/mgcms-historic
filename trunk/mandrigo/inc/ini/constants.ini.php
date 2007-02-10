@@ -2,9 +2,9 @@
 /**********************************************************
     constants.ini.php
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 06/27/06
+	Date Last Edited: 01/31/07
 
-	Copyright (C) 2006  Kevin Wijesekera
+	Copyright (C) 2006-2007 the MandrigoCMS Group
 
     ##########################################################
 	This program is free software; you can redistribute it and/or
@@ -29,11 +29,7 @@
 //To prevent direct script access
 //
 if(!defined("START_MANDRIGO")){
-    die("<html><head>
-            <title>Forbidden</title>
-        </head><body>
-            <h1>Forbidden</h1><hr width=\"300\" align=\"left\"/>\n<p>You do not have permission to access this file directly.</p>
-        </html></body>");
+    die($GLOBALS["MANDRIGO"]["CONFIG"]["DIE_STRING"]);
 }
 
 //
@@ -55,29 +51,6 @@ define("TABLE_LANG_MAIN","langsets");
 define("TABLE_CAPTCHA_DATA","captcha_data");
 define("TABLE_ENVELOPE_DATA","envelope_data");
 
-//
-//DB Constants
-//
-define("DB_UPDATE","UPDATE");
-define("DB_INSERT","INSERT");
-define("DB_DELETE","DELETE");
-define("DB_REMOVE","DELETE");
-define("DB_DROP","DROP");
-define("DB_ADD","ADD");
-define("DB_CREATE","CREATE");
-define("DB_ALTER","ALTER");
-define("DB_TRUNCATE","TRUNCATE");
-define("DB_DATABASE","DATABASE");
-define("DB_PRIMARY","PRIMARY");
-define("DB_KEY","KEY");
-define("DB_TABLE","TABLE");
-define("DB_UINDEX","UINDEX");
-define("DB_AND","AND");
-define("DB_OR","OR");
-define("DB_IN","IN");
-define("DB_BETWEEN","BETWEEN");
-define("DB_NULL","NULL");
-define("DB_AUTO_INC","AUTO");
 //
 //Templates
 //
@@ -131,4 +104,3 @@ define("TEXT_PLAIN","text/plain");
 define("TEXT_HTML","text/html");
 define("MULTI_ALT","multipart/alternative");
 
-?>
