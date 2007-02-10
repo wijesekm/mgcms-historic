@@ -2,7 +2,7 @@
 /**********************************************************
 	extension.inc
 
-	Copyright (C) 2005  Kevin Wijesekera
+	Copyright (C) 2006-2007 the MandrigoCMS Group
 **********************************************************/
 
 //
@@ -13,4 +13,3 @@
 $php_ex = "php";
 $tpl_ex = "tpl";
 
-?>

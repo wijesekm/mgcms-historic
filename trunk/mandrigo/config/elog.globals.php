@@ -2,9 +2,9 @@
 /**********************************************************
     elog.globals.php
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 06/24/06
+	Date Last Edited: 01/30/07
 
-	Copyright (C) 2006  Kevin Wijesekera
+	Copyright (C) 2006-2007 the MandrigoCMS Group
 
     ##########################################################
 	This program is free software; you can redistribute it and/or
@@ -29,24 +29,23 @@
 //To prevent direct script access
 //
 if(!defined("START_MANDRIGO")){
-    die("<html><head>
-            <title>Forbidden</title>
-        </head><body>
-            <h1>Forbidden</h1><hr width=\"300\" align=\"left\"/>\n<p>You do not have permission to access this file directly.</p>
-        </html></body>");
+    die($GLOBALS["MANDRIGO"]["CONFIG"]["DIE_STRING"]);
 }
 
+//
 //lang globals
-$GLOBALS["ELOG"]["TITLE"]="Fatal Error";
-$GLOBALS["ELOG"]["TITLE2"]="Error Log";
-$GLOBALS["ELOG"]["ZERO"]="Fatal Error #0: The error logging script is either missing or in the wrong directory.  Please contact the webmaster to alert him/her of this issue";
-$GLOBALS["ELOG"]["ONE"]="Fatal Error #1: The error logging script could not load the correct log ini files.  Please contact the webmaster to alert him/her of this issue";
-$GLOBALS["ELOG"]["TWO"]="Fatal Error #3: The error logging script could not load the template file";
-$GLOBALS["ELOG"]["THREE"]="Fatal Error #1: The Error Log could not write the errors to the log.  Please contact the webmaster to alert him/her of this issue";
-$GLOBALS["ELOG"]["PERMISSION"]="You are not authorized to view this page.";
+//
+$GLOBALS["MANDRIGO"]["ELOG"]["TITLE"]="Fatal Error";
+$GLOBALS["MANDRIGO"]["ELOG"]["TITLE2"]="Error Log";
+$GLOBALS["MANDRIGO"]["ELOG"]["ZERO"]="Fatal Error #0: The error logging script is either missing or in the wrong directory.  Please contact the webmaster to alert him/her of this issue";
+$GLOBALS["MANDRIGO"]["ELOG"]["ONE"]="Fatal Error #1: The error logging script could not load the correct log ini files.  Please contact the webmaster to alert him/her of this issue";
+$GLOBALS["MANDRIGO"]["ELOG"]["TWO"]="Fatal Error #3: The error logging script could not load the template file";
+$GLOBALS["MANDRIGO"]["ELOG"]["THREE"]="Fatal Error #1: The Error Log could not write the errors to the log.  Please contact the webmaster to alert him/her of this issue";
+$GLOBALS["MANDRIGO"]["ELOG"]["PERMISSION"]="You are not authorized to view this page.";
 
+//
 //html globals
-$GLOBALS["ELOG"]["HTMLHEAD"]="<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n\n<html>\n<head>\n\t<title>";
-$GLOBALS["ELOG"]["HTMLBODY"]="\n\t</title>\n</head>\n<body>\n";
-$GLOBALS["ELOG"]["HTMLEND"]="\n</body>\n</html>";
-?>
+//
+$GLOBALS["MANDRIGO"]["ELOG"]["HTMLHEAD"]="<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n\n<html>\n<head>\n\t<title>";
+$GLOBALS["MANDRIGO"]["ELOG"]["HTMLBODY"]="\n\t</title>\n</head>\n<body>\n";
+$GLOBALS["MANDRIGO"]["ELOG"]["HTMLEND"]="\n</body>\n</html>";
