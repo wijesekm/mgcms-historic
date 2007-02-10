@@ -2,9 +2,9 @@
 /**********************************************************
     index.php
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 06/24/06
+	Date Last Edited: 01/30/07
 
-	Copyright (C) 2006  Kevin Wijesekera
+	Copyright (C) 2006-2007 the MandrigoCMS Group
 
     ##########################################################
 	This program is free software; you can redistribute it and/or
@@ -29,67 +29,43 @@
 //site manager definition
 //
 define("START_MANDRIGO",true);
-define("CORE_NAME","mg_core");
-$GLOBALS["MANDRIGO_CONFIG"]="";
-$GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]=dirname(__FILE__)."/";
+define("CORE_NAME","mg_display");
+$GLOBALS["MANDRIGO"]["CONFIG"]="";
+$GLOBALS["MANDRIGO"]["CONFIG"]["ROOT_PATH"]=dirname(__FILE__)."/";
 
 //
 //Initial includes (php extension, config vars, elog lang arays)
 //
-require($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."config/extension.inc");
-require($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."config/elog.globals.$php_ex");
-require($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."config/config.ini.$php_ex");
+require($GLOBALS["MANDRIGO"]["CONFIG"]["ROOT_PATH"]."config/extension.inc");
+require($GLOBALS["MANDRIGO"]["CONFIG"]["ROOT_PATH"]."config/elog.globals.$php_ex");
+require($GLOBALS["MANDRIGO"]["CONFIG"]["ROOT_PATH"]."config/config.ini.$php_ex");
 
 //
 //Error Logger Init
 //
-if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-    require_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."error_logger.class.$php_ex");
+if($GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
+    require_once($GLOBALS["MANDRIGO"]["CONFIG"]["ROOT_PATH"]."error_logger.class.$php_ex");
 }
 else{
-    if(!(@include_once($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."error_logger.class.$php_ex"))){
-	   die($GLOBALS["ELOG"]["HTMLHEAD"].$GLOBALS["ELOG"]["TITLE"].$GLOBALS["ELOG"]["HTMLBODY"].
-           $GLOBALS["ELOG"]["ZERO"].$GLOBALS["ELOG"]["HTMLEND"]);
+    if(!(@include_once($GLOBALS["MANDRIGO"]["CONFIG"]["ROOT_PATH"]."error_logger.class.$php_ex"))){
+	   die($GLOBALS["MANDRIGO"]["ELOG"]["HTMLHEAD"].$GLOBALS["MANDRIGO"]["ELOG"]["TITLE"].$GLOBALS["MANDRIGO"]["ELOG"]["HTMLBODY"].
+           $GLOBALS["MANDRIGO"]["ELOG"]["ZERO"].$GLOBALS["MANDRIGO"]["ELOG"]["HTMLEND"]);
     }
 }
-$GLOBALS["error_log"] = & new error_logger($log_config["LOG_LEVEL_1"],$log_config["LOG_LEVEL_2"],$log_config["ARCHIVE"]);
+$GLOBALS["MANDRIGO"]["ERROR_LOGGER"] = & new error_logger($log_config["LOG_LEVEL_1"],$log_config["LOG_LEVEL_2"],$log_config["ARCHIVE"],$log_config["ERROR_LOGS"],$log_config["FATAL_TYPES"]);
 
 //
 // Cleans varables, loads requires packages and starts required classes.
 //
-if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-    require($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."ini{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}ini.$php_ex");
+if($GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
+    require($GLOBALS["MANDRIGO"]["CONFIG"]["ROOT_PATH"]."ini{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}ini.$php_ex");
 }
 else{
-    if(!(@include($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."ini{$GLOBALS["MANDRIGO_CONFIG"]["PATH"]}ini.$php_ex"))){
-        $GLOBALS["error_log"]->add_error(1,"script");
-	   	die($GLOBALS["ELOG"]["HTMLHEAD"].$GLOBALS["ELOG"]["TITLE"].$GLOBALS["ELOG"]["HTMLBODY"].
-        	$GLOBALS["error_log"]->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);
+    if(!(@include($GLOBALS["MANDRIGO"]["CONFIG"]["ROOT_PATH"]."ini{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}ini.$php_ex"))){
+        $GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->add_error(1,"script");
+	   	die($GLOBALS["MANDRIGO"]["ELOG"]["HTMLHEAD"].$GLOBALS["MANDRIGO"]["ELOG"]["TITLE"].$GLOBALS["MANDRIGO"]["ELOG"]["HTMLBODY"].
+        	$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->generate_report().$GLOBALS["MANDRIGO"]["ELOG"]["HTMLEND"]);
     }
-}
-
-//
-//sets up the page
-//
-$current_page = new page($sql_db);
-
-//one final check for errors
-if($GLOBALS["error_log"]->get_status()==2){
-	die($GLOBALS["ELOG"]["HTMLHEAD"].$GLOBALS["ELOG"]["TITLE"].$GLOBALS["ELOG"]["HTMLBODY"].
-    	$GLOBALS["error_log"]->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);
-}
-
-//
-//Displays the current page.  Will display an off site page if the site is set to off and the bypass code is incorrect.
-//
-if($GLOBALS["MANDRIGO_CONFIG"]["SITE_STATUS"]||$GLOBALS["HTTP_GET"]["KEY"]==$GLOBALS["SITE_DATA"]["BYPASS_CODE"]){
-    echo $current_page->display();
-}
-else{
-  	$tpl = new template();
-    $tpl->load($GLOBALS["MANDRIGO_CONFIG"]["TEMPLATE_PATH"].TPL_OFF_SITE);
-    $tpl->pparse(false);
-    echo $tpl->return_template();
 }
 
 ?>
