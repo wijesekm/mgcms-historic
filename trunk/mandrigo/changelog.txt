@@ -1,3 +1,7 @@
+0.7.0
+1) Now able to have more error log files then the default
+2) New system for loading default packages to make it easier to add packages to the system.
+
 0.6.0
 1) lang and template data is now drawn from the sql database
 2) server variables are now drawn from the sql database
