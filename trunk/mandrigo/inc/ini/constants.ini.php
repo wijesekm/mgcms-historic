@@ -35,7 +35,6 @@ if(!defined("START_MANDRIGO")){
 //
 //SQL Tables
 //
-define("TABLE_PREFIX",$sql_config["TABLE_PREFIX"]);
 define("TABLE_USER_DATA","user_data");
 define("TABLE_USER_GROUPS","user_groups");
 define("TABLE_GROUP_PERMISSIONS","group_permissions");
@@ -54,9 +53,6 @@ define("TABLE_ENVELOPE_DATA","envelope_data");
 //
 //Templates
 //
-define("PHP_EXT",$php_ex);
-define("TPL_EXT",$tpl_ex);
-define("TPL_ERROR_LOG","error_log.".TPL_EXT);
 define("TPL_OFF_SITE","off_site.".TPL_EXT);
 define("TPL_AUTH_SITE","auth_site.".TPL_EXT);
 define("TPL_MAIN_SITE","main_site.".TPL_EXT);
