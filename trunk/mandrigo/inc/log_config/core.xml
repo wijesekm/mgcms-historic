@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<error_log>
+	<msg>
+		<id>1</id>
+		<value>&lt;h3 style="margin: 0px;"&gt;Core Script Errors&lt;/h3&gt;</value>
+	</msg>
+	<msg>
+		<id>2</id>
+		<value>
+			Could not load the initialization script.
+		</value>
+	</msg>
+	<msg>
+		<id>3</id>
+		<value>
+			Could not load the database package.
+		</value>
+	</msg>
+	<msg>
+		<id>4</id>
+		<value>
+			Could not load the constants package.		
+		</value>
+	</msg>
+	<msg>
+		<id>4</id>
+		<value>
+			Could not load the variable cleaning package.		
+		</value>
+	</msg>
+	<msg>
+		<id>5</id>
+		<value>
+			Could not load the server time package.
+		</value>
+	</msg>
+</error_log>
