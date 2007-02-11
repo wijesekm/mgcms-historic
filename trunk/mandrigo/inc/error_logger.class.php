@@ -2,9 +2,9 @@
 /**********************************************************
     error_logger.class.php
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 11/03/05
-
-	Copyright (C) 2005  Kevin Wijesekera
+	Date Last Edited: 02/10/07
+	
+	Copyright (C) 2006-2007 the MandrigoCMS Group
 
     ##########################################################
 	This program is free software; you can redistribute it and/or
@@ -29,11 +29,7 @@
 //To prevent direct script access
 //
 if(!defined("START_MANDRIGO")){
-    die("<html><head>
-            <title>Forbidden</title>
-        </head><body>
-            <h1>Forbidden</h1><hr width=\"300\" align=\"left\"/>\n<p>You do not have permission to access this file directly.</p>
-        </html></body>");
+    die($GLOBALS["MANDRIGO"]["CONFIG"]["DIE_STRING"]);
 }
 
 class error_logger{
@@ -49,47 +45,256 @@ class error_logger{
     var $type;
     //data format of error logs
     var $format;
+    //for xml parsing
+   	var $document;
+   	var $curr_tag;
+   	var $tag_stack;
     
-    //resets the error logger and sets default settings
-    function error_logger($lvl1,$lvl2,$format){
+    //
+    //constructor function error_logger($lvl1,$lvl2,$format,$type,$fatal_type)
+    //
+    //Initializes the error logging script
+    //
+    //INPUTS:
+    //$lvl1			-	log non system critical errors (default: )
+    //$lvl2			-	log system critical errors (default: )
+    //$format		-	report file name format (default: )
+    //$type			-	array of error log file names (default: )
+    //$fatal_type	-	array of log types that are system critical (default: )
+    function error_logger($lvl1,$lvl2,$format,$type,$fatal_type){
         $this->lvl[1]=$lvl1;
         $this->lvl[2]=$lvl2;
         $this->format=$format;
         $this->status["END"]=false;
         $this->status["DISPLAY"]=false;
-        $this->type=array("sql","script","display","access");
-        $this->fatal_type=array("sql"=>1,"script"=>1);
+        $this->type=(is_array($type))?$type:array("sql","script","display","access");
+        $this->fatal_type=(is_array($fatal_type))?$fatal_type:array("sql"=>1,"script"=>1);
         for($i=0;$i<count($this->type);$i++){
-            $this->log[$this->type[$i]]=array("0");
+            $this->log[$this->type[$i]]=array("1");
         }
     }
-    //adds an error to the log array assuming that $error is in the $log_inc array and that $type is a part of that error array
-    //if these conditions are not met it will show up as blank in the error log
-    function add_error($error,$type){
+    
+	//#################################
+	//
+	// PUBLIC FUNCTIONS
+	//
+	//#################################	
+	
+    //
+    //public function el_adderror($error,$type)
+    //
+    //Adds an error occurance
+    //
+    //INPUTS:
+    //$error	-	error number (default: )
+    //$type		-	type of error (default: )
+    function el_adderror($error,$type){
         $this->log["$type"][count($this->log["$type"])]=$error;
         if($this->fatal_type["$type"]){
              $this->status["END"]=true;
         }
         $this->status["DISPLAY"]=true;
     }
-    //returns the current status of the error logger: 2 - fatal errors, 1 - non fatal errors, 0 - no errors
-    function get_status(){
+    //
+    //public function el_getstatus()
+    //
+    //Adds an error occurance
+    //
+    //returns the current status of the error logger [2:fatal errors, 1:non fatal errors, 0:no errors]
+    function el_getstatus(){
         return ($this->status["DISPLAY"])?(($this->status["END"])?2:1):0;
     }
     
-    //generates an error report and displays/logs it
-    function generate_report(){
+    //
+    //public function el_adderror($error,$type)
+    //
+    //Adds an error occurance
+    //
+    //INPUTS:
+    //$vars		-	array of parse vars (default: )
+    //
+    //returns error log
+    function el_generatereport($vars=array()){
         //loads error log inc from file
-        if(!$log_inc=$this->error_log_init()){
-            return $GLOBALS["ELOG"]["ONE"];
+        if(!$log_inc=$this->el_init()){
+            return $GLOBALS["MANDRIGO"]["ELOG"]["ONE"];
         }
-        //loads template to the $tpl var
-        if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-            $f=fopen($GLOBALS["MANDRIGO_CONFIG"]["TEMPLATE_PATH"].TPL_ERROR_LOG,"r");
+		
+		if(!$this->el_getstatus()){
+			return false;
+		}
+
+		//loads the error logger template
+		$tpl=$this->el_loadtemplate($GLOBALS["MANDRIGO"]["CONFIG"]["TEMPLATE_PATH"].TPL_ERROR_LOG);
+		
+        $report="";
+        //goes through each error array in the $log array and generates a report based on what is inside it
+        for($i=0;$i<count($this->type);$i++){
+            $type=$this->type[$i];
+            $len=count($this->log[$this->type[$i]]);
+            if($len>1){
+                for($j=0;$j<$len;$j++){
+                 	if($this->log[$this->type[$i]][$j]>1){
+						$report.="[".$this->log[$this->type[$i]][$j]."] ";
+					}
+                    $report.=$this->el_vparse($vars,$log_inc[$this->type[$i]]["L".$this->log[$this->type[$i]][$j]]);
+                    if($this->log[$this->type[$i]][$j]>1){
+                        $report.=$GLOBALS["MANDRIGO"]["ELOG"]["BR"];
+                    }
+                }
+            }
+        }
+        //if use has requested error logging, logs the report
+        if(($this->el_getstatus()==1&&$this->lvl[1])||($this->el_getstatus()==2&&$this->lvl[2])){
+        //    $this->el_writetofile($report);
+        }
+        return ereg_replace("{CONTENT}",$report,$tpl);
+    }
+    
+    
+	//#################################
+	//
+	// PRIVATE FUNCTIONS
+	//
+	//#################################	    
+ 
+    //
+    //private function el_adderror($error,$type)
+    //
+    //Adds an error occurance
+    //
+    //INPUTS:
+    //$vars		-	array of parse vars (default: )
+    //$string	-	string to parse (default: )
+    //
+	//returns parsed string
+    function el_vparse($vars,$string){
+        $sov=count($vars);
+        if(!$sov%2){
+            return $string;
+        }
+        for($i=0;$i<$sov-1;$i+=2){
+            $string=ereg_replace("{".$vars[$i]."}",$vars[$i+1],$string);
+        }
+        $string=eregi_replace("[{]+[a-z0-9_-]+[}]","",$string);
+        return $string;
+    }
+    
+    //
+    //private function el_init()
+    //
+    //Sets up log_inc array
+    //
+    //returns array of all log messages
+    function el_init(){
+        $log_inc="";
+        for($i=0;$i<count($this->type);$i++){
+            $log_inc[$this->type[$i]]=$this->el_openarrayassoc($GLOBALS["MANDRIGO"]["CONFIG"]["ROOT_PATH"]."log_config/".$this->type[$i].".".XML_EXT);
+            if(!$log_inc[$this->type[$i]]){
+                return false;
+            }
+        }
+   		$this->document="";
+   		$this->curr_tag="";
+   		$this->tag_stack="";
+        return $log_inc;
+    }
+    
+    //
+    //private function el_openarrayassoc($path)
+    //
+    //Creates an array for a given log init file
+    //
+    //INPUTS:
+    //$path	-	path to error log file (default: )
+    //
+    //returns array of all messages in log init file
+    function el_openarrayassoc($path){
+        
+        $this->el_xmlparse($path);
+        $data=$this->document["ERROR_LOG"][0]["MSG"];
+        $soq=count($data);
+        $log=array();
+		for($i=0;$i<$soq;$i++){
+			$log=$this->el_addarray($log,$data[$i]["ID"][0]["data"],$data[$i]["VALUE"][0]["data"]);
+		}
+		
+        return $log;
+    }
+    
+    //
+    //private function el_openarrayassoc($path)
+    //
+    //Creates an array for a given log init file
+    //
+    //INPUTS:
+    //$array	-	array to merge to (default: )
+    //$key		-	key (default: )
+    //$val		-	value (default: )
+    //
+    //returns merged array
+    function el_addarray($array, $key, $val){
+        $tmp = array("L$key"=>"$val");
+        $array = array_merge($array, $tmp);
+        return $array;
+    }
+    
+    //
+    //private function el_writetofile($report)
+    //
+    //Write the error log to a file
+    //
+    //INPUTS:
+    //$report	-	error log (default: )
+    function el_writetofile($report){
+        $time = date("m-d-Y")." at ".date("h:i:s")."\n";
+
+        if($GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
+            if(!is_file($GLOBALS["MANDRIGO"]["CONFIG"]["LOG_PATH"]."log_".date($this->format).".log")){
+                $f=fopen($GLOBALS["MANDRIGO"]["CONFIG"]["LOG_PATH"]."log_".date($this->format).".log","x");
+            }
+            else{
+				$f=fopen($GLOBALS["MANDRIGO"]["CONFIG"]["LOG_PATH"]."log_".date($this->format).".log","a");
+			}
         }
         else{
-            if(!(@$f=fopen($GLOBALS["MANDRIGO_CONFIG"]["TEMPLATE_PATH"]."error_log.tpl","r"))){
-                return $GLOBALS["ELOG"]["TWO"];
+         	if(!is_file($GLOBALS["MANDRIGO"]["CONFIG"]["LOG_PATH"]."log_".date($this->format).".log")){
+				if(!(@$f=fopen($GLOBALS["MANDRIGO"]["CONFIG"]["LOG_PATH"]."log_".date($this->format).".log","x"))){
+                    die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
+                        $GLOBALS["MANDRIGO"]["ELOG"]["THREE"].$GLOBALS["HTML"]["EEND"]);				
+				}	
+			}
+			else{
+				if(!(@$f=fopen($GLOBALS["MANDRIGO"]["CONFIG"]["LOG_PATH"]."log_".date($this->format).".log","a"))){
+                    die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
+                        $GLOBALS["MANDRIGO"]["ELOG"]["THREE"].$GLOBALS["HTML"]["EEND"]);
+                }			
+			}
+        }
+        fwrite($f,$time);
+        fwrite($f,"----------------------\n");
+        fwrite($f,strip_tags($report)."\n\n");
+        fclose($f);
+    }
+     
+    //
+    //private function el_loadtemplate($path)
+    //
+    //Loads a template file
+    //
+    //INPUTS:
+    //$path	-	path to template (default: )   
+    //
+    //returns the template
+    function el_loadtemplate($path){
+
+        //loads template to the $tpl var
+        if($GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
+            $f=fopen($path,"r");
+        }
+        else{
+            if(!(@$f=fopen($path,"r"))){
+                return $GLOBALS["MANDRIGO"]["ELOG"]["TWO"];
             }
         }
         $tpl="";
@@ -97,99 +302,99 @@ class error_logger{
             $tpl.=fgets($f);
         }
         fclose($f);
-        
-        $report="";
-        
-        //goes through each error array in the $log array and generates a report based on what is inside it
-        for($i=0;$i<count($this->type);$i++){
-            $type=$this->type[$i];
-            $len=count($this->log[$this->type[$i]]);
-            if($len!=1){
-                for($j=0;$j<$len;$j++){
-                    $report.=$log_inc[$this->type[$i]]["l_".$this->log[$this->type[$i]][$j]];
-                    if($this->log[$this->type[$i]][$j]!=0){
-                        $report.=$GLOBALS["HTML"]["BR"].$GLOBALS["HTML"]["BR"];
-                    }
-                }
-            }
-        }
-        
-        //if use has requested error logging, logs the report
-        if(($this->get_status()==1&&$this->lvl[1])||($this->get_status()==2&&$this->lvl[2])){
-            $this->write_to_file($report);
-        }
-        return ereg_replace("{CONTENT}",$report,$tpl);
-    }
-    
-    //loads log_inc data from the init files
-    //to make a new error type simply place a file with that name in the directory
-    //and add the name to the type array and/or fatal_type array if necessary
-    //error log files should be of this format ROOT_PATH/log_config/some_name.inc.log
-    function error_log_init(){
-        $log_inc="";
-        for($i=0;$i<count($this->type);$i++){
-            $log_inc[$this->type[$i]]=$this->open_array_assoc($GLOBALS["MANDRIGO_CONFIG"]["ROOT_PATH"]."log_config/".$this->type[$i].".inc.log");
-            if(!$log_inc[$this->type[$i]]){
-                return false;
-            }
-        }
-        return $log_inc;
-    }
-    
-    //forms an associative array based on the error log file
-    //ex array("error_number","error_message")
-    function open_array_assoc($file_name){
-        $deliminator="&split;";
-        $file="";
-        if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-            $f=fopen($file_name,"r");
-        }
-        else{
-            if(!(@$f=fopen($file_name,"r"))){
-            return false;
-            }
-        }
-		while(!feof($f)){
-			$file.=fgets($f);
-        }
-		fclose($f);
-        $raw_data = explode($deliminator,$file);
-        $data = array();
-        $raw_data_length=count($raw_data);
-        if($raw_data_length%2){
-            return false;
-        }
-        for($i=0; $i< $raw_data_length; $i=$i+2){
-            $data = $this->add_array($data,$raw_data[$i],$raw_data[$i+1]);
-        }
-        return $data;
-    }
-    //simple function to add two arrays
-    function add_array($array, $key, $val){
-        $tmp = array("l_$key"=>"$val");
-        $array = array_merge($array, $tmp);
-        return $array;
-    }
-    //logs the error report to a file
-    //log files are located in LOG_PATH/log_timestamp.log
-    function write_to_file($report){
-        $time = date("m-d-Y")." at ".date("h:i:s")."\n";
-        if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-            if(!($f=fopen($GLOBALS["MANDRIGO_CONFIG"]["LOG_PATH"]."log_".date($this->format).".log","x"))){
-                $f=fopen($GLOBALS["MANDRIGO_CONFIG"]["LOG_PATH"]."log_".date($this->format).".log","a");
-            }
-        }
-        else{
-            if(!(@$f=fopen($GLOBALS["MANDRIGO_CONFIG"]["LOG_PATH"]."log_".date($this->format).".log","x"))){
-                if(!(@$f=fopen($GLOBALS["MANDRIGO_CONFIG"]["LOG_PATH"]."log_".date($this->format).".log","a"))){
-                    die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
-                        $GLOBALS["ELOG"]["THREE"].$GLOBALS["HTML"]["EEND"]);
-                }
-            }
-        }
-        fwrite($f,$time);
-        fwrite($f,strip_tags($report)."\n");
-        fclose($f);
-    }
+		return $tpl;	
+	}
+	
+    //
+    //private function el_xmlparse($path)
+    //
+    //Loads and parses an xml file
+    //
+    //INPUTS:
+    //$path	-	path to the xml file (default: )   
+    //
+    //returns true on success or false on fail
+	function el_xmlparse($path){
+		$parser=xml_parser_create();
+	 	$this->document = array();
+		$this->currTag =& $this->document;
+		$this->tagStack = array();
+	    xml_set_object($parser, $this);
+	    xml_set_character_data_handler($parser, 'el_datahandler');
+	    xml_set_element_handler($parser, 'el_starthandler', 'el_endhandler');
+	   	if(!($fp = fopen($path, "r"))){
+	           return false;
+	    }
+		while($data = fread($fp, 4096)){
+	    	if(!xml_parse($parser, $data, feof($fp))){
+	        	return false;
+			}
+		}
+	    fclose($fp);
+	   	xml_parser_free($parser);
+	   	return true;
+	}
+	
+    //
+    //private function el_starthandler($parser, $name, $attribs)
+    //
+    //Required funtion to parse the beginning of each xml tag
+    //
+    //INPUTS:
+    //$parser	-	xml parser(default: )  
+	//$name		-	xml tag name (default: ) 
+    //$attribs	-	xml tag attributes (default: )
+	function el_starthandler($parser, $name, $attribs){
+	    if(!isset($this->currTag[$name])){
+			$this->currTag[$name] = array();
+		}
+	      
+	    $newTag = array();
+	    if(!empty($attribs)){
+			$newTag['attr'] = $attribs;	
+		}
+	    array_push($this->currTag[$name], $newTag);
+	      
+		$t =& $this->currTag[$name];
+		$this->currTag =& $t[count($t)-1];
+		array_push($this->tagStack, $name);
+	}
+
+    //
+    //private function el_datahandler($parser, $data)
+    //
+    //Required funtion to parse the middle of each xml tag
+    //
+    //INPUTS:
+    //$parser	-	xml parser(default: )  
+	//$data		-	xml tag data (default: ) 	  
+	function el_datahandler($parser, $data){
+	    $data = trim($data); 
+	    if(!empty($data)){
+	        if(isset($this->currTag['data'])){
+				$this->currTag['data'] .= $data;	
+			}
+	        else{
+				$this->currTag['data'] = $data;
+			}
+	    }
+	}
+	
+    //
+    //private function el_endhandler($parser, $name)
+    //
+    //Required funtion to parse the end of each xml tag
+    //
+    //INPUTS:
+    //$parser	-	xml parser(default: )  
+	//$name		-	xml tag name (default: )  
+	function el_endhandler($parser, $name){
+	    $this->currTag =& $this->document;
+	    array_pop($this->tagStack);
+	      
+	    for($i = 0; $i < count($this->tagStack); $i++){
+	        $t =& $this->currTag[$this->tagStack[$i]];
+	        $this->currTag =& $t[count($t)-1];
+	    }
+	}
 }
-?>
