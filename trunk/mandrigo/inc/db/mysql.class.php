@@ -73,9 +73,8 @@ class db extends _db{
         if(!$host){
 			$host="localhost";
 		}
-		
 		//sets default socket if host is localhost and no port or socket is set
-		if($host=="localhost"&&!$port&&!socket){
+		if($host=="localhost"&&!$port&&!$socket){
 			$socket="/tmp/mysql.sock";
 		}
 		
