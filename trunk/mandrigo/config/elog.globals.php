@@ -32,6 +32,9 @@ if(!defined("START_MANDRIGO")){
     die($GLOBALS["MANDRIGO"]["CONFIG"]["DIE_STRING"]);
 }
 
+
+define("TPL_ERROR_LOG","error_log.".TPL_EXT);
+
 //
 //lang globals
 //
@@ -49,3 +52,4 @@ $GLOBALS["MANDRIGO"]["ELOG"]["PERMISSION"]="You are not authorized to view this 
 $GLOBALS["MANDRIGO"]["ELOG"]["HTMLHEAD"]="<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n\n<html>\n<head>\n\t<title>";
 $GLOBALS["MANDRIGO"]["ELOG"]["HTMLBODY"]="\n\t</title>\n</head>\n<body>\n";
 $GLOBALS["MANDRIGO"]["ELOG"]["HTMLEND"]="\n</body>\n</html>";
+$GLOBALS["MANDRIGO"]["ELOG"]["BR"]="<br/>";

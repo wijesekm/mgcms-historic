@@ -12,4 +12,10 @@
 
 $php_ex = "php";
 $tpl_ex = "tpl";
+$xml_ex = "xml";
 
+//DO NOT EDIT BELOW THIS LINE!
+
+define("PHP_EXT",$php_ex);
+define("TPL_EXT",$tpl_ex);
+define("XML_EXT",$xml_ex);

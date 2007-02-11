@@ -74,7 +74,7 @@ if(!defined("START_MANDRIGO")){
 $sql_config="";
 $sql_config["SQL_TYPE"]="mysql";
 $sql_config["SQL_HOST"]="localhost";
-$sql_config["SQL_PORT"]="";
+$sql_config["SQL_PORT"]="3306";
 $sql_config["SQL_SOCKET"]="";
 $sql_config["SQL_USER"]="robotics_mg";
 $sql_config["SQL_PASSWORD"]="B]bTN+UNz[cYY=kcjkLhN";
@@ -90,7 +90,7 @@ $sql_config["SSL"]=array("KEY"=>"",
 // Error Logging
 /////////////////////
 
-//LOG_LEVEL_2 - all errors that are non system critical ie. page does not
+//LOG_LEVEL_1 - all errors that are non system critical ie. page does not
 //exist, permission denyed,etc
 //
 //LOG_LEVEL_2 - all errors that are system critical ie. could not access
@@ -107,8 +107,8 @@ $log_config="";
 $log_config["LOG_LEVEL_1"]=false;
 $log_config["LOG_LEVEL_2"]=true;
 $log_config["ARCHIVE"]="m_d_h";
-$log_config["ERROR_LOGS"]=array("sql","script","display","access");
-$log_config["FATAL_TYPES"]=array("sql"=>1,"script"=>1);
+$log_config["ERROR_LOGS"]=array("sql","core","display","access");
+$log_config["FATAL_TYPES"]=array("sql"=>1,"core"=>1);
 
 
 //////////////////////
@@ -184,3 +184,6 @@ if($path_style=="win"){
 else{
 	$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]="/";	
 }
+
+//define table prefix
+define("TABLE_PREFIX",$sql_config["TABLE_PREFIX"]);
