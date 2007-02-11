@@ -54,6 +54,7 @@ else{
 }
 $GLOBALS["MANDRIGO"]["ERROR_LOGGER"] = & new error_logger($log_config["LOG_LEVEL_1"],$log_config["LOG_LEVEL_2"],$log_config["ARCHIVE"],$log_config["ERROR_LOGS"],$log_config["FATAL_TYPES"]);
 
+
 //
 // Cleans varables, loads requires packages and starts required classes.
 //
@@ -62,9 +63,9 @@ if($GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
 }
 else{
     if(!(@include($GLOBALS["MANDRIGO"]["CONFIG"]["ROOT_PATH"]."ini{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}ini.$php_ex"))){
-        $GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->add_error(1,"script");
+        $GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(2,"core");
 	   	die($GLOBALS["MANDRIGO"]["ELOG"]["HTMLHEAD"].$GLOBALS["MANDRIGO"]["ELOG"]["TITLE"].$GLOBALS["MANDRIGO"]["ELOG"]["HTMLBODY"].
-        	$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->generate_report().$GLOBALS["MANDRIGO"]["ELOG"]["HTMLEND"]);
+        	$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_generatereport().$GLOBALS["MANDRIGO"]["ELOG"]["HTMLEND"]);
     }
 }
 
