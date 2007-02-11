@@ -113,9 +113,9 @@ if($GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
 }
 else{
     if(!(@include_once($GLOBALS["MANDRIGO"]["CONFIG"]["ROOT_PATH"]."db{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}".$sql_config["SQL_TYPE"].".class.$php_ex"))){
-        $GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->add_error(2,"script");
+        $GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(3,"script");
 	   	die($GLOBALS["MANDRIGO"]["ELOG"]["HTMLHEAD"].$GLOBALS["MANDRIGO"]["ELOG"]["TITLE"].$GLOBALS["MANDRIGO"]["ELOG"]["HTMLBODY"].
-           	$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->generate_report().$GLOBALS["MANDRIGO"]["ELOG"]["HTMLEND"]);
+           	$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_generatereport().$GLOBALS["MANDRIGO"]["ELOG"]["HTMLEND"]);
     }
 }
 $sql_db = & new db();
@@ -127,28 +127,26 @@ if($GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
 else{
     if(!$sql_db->db_connect($sql_config["SQL_HOST"],$sql_config["SQL_PORT"],$sql_config["SQL_SOCKET"],$sql_config["SQL_USER"],
 		$sql_config["SQL_PASSWORD"],$sql_config["SQL_DATABASE"],true,$sql_config["USE_SSL"],$sql_config["SSL"])){
-        $GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->add_error(1,"sql");
+        $GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(2,"sql");
 	   	die($GLOBALS["MANDRIGO"]["ELOG"]["HTMLHEAD"].$GLOBALS["MANDRIGO"]["ELOG"]["TITLE"].$GLOBALS["MANDRIGO"]["ELOG"]["HTMLBODY"].
-           	$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->generate_report().$GLOBALS["MANDRIGO"]["ELOG"]["HTMLEND"]);
+           	$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_generatereport().$GLOBALS["MANDRIGO"]["ELOG"]["HTMLEND"]);
     }
 }
-
 //
 //Now we will load a few essential packages such as constants
 //
 $basic_init=array(array("ini{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}constants.ini.$php_ex",3),
 				  array("ini{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}clean_functions.ini.$php_ex",4),
-				  array("server_time.class.$php_ex",5),
-				  array("ini{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}funct.ini.$php_ex",6));			  
-$globals_init=array(array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}site.globals.$php_ex",7),
+				  array("server_time.class.$php_ex",5));			  
+/*$globals_init=array(array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}site.globals.$php_ex",7),
 					array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}server.globals.$php_ex",8),
 					array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}user.globals.$php_ex",9),
 					array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}page.globals.$php_ex",10),
-					array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}script.globals.$php_ex",11)
-					array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}lang.globals.$php_ex",12));	
+					array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}script.globals.$php_ex",11),
+					array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}lang.globals.$php_ex",12));	*/
 
 package_init($basic_init);	
-package_init($globals_init);		
+//package_init($globals_init);		
 		
 //
 //Gets rid of unneeded config vars
@@ -175,12 +173,12 @@ function package_init($pkg){
 		}
 		else{
 			if(!(@include_once($GLOBALS["MANDRIGO"]["CONFIG"]["ROOT_PATH"].$pkg[$i][0]))){
-				$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->add_error($pkg[$i][1],"script");
+				$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror($pkg[$i][1],"core");
 			}
 		}
 	}
-    if($GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->get_status()==2){
+    if($GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_getstatus()==2){
 	   	die($GLOBALS["MANDRIGO"]["ELOG"]["HTMLHEAD"].$GLOBALS["MANDRIGO"]["ELOG"]["TITLE"].$GLOBALS["MANDRIGO"]["ELOG"]["HTMLBODY"].
-           	$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->generate_report().$GLOBALS["MANDRIGO"]["ELOG"]["HTMLEND"]);
+           	$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_generatereport().$GLOBALS["MANDRIGO"]["ELOG"]["HTMLEND"]);
     }
 }	
