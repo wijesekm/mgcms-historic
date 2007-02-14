@@ -216,10 +216,10 @@ class db extends _db{
 	//$params	- the search parameters (default: )
 	//$type		- the format the data will be returned in [ASSOC, NUM, BOTH] (default: ASSOC)
 	//$row		- do we want to fetch the first row or a matrix of all values we get more then 
-	//				one result (default: DB_ALL_ROWS)
+	//				one result (default: 0)
 	//
 	//returns result or false on fail
-    function db_fetcharray($table,$fields,$params="",$type="ASSOC",$rows=""){
+    function db_fetcharray($table,$fields,$params="",$type="ASSOC",$rows=0){
 		$tmp_value=array();	
         $result=$this->db_query($this->db_formfetchquery($table,$fields,$params));
         if($type="ASSOC"){
