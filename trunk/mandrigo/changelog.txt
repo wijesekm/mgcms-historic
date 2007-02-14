@@ -2,6 +2,7 @@
 1) Now able to have more error log files then the default
 2) New system for loading default packages to make it easier to add packages to the system.
 3) Error logger init files now in xml
+4) Simplified server var loading with new multi-protocol var support
 
 0.6.0
 1) lang and template data is now drawn from the sql database

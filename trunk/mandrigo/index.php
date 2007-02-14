@@ -30,7 +30,7 @@
 //
 define("START_MANDRIGO",true);
 define("CORE_NAME","mg_display");
-$GLOBALS["MANDRIGO"]["CONFIG"]="";
+$GLOBALS["MANDRIGO"]=array();
 $GLOBALS["MANDRIGO"]["CONFIG"]["ROOT_PATH"]=dirname(__FILE__)."/";
 
 //
