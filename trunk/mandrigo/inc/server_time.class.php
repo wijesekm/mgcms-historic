@@ -2,9 +2,9 @@
 /**********************************************************
     server_time.class.php
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 09/23/06
+	Date Last Edited: 02/11/07
 
-	Copyright (C) 2006  Kevin Wijesekera
+	Copyright (C) 2006-2007 the MandrigoCMS Group
 
     ##########################################################
 	This program is free software; you can redistribute it and/or
@@ -28,19 +28,17 @@
 //
 //To prevent direct script access
 //
-if(!defined('START_MANDRIGO')){
-    die('<html><head>
-            <title>Forbidden</title>
-        </head><body>
-            <h1>Forbidden</h1><hr width="300" align="left"/><p>You do not have permission to access this file directly.</p>
-        </html></body>');
+if(!defined("START_MANDRIGO")){
+    die($GLOBALS["MANDRIGO"]["CONFIG"]["DIE_STRING"]);
 }
 
-
 class server_time{
- 
+
+	//current gmt 
     var $gmt;
+    //current time of the server
     var $server_time;
+    //current time of the client
     var $client_time;
 
     
@@ -60,7 +58,6 @@ class server_time{
 	//public function st_returngmt();
 	//
 	//returns the gmt time
-	//
 	function st_returngmt(){
 		return $this->gmt;
 	}
@@ -69,7 +66,6 @@ class server_time{
 	//public function st_returnst();
 	//
 	//returns the server time
-	//
 	function st_returnst(){
 		return $this->server_time;
 	}
@@ -78,7 +74,6 @@ class server_time{
 	//public function st_returnct();
 	//
 	//returns the client time
-	//
 	function st_returnct(){
 		return $this->client_time;
 	}
@@ -92,7 +87,6 @@ class server_time{
 	//private function st_mkgmt();
 	//
 	//sets the gmt time stamp
-	//
 	function st_mkgmt(){
 		$this->gmt=$server_time + date("Z",$server_time);
 	}
@@ -102,8 +96,11 @@ class server_time{
 	//
 	//sets the client time stamp
 	//
+	//INPUTS:
+	//$c_zone	-	timezone of the client [in format +/- 0050] (default: )
+	//$c_dst	-	dst of the client [0,1] (default: )
 	function st_mkct($c_zone,$c_dst){
-		$this->client_time=$this->gmt + $this->st_dst($c_zone,$c_dst)
+		$this->client_time=$this->gmt + $this->st_dst($c_zone,$c_dst);
 	}
 	
 	//
@@ -111,6 +108,8 @@ class server_time{
 	//
 	//returns the time offset from GMT adjusted for DST
 	//
+	//$zone	-	timezone [in format +/- 0050] (default: )
+	//$dst	-	dst [0,1] (default: 0)
     function st_dst($zone,$dst){
         $time_stamp_dst_april = 0;
         $time_stamp_dst_october = 0;
@@ -132,5 +131,3 @@ class server_time{
         return ($zone)*3600;
     }
 }
-
-?>
