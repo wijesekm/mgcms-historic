@@ -2,9 +2,9 @@
 /**********************************************************
     site.globals.php
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 12/13/05
+	Date Last Edited: 02/12/07
 
-	Copyright (C) 2005  Kevin Wijesekera
+	Copyright (C) 2006-2007 the MandrigoCMS Group
 
     ##########################################################
 	This program is free software; you can redistribute it and/or
@@ -29,39 +29,23 @@
 //To prevent direct script access
 //
 if(!defined("START_MANDRIGO")){
-    die("<html><head>
-            <title>Forbidden</title>
-        </head><body>
-            <h1>Forbidden</h1><hr width=\"300\" align=\"left\"/>\n<p>You do not have permission to access this file directly.</p>
-        </html></body>");
+    die($GLOBALS["MANDRIGO"]["CONFIG"]["DIE_STRING"]);
 }
 
-$GLOBALS["SITE_DATA"]["SITE_NAME"]=$sql_db->db_fetchresult(TABLE_PREFIX.TABLE_MAIN_DATA,"data_value",array(array("data_name","=","site_name")));
-$GLOBALS["SITE_DATA"]["SITE_URL"]=$sql_db->db_fetchresult(TABLE_PREFIX.TABLE_MAIN_DATA,"data_value",array(array("data_name","=","site_url")));
-$GLOBALS["SITE_DATA"]["IMG_URL"]=$sql_db->db_fetchresult(TABLE_PREFIX.TABLE_MAIN_DATA,"data_value",array(array("data_name","=","img_url")));
-$GLOBALS["SITE_DATA"]["IMG_URL"]=(empty($GLOBALS["SITE_DATA"]["IMG_URL"]))?$GLOBALS["SITE_DATA"]["SITE_URL"]:$GLOBALS["SITE_DATA"]["IMG_URL"];
-$GLOBALS["SITE_DATA"]["URL_FORMAT"]=$sql_db->db_fetchresult(TABLE_PREFIX.TABLE_MAIN_DATA,"data_value",array(array("data_name","=","url_format")));
-$GLOBALS["SITE_DATA"]["MAIN_PAGE"]=$sql_db->db_fetchresult(TABLE_PREFIX.TABLE_MAIN_DATA,"data_value",array(array("data_name","=","main_page")));
-$GLOBALS["SITE_DATA"]["FORM_MAIL_PAGE"]=$sql_db->db_fetchresult(TABLE_PREFIX.TABLE_MAIN_DATA,"data_value",array(array("data_name","=","form_mail_page")));
-$GLOBALS["SITE_DATA"]["PROFILE_PAGE"]=$sql_db->db_fetchresult(TABLE_PREFIX.TABLE_MAIN_DATA,"data_value",array(array("data_name","=","profile_page")));
-$GLOBALS["SITE_DATA"]["BYPASS_CODE"]=$sql_db->db_fetchresult(TABLE_PREFIX.TABLE_MAIN_DATA,"data_value",array(array("data_name","=","bypass_code")));
-$GLOBALS["SITE_DATA"]["WEBMASTER_NAME"]=$sql_db->db_fetchresult(TABLE_PREFIX.TABLE_MAIN_DATA,"data_value",array(array("data_name","=","webmaster_name")));
-$GLOBALS["SITE_DATA"]["WEBMASTER_EMAIL"]=$sql_db->db_fetchresult(TABLE_PREFIX.TABLE_MAIN_DATA,"data_value",array(array("data_name","=","webmaster_email")));
-$GLOBALS["SITE_DATA"]["LAST_UPDATED"]=$sql_db->db_fetchresult(TABLE_PREFIX.TABLE_MAIN_DATA,"data_value",array(array("data_name","=","last_updated")));
-$GLOBALS["SITE_DATA"]["MANDRIGO_VER"]=$sql_db->db_fetchresult(TABLE_PREFIX.TABLE_MAIN_DATA,"data_value",array(array("data_name","=","mandrigo_ver")));
-$GLOBALS["SITE_DATA"]["SERVER_ZONE"]=$sql_db->db_fetchresult(TABLE_PREFIX.TABLE_MAIN_DATA,"data_value",array(array("data_name","=","server_timezone")));
-$GLOBALS["SITE_DATA"]["SERVER_DST"]=$sql_db->db_fetchresult(TABLE_PREFIX.TABLE_MAIN_DATA,"data_value",array(array("data_name","=","server_dst")));
-$GLOBALS["SITE_DATA"]["PAGE_INPUT_TYPE"]=$sql_db->db_fetchresult(TABLE_PREFIX.TABLE_MAIN_DATA,"data_value",array(array("data_name","=","page_type")));
-$GLOBALS["SITE_DATA"]["CRYPT_TYPE"]=$sql_db->db_fetchresult(TABLE_PREFIX.TABLE_MAIN_DATA,"data_value",array(array("data_name","=","crypt_type")));
-$GLOBALS["SITE_DATA"]["UC_CRYPT_TYPE"]=$sql_db->db_fetchresult(TABLE_PREFIX.TABLE_MAIN_DATA,"data_value",array(array("data_name","=","uc_crypt_type")));
-$GLOBALS["SITE_DATA"]["LOGIN_TYPE"]=$sql_db->db_fetchresult(TABLE_PREFIX.TABLE_MAIN_DATA,"data_value",array(array("data_name","=","login_type")));
-$GLOBALS["SITE_DATA"]["UC_LOGIN_TYPE"]=$sql_db->db_fetchresult(TABLE_PREFIX.TABLE_MAIN_DATA,"data_value",array(array("data_name","=","uc_login_type")));
-$GLOBALS["SITE_DATA"]["STANDARD_SESSION_LEN"]=$sql_db->db_fetchresult(TABLE_PREFIX.TABLE_MAIN_DATA,"data_value",array(array("data_name","=","standard_session_len")));
-$GLOBALS["SITE_DATA"]["REMEMBERED_SESSION_LEN"]=$sql_db->db_fetchresult(TABLE_PREFIX.TABLE_MAIN_DATA,"data_value",array(array("data_name","=","remembered_session_len")));
-$GLOBALS["SITE_DATA"]["UC_REMEMBERED_SESSION_LEN"]=$sql_db->db_fetchresult(TABLE_PREFIX.TABLE_MAIN_DATA,"data_value",array(array("data_name","=","uc_remembered_session_len")));
-$GLOBALS["SITE_DATA"]["COOKIE_PATH"]=$sql_db->db_fetchresult(TABLE_PREFIX.TABLE_MAIN_DATA,"data_value",array(array("data_name","=","cookie_path")));
-$GLOBALS["SITE_DATA"]["COOKIE_DOMAINS"]=$sql_db->db_fetchresult(TABLE_PREFIX.TABLE_MAIN_DATA,"data_value",array(array("data_name","=","cookie_domains")));
-$GLOBALS["SITE_DATA"]["COOKIE_SECURE"]=($sql_db->db_fetchresult(TABLE_PREFIX.TABLE_MAIN_DATA,"data_value",array(array("data_name","=","secure_cookie")))=="true")?true:false;;
+//grabs the config data from the database
+$config=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_MAIN_DATA,"","","ASSOC",DB_ALL_ROWS);
 
+$soq=count($config);
+
+if(!$soq){
+	$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(3,"sql");
+}
+
+//sets the SITE vars
+for($i=0;$i<$soq;$i++){
+	$GLOBALS["MANDRIGO"]["SITE"][strtoupper($config[$i]["cfg_name"])]=$config[$i]["cfg_value"];
+}
+
+$config="";
 
 ?>
