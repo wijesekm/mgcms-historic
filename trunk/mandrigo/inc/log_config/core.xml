@@ -34,4 +34,10 @@
 			Could not load the server time package.
 		</value>
 	</msg>
+	<msg>
+		<id>5</id>
+		<value>
+			Could not load the site globals package.
+		</value>
+	</msg>
 </error_log>

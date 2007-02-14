@@ -10,4 +10,16 @@
 			Could not connect to the database.
 		</value>
 	</msg>
+	<msg>
+		<id>3</id>
+		<value>
+			No site variables set.  This usually means the config table is blank or missing.
+		</value>
+	</msg>
+	<msg>
+		<id>4</id>
+		<value>
+			No server globals set.  This usually means the server globals table is blank or missing.
+		</value>
+	</msg>
 </error_log>
