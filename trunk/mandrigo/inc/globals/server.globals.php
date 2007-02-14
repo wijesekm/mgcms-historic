@@ -2,9 +2,9 @@
 /**********************************************************
     server.globals.php
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 06/14/06
+	Date Last Edited: 02/12/07
 
-	Copyright (C) 2006  Kevin Wijesekera
+	Copyright (C) 2006-2007 the MandrigoCMS Group
 
     ##########################################################
 	This program is free software; you can redistribute it and/or
@@ -27,133 +27,122 @@
 
 //
 //To prevent direct script access
-//$GLOBALS["SITE_DATA"]["URL_FORMAT"]
+//
 if(!defined("START_MANDRIGO")){
-    die("<html><head>
-            <title>Forbidden</title>
-        </head><body>
-            <h1>Forbidden</h1><hr width=\"300\" align=\"left\"/>\n<p>You do not have permission to access this file directly.</p>
-        </html></body>");
+    die($GLOBALS["MANDRIGO"]["CONFIG"]["DIE_STRING"]);
 }
 
-//array defs
-$GLOBALS["HTTP_COOKIE"]=array();
-$GLOBALS["HTTP_GET"]=array();
-$GLOBALS["HTTP_SERVER"]=array();
-$GLOBALS["HTTP_POST"]=array();
+$url = array();
+$vars= array();
 
 //makes the URL array for type 1 urls only
-if($GLOBALS["SITE_DATA"]["URL_FORMAT"]==1){
-	$url = array(null=>null);
-    if(!ereg($GLOBALS["MANDRIGO_CONFIG"]["INDEX"]."/",$HTTP_SERVER_VARS["PHP_SELF"])){
-		$php_self=$GLOBALS["MANDRIGO_CONFIG"]["INDEX"].$HTTP_SERVER_VARS["PHP_SELF"];
+if($GLOBALS["MANDRIGO"]["SITE"]["URL_FORMAT"]==1){
+ 
+ 	//detects php_self.  I have seen servers regester this as index.php/vars or just /vars
+ 	//which is why the check is there.
+    if(!ereg($GLOBALS["MANDRIGO"]["SITE"]["INDEX_NAME"]."/",$_SERVER["PHP_SELF"])){
+		$php_self=$GLOBALS["MANDRIGO"]["SITE"]["INDEX_NAME"].$_SERVER["PHP_SELF"];
     }
 	else{
-		$php_self=$HTTP_SERVER_VARS["PHP_SELF"];
+		$php_self=$_SERVER["PHP_SELF"];
     }
-    $raw_url = eregi_replace("^.*".$GLOBALS["MANDRIGO_CONFIG"]["INDEX"]."/p","p",$php_self);
+    //exploes the array into its basic chunks
+    $raw_url = eregi_replace("^.*".$GLOBALS["MANDRIGO"]["SITE"]["INDEX_NAME"]."/p","p",$php_self);
     $raw_url = explode("/",$raw_url);
-    $array_url = array("","");
+    $array_url = array();
+    //just in case we want to do /var=value/var2=value2/ we will explode all ='s too
     for($i =0; $i < count($raw_url); $i++){
-        $tmp = explode("=",$raw_url[$i]);
-        $array_url = array_merge_recursive($array_url,$tmp);
+        $array_url = array_merge_recursive($array_url,explode("=",$raw_url[$i]));
     }
-    for($i=2; $i< count($array_url); $i=$i+2){
-    	$tmp = array($array_url[$i]=>$array_url[$i+1]);
-        $url = array_merge_recursive($url, $tmp);
+    //forms the url array
+    for($i=0; $i< count($array_url); $i=$i+2){
+        $url = array_merge_recursive($url, array($array_url[$i]=>$array_url[$i+1]));
     }
-    $array_url=array();
-    $tmp=array();
-    $raw_url=array();
+    
+    //cleanup
+    $array_url="";
+    $raw_url="";
+    $php_self="";
 }
-$soa=$sql_db->db_numrows(TABLE_PREFIX.TABLE_SERVER_GLOBALS,array(array("var_core_name","=",CORE_NAME,DB_OR),array("var_core_name","=","all")));
-$j=0;
-for($i=0;$j<$soa;$i++){
-	if($parse=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_SERVER_GLOBALS,"",array(array("var_core_name","=",CORE_NAME,DB_OR,1),array("var_core_name","=","all",DB_AND,1),array("var_id","=",$i,"",5)))){
-		$j++;
-		switch($parse["var_protocol"]){
-			case METHOD_GET:
-				$get_names=explode(";",$parse["var_get_names"]);
-				$clean_functs=explode(";",$parse["var_clean_functs"]);
-				$defaults=explode("&split;",$parse["var_defaults"]);
-				$soc=count($get_names);
-				for($k=0;$k<$soc;$k++){
-					if(!$GLOBALS["HTTP_GET"][$parse["var_store_name"]]||$GLOBALS["HTTP_GET"][$parse["var_store_name"]]==BAD_DATA){
-						if($GLOBALS["SITE_DATA"]["URL_FORMAT"]==0){
-							$tmp_=$HTTP_GET_VARS[$get_names[$k]];	
-						}
-						else if($GLOBALS["SITE_DATA"]["URL_FORMAT"]==1){
-							$tmp_=$url[$get_names[$k]];	
-						}
-						if(isset($tmp_)){
-							$tmp=clean_var($tmp_,$clean_functs[$k]);
-						}
-						else{
-							eval($defaults[$k]);
-						}
-						$GLOBALS["HTTP_GET"][$parse["var_store_name"]]=$tmp;
-					}
-				}
-			break;
-			case METHOD_POST:
-				$get_names=explode(";",$parse["var_get_names"]);
-				$clean_functs=explode(";",$parse["var_clean_functs"]);
-				$defaults=explode("&split;",$parse["var_defaults"]);
-				$soc=count($get_names);
-				for($k=0;$k<$soc;$k++){
-					if(!$GLOBALS["HTTP_POST"][$parse["var_store_name"]]||$GLOBALS["HTTP_POST"][$parse["var_store_name"]]==BAD_DATA){
-						if(isset($HTTP_POST_VARS[$get_names[$k]])){
-							$tmp=clean_var($HTTP_POST_VARS[$get_names[$k]],$clean_functs[$k]);
-						}
-						else{
-							eval($defaults[$k]);
-						}
-						$GLOBALS["HTTP_POST"][$parse["var_store_name"]]=$tmp;
-					}
-				}			
-			break;
-			case METHOD_COOKIE:
-				$get_names=explode(";",$parse["var_get_names"]);
-				$clean_functs=explode(";",$parse["var_clean_functs"]);
-				$defaults=explode("&split;",$parse["var_defaults"]);
-				$soc=count($get_names);
-				for($k=0;$k<$soc;$k++){
-					if(!$GLOBALS["HTTP_COOKIE"][$parse["var_store_name"]]||$GLOBALS["HTTP_POST"][$parse["var_store_name"]]==BAD_DATA){
-						if(isset($HTTP_COOKIE_VARS[$get_names[$k]])){
-							$tmp=clean_var($HTTP_COOKIE_VARS[$get_names[$k]],$clean_functs[$k]);
-						}
-						else{
-							eval($defaults[$k]);
-						}
-						$GLOBALS["HTTP_COOKIE"][$parse["var_store_name"]]=$tmp;
-					}
-				}			
-			break;
-			case METHOD_SERVER;
-				$get_names=explode(";",$parse["var_get_names"]);
-				$clean_functs=explode(";",$parse["var_clean_functs"]);
-				$defaults=explode("&split;",$parse["var_defaults"]);
-				$soc=count($get_names);
-				for($k=0;$k<$soc;$k++){
-					if(!$GLOBALS["HTTP_SERVER"][$parse["var_store_name"]]||$GLOBALS["HTTP_SERVER"][$parse["var_store_name"]]==BAD_DATA){
-						if(isset($HTTP_SERVER_VARS[$get_names[$k]])){
-							$tmp=clean_var($HTTP_SERVER_VARS[$get_names[$k]],$clean_functs[$k]);
-						}
-						else{
-							eval($defaults[$k]);
-						}
-						$GLOBALS["HTTP_SERVER"][$parse["var_store_name"]]=$tmp;
-					}
-				}
-			break;
-			default:
-			break;
-		};
+
+//gets vars array
+$vars=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_SERVER_GLOBALS,"",array(array("var_corename","=",CORE_NAME,DB_OR),array("var_corename","=","all")));
+$soa=count($vars);
+
+if(!$soa){
+	$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(4,"sql");
+}
+
+//parses all vars out.  When multiple var names, protocols are specified the first one which has a value wins
+//and is made the var value.
+for($i=0;$i<$soa;$i++){
+ 	$multi=false;
+ 	//if multiple protocols are specified we will run this
+	if(eregi(";",$vars[$i]["var_protocols"])){
+		$multi=true;
+		$vars[$i]["var_protocols"]=explode(";",$vars[$i]["var_protocols"]);
+		$soq2=count($vars[$i]["var_protocols"]);
+		for($j=0;$j<$soq2;$j++){
+			sg_setglobal($vars[$i],$url,$vars[$i]["var_protocols"][$j]);
+		}
+	}
+	else{
+		sg_setglobal($vars[$i],$url,$vars[$i]["var_protocols"]);
 	}
 }
-$parse=array();
-$get_names=array();
-$clean_functs=array();
-$defaults=array();
+//cleanup
+$vars="";
+$url="";
 
-?>
+//function sg_setglobal($vars,$url,$protocol="http_get")
+//
+//regesters a var based on the database
+//
+//INPUTS:
+//$vars		-	array of data for the whole row from the database
+//$url		-	url array
+//$protocol -	protocol we will run this for
+function sg_setglobal($vars,$url,$protocol="http_get"){
+	$get_names=explode(";",$vars["var_getnames"]);
+	$clean_functs=explode(";",$vars["var_cleanfuncts"]);
+	$defaults=explode(";",$vars["var_defaults"]);
+	$soc=count($get_names);
+	for($k=0;$k<$soc;$k++){
+		if(!$GLOBALS["MANDRIGO"]["VARS"][strtoupper($vars["var_name"])]||$GLOBALS["MANDRIGO"]["VARS"][strtoupper($vars["var_name"])]==BAD_DATA){
+			$tmp="";
+			switch($protocol){
+				case METHOD_GET:
+					if($GLOBALS["MANDRIGO"]["SITE"]["URL_FORMAT"]==1){
+						$tmp=$url[$get_names[$k]];
+						if(!$tmp){
+							$tmp=$_GET[$get_names[$k]];	
+						}
+					}
+					else{
+						$tmp=$_GET[$get_names[$k]];	
+					}
+				break;
+				case METHOD_POST:
+					$tmp=$_POST[$get_names[$k]];	
+				break;
+				case METHOD_COOKIE:
+					$tmp=$_COOKIE[$get_names[$k]];	
+				break;
+				case METHOD_SERVER:
+					$tmp=$_SERVER[$get_names[$k]];	
+				break;
+			};
+
+			if(isset($tmp)){
+				$tmp=clean_var($tmp,$clean_functs[$k]);
+			}
+			else{
+			 	if(!$defaults[$k]){
+					$defaults[$k]="''";
+				}
+				eval("$"."tmp=".$defaults[$k].";");
+			}
+			$GLOBALS["MANDRIGO"]["VARS"][strtoupper($vars["var_name"])]=$tmp;
+		}
+	}
+}
