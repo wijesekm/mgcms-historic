@@ -2,7 +2,7 @@
 /**********************************************************
     constants.ini.php
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 01/31/07
+	Date Last Edited: 02/18/07
 
 	Copyright (C) 2006-2007 the MandrigoCMS Group
 
@@ -35,16 +35,18 @@ if(!defined("START_MANDRIGO")){
 //
 //SQL Tables
 //
-define("TABLE_USER_DATA","user_data");
-define("TABLE_USER_GROUPS","user_groups");
-define("TABLE_GROUP_PERMISSIONS","group_permissions");
 define("TABLE_MAIN_DATA","config");
+define("TABLE_SERVER_GLOBALS","server_globals");
+define("TABLE_ACCOUNTS","accounts");
+define("TABLE_GROUPS","groups");
+
+define("TABLE_GROUP_PERMISSIONS","group_permissions");
 define("TABLE_PAGE_DATA","page_data");
 define("TABLE_RESTRICTED_PAGE_DATA","restricted_page_data");
 define("TABLE_PACKAGE_DATA","packages");
 define("TABLE_SITE_STATS","site_stats");
 define("TABLE_CAPTCHA","captcha");
-define("TABLE_SERVER_GLOBALS","server_globals");
+
 define("TABLE_LANG","lang_");
 define("TABLE_LANG_MAIN","langsets");
 define("TABLE_CAPTCHA_DATA","captcha_data");
