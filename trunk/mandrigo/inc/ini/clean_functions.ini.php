@@ -2,9 +2,9 @@
 /**********************************************************
     clean_functions.ini.php
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 05/08/06
+	Date Last Edited: 02/11/07
 
-	Copyright (C) 2006  Kevin Wijesekera
+	Copyright (C) 2006-2007 the MandrigoCMS Group
 
     ##########################################################
 	This program is free software; you can redistribute it and/or
@@ -29,12 +29,19 @@
 //To prevent direct script access
 //
 if(!defined("START_MANDRIGO")){
-    die("<html><head>
-            <title>Forbidden</title>
-        </head><body>
-            <h1>Forbidden</h1><hr width=\"300\" align=\"left\"/>\n<p>You do not have permission to access this file directly.</p>
-        </html></body>");
+    die($GLOBALS["MANDRIGO"]["CONFIG"]["DIE_STRING"]);
 }
+
+//
+//function clean_var($string,$method)
+//
+//Runs an input though regx to check to see if its valid
+//
+//INPUTS:
+//$string	-	input string
+//$method	-	clean method
+//
+//returns the cleaned string
 function clean_var($string,$method){
 	switch($method){
 		case "num":
@@ -78,4 +85,3 @@ function clean_var($string,$method){
 		break;
 	};
 }
-?>
