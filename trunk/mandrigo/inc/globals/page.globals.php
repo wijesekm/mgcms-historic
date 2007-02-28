@@ -32,8 +32,6 @@ if(!defined("START_MANDRIGO")){
     die($GLOBALS["MANDRIGO"]["CONFIG"]["DIE_STRING"]);
 }
 
-print_r($GLOBALS["MANDRIGO"]["VARS"]);
-
 //
 //Sets what the page-input is
 //
