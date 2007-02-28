@@ -3,6 +3,8 @@
 2) New system for loading default packages to make it easier to add packages to the system.
 3) Error logger init files now in xml
 4) Simplified server var loading with new multi-protocol var support
+5) Support for SQL, AD accounts added in and tested
+6) Added AD class
 
 0.6.0
 1) lang and template data is now drawn from the sql database
