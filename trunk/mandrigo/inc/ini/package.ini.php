@@ -2,9 +2,9 @@
 /**********************************************************
     package.ini.php
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 11/14/05
+	Date Last Edited: 02/28/07
 
-	Copyright (C) 2005  Kevin Wijesekera
+	Copyright (C) 2006-2007 the MandrigoCMS Group
 
     ##########################################################
 	This program is free software; you can redistribute it and/or
@@ -29,49 +29,55 @@
 //To prevent direct script access
 //
 if(!defined("START_MANDRIGO")){
-    die("<html><head>
-            <title>Forbidden</title>
-        </head><body>
-            <h1>Forbidden</h1><hr width=\"300\" align=\"left\"/>\n<p>You do not have permission to access this file directly.</p>
-        </html></body>");
+    die($GLOBALS["MANDRIGO"]["CONFIG"]["DIE_STRING"]);
 }
 
-for($i=0;$i<count($GLOBALS["PAGE_DATA"]["HOOKS"]);$i++){
-    if(!empty($GLOBALS["PAGE_DATA"]["HOOKS"][$i])){
-      	
-        if(!($sql_result=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_PACKAGE_DATA,"",array(array("package_id","=",$GLOBALS["PAGE_DATA"]["HOOKS"][$i]))))){
-            if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-                $GLOBALS["error_log"]->add_error(14,"sql");
-	   			die($GLOBALS["ELOG"]["HTMLHEAD"].$GLOBALS["ELOG"]["TITLE"].$GLOBALS["ELOG"]["HTMLBODY"].
-           			$GLOBALS["error_log"]->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);
-            }
-        }
-        else{
-            if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-                include_once($GLOBALS["MANDRIGO_CONFIG"]["PLUGIN_PATH"].$sql_result["package_name"]."/hooks.pkg.$php_ex");
-                include_once($GLOBALS["MANDRIGO_CONFIG"]["PLUGIN_PATH"].$sql_result["package_name"]."/display.pkg.$php_ex");
-                include_once($GLOBALS["MANDRIGO_CONFIG"]["PLUGIN_PATH"].$sql_result["package_name"]."/globals.pkg.$php_ex");
-            }
-            else{
-                if(!@include_once($GLOBALS["MANDRIGO_CONFIG"]["PLUGIN_PATH"].$sql_result["package_name"]."/hooks.pkg.$php_ex")){
-                    $GLOBALS["error_log"]->add_error($sql_result["package_noload_error"],"script");
-	   				die($GLOBALS["ELOG"]["HTMLHEAD"].$GLOBALS["ELOG"]["TITLE"].$GLOBALS["ELOG"]["HTMLBODY"].
-           				$GLOBALS["error_log"]->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);
-                }
-                if(!@include_once($GLOBALS["MANDRIGO_CONFIG"]["PLUGIN_PATH"].$sql_result["package_name"]."/display.pkg.$php_ex")){
-                    $GLOBALS["error_log"]->add_error($sql_result["package_noload_error"],"script");
-	   				die($GLOBALS["ELOG"]["HTMLHEAD"].$GLOBALS["ELOG"]["TITLE"].$GLOBALS["ELOG"]["HTMLBODY"].
-           				$GLOBALS["error_log"]->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);
-                }
-                if(!@include_once($GLOBALS["MANDRIGO_CONFIG"]["PLUGIN_PATH"].$sql_result["package_name"]."/globals.pkg.$php_ex")){
-                    $GLOBALS["error_log"]->add_error($sql_result["package_noload_error"],"script");
-	   				die($GLOBALS["ELOG"]["HTMLHEAD"].$GLOBALS["ELOG"]["TITLE"].$GLOBALS["ELOG"]["HTMLBODY"].
-           				$GLOBALS["error_log"]->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);
-                }
-            }
-            $GLOBALS["PAGE_DATA"]["DISPLAY_HOOK"]=$sql_result["package_name"].".display_hook();";
-        }
-    }
+$soq=count($GLOBALS["MANDRIGO"]["CURRENTPAGE"]["HOOKS"]);
+
+$filter=array();
+
+for($i=0;$i<$soq;$i++){
+ 	if($i+1<$soq){
+		$filter[$i]=array("pkg_id","=",$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["HOOKS"][$i],DB_OR);		
+	}
+	else{
+		$filter[$i]=array("pkg_id","=",$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["HOOKS"][$i]);	
+	}
 }
 
-?>
+$packages=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_PACKAGES,"pkg_name,pkg_nlerror",$filter,"ASSOC",DB_ALL_ROWS);
+
+$soq=count($packages);
+
+if($packages===false){
+	$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(7,"sql");
+}
+if($soq==0){
+	$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(3,"display");
+}
+
+for($i=0;$i<$soq;$i++){
+	if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
+		include_once($GLOBALS["MANDRIGO"]["CONFIG"]["PLUGIN_PATH"].$packages[$i]["pkg_name"]."/hooks.pkg.".PHP_EXT);
+		include_once($GLOBALS["MANDRIGO"]["CONFIG"]["PLUGIN_PATH"].$packages[$i]["pkg_name"]."/globals.pkg.".PHP_EXT);
+		include_once($GLOBALS["MANDRIGO"]["CONFIG"]["PLUGIN_PATH"].$packages[$i]["pkg_name"]."/display.pkg.".PHP_EXT);
+	}
+	else{
+	 	$fail=false;
+		if(!(@include_once($GLOBALS["MANDRIGO"]["CONFIG"]["PLUGIN_PATH"].$packages[$i]["pkg_name"]."/hooks.pkg.".PHP_EXT))){
+			$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror((int)$packages[$i]["pkg_nlerror"],"display");
+			$fail=true;	
+		}
+		if(!(@include_once($GLOBALS["MANDRIGO"]["CONFIG"]["PLUGIN_PATH"].$packages[$i]["pkg_name"]."/globals.pkg.".PHP_EXT))){
+			if(!$fail){
+				$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror((int)$packages[$i]["pkg_nlerror"],"display");
+				$fail=true;
+			}
+		}
+		if(!(@include_once($GLOBALS["MANDRIGO"]["CONFIG"]["PLUGIN_PATH"].$packages[$i]["pkg_name"]."/display.pkg.".PHP_EXT))){
+			if(!$fail){
+				$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror((int)$packages[$i]["pkg_nlerror"],"display");
+			}			
+		}
+	}
+}
