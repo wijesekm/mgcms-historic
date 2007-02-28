@@ -216,10 +216,10 @@ class db extends _db{
 	//$params	- the search parameters (default: )
 	//$type		- the format the data will be returned in [ASSOC, NUM, BOTH] (default: ASSOC)
 	//$row		- do we want to fetch the first row or a matrix of all values we get more then 
-	//				one result (default: 0)
+	//				one result (default: false)
 	//
 	//returns result or false on fail
-    function db_fetcharray($table,$fields,$params="",$type="ASSOC",$rows=0){
+    function db_fetcharray($table,$fields,$params="",$type="ASSOC",$rows=false){
 		$tmp_value=array();	
         $result=$this->db_query($this->db_formfetchquery($table,$fields,$params));
         if($type="ASSOC"){
@@ -527,7 +527,7 @@ class db extends _db{
     function db_query($string){
         $result="";
         if($GLOBALS["MANDRIGO"]["CONFIG"]["SQL_PRINT_MODE"]){
-			echo $string;
+			echo $string."<br>";
 		}
         if($GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
             $result=mysql_query($string,$this->db_id);
@@ -574,10 +574,10 @@ class db extends _db{
 		$new_field="";
 		$new_table="";
 		if(ereg(",",$fields)){
-			$fields=explode($fields);
+			$fields=explode(",",$fields);
 			for($i=0;$i<count($fields);$i++){
 				$new_field.="`".mysql_real_escape_string($fields[$i])."`";
-				if($i<count($fields)){
+				if($i<count($fields)-1){
 					$new_field.=",";
 				}
 			}
@@ -591,10 +591,10 @@ class db extends _db{
 			}
 		}
 		if(ereg(",",$table)){
-			$table=explode($table);
+			$table=explode(",",$table);
 			for($i=0;$i<count($table);$i++){
 				$new_table.="`".mysql_real_escape_string($table[$i])."`";
-				if($i<count($table)){
+				if($i<count($table)-1){
 					$new_table.=",";
 				}
 			}
