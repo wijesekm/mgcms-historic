@@ -22,4 +22,16 @@
 			No server globals set.  This usually means the server globals table is blank or missing.
 		</value>
 	</msg>
+	<msg>
+		<id>5</id>
+		<value>
+			No language globals set.  This usually means the table is blank or missing.
+		</value>
+	</msg>
+	<msg>
+		<id>6</id>
+		<value>
+			No html version globals set.  This usually means the table is blank or missing.
+		</value>
+	</msg>
 </error_log>

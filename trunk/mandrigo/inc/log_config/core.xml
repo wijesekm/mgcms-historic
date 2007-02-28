@@ -88,4 +88,10 @@
 			Could not load the acl globals package.
 		</value>
 	</msg>
+	<msg>
+		<id>14</id>
+		<value>
+			Could not load the language globals package.
+		</value>
+	</msg>
 </error_log>
