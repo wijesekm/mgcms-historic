@@ -32,10 +32,12 @@ if(!defined("START_MANDRIGO")){
     die($GLOBALS["MANDRIGO"]["CONFIG"]["DIE_STRING"]);
 }
 
+@include_once($GLOBALS["MANDRIGO"]["CONFIG"]["ROOT_PATH"]."acct{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}account.class.".PHP_EXT);
+
 class account extends _account{
 	
-	function account($uname){
-		$this->ac_setname($uname);
+	function account($uid){
+		$this->ac_setuser($uid);
 	}
 
 	//#################################
@@ -45,24 +47,22 @@ class account extends _account{
 	//#################################	
 		
 	//
-	//public ac_setname()
+	//public ac_setuser($uid)
 	//
 	//sets the current username	
-	function ac_setname($uname){
-		if($r=$GLOBALS["MANDRIGO"]["DB"]->db_fetchresult(TABLE_PREFIX.TABLE_ACCOUNTS,"ac_username",array(array("ac_username","=",$uname)))){
-			if((string)$r===(string)$uname){
-				$this->name=$uname;
-				$this->isuser=true;
-				$this->ac_getuserdata();
-			}
-			else{
-			 	$this->isuser=false;
-				return false;
-			}
+	function ac_setuser($uid){
+		$r=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_ACCOUNTS,"ac_username,ac_id",array(array("ac_id","=",$uid)));
+		print_r($r);
+		if((int)$r["ac_id"]===(int)$uid){
+			$this->name=(string)$r["ac_username"];
+			$this->uid=(int)$r["ac_id"];
+			$this->isuser=true;
+			$this->ac_getuserdata();
 		}
 		else{
 			$this->isuser=false;
-			return false;			
+			$this->uid=false;
+			return false;
 		}
 		return true;
 	}
@@ -77,9 +77,22 @@ class account extends _account{
 	 	if(!$this->isuser){
 			return false;
 		}
-		return $this->u_data["ac_id"]
+		return $this->u_data["ac_id"];
 	}
 	
+	//
+	//public ac_uname()
+	//
+	//gets the uname of the current user
+	//
+	//returns uname on success or false on fail	
+	function ac_uname(){
+		if(!$this->isuser){
+			return false;
+		}
+		return $this->uname;
+	}
+		
 	//
 	//public ac_userdata()
 	//
@@ -91,16 +104,17 @@ class account extends _account{
 			return false;
 		}
 	 	$tmp=explode(";",$this->u_data["ac_fullname"]);
-		return array("fname"=>$tmp[0],
-					 "mname"=>$tmp[1],
-					 "lname"=>$tmp[2],
-					 "email"=>$this->u_data["ac_email"],
-					 "im"=>explode(";",$this->u_data["ac_im"]),
-					 "website"=>$this->u_data["ac_website"],
-					 "about"=>$this->u_data["ac_about"],
-					 "picture_path"=>$this->u_data["ac_picture"]);
+		return array("FNAME"=>$tmp[0],
+					 "MNAME"=>$tmp[1],
+					 "LNAME"=>$tmp[2],
+					 "EMAIL"=>$this->u_data["ac_email"],
+					 "IM"=>explode(";",$this->u_data["ac_im"]),
+					 "WEBSITE"=>$this->u_data["ac_website"],
+					 "ABOUT"=>$this->u_data["ac_about"],
+					 "PICTURE_PATH"=>$this->u_data["ac_picture"],
+					 "UID"=>$this->ac_id(),
+					 "USERNAME"=>$this->ac_uname());
 	}
-
 	//
 	//public ac_last()
 	//
@@ -111,9 +125,9 @@ class account extends _account{
 	 	if(!$this->isuser){
 			return false;
 		}
-		return array("login_time"=>$this->u_data["ac_lastlogin"],
-					 "login_ip"=>$this->u_data["ac_lastip"]
-					 "pchange_time"=>$this->u_data["ac_lastpwdchg"]);
+		return array("LT"=>$this->u_data["ac_lastlogin"],
+					 "LIP"=>$this->u_data["ac_lastip"],
+					 "PCT"=>$this->u_data["ac_lastpwdchg"]);
 	}
 
 	//
@@ -126,8 +140,8 @@ class account extends _account{
 	 	if(!$this->isuser){
 			return false;
 		}
-		return array("timezone"=>$this->u_data["ac_tz"],
-					 "dst"=>$this->u_data["ac_dst"]);		
+		return array("TZ"=>$this->u_data["ac_tz"],
+					 "DST"=>$this->u_data["ac_dst"]);		
 	}
 
 	//

@@ -34,8 +34,9 @@ if(!defined("START_MANDRIGO")){
 
 class _account{
 	
-	var $name;
+	var $uid;
 	var $isuser;
+	var $name;
 	var $u_data;
 	
 	function _account($uname){}
