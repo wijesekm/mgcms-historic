@@ -40,4 +40,52 @@
 			Could not load the site globals package.
 		</value>
 	</msg>
+	<msg>
+		<id>6</id>
+		<value>
+			Could not load the active directory package.
+		</value>
+	</msg>
+	<msg>
+		<id>7</id>
+		<value>
+			Could not load the LDAP package.
+		</value>
+	</msg>
+	<msg>
+		<id>8</id>
+		<value>
+			Could not load the server globals package.
+		</value>
+	</msg>
+	<msg>
+		<id>9</id>
+		<value>
+			Could not load the user globals package.
+		</value>
+	</msg>
+	<msg>
+		<id>10</id>
+		<value>
+			Could not load the session package.
+		</value>
+	</msg>
+	<msg>
+		<id>11</id>
+		<value>
+			Could not load the account package.
+		</value>
+	</msg>
+	<msg>
+		<id>12</id>
+		<value>
+			Could not load the site globals package.
+		</value>
+	</msg>
+	<msg>
+		<id>13</id>
+		<value>
+			Could not load the acl globals package.
+		</value>
+	</msg>
 </error_log>

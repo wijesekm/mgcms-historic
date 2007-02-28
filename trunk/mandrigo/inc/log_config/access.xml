@@ -4,4 +4,10 @@
 		<id>1</id>
 		<value>&lt;h3 style="margin: 0px;"&gt;Access Errors&lt;/h3&gt;</value>
 	</msg>
+	<msg>
+		<id>2</id>
+		<value>
+			The page requested has a page_id of 0.  This page_id is reserved for stats information and cannot be used.
+		</value>
+	</msg>
 </error_log>
