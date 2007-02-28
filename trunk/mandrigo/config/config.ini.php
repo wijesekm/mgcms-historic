@@ -188,9 +188,8 @@ $path_style="unix";
 //Html Version - html version that the script is in (ex xhtml_1_0_trans)
 //
 
-$default_lang="";
-$default_lang["LANGUAGE"]="en-US";
-$default_lang["HTML_VER"]="xhtml_1_0_trans";
+$GLOBALS["MANDRIGO"]["CONFIG"]["LANGUAGE"]="en-US";
+$GLOBALS["MANDRIGO"]["CONFIG"]["HTML_VER"]="xhtml_1_0_trans";
 
 //
 //DO NOT EDIT BELOW THIS
