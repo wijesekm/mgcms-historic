@@ -2,9 +2,9 @@
 /**********************************************************
     session.class.php
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 03/20/06
+	Date Last Edited: 02/27/07
 
-	Copyright (C) 2006  Kevin Wijesekera
+	Copyright (C) 2006-2007 the MandrigoCMS Group
 
     ##########################################################
 	This program is free software; you can redistribute it and/or
@@ -29,92 +29,108 @@
 //To prevent direct script access
 //
 if(!defined("START_MANDRIGO")){
-    die("<html><head>
-            <title>Forbidden</title>
-        </head><body>
-            <h1>Forbidden</h1><hr width=\"300\" align=\"left\"/>\n<p>You do not have permission to access this file directly.</p>
-        </html></body>");
+    die($GLOBALS["MANDRIGO"]["CONFIG"]["DIE_STRING"]);
 }
+
+define("SESSION_COOKIE","mg_sesid");
+define("USER_COOKIE","mg_uid");
 
 class session{
 
-	var $db;
+	var $sesid;
+	var $uid;
 
-	function session(&$sql){
-		$this->db=$sql;
-	}
-	function session_start($uid,$expires,$secure,$path,$domains){
+	function session(){}
+	
+	function se_startnew($uid,$expires,$secure,$path,$domains){
 	  	if((int)$uid<=1){
 			return false;
 		}
-		$sessionid=md5(uniqid(rand(),true));
-		if(!$this->db->db_update(DB_UPDATE,TABLE_PREFIX.TABLE_USER_DATA,array(array("user_session",$sessionid)),array(array("user_id","=",$uid)))){
+		$this->sesid=md5(uniqid(rand(),true));
+		$this->uid=$uid;
+		if(!$GLOBALS["MANDRIGO"]["DB"]->db_update(DB_UPDATE,TABLE_PREFIX.TABLE_ACCOUNTS,array(array("ac_session",$this->sesid)),array(array("ac_id","=",$uid)))){
 			return false;
 		}
 		
 		$domains=explode(";",$domains);
 		for($i=0;$i<count($domains);$i++){
 		  	if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-				setcookie(SESSION_COOKIE,$sessionid,$expires,$path,$domains[$i],$secure);
-				setcookie(USER_COOKIE,$uid,$expires,$path,$domains[$i],$secure);
+				setcookie(SESSION_COOKIE,$this->sesid,$expires,$path,$domains[$i],$secure);
+				setcookie(USER_COOKIE,$this->uid,$expires,$path,$domains[$i],$secure);
 				return false;
 			}	
 			else{
-				if(!(@setcookie(SESSION_COOKIE,$sessionid,$expires,$path,$domains[$i],$secure))){
+				if(!(@setcookie(SESSION_COOKIE,$this->sesid,$expires,$path,$domains[$i],$secure))){
 					return false;
 				}
-				if(!(@setcookie(USER_COOKIE,$uid,$expires,$path,$domains[$i],$secure))){
+				if(!(@setcookie(USER_COOKIE,$this->uid,$expires,$path,$domains[$i],$secure))){
 					return false;
 				}				
 			}
 		}
-	  	return $sessionid;
+		return true;	
 	}
-	function session_check($uid,$sesid){
-		if((int)$uid<=1||!$sesid){
-			return false
-		}
-		if((int)$sesid===$this->session_id($uid)){
-			return true;
-		}
-		return false;
-	}
-	function session_renew($sesid,$uid,$expires,$secure,$path,$domains){
-	 	if($uid<=1||!$sesid){
+	function se_load($uid){
+		if((int)$uid<=1){
 			return false;
 		}
-		if(!$this->db->db_update(DB_UPDATE,TABLE_PREFIX.TABLE_USER_DATA,array(array("user_session",$sesid)),array(array("user_id","=",$uid)))){
+		$this->sesid=(int)$GLOBALS["MANDRIGO"]["DB"]>db_fetchresult(TABLE_PREFIX.TABLE_ACCOUNTS,"ac_session",array(array("ac_id","=",$uid)));  
+		$this->uid=(int)$uid;
+		if(!$this->uid&&!$this->sesid){
+			return false;
+		}
+		return true;
+	}
+	function se_check($uid,$sesid){
+		if((int)$uid<=1||!$sesid){
+			return false;
+		}
+		if(!$this->uid&&!$this->sesid){
+			return false;
+		}
+		if((int)$sesid===$this->sesid&&(int)$uid===$this->uid){
+			return true;
+		}
+		return $this->se_checkstatus();
+	}
+	function se_checkstatus(){
+		$s=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_ACCOUNTS,"ac_status,ac_expires",array(array("ac_id","=",$uid)));
+		if($s["ac_status"]=="D"||$s["ac_expires"]<$GLOBALS["MANDRIGO"]["SITE"]["SERVERTIME"]){
+			return false;
+		}
+		return true;
+	}
+	function se_renew($expires,$secure,$path,$domains){
+		if(!$GLOBALS["MANDRIGO"]["DB"]->db_update(DB_UPDATE,TABLE_PREFIX.TABLE_ACCOUNTS,array(array("ac_session",$this->sesid)),array(array("ac_id","=",$this->uid)))){
 			return false;
 		}		
 		$domains=explode(";",$domains);
 		for($i=0;$i<count($domains);$i++){
 		  	if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-				setcookie(SESSION_COOKIE,$sessionid,$expires,$path,$domains[$i],$secure);
-				setcookie(USER_COOKIE,$uid,$expires,$path,$domains[$i],$secure);
+				setcookie(SESSION_COOKIE,$this->sesid,$expires,$path,$domains[$i],$secure);
+				setcookie(USER_COOKIE,$this->uid,$expires,$path,$domains[$i],$secure);
 			}	
 			else{
-				if(!(@setcookie(SESSION_COOKIE,$sessionid,$expires,$path,$domains[$i],$secure))){
+				if(!(@setcookie(SESSION_COOKIE,$this->sesid,$expires,$path,$domains[$i],$secure))){
 					return false;
 				}
-				if(!(@setcookie(USER_COOKIE,$uid,$expires,$path,$domains[$i],$secure))){
+				if(!(@setcookie(USER_COOKIE,$this->uid,$expires,$path,$domains[$i],$secure))){
 					return false;
 				}				
 			}
 		}
 		return true;		
 	}
-	function session_stop($uid){
-	  	if((int)$uid<=1){
-			return false;
-		}
-		if(!$this->db->db_update(DB_UPDATE,TABLE_PREFIX.TABLE_USER_DATA,array(array("user_session","")),array(array("user_id","=",$uid)))){
+	function se_stop(){
+		if(!$GLOBALS["MANDRIGO"]["DB"]->db_update(DB_UPDATE,TABLE_PREFIX.TABLE_ACCOUNTS,array(array("ac_session","")),array(array("ac_id","=",$this->uid)))){
 			return false;
 		}	
+		$this->uid=false;
+		$this->sesid=false;
+		
 		return true;	  
 	}
-	function session_id($uid){
-		return (int)$this->db->db_fetchresult(TABLE_PREFIX.TABLE_USER_DATA,"user_session",array(array("user_id","=",$uid)));  
-	} 
+	function se_uid(){
+		return $this->uid;
+	}
 }
-
-?>
