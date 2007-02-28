@@ -76,7 +76,15 @@ class _account{
 	//
 	//returns last login data on success or false on fail	
 	function ac_lastlogin(){}
-
+	
+	//
+	//public ac_language()
+	//
+	//gets the lang of the current user
+	//
+	//returns lang
+	function ac_language(){}
+	
 	//
 	//public ac_timezone()
 	//

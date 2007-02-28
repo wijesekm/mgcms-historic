@@ -131,6 +131,19 @@ class account extends _account{
 	}
 
 	//
+	//public ac_language()
+	//
+	//gets the lang of the current user
+	//
+	//returns lang
+	function ac_language(){
+	 	if(!$this->isuser){
+			return false;
+		}
+		return $this->u_data["ac_lang"];
+		
+	}
+	//
 	//public ac_timezone()
 	//
 	//gets the timezone/dst of the current user

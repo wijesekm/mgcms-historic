@@ -148,7 +148,21 @@ class account extends _account{
 					 "LIP"=>$this->u_data_sql["ac_lastip"],
 					 "PCT"=>$this->u_data_sql["ac_lastpwdchg"]);
 	}
-
+	
+	//
+	//public ac_language()
+	//
+	//gets the lang of the current user
+	//
+	//returns lang
+	function ac_language(){
+	 	if(!$this->isuser){
+			return false;
+		}
+		return $this->u_data_sql["ac_lang"];
+		
+	}
+	
 	//
 	//public ac_timezone()
 	//
@@ -219,7 +233,7 @@ class account extends _account{
 		}
 		$this->u_data=$GLOBALS["MANDRIGO"]["AD"]->ad_userinfo($this->name,array("givenname","info","sn","initials","mail","wWWHomePage"));
 		$this->u_data=$this->u_data[0];
-		$this->u_data_sql=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_ACCOUNTS,"ac_lastlogin,ac_lastip,ac_lastpwdchg",array(array("ac_username","=",$this->name)));
+		$this->u_data_sql=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_ACCOUNTS,"ac_lastlogin,ac_lastip,ac_lastpwdchg,ac_lang",array(array("ac_username","=",$this->name)));
 		return true;
 	}
 }
