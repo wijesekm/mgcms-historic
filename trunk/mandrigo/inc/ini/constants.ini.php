@@ -41,13 +41,12 @@ define("TABLE_ACCOUNTS","accounts");
 define("TABLE_GROUPS","groups");
 define("TABLE_PAGES","pages");
 define("TABLE_ACL","acl");
+define("TABLE_LANGSETS","langsets");
+define("TABLE_LANG","lang");
 
 define("TABLE_PACKAGE_DATA","packages");
 define("TABLE_SITE_STATS","site_stats");
 define("TABLE_CAPTCHA","captcha");
-
-define("TABLE_LANG","lang_");
-define("TABLE_LANG_MAIN","langsets");
 define("TABLE_CAPTCHA_DATA","captcha_data");
 define("TABLE_ENVELOPE_DATA","envelope_data");
 
@@ -66,7 +65,7 @@ define("METHOD_GET","http_get");
 define("METHOD_POST","http_post");
 define("METHOD_COOKIE","http_cookie");
 define("METHOD_SERVER","http_server");
-define("CORE_PACKAGES","package_core");
+define("CORE_PACKAGES","mg_packages");
 
 //
 //Hooks
@@ -98,4 +97,4 @@ define("MULTIPART_ALT","multipart/alternative");
 define("TEXT_PLAIN","text/plain");
 define("TEXT_HTML","text/html");
 define("MULTI_ALT","multipart/alternative");
-
+define("CORE_PACKAGES","mg_packages");
