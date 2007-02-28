@@ -184,11 +184,12 @@ switch($GLOBALS["MANDRIGO"]["SITE"]["ACCOUNT_TYPE"]){
 };
 
 //
-//Now we will load the user data/permissions and page data
-//
+//Now we will load the user data/permissions, and page data
 $init3=	array(array("acct{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}account_".$GLOBALS["MANDRIGO"]["SITE"]["ACCOUNT_TYPE"].".class.$php_ex",11),
 			  array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}user.globals.$php_ex",9),
-			  array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}page.globals.$php_ex",12));
+			  array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}page.globals.$php_ex",12),
+			  array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}acl.globals.$php_ex",13),
+			  array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}lang.globals.$php_ex",14));
 package_init($init3);
 $init3="";	
 		  
@@ -201,9 +202,7 @@ $GLOBALS["MANDRIGO"]["SITE"]["GMT"]=$clock->st_returnst();
 $GLOBALS["MANDRIGO"]["CURRENTUSER"]["TIME"]=$clock->st_returnct();
 $clock="";
 
-
-/*					array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}page.globals.$php_ex",10),
-					array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}script.globals.$php_ex",11),
+/*					
 					array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}lang.globals.$php_ex",12));	*/
 
 
