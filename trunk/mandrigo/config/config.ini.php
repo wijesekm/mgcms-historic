@@ -53,6 +53,7 @@ if(!defined("START_MANDRIGO")){
 //mysqli - mysql 4.1 and up. ssl support.  not ready yet!
 //pgsql - PostgreSQL.  Not ready yet!
 //mssql - Microsoft SQL. Not ready yet!
+//oraclesql - Oracle SQL DB. Not Ready Yet!
 //
 //SQL_HOST - Sql server address or ip address (ex. sql.kevinwijesekera.net, localhost)
 //
@@ -70,15 +71,15 @@ if(!defined("START_MANDRIGO")){
 //
 //USE_SSL - Use a secure connection.  Still testing so not ready yet!
 //
-
+//SSL - array of ssl data
 $sql_config="";
 $sql_config["SQL_TYPE"]="mysql";
 $sql_config["SQL_HOST"]="localhost";
 $sql_config["SQL_PORT"]="3306";
 $sql_config["SQL_SOCKET"]="";
-$sql_config["SQL_USER"]="robotics_mg";
-$sql_config["SQL_PASSWORD"]="B]bTN+UNz[cYY=kcjkLhN";
-$sql_config["SQL_DATABASE"]="prep_mandrigo";
+$sql_config["SQL_USER"]="some_user";
+$sql_config["SQL_PASSWORD"]="some_password";
+$sql_config["SQL_DATABASE"]="mandrigo";
 $sql_config["TABLE_PREFIX"]="mg_";
 $sql_config["USE_SSL"]=false;
 $sql_config["SSL"]=array("KEY"=>"",
@@ -86,6 +87,22 @@ $sql_config["SSL"]=array("KEY"=>"",
 						 "CA"=>"",
 						 "CAPATH"=>"" 
 						);
+						
+//////////////////////
+// AD/LDAP array
+/////////////////////
+
+//Enter in the information for your AD/LDAP database (if used):
+//
+//
+//	
+$adldap_config="";
+$adldap_config["DN"]="DC=MS,DC=TEST,DC=ORG";
+$adldap_config["DC"]=array("dc1.test.org");
+$adldap_config["ACCT_SUFFIX"]="@ms.test.org";
+$adldap_config["CONTROL_USER"]="control_user";
+$adldap_config["CONTROL_PASSWORD"]="some_password";
+
 //////////////////////
 // Error Logging
 /////////////////////
@@ -107,8 +124,8 @@ $log_config="";
 $log_config["LOG_LEVEL_1"]=false;
 $log_config["LOG_LEVEL_2"]=true;
 $log_config["ARCHIVE"]="m_d_h";
-$log_config["ERROR_LOGS"]=array("sql","core","display","access");
-$log_config["FATAL_TYPES"]=array("sql"=>1,"core"=>1);
+$log_config["ERROR_LOGS"]=array("sql","core","display","access","ldap");
+$log_config["FATAL_TYPES"]=array("sql"=>1,"core"=>1,"ldap"=>1);
 
 
 //////////////////////
@@ -123,9 +140,9 @@ $log_config["FATAL_TYPES"]=array("sql"=>1,"core"=>1);
 //
 //PLUGIN_PATH - path to the plugins folder (usually a subdir of inc) ex: /var/www/htdocs/inc/packages/
 //
-//TEMPLATE_PATH - path to the templates folders ex /var/www/templates/
+//TEMPLATE_PATH - path to the templates folders ex /var/www/templates/ (it is recommended that this path not be web accessible)
 //
-//LOG_PATH - path to the logs folder ex /var/www/logs/
+//LOG_PATH - path to the logs folder ex /var/www/logs/ (it is recommended that this path not be web accessible)
 //
 //IMG_PATH - path to the mandrigo images folder ex /var/www/htdocs/images/
 //
@@ -154,7 +171,7 @@ $GLOBALS["MANDRIGO"]["CONFIG"]["SQL_PRINT_MODE"]=false;
 //IS_INSTALLED:  If not using auto install or script has already been set up
 //this should be set to true.
 //
-$GLOBALS["MANDRIGO"]["CONFIG"]["IS_INSTALLED"]=true;
+$GLOBALS["MANDRIGO"]["CONFIG"]["IS_INSTALLED"]=false;
 
 //
 //path_style - Path Style for includes.  Set to either win or unix
