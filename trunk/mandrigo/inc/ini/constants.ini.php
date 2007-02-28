@@ -39,10 +39,9 @@ define("TABLE_MAIN_DATA","config");
 define("TABLE_SERVER_GLOBALS","server_globals");
 define("TABLE_ACCOUNTS","accounts");
 define("TABLE_GROUPS","groups");
+define("TABLE_PAGES","pages");
+define("TABLE_ACL","acl");
 
-define("TABLE_GROUP_PERMISSIONS","group_permissions");
-define("TABLE_PAGE_DATA","page_data");
-define("TABLE_RESTRICTED_PAGE_DATA","restricted_page_data");
 define("TABLE_PACKAGE_DATA","packages");
 define("TABLE_SITE_STATS","site_stats");
 define("TABLE_CAPTCHA","captcha");
