@@ -1,10 +1,10 @@
 <?php
 /**********************************************************
-    site.globals.php
+    page.globals.php
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 12/14/05
+	Date Last Edited: 02/28/07
 
-	Copyright (C) 2005  Kevin Wijesekera
+	Copyright (C) 2006-2007 the MandrigoCMS Group
 
     ##########################################################
 	This program is free software; you can redistribute it and/or
@@ -29,123 +29,57 @@
 //To prevent direct script access
 //
 if(!defined("START_MANDRIGO")){
-    die("<html><head>
-            <title>Forbidden</title>
-        </head><body>
-            <h1>Forbidden</h1><hr width=\"300\" align=\"left\"/>\n<p>You do not have permission to access this file directly.</p>
-        </html></body>");
+    die($GLOBALS["MANDRIGO"]["CONFIG"]["DIE_STRING"]);
 }
 
-$page_input_type = "page_name";
-if($GLOBALS["SITE_DATA"]["PAGE_INPUT_TYPE"]==1){
-    $page_input_type = "page_id";
+print_r($GLOBALS["MANDRIGO"]["VARS"]);
+
+//
+//Sets what the page-input is
+//
+$pageinput_type = "pg_name";
+if($GLOBALS["MANDRIGO"]["SITE"]["PAGE_TYPE"]==1){
+    $pageinput_type = "pg_id";
 }
 
-if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-    $page_data=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_PAGE_DATA,"",array(array($page_input_type,"=",$GLOBALS["HTTP_GET"]["PAGE"])));
+if($GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
+    $page_data=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_PAGES,"",array(array($pageinput_type,"=",$GLOBALS["MANDRIGO"]["VARS"]["PAGE"])));
 }
 else{
-    if(!$page_data=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_PAGE_DATA,"",array(array($page_input_type,"=",$GLOBALS["HTTP_GET"]["PAGE"])))){
-        $GLOBALS["error_log"]->add_error(1,"display");
+    if(!$page_data=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_PAGES,"",array(array($pageinput_type,"=",$GLOBALS["MANDRIGO"]["VARS"]["PAGE"])))){
+        $GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(2,"display");
     }
 }
 
-$GLOBALS["PAGE_DATA"]["ID"] = $page_data["page_id"];
-if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-	if($GLOBALS["PAGE_DATA"]["ID"]==0&&!$GLOBALS["error_log"]->get_status()){
-	    $GLOBALS["error_log"]->add_error(2,"access");
+$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["ID"]=(int)trim($page_data["pg_id"]);
+
+//
+//If page has ID of 0 it is a bad page
+//
+
+if($GLOBALS["MANDRIGO"]["CURRENTPAGE"]["ID"]===0){
+	if($GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
+		die();
+	}
+	else{
+		$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(2,"access");
+	   	die($GLOBALS["MANDRIGO"]["ELOG"]["HTMLHEAD"].$GLOBALS["MANDRIGO"]["ELOG"]["TITLE"].$GLOBALS["MANDRIGO"]["ELOG"]["HTMLBODY"].
+           	$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_generatereport().$GLOBALS["MANDRIGO"]["ELOG"]["HTMLEND"]);		
 	}
 }
-$GLOBALS["PAGE_DATA"]["NAME"] = $page_data["page_name"];
 
-$GLOBALS["USER_DATA"]["PERMISSIONS"]["READ"]=false;
-$GLOBALS["USER_DATA"]["PERMISSIONS"]["READ_RESTRICTED"]=false;
-$GLOBALS["USER_DATA"]["PERMISSIONS"]["POST_TO"]=false;
-$GLOBALS["USER_DATA"]["PERMISSIONS"]["EDIT"]=false;
-$GLOBALS["USER_DATA"]["PERMISSIONS"]["CHANGE_DATA"]=false;
-$GLOBALS["USER_DATA"]["PERMISSIONS"]["FULL_CONTROL"]=false;
 
-$default_permissions="";
-$page_permissions="";
-if(!$GLOBALS["error_log"]->get_status()){
-    for($i=0;$i<count($GLOBALS["USER_DATA"]["GROUPS"]);$i++){
-        if(!$page_permissions=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_GROUP_PERMISSIONS,"",array(array("group_id","=",$GLOBALS["USER_DATA"]["GROUPS"]["$i"],DB_AND),array("page_id","=",$GLOBALS["PAGE_DATA"]["ID"])))){
-			$default_permissions=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_GROUP_PERMISSIONS,"",array(array("group_id","=",$GLOBALS["USER_DATA"]["GROUPS"]["$i"],DB_AND),array("page_id","=",0)));
-			if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]&&!$default_permissions){
-                $GLOBALS["error_log"]->add_error(1,"access");
-                break;
-            }
-			else{
-	            if($default_permissions["read"]){
-	                $GLOBALS["USER_DATA"]["PERMISSIONS"]["READ"]=true;
-	            }
-	            if($default_permissions["read_restricted"]){
-	                $GLOBALS["USER_DATA"]["PERMISSIONS"]["READ_RESTRICTED"]=true;
-	            }
-	            if($default_permissions["post_to"]){
-	                $GLOBALS["USER_DATA"]["PERMISSIONS"]["POST_TO"]=true;
-	            }
-	            if($default_permissions["edit"]){
-	                $GLOBALS["USER_DATA"]["PERMISSIONS"]["EDIT"]=true;
-	            }
-	            if($default_permissions["change_data"]){
-	                $GLOBALS["USER_DATA"]["PERMISSIONS"]["CHANGE_DATA"]=true;
-	            }
-	            if($default_permissions["full_control"]){
-	                $GLOBALS["USER_DATA"]["PERMISSIONS"]["FULL_CONTROL"]=true;
-	            }
-			}
-        }
-        else{
-            if($page_permissions["read"]){
-                $GLOBALS["USER_DATA"]["PERMISSIONS"]["READ"]=true;
-            }
-            if($page_permissions["read_restricted"]){
-                $GLOBALS["USER_DATA"]["PERMISSIONS"]["READ_RESTRICTED"]=true;
-            }
-            if($page_permissions["post_to"]){
-                $GLOBALS["USER_DATA"]["PERMISSIONS"]["POST_TO"]=true;
-            }
-            if($page_permissions["edit"]){
-                $GLOBALS["USER_DATA"]["PERMISSIONS"]["EDIT"]=true;
-            }
-            if($page_permissions["change_data"]){
-                $GLOBALS["USER_DATA"]["PERMISSIONS"]["CHANGE_DATA"]=true;
-            }
-            if($page_permissions["full_control"]){
-                $GLOBALS["USER_DATA"]["PERMISSIONS"]["FULL_CONTROL"]=true;
-            }
-        }
-    }
-}
-$page_permissions=array();
-$default_permissions=array();
-if(!$GLOBALS["error_log"]->get_status()){
-    if(!($r_page_data=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_RESTRICTED_PAGE_DATA,"",array(array("page_id","=",$GLOBALS["PAGE_DATA"]["ID"]))))||!$GLOBALS["USER_DATA"]["PERMISSIONS"]["READ_RESTRICTED"]){
-        $GLOBALS["PAGE_DATA"]["AUTH_PAGE"]=false;
-        $GLOBALS["PAGE_DATA"]["RNAME"]=$page_data["page_rname"];
-        $GLOBALS["PAGE_DATA"]["TITLE"]=$page_data["page_title"];
-        $GLOBALS["PAGE_DATA"]["VARS"]=explode(";",$page_data["page_vars"]);
-        $GLOBALS["PAGE_DATA"]["HOOKS"]=explode(";",$page_data["page_hooks"]);
-        $GLOBALS["PAGE_DATA"]["SUBPAGES"]=explode(";",$page_data["page_subpages"]);
-        $GLOBALS["PAGE_DATA"]["PARENT"]=$page_data["page_parent"];
-        $GLOBALS["PAGE_DATA"]["IS_ROOT"]=$page_data["page_root"];
-        $GLOBALS["PAGE_DATA"]["DATAPATH"]=$page_data["page_datapath"];
-        $GLOBALS["PAGE_DATA"]["PAGE_STATUS"]=$page_data["page_status"];
-    }
-    else if($GLOBALS["USER_DATA"]["PERMISSIONS"]["READ"]){
-        $GLOBALS["PAGE_DATA"]["AUTH_PAGE"]=true;
-        $GLOBALS["PAGE_DATA"]["RNAME"]=$r_page_data["page_rname"];
-        $GLOBALS["PAGE_DATA"]["TITLE"]=$r_page_data["page_title"];
-        $GLOBALS["PAGE_DATA"]["VARS"]=explode(";",$r_page_data["page_vars"]);
-        $GLOBALS["PAGE_DATA"]["HOOKS"]=explode(";",$r_page_data["page_hooks"]);
-        $GLOBALS["PAGE_DATA"]["SUBPAGES"]=$r_page_data["page_subpages"];
-        $GLOBALS["PAGE_DATA"]["PARENT"]=$r_page_data["page_parent"];
-        $GLOBALS["PAGE_DATA"]["IS_ROOT"]=$r_page_data["page_root"];
-        $GLOBALS["PAGE_DATA"]["DATAPATH"]=$r_page_data["page_datapath"];
-        $GLOBALS["PAGE_DATA"]["PAGE_STATUS"]=$r_page_data["page_status"];
-    }
-}
-$r_page_data=array();
-$page_data=array();
-?>
+//
+//Now we will get the page data
+//
+$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["NAME"]=(string)trim($page_data["pg_name"]);
+$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["FULLNAME"]=(string)trim($page_data["pg_fullname"]);
+$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["TITLE"]=(string)trim($page_data["pg_title"]);
+$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["VARS"]=$page_data["pg_vars"];
+$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["HOOKS"]=(string)trim($page_data["pg_hooks"]);
+$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["SUBPAGES"]=(string)trim($page_data["pg_subpages"]);
+$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["PARENT"]=(int)trim($page_data["pg_parent"]);
+$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["ISROOT"]=(int)trim($page_data["pg_root"]);
+$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["DATAPATH"]=(string)trim($page_data["pg_datapath"]);
+$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["STATUS"]=(int)trim($page_data["pg_status"]);
+$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["READLEVEL"]=(int)trim($page_data["pg_readlevel"]);
