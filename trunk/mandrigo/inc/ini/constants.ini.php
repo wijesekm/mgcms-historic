@@ -43,8 +43,8 @@ define("TABLE_PAGES","pages");
 define("TABLE_ACL","acl");
 define("TABLE_LANGSETS","langsets");
 define("TABLE_LANG","lang");
+define("TABLE_PACKAGES","packages");
 
-define("TABLE_PACKAGE_DATA","packages");
 define("TABLE_SITE_STATS","site_stats");
 define("TABLE_CAPTCHA","captcha");
 define("TABLE_CAPTCHA_DATA","captcha_data");
@@ -97,4 +97,3 @@ define("MULTIPART_ALT","multipart/alternative");
 define("TEXT_PLAIN","text/plain");
 define("TEXT_HTML","text/html");
 define("MULTI_ALT","multipart/alternative");
-define("CORE_PACKAGES","mg_packages");
