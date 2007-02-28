@@ -223,15 +223,15 @@ mt_srand(doubleval(microtime()) * 1000003);
 //Init Script
 //
 function package_init($pkg){
-	$soq=count($pkg);
-	for($f=0;$f<$soq;$f++){
-	 	if($pkg[$f][0]){
+	$pkg_size=count($pkg);
+	for($pkg_c=0;$pkg_c<$pkg_size;$pkg_c++){
+	 	if($pkg[$pkg_c][0]){
 			if($GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
-				include_once($GLOBALS["MANDRIGO"]["CONFIG"]["ROOT_PATH"].$pkg[$f][0]);
+				include_once($GLOBALS["MANDRIGO"]["CONFIG"]["ROOT_PATH"].$pkg[$pkg_c][0]);
 			}
 			else{
-				if(!(@include_once($GLOBALS["MANDRIGO"]["CONFIG"]["ROOT_PATH"].$pkg[$f][0]))){
-					$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror($pkg[$f][1],"core");
+				if(!(@include_once($GLOBALS["MANDRIGO"]["CONFIG"]["ROOT_PATH"].$pkg[$pkg_c][0]))){
+					$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror($pkg[$pkg_c][1],"core");
 				}
 			}	
 		}
