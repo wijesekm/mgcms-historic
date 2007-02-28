@@ -113,19 +113,19 @@ if($GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
 }
 else{
     if(!(@include_once($GLOBALS["MANDRIGO"]["CONFIG"]["ROOT_PATH"]."db{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}".$sql_config["SQL_TYPE"].".class.$php_ex"))){
-        $GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(3,"script");
+        $GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(3,"core");
 	   	die($GLOBALS["MANDRIGO"]["ELOG"]["HTMLHEAD"].$GLOBALS["MANDRIGO"]["ELOG"]["TITLE"].$GLOBALS["MANDRIGO"]["ELOG"]["HTMLBODY"].
            	$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_generatereport().$GLOBALS["MANDRIGO"]["ELOG"]["HTMLEND"]);
     }
 }
-$sql_db = & new db();
+$GLOBALS["MANDRIGO"]["DB"] = & new db();
 
 if($GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
-	$sql_db->db_connect($sql_config["SQL_HOST"],$sql_config["SQL_PORT"],$sql_config["SQL_SOCKET"],$sql_config["SQL_USER"],
+	$GLOBALS["MANDRIGO"]["DB"]->db_connect($sql_config["SQL_HOST"],$sql_config["SQL_PORT"],$sql_config["SQL_SOCKET"],$sql_config["SQL_USER"],
 						$sql_config["SQL_PASSWORD"],$sql_config["SQL_DATABASE"],true,$sql_config["USE_SSL"],$sql_config["SSL"]);
 }
 else{
-    if(!$sql_db->db_connect($sql_config["SQL_HOST"],$sql_config["SQL_PORT"],$sql_config["SQL_SOCKET"],$sql_config["SQL_USER"],
+    if(!$GLOBALS["MANDRIGO"]["DB"]->db_connect($sql_config["SQL_HOST"],$sql_config["SQL_PORT"],$sql_config["SQL_SOCKET"],$sql_config["SQL_USER"],
 		$sql_config["SQL_PASSWORD"],$sql_config["SQL_DATABASE"],true,$sql_config["USE_SSL"],$sql_config["SSL"])){
         $GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(2,"sql");
 	   	die($GLOBALS["MANDRIGO"]["ELOG"]["HTMLHEAD"].$GLOBALS["MANDRIGO"]["ELOG"]["TITLE"].$GLOBALS["MANDRIGO"]["ELOG"]["HTMLBODY"].
@@ -133,52 +133,112 @@ else{
     }
 }
 //
-//Now we will load a few essential packages such as constants
+//Need to set this up for user init
 //
-$basic_init=array(array("ini{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}constants.ini.$php_ex",3),
+$GLOBALS["MANDRIGO"]["SITE"]["SERVERTIME"]=time();
+
+//
+//Now we will load the first set of packages/globals
+//
+
+$init1=array(array("ini{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}constants.ini.$php_ex",3),
 				  array("ini{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}clean_functions.ini.$php_ex",4),
-				  array("server_time.class.$php_ex",5));			  
-/*$globals_init=array(array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}site.globals.$php_ex",7),
-					array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}server.globals.$php_ex",8),
-					array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}user.globals.$php_ex",9),
-					array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}page.globals.$php_ex",10),
+				  array("server_time.class.$php_ex",5),
+				  array("session.class.$php_ex",10));			  
+$init2=array(array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}site.globals.$php_ex",6),
+					array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}server.globals.$php_ex",8));
+package_init($init1);
+package_init($init2);
+$init1="";
+$init2="";
+
+//Now we will initialize some extra database packages if needed
+switch($GLOBALS["MANDRIGO"]["SITE"]["ACCOUNT_TYPE"]){
+	case "ad":
+		if($GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
+    		require_once($GLOBALS["MANDRIGO"]["CONFIG"]["ROOT_PATH"]."{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}"."ad.class.$php_ex");
+		}
+		else{
+    		if(!(@include_once($GLOBALS["MANDRIGO"]["CONFIG"]["ROOT_PATH"]."{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}"."ad.class.$php_ex"))){
+        		$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(6,"core");
+    		}
+		}
+		
+		$GLOBALS["MANDRIGO"]["AD"] = & new ad();
+		
+		if($GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
+			$GLOBALS["MANDRIGO"]["AD"]->ad_connect($adldap_config["DN"],$adldap_config["DC"],$adldap_config["ACCT_SUFFIX"],$adldap_config["CONTROL_USER"],$adldap_config["CONTROL_PASSWORD"]);
+		}
+		else{
+		    if(!$GLOBALS["MANDRIGO"]["AD"]->ad_connect($adldap_config["DN"],$adldap_config["DC"],$adldap_config["ACCT_SUFFIX"],$adldap_config["CONTROL_USER"],$adldap_config["CONTROL_PASSWORD"])){
+		        $GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(2,"ldap");
+		    }
+		}
+	break;
+	case "ldap":
+		//no support yet (use sql)
+	break;
+	default:
+	
+	break;	
+};
+
+//
+//Now we will load the user data/permissions and page data
+//
+$init3=	array(array("acct{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}account_".$GLOBALS["MANDRIGO"]["SITE"]["ACCOUNT_TYPE"].".class.$php_ex",11),
+			  array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}user.globals.$php_ex",9),
+			  array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}page.globals.$php_ex",12));
+package_init($init3);
+$init3="";	
+		  
+//
+//Time to set the clock
+//
+$clock=new server_time($GLOBALS["MANDRIGO"]["CURRENTUSER"]["TZ"],$GLOBALS["MANDRIGO"]["CURRENTUSER"]["DST"]);
+$GLOBALS["MANDRIGO"]["SITE"]["TIME"]=$clock->st_returngmt();
+$GLOBALS["MANDRIGO"]["SITE"]["GMT"]=$clock->st_returnst();
+$GLOBALS["MANDRIGO"]["CURRENTUSER"]["TIME"]=$clock->st_returnct();
+$clock="";
+
+
+/*					array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}page.globals.$php_ex",10),
 					array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}script.globals.$php_ex",11),
 					array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}lang.globals.$php_ex",12));	*/
 
-package_init($basic_init);	
-//package_init($globals_init);		
-		
+
 //
 //Gets rid of unneeded config vars
 //
 $sql_config="";
 $log_config="";
 $lang="";
-$basic_init="";
-$globals_init="";
-
+$adldap_config="";
 //
 //Seeds random number generator
 //
 srand(((int)((double)microtime()*1000003)));
+mt_srand(doubleval(microtime()) * 1000003);
 
 //
 //Init Script
 //
 function package_init($pkg){
 	$soq=count($pkg);
-	for($i=0;$i<$soq;$i++){
-		if($GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
-			include_once($GLOBALS["MANDRIGO"]["CONFIG"]["ROOT_PATH"].$pkg[$i][0]);
-		}
-		else{
-			if(!(@include_once($GLOBALS["MANDRIGO"]["CONFIG"]["ROOT_PATH"].$pkg[$i][0]))){
-				$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror($pkg[$i][1],"core");
+	for($f=0;$f<$soq;$f++){
+	 	if($pkg[$f][0]){
+			if($GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
+				include_once($GLOBALS["MANDRIGO"]["CONFIG"]["ROOT_PATH"].$pkg[$f][0]);
 			}
+			else{
+				if(!(@include_once($GLOBALS["MANDRIGO"]["CONFIG"]["ROOT_PATH"].$pkg[$f][0]))){
+					$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror($pkg[$f][1],"core");
+				}
+			}	
 		}
 	}
     if($GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_getstatus()==2){
 	   	die($GLOBALS["MANDRIGO"]["ELOG"]["HTMLHEAD"].$GLOBALS["MANDRIGO"]["ELOG"]["TITLE"].$GLOBALS["MANDRIGO"]["ELOG"]["HTMLBODY"].
            	$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_generatereport().$GLOBALS["MANDRIGO"]["ELOG"]["HTMLEND"]);
     }
-}	
+}
