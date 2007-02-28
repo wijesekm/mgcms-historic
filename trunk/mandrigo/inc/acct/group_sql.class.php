@@ -2,7 +2,7 @@
 /**********************************************************
     group_sql.class.php
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 02/18/07
+	Date Last Edited: 02/27/07
 
 	Copyright (C) 2006-2007 the MandrigoCMS Group
 
@@ -32,11 +32,14 @@ if(!defined("START_MANDRIGO")){
     die($GLOBALS["MANDRIGO"]["CONFIG"]["DIE_STRING"]);
 }
 
-class group extends _group{
+class _group{
 	
-	function group($gname){
-		$this->gp_setname($gname);
-	}
+	var $name;
+	var $gid;
+	var $isgroup;
+	var $g_data;
+	
+	function _group($gname){}
 
 	//#################################
 	//
@@ -49,51 +52,42 @@ class group extends _group{
 	//
 	//sets the current group name	
 	function gp_setname($gname){
-		if($r=$GLOBALS["MANDRIGO"]["DB"]->db_fetchresult(TABLE_PREFIX.TABLE_GROUPS,"gp_name",array(array("gp_name","=",$gname)))){
-			if((string)$r===(string)$gname){
-				$this->name=$gname;
-				$this->isgroup=true;
-				$this->gp_getgpdata();
-			}
-			else{
-			 	$this->isgroup=false;
-				return false;
-			}
+		$r=$GLOBALS["MANDRIGO"]["DB"]->db_fetchresult(TABLE_PREFIX.TABLE_GROUPS,"gp_name,gp_id",array(array("gp_name","=",$gname)));
+		if((int)$r["ac_id"]===(int)$uid){
+			$this->name=(string)$r["ac_username"];
+			$this->uid=(int)$r["ac_id"];
+			$this->isuser=true;
+			$this->ac_getuserdata();
 		}
 		else{
-			$this->isgroup=false;
-			return false;			
+			$this->isuser=false;
+			$this->uid=false;
+			return false;
 		}
-		return true;			
+		return true;
 	}
 		
 	//
 	//public gp_id()
 	//
-	//gets the name of the current group
+	//gets the id of the current group
 	//
-	//returns name on success or false on fail	
-	function gp_id(){
-		if(!$this->isgroup){
-			return false;
-		}
-		return $this->g_data("gp_id");	
-		
-	}
-	
+	//returns id on success or false on fail	
+	function gp_id(){}
+	//
+	//public gp_name()
+	//
+	//gets the id of the current group
+	//
+	//returns id on success or false on fail	
+	function gp_name(){}	
 	//
 	//public gp_data()
 	//
 	//gets the data for the current group
 	//
 	//returns data on success or false on fail	
-	function gp_data(){
-		if(!$this->isgroup){
-			return false;
-		}
-		return array("about"=>$this->g_data["about"],
-					 "picture_path"=>$this->g_data["gp_picture"]);		
-	}	
+	function gp_data(){}	
 
 	//
 	//public gp_data()
@@ -124,11 +118,5 @@ class group extends _group{
 	//gets the groupdata from the database
 	//
 	//returns true on success or false on fail
-	function gp_getgpdata(){
-		if(!$this->isgroup){
-			return false;
-		}
-		$this->g_data=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_GROUPS,"",array(array("gp_id","=",$this->id)));		
-		return true;
-	}
+	function gp_getgpdata(){}	
 }

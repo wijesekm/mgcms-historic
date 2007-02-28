@@ -2,7 +2,7 @@
 /**********************************************************
     group.class.php
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 02/18/07
+	Date Last Edited: 02/27/07
 
 	Copyright (C) 2006-2007 the MandrigoCMS Group
 
@@ -35,6 +35,7 @@ if(!defined("START_MANDRIGO")){
 class _group{
 	
 	var $name;
+	var $gid;
 	var $isgroup;
 	var $g_data;
 	
@@ -50,7 +51,7 @@ class _group{
 	//public gp_setname()
 	//
 	//sets the current group name	
-	function gp_setid($gname){}
+	function gp_setname($gname){}
 		
 	//
 	//public gp_id()
@@ -59,7 +60,13 @@ class _group{
 	//
 	//returns id on success or false on fail	
 	function gp_id(){}
-	
+	//
+	//public gp_name()
+	//
+	//gets the id of the current group
+	//
+	//returns id on success or false on fail	
+	function gp_name(){}	
 	//
 	//public gp_data()
 	//
