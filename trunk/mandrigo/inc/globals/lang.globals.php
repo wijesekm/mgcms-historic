@@ -2,9 +2,9 @@
 /**********************************************************
     lang.globals.php
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 06/21/06
+	Date Last Edited: 02/28/07
 
-	Copyright (C) 2006  Kevin Wijesekera
+	Copyright (C) 2006-2007 the MandrigoCMS Group
 
     ##########################################################
 	This program is free software; you can redistribute it and/or
@@ -29,114 +29,87 @@
 //To prevent direct script access
 //
 if(!defined("START_MANDRIGO")){
-    die("<html><head>
-            <title>Forbidden</title>
-        </head><body>
-            <h1>Forbidden</h1><hr width=\"300\" align=\"left\"/>\n<p>You do not have permission to access this file directly.</p>
-        </html></body>");
+    die($GLOBALS["MANDRIGO"]["CONFIG"]["DIE_STRING"]);
 }
-$GLOBALS["LANGUAGE"]=array();
-$GLOBALS["HTML"]=array();
+
+if($GLOBALS["MANDRIGO"]["SITE"]["ALLOW_USERLANG"]==1){
+$GLOBALS["MANDRIGO"]["CONFIG"]["LANGUAGE"]=(isset($GLOBALS["MANDRIGO"]["CURRENTUSER"]["LANGUAGE"]))
+											?$GLOBALS["MANDRIGO"]["CURRENTUSER"]["LANGUAGE"]
+											:$GLOBALS["MANDRIGO"]["CONFIG"]["LANGUAGE"];	
+}
+
+$lang_curset=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_LANGSETS,"",array(array("lang_name","=",$GLOBALS["MANDRIGO"]["CONFIG"]["LANGUAGE"],DB_AND),array("lang_type","=","L")));
+$html_curset=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_LANGSETS,"",array(array("lang_name","=",$GLOBALS["MANDRIGO"]["CONFIG"]["HTML_VER"],DB_AND),array("lang_type","=","H")));
 
 //
-//Language Section
+//Errors for no language stuff
 //
-
-//to get the name of the lang table
-$langname=(isset($GLOBALS["USER_DATA"]["LANGUAGE"]))?$GLOBALS["USER_DATA"]["LANGUAGE"]:$default_lang["LANGUAGE"];
-if(!$lang_id=$sql_db->db_fetchresult(TABLE_PREFIX.TABLE_LANG_MAIN,"lang_id",array(array("lang_name","=",$langname)))){
-	if(!$lang_id=$sql_db->db_fetchresult(TABLE_PREFIX.TABLE_LANG_MAIN,"lang_id",array(array("lang_name","=",$default_lang["LANGUAGE"])))){
-		if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-        	$GLOBALS["error_log"]->add_error(30,"sql");	
-			die($GLOBALS["ELOG"]["HTMLHEAD"].$GLOBALS["ELOG"]["TITLE"].$GLOBALS["ELOG"]["HTMLBODY"].
-        		$GLOBALS["error_log"]->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);	  
-		}
-	}			
+if($lang_curset["lang_id"]<=0){
+	if(!$GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
+		$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(5,"sql");
+	}
+}
+if($html_curset["lang_id"]<=0){
+	if(!$GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
+		$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(6,"sql");
+	}
+}
+if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]&&$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_getstatus()==2){
+	die($GLOBALS["MANDRIGO"]["ELOG"]["HTMLHEAD"].$GLOBALS["MANDRIGO"]["ELOG"]["TITLE"].$GLOBALS["MANDRIGO"]["ELOG"]["HTMLBODY"].
+        $GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_generatereport().$GLOBALS["MANDRIGO"]["ELOG"]["HTMLEND"]);
 }
 
-//to set the content/type charset header
-if(!$lang=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_LANG_MAIN,"",array(array("lang_name","=",$langname)))){
-	if(!$lang=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_LANG_MAIN,"",array(array("lang_name","=",$default_lang["LANGUAGE"])))){
-		if(!$lang=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_LANG_MAIN,"",array(array("lang_name","=",0)))){
-			if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-        		$GLOBALS["error_log"]->add_error(30,"sql");	
-				die($GLOBALS["ELOG"]["HTMLHEAD"].$GLOBALS["ELOG"]["TITLE"].$GLOBALS["ELOG"]["HTMLBODY"].
-        			$GLOBALS["error_log"]->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);						  
-			}
-		}
-	}			
-}
-$GLOBALS["LANGUAGE"]["NAME"]=$lang["lang_name"];
-$GLOBALS["LANGUAGE"]["CHARSET"]=$lang["lang_charset"];
-$GLOBALS["LANGUAGE"]["ENCODING"]=$lang["lang_encoding"];
-$GLOBALS["LANGUAGE"]["CONTENT_TYPE"]="text/html;";
-$GLOBALS["LANGUAGE"]["SET_ENCODING"]=true;
-$GLOBALS["LANGUAGE"]["REG"]=false;
+//
+//Basic Lang Data
+//
+$GLOBALS["MANDRIGO"]["LANGUAGE"]["ID"]=$lang_curset["lang_id"];
+$GLOBALS["MANDRIGO"]["LANGUAGE"]["NAME"]=$lang_curset["lang_name"];
+$GLOBALS["MANDRIGO"]["LANGUAGE"]["CHARSET"]=$lang_curset["lang_charset"];
+$GLOBALS["MANDRIGO"]["LANGUAGE"]["ENCODING"]=$lang_curset["lang_encoding"];
+$GLOBALS["MANDRIGO"]["LANGUAGE"]["CONTENT_TYPE"]="text/html;";
+$GLOBALS["MANDRIGO"]["LANGUAGE"]["SET_ENCODING"]=true;
+$GLOBALS["MANDRIGO"]["LANGUAGE"]["REG"]=false;
 
-//makes the lang conditional statements and gets the size of the lang array.
-$cond_array=array(array("lang_core","=","all",DB_OR,2),array("lang_core","=","display",DB_AND,2));
-for($i=0;$i<count($GLOBALS["PAGE_DATA"]["HOOKS"]);$i++){
-	$cond_array=array_merge_recursive($cond_array,array(array("lang_app_id","=",$GLOBALS["PAGE_DATA"]["HOOKS"][$i],DB_OR,4)));
-}
-$soa=$sql_db->db_numrows(TABLE_PREFIX.TABLE_LANG.$lang_id,array_merge_recursive($cond_array,array(array("lang_app_id","=","0","",4))));
-$cond_array=array_merge_recursive($cond_array,array(array("lang_app_id","=","0",DB_AND,4)));
+$GLOBALS["MANDRIGO"]["HTML"]["ID"]=$html_curset["lang_id"];
+$GLOBALS["MANDRIGO"]["HTML"]["NAME"]=$html_curset["lang_name"];
 
-//populates the language array
-if(!$soa){
-	if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-        $GLOBALS["error_log"]->add_error(31,"sql");	
-		die($GLOBALS["ELOG"]["HTMLHEAD"].$GLOBALS["ELOG"]["TITLE"].$GLOBALS["ELOG"]["HTMLBODY"].
-        	$GLOBALS["error_log"]->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);		  
-	}	
-}
-$j=0;
-for($i=0;$j<$soa;$i++){
-  	$n_cond_array=array_merge_recursive($cond_array,array(array("lang_id","=",$i,"",6)));
-	if($result=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_LANG.$lang_id,"",$n_cond_array)){
-		$j++;
-		$GLOBALS["LANGUAGE"][$result["lang_callname"]]=$result["lang_value"];
+//
+//Now we will form the search array which is all cores OR display core OR (package core AND (Package ID's))
+//
+$soq=count($GLOBALS["MANDRIGO"]["CURRENTPAGE"]["HOOKS"]);
+$filter=array();
+$count=0;
+for($i=0;$i<$soq;$i++){
+ 	if($i+1<$soq){
+ 	 	$filter[$count]=array("lang_corename","=",CORE_PACKAGES,DB_AND,$i+1);
+ 	 	$count++;
+		$filter[$count]=array("lang_appid","=",$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["HOOKS"][$i],DB_OR,$i+1);
+		$count++;		
+	}
+	else{
+ 	 	$filter[$count]=array("lang_corename","=",CORE_PACKAGES,DB_AND,$i+1);
+ 	 	$count++;
+		$filter[$count]=array("lang_appid","=",$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["HOOKS"][$i],DB_OR,$i+1);
+		$count++;	
 	}
 }
 
+$filter[$count]=array("lang_corename","=",CORE_NAME,DB_OR,$soq+1);
+$filter[$count+1]=array("lang_corename","=","all","",$soq+1);
+
 //
-//HTML Section
-//$default_lang["HTML_VER"]
-
-//to get the name of the lang table
-if(!$lang_id=$sql_db->db_fetchresult(TABLE_PREFIX.TABLE_LANG_MAIN,"lang_id",array(array("lang_name","=",$default_lang["HTML_VER"])))){
-	if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-        $GLOBALS["error_log"]->add_error(30,"sql");	
-		die($GLOBALS["ELOG"]["HTMLHEAD"].$GLOBALS["ELOG"]["TITLE"].$GLOBALS["ELOG"]["HTMLBODY"].
-        	$GLOBALS["error_log"]->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);		  
-	}		
+//LANGUAGE array formation
+//
+$tmp=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_LANG.$GLOBALS["MANDRIGO"]["LANGUAGE"]["ID"],"lang_callname,lang_value",$filter,"ASSOC",DB_ALL_ROWS);
+$soq=count($tmp);
+for($i=0;$i<$soq;$i++){
+	$GLOBALS["MANDRIGO"]["LANGUAGE"][strtoupper($tmp[$i]["lang_callname"])]=$tmp[$i]["lang_value"];
 }
-
-//makes the lang conditional statements and gets the size of the lang array.
-$cond_array=array(array("lang_core","=","all",DB_OR,2),array("lang_core","=","display",DB_AND,2));
-for($i=0;$i<count($GLOBALS["PAGE_DATA"]["HOOKS"]);$i++){
-	$cond_array=array_merge_recursive($cond_array,array(array("lang_app_id","=",$GLOBALS["PAGE_DATA"]["HOOKS"][$i],DB_OR,4)));
+//
+//HTML array formation
+//
+$tmp=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_LANG.$GLOBALS["MANDRIGO"]["HTML"]["ID"],"lang_callname,lang_value",$filter,"ASSOC",DB_ALL_ROWS);
+$soq=count($tmp);
+for($i=0;$i<$soq;$i++){
+	$GLOBALS["MANDRIGO"]["HTML"][strtoupper($tmp[$i]["lang_callname"])]=$tmp[$i]["lang_value"];
 }
-$soa=$sql_db->db_numrows(TABLE_PREFIX.TABLE_LANG.$lang_id,array_merge_recursive($cond_array,array(array("lang_app_id","=","0","",4))));
-$cond_array=array_merge_recursive($cond_array,array(array("lang_app_id","=","0",DB_AND,4)));
-
-//populates the language array
-if(!$soa){
-	if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-        $GLOBALS["error_log"]->add_error(31,"sql");	
-		die($GLOBALS["ELOG"]["HTMLHEAD"].$GLOBALS["ELOG"]["TITLE"].$GLOBALS["ELOG"]["HTMLBODY"].
-        	$GLOBALS["error_log"]->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);		  
-	}	
-}
-$j=0;
-for($i=0;$j<$soa;$i++){
-  	$n_cond_array=array_merge_recursive($cond_array,array(array("lang_id","=",$i,"",6)));
-	if($result=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_LANG.$lang_id,"",$n_cond_array)){
-		$j++;
-		$GLOBALS["HTML"][$result["lang_callname"]]=$result["lang_value"];
-	}
-}
-$default_lang=array();
-$n_cond_array=array();
-$cond_array=array();
-$result=array();
-?>
