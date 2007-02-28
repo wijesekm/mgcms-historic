@@ -1,6 +1,6 @@
 <?php
 /**********************************************************
-    page.globals.php
+    acl.globals.php
 	Last Edited By: Kevin Wijesekera
 	Date Last Edited: 02/28/07
 
