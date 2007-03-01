@@ -157,10 +157,10 @@ $init2="";
 switch($GLOBALS["MANDRIGO"]["SITE"]["ACCOUNT_TYPE"]){
 	case "ad":
 		if($GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
-    		require_once($GLOBALS["MANDRIGO"]["CONFIG"]["ROOT_PATH"]."{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}"."ad.class.$php_ex");
+    		require_once($GLOBALS["MANDRIGO"]["CONFIG"]["ROOT_PATH"]."db{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}"."ad.class.$php_ex");
 		}
 		else{
-    		if(!(@include_once($GLOBALS["MANDRIGO"]["CONFIG"]["ROOT_PATH"]."{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}"."ad.class.$php_ex"))){
+    		if(!(@include_once($GLOBALS["MANDRIGO"]["CONFIG"]["ROOT_PATH"]."db{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}"."ad.class.$php_ex"))){
         		$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(6,"core");
     		}
 		}

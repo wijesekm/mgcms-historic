@@ -50,14 +50,10 @@ for($i=0;$i<$soq;$i++){
 
 $packages=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_PACKAGES,"pkg_name,pkg_nlerror",$filter,"ASSOC",DB_ALL_ROWS);
 $soq=count($packages);
-
 if(!$GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
-	if($packages===false){
-		$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(7,"sql");
-	}
-	if($soq==0){
+	if(!$packages){
 		$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(3,"display");
-	}	
+	}
 }
 
 for($i=0;$i<$soq;$i++){
