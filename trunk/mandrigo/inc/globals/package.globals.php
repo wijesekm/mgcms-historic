@@ -42,8 +42,6 @@ for($i=0;$i<$soq;$i++){
 $filter[$soq]=array("var_appid","=",0,"",2);
 $vars=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_SERVER_GLOBALS,"",$filter,"ASSOC",DB_ALL_ROWS);
 
-print_r($vars);
-
 $soa=count($vars);
 
 //parses all vars out.  When multiple var names, protocols are specified the first one which has a value wins
