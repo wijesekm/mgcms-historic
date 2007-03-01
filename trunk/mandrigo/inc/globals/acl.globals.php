@@ -39,6 +39,11 @@ $GLOBALS["MANDRIGO"]["CURRENTUSER"]["ACL"]["EDIT"]=0;
 $GLOBALS["MANDRIGO"]["CURRENTUSER"]["ACL"]["CONFIG"]=0;
 
 $soq=count($GLOBALS["MANDRIGO"]["CURRENTUSER"]["GROUPS"]);
+if(!$soq){
+	if(!$GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
+		$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(8,"sql");
+	}
+}
 $filter=array(array("acl_pageid","=",$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["ID"],DB_OR,1),array("acl_pageid","=",0,DB_AND,1));
 for($k=0;$k<$soq;$k++){
  	if($k+1<$soq){
@@ -74,3 +79,7 @@ for($k=0;$k<$soq;$k++){
 }
 $filter="";
 $acl="";
+
+if($GLOBALS["MANDRIGO"]["CURRENTPAGE"]["READLEVEL"] > $GLOBALS["MANDRIGO"]["CURRENTUSER"]["ACL"]["READ"]){
+	$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(2,"access");
+}

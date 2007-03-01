@@ -60,7 +60,7 @@ if($GLOBALS["MANDRIGO"]["CURRENTPAGE"]["ID"]===0){
 		die();
 	}
 	else{
-		$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(2,"access");
+		$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(9,"sql");
 	   	die($GLOBALS["MANDRIGO"]["ELOG"]["HTMLHEAD"].$GLOBALS["MANDRIGO"]["ELOG"]["TITLE"].$GLOBALS["MANDRIGO"]["ELOG"]["HTMLBODY"].
            	$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_generatereport().$GLOBALS["MANDRIGO"]["ELOG"]["HTMLEND"]);		
 	}
