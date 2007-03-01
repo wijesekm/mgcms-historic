@@ -82,16 +82,13 @@ $count=0;
 for($i=0;$i<$soq;$i++){
  	if($i+1<$soq){
  	 	$filter[$count]=array("lang_corename","=",CORE_PACKAGES,DB_AND,$i+1);
- 	 	$count++;
-		$filter[$count]=array("lang_appid","=",$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["HOOKS"][$i],DB_OR,$i+1);
-		$count++;		
+		$filter[$count+1]=array("lang_appid","=",$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["HOOKS"][$i],DB_OR,$i+1);		
 	}
 	else{
  	 	$filter[$count]=array("lang_corename","=",CORE_PACKAGES,DB_AND,$i+1);
- 	 	$count++;
-		$filter[$count]=array("lang_appid","=",$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["HOOKS"][$i],DB_OR,$i+1);
-		$count++;	
+		$filter[$count+1]=array("lang_appid","=",$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["HOOKS"][$i],DB_OR,$i+1);
 	}
+	$count+=2;
 }
 
 $filter[$count]=array("lang_corename","=",CORE_NAME,DB_OR,$soq+1);
