@@ -35,28 +35,33 @@ if(!defined("START_MANDRIGO")){
 $soq=count($GLOBALS["MANDRIGO"]["CURRENTPAGE"]["HOOKS"]);
 
 $filter=array();
-
+$count=0;
 for($i=0;$i<$soq;$i++){
  	if($i+1<$soq){
-		$filter[$i]=array("pkg_id","=",$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["HOOKS"][$i],DB_OR);		
+		$filter[$count]=array("pkg_id","=",$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["HOOKS"][$i],DB_AND,$i+1);
+		$filter[$count+1]=array("pkg_status","=","E",DB_OR,$i+1);
 	}
 	else{
-		$filter[$i]=array("pkg_id","=",$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["HOOKS"][$i]);	
+		$filter[$count]=array("pkg_id","=",$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["HOOKS"][$i],DB_AND,$i+1);
+		$filter[$count+1]=array("pkg_status","=","E","",$i+1);
 	}
+	$count+=2;
 }
 
 $packages=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_PACKAGES,"pkg_name,pkg_nlerror",$filter,"ASSOC",DB_ALL_ROWS);
-
 $soq=count($packages);
 
-if($packages===false){
-	$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(7,"sql");
-}
-if($soq==0){
-	$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(3,"display");
+if(!$GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
+	if($packages===false){
+		$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(7,"sql");
+	}
+	if($soq==0){
+		$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(3,"display");
+	}	
 }
 
 for($i=0;$i<$soq;$i++){
+ 	echo $packages[$i]["pkg_name"];
 	if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
 		include_once($GLOBALS["MANDRIGO"]["CONFIG"]["PLUGIN_PATH"].$packages[$i]["pkg_name"]."/hooks.pkg.".PHP_EXT);
 		include_once($GLOBALS["MANDRIGO"]["CONFIG"]["PLUGIN_PATH"].$packages[$i]["pkg_name"]."/globals.pkg.".PHP_EXT);
@@ -77,7 +82,7 @@ for($i=0;$i<$soq;$i++){
 		if(!(@include_once($GLOBALS["MANDRIGO"]["CONFIG"]["PLUGIN_PATH"].$packages[$i]["pkg_name"]."/display.pkg.".PHP_EXT))){
 			if(!$fail){
 				$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror((int)$packages[$i]["pkg_nlerror"],"display");
-			}			
+			}
 		}
 	}
 }
