@@ -1,10 +1,10 @@
 <?php
 /**********************************************************
-    server.globals.php
+    package.globals.php
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 06/14/06
+	Date Last Edited: 02/28/07
 
-	Copyright (C) 2006  Kevin Wijesekera
+	Copyright (C) 2006-2007 the MandrigoCMS Group
 
     ##########################################################
 	This program is free software; you can redistribute it and/or
@@ -27,110 +27,42 @@
 
 //
 //To prevent direct script access
-//$GLOBALS["SITE_DATA"]["URL_FORMAT"]
+//
 if(!defined("START_MANDRIGO")){
-    die("<html><head>
-            <title>Forbidden</title>
-        </head><body>
-            <h1>Forbidden</h1><hr width=\"300\" align=\"left\"/>\n<p>You do not have permission to access this file directly.</p>
-        </html></body>");
+    die($GLOBALS["MANDRIGO"]["CONFIG"]["DIE_STRING"]);
 }
-$soa=0;
-$cond_array=array(array("var_core_name","=",CORE_PACKAGES,DB_AND,2));
-for($i=0;$i<count($GLOBALS["PAGE_DATA"]["HOOKS"]);$i++){
-	$cond_array=array_merge_recursive($cond_array,array(array("var_app_id","=",$GLOBALS["PAGE_DATA"]["HOOKS"][$i],DB_OR,4)));
+$filter=array();
+$filter=array(array("var_corename","=",CORE_PACKAGES,DB_AND,1));
+$soq=count($GLOBALS["MANDRIGO"]["CURRENTPAGE"]["HOOKS"]);
+
+for($i=0;$i<$soq;$i++){
+	$filter[$i+1]=array("var_appid","=",$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["HOOKS"][$i],DB_OR,2);
 }
-$soa=$sql_db->db_numrows(TABLE_PREFIX.TABLE_SERVER_GLOBALS,array_merge_recursive($cond_array,array(array("var_app_id","=","0","",4))));
-$cond_array=array_merge_recursive($cond_array,array(array("var_app_id","=","0",DB_AND,4)));
-$j=0;
-for($i=0;$j<$soa;$i++){
-  	$n_cond_array=array_merge_recursive($cond_array,array(array("var_id","=",$i,"",6)));
-	if($parse=$sql_db->db_fetcharray(TABLE_PREFIX.TABLE_SERVER_GLOBALS,"",$n_cond_array)){
-		$j++;
-		switch($parse["var_protocol"]){
-			case METHOD_GET:
-				$get_names=explode(";",$parse["var_get_names"]);
-				$clean_functs=explode(";",$parse["var_clean_functs"]);
-				$defaults=explode("&split;",$parse["var_defaults"]);
-				$soc=count($get_names);
-				for($k=0;$k<$soc;$k++){
-					if(!$GLOBALS["HTTP_GET"][$parse["var_store_name"]]||$GLOBALS["HTTP_GET"][$parse["var_store_name"]]==BAD_DATA){
-						if($GLOBALS["SITE_DATA"]["URL_FORMAT"]==0){
-							$tmp_=$HTTP_GET_VARS[$get_names[$k]];	
-						}
-						else if($GLOBALS["SITE_DATA"]["URL_FORMAT"]==1){
-							$tmp_=$url[$get_names[$k]];	
-						}
-						if(isset($tmp_)){
-							$tmp=clean_var($tmp_,$clean_functs[$k]);
-						}
-						else{
-							eval($defaults[$k]);
-						}
-						$GLOBALS["HTTP_GET"][$parse["var_store_name"]]=$tmp;
-					}
-				}
-			break;
-			case METHOD_POST:
-				$get_names=explode(";",$parse["var_get_names"]);
-				$clean_functs=explode(";",$parse["var_clean_functs"]);
-				$defaults=explode("&split;",$parse["var_defaults"]);
-				$soc=count($get_names);
-				for($k=0;$k<$soc;$k++){
-					if(!$GLOBALS["HTTP_POST"][$parse["var_store_name"]]||$GLOBALS["HTTP_POST"][$parse["var_store_name"]]==BAD_DATA){
-						if(isset($HTTP_POST_VARS[$get_names[$k]])){
-							$tmp=clean_var($HTTP_POST_VARS[$get_names[$k]],$clean_functs[$k]);
-						}
-						else{
-							eval($defaults[$k]);
-						}
-						$GLOBALS["HTTP_POST"][$parse["var_store_name"]]=$tmp;
-					}
-				}			
-			break;
-			case METHOD_COOKIE:
-				$get_names=explode(";",$parse["var_get_names"]);
-				$clean_functs=explode(";",$parse["var_clean_functs"]);
-				$defaults=explode("&split;",$parse["var_defaults"]);
-				$soc=count($get_names);
-				for($k=0;$k<$soc;$k++){
-					if(!$GLOBALS["HTTP_COOKIE"][$parse["var_store_name"]]||$GLOBALS["HTTP_POST"][$parse["var_store_name"]]==BAD_DATA){
-						if(isset($HTTP_COOKIE_VARS[$get_names[$k]])){
-							$tmp=clean_var($HTTP_COOKIE_VARS[$get_names[$k]],$clean_functs[$k]);
-						}
-						else{
-							eval($defaults[$k]);
-						}
-						$GLOBALS["HTTP_COOKIE"][$parse["var_store_name"]]=$tmp;
-					}
-				}			
-			break;
-			case METHOD_SERVER;
-				$get_names=explode(";",$parse["var_get_names"]);
-				$clean_functs=explode(";",$parse["var_clean_functs"]);
-				$defaults=explode("&split;",$parse["var_defaults"]);
-				$soc=count($get_names);
-				for($k=0;$k<$soc;$k++){
-					if(!$GLOBALS["HTTP_SERVER"][$parse["var_store_name"]]||$GLOBALS["HTTP_SERVER"][$parse["var_store_name"]]==BAD_DATA){
-						if(isset($HTTP_SERVER_VARS[$get_names[$k]])){
-							$tmp=clean_var($HTTP_SERVER_VARS[$get_names[$k]],$clean_functs[$k]);
-						}
-						else{
-							eval($defaults[$k]);
-						}
-						$GLOBALS["HTTP_SERVER"][$parse["var_store_name"]]=$tmp;
-					}
-				}
-			break;
-			default:
-			break;
-		};
+
+$filter[$soq]=array("var_appid","=",0,"",2);
+$vars=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_SERVER_GLOBALS,"",$filter,"ASSOC",DB_ALL_ROWS);
+
+print_r($vars);
+
+$soa=count($vars);
+
+//parses all vars out.  When multiple var names, protocols are specified the first one which has a value wins
+//and is made the var value.
+for($i=0;$i<$soa;$i++){
+ 	$multi=false;
+ 	//if multiple protocols are specified we will run this
+	if(eregi(";",$vars[$i]["var_protocols"])){
+		$multi=true;
+		$vars[$i]["var_protocols"]=explode(";",$vars[$i]["var_protocols"]);
+		$soq2=count($vars[$i]["var_protocols"]);
+		for($j=0;$j<$soq2;$j++){
+			sg_setglobal($vars[$i],$GLOBALS["TMPURL"],$vars[$i]["var_protocols"][$j]);
+		}
+	}
+	else{
+		sg_setglobal($vars[$i],$GLOBALS["TMPURL"],$vars[$i]["var_protocols"]);
 	}
 }
-unset($get_names);
-unset($clean_functs);
-unset($defaults);
-unset($url);
-unset($cond_array);
-unset($n_cond_array);
-?>
+//cleanup
+$vars="";
+$GLOBALS["TMPURL"]="";
