@@ -92,8 +92,8 @@ for($i=0;$i<$soa;$i++){
 }
 //cleanup
 $vars="";
+$GLOBALS["TMPURL"]=$url;
 $url="";
-
 //function sg_setglobal($vars,$url,$protocol="http_get")
 //
 //regesters a var based on the database
