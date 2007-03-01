@@ -11,4 +11,10 @@
 			the sites index and look for the correct page.
 		</value>
 	</msg>
+	<msg>
+		<id>3</id>
+		<value>
+			The requested page exists but has no display settings set and therefore is blank.
+		</value>
+	</msg>
 </error_log>

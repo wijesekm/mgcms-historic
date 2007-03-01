@@ -34,4 +34,10 @@
 			No html version globals set.  This usually means the table is blank or missing.
 		</value>
 	</msg>
+	<msg>
+		<id>7</id>
+		<value>
+			Could not access package table.  This usually means the table is blank or missing.
+		</value>
+	</msg>
 </error_log>

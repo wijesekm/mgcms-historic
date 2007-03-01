@@ -94,4 +94,10 @@
 			Could not load the language globals package.
 		</value>
 	</msg>
+	<msg>
+		<id>15</id>
+		<value>
+			Could not load the display package init.
+		</value>
+	</msg>
 </error_log>
