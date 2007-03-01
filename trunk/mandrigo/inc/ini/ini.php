@@ -144,7 +144,8 @@ $GLOBALS["MANDRIGO"]["SITE"]["SERVERTIME"]=time();
 $init1=array(array("ini{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}constants.ini.$php_ex",3),
 				  array("ini{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}clean_functions.ini.$php_ex",4),
 				  array("server_time.class.$php_ex",5),
-				  array("session.class.$php_ex",10));			  
+				  array("session.class.$php_ex",10),
+				  array("stats.class.$php_ex",18));			  
 $init2=array(array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}site.globals.$php_ex",6),
 					array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}server.globals.$php_ex",8));
 package_init($init1);
@@ -190,7 +191,8 @@ $init3=	array(array("acct{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}account_".$GLOB
 			  array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}page.globals.$php_ex",12),
 			  array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}acl.globals.$php_ex",13),
 			  array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}lang.globals.$php_ex",14),
-			  array("ini{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}package.ini.$php_ex",15));
+			  array("ini{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}package.ini.$php_ex",15),
+			  array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}package.globals.$php_ex",17));
 package_init($init3);
 $init3="";	
 		  
@@ -203,9 +205,11 @@ $GLOBALS["MANDRIGO"]["SITE"]["GMT"]=$clock->st_returnst();
 $GLOBALS["MANDRIGO"]["CURRENTUSER"]["TIME"]=$clock->st_returnct();
 $clock="";
 
-/*					
-					array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}lang.globals.$php_ex",12));	*/
 
+//
+//Last but not least site stats
+//
+package_init(array(array("ini{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}stats.ini.$php_ex",18)));
 
 //
 //Gets rid of unneeded config vars

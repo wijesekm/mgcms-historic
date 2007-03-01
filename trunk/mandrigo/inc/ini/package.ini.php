@@ -61,8 +61,7 @@ if(!$GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
 }
 
 for($i=0;$i<$soq;$i++){
- 	echo $packages[$i]["pkg_name"];
-	if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
+	if($GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
 		include_once($GLOBALS["MANDRIGO"]["CONFIG"]["PLUGIN_PATH"].$packages[$i]["pkg_name"]."/hooks.pkg.".PHP_EXT);
 		include_once($GLOBALS["MANDRIGO"]["CONFIG"]["PLUGIN_PATH"].$packages[$i]["pkg_name"]."/globals.pkg.".PHP_EXT);
 		include_once($GLOBALS["MANDRIGO"]["CONFIG"]["PLUGIN_PATH"].$packages[$i]["pkg_name"]."/display.pkg.".PHP_EXT);
