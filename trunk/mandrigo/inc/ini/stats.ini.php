@@ -2,9 +2,9 @@
 /**********************************************************
     stats.ini.php
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 11/14/05
+	Date Last Edited: 02/28/07
 
-	Copyright (C) 2005  Kevin Wijesekera
+	Copyright (C) 2006-2007 the MandrigoCMS Group
 
     ##########################################################
 	This program is free software; you can redistribute it and/or
@@ -29,24 +29,26 @@
 //To prevent direct script access
 //
 if(!defined("START_MANDRIGO")){
-    die("<html><head>
-            <title>Forbidden</title>
-        </head><body>
-            <h1>Forbidden</h1><hr width=\"300\" align=\"left\"/>\n<p>You do not have permission to access this file directly.</p>
-        </html></body>");
+    die($GLOBALS["MANDRIGO"]["CONFIG"]["DIE_STRING"]);
 }
 
-/*if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-	$cur=$sql_db->db_fetchresult(TABLE_PREFIX.TABLE_SITE_STATS,"total_hits",array(array("page_id","=",$GLOBALS["PAGE_DATA"]["ID"])));
-	$cur++;
-	$sql_db->db_update(DB_UPDATE,TABLE_PREFIX.TABLE_SITE_STATS,array(array("total_hits",$cur,"time_last",time())),array(array("page_id","=",$GLOBALS["PAGE_DATA"]["ID"])));
-}
-else if(!$error_log->get_status()){
-	$cur=$sql_db->db_fetchresult(TABLE_PREFIX.TABLE_SITE_STATS,"total_hits",array(array("page_id","=",$GLOBALS["PAGE_DATA"]["ID"])));
-	$cur++;
-	if(!$sql_db->db_update(DB_UPDATE,TABLE_PREFIX.TABLE_SITE_STATS,array(array("total_hits",$cur,"time_last",$GLOBALS["SITE_DATA"]["SERVER_TIME"])),array(array("page_id","=",$GLOBALS["PAGE_DATA"]["ID"])))){
-	 	$error_log->add_error(15,"sql");  
-	}
-}*/
+$stat=new stats();
 
-?>
+switch($GLOBALS["MANDRIGO"]["SITE"]["STATS_LEVEL"]){
+	case '3':
+		$stat->st_reghit();
+		$stat->st_regip();
+		$stat->st_reguagent();
+	break;
+	case '2':
+		$stat->st_reghit();
+		$stat->st_reguagent();
+	break;
+	case '1':
+		$stat->st_reghit();
+	break;
+	default:
+	
+	break;	
+
+};
