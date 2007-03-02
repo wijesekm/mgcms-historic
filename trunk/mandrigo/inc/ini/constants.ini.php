@@ -55,10 +55,9 @@ define("TABLE_ENVELOPE_DATA","envelope_data");
 //
 //Templates
 //
-define("TPL_OFF_SITE","off_site.".TPL_EXT);
-define("TPL_AUTH_SITE","auth_site.".TPL_EXT);
-define("TPL_MAIN_SITE","main_site.".TPL_EXT);
-define("TPL_OFF_PAGE","off_page.".TPL_EXT);
+define("TPL_MAINSITE","main_site.".TPL_EXT);
+define("TPL_OFFSITE","off_site.".TPL_EXT);
+define("TPL_OFFPAGE","off_page.".TPL_EXT);
 
 //
 //Server Globals
@@ -72,16 +71,9 @@ define("CORE_PACKAGES","mg_packages");
 //
 //Hooks
 //
-define("HOOK_DISPLAY","_display_hook($"."this->page_db,$"."i);");
-define("HOOK_VARS","_vars_hook($"."this->page_db,$"."i);");
+define("HOOK_DISPLAY","_display_hook($"."i);");
+define("HOOK_VARS","_vars_hook($"."i);");
 define("HOOK_CLASS","_hook();");
-
-//
-//Defaults
-//
-define("DEFAULT_ACTION","D");
-define("DEFAULT_ID",0);
-define("DEFAULT_PN",0);
 
 //
 //Paths
@@ -93,7 +85,6 @@ define("ICONS_IMG","icons");
 //
 //Misc
 //
-define("MANDRIGO_CODE_BLOCK","<?MG_CODE>");
 define("BAD_DATA","&ERROR_IN_DATA;");
 define("MULTIPART_ALT","multipart/alternative");
 define("TEXT_PLAIN","text/plain");
