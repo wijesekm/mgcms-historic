@@ -145,7 +145,9 @@ $init1=array(array("ini{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}constants.ini.$ph
 				  array("ini{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}clean_functions.ini.$php_ex",4),
 				  array("server_time.class.$php_ex",5),
 				  array("session.class.$php_ex",10),
-				  array("stats.class.$php_ex",18));			  
+				  array("stats.class.$php_ex",18),
+				  array("page.class.$php_ex",19),
+				  array("template.class.$php_ex",20));			  
 $init2=array(array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}site.globals.$php_ex",6),
 					array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}server.globals.$php_ex",8));
 package_init($init1);
@@ -200,8 +202,8 @@ $init3="";
 //Time to set the clock
 //
 $clock=new server_time($GLOBALS["MANDRIGO"]["CURRENTUSER"]["TZ"],$GLOBALS["MANDRIGO"]["CURRENTUSER"]["DST"]);
-$GLOBALS["MANDRIGO"]["SITE"]["TIME"]=$clock->st_returngmt();
-$GLOBALS["MANDRIGO"]["SITE"]["GMT"]=$clock->st_returnst();
+$GLOBALS["MANDRIGO"]["SITE"]["GMT"]=$clock->st_returngmt();
+$GLOBALS["MANDRIGO"]["SITE"]["SERVERTIME"]=$clock->st_returnst();
 $GLOBALS["MANDRIGO"]["CURRENTUSER"]["TIME"]=$clock->st_returnct();
 $clock="";
 
