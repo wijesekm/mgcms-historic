@@ -88,7 +88,7 @@ class server_time{
 	//
 	//sets the gmt time stamp
 	function st_mkgmt(){
-		$this->gmt=$server_time + date("Z",$server_time);
+		$this->gmt= $this->server_time + date("Z",$server_time);
 	}
 	
 	//
@@ -97,10 +97,15 @@ class server_time{
 	//sets the client time stamp
 	//
 	//INPUTS:
-	//$c_zone	-	timezone of the client [in format +/- 0050] (default: )
+	//$c_zone	-	timezone of the client [in format +/- 5] (default: )
 	//$c_dst	-	dst of the client [0,1] (default: )
 	function st_mkct($c_zone,$c_dst){
-		$this->client_time=$this->gmt + $this->st_dst($c_zone,$c_dst);
+	 	if($c_zone=="serv"){
+			$this->client_time=$this->server_time;
+		}
+		else{
+			$this->client_time=$this->gmt + $this->st_dst($c_zone,$c_dst);		
+		}
 	}
 	
 	//
@@ -108,7 +113,7 @@ class server_time{
 	//
 	//returns the time offset from GMT adjusted for DST
 	//
-	//$zone	-	timezone [in format +/- 0050] (default: )
+	//$zone	-	timezone [in format +/- 5] (default: )
 	//$dst	-	dst [0,1] (default: 0)
     function st_dst($zone,$dst){
         $time_stamp_dst_april = 0;
