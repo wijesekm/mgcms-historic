@@ -1,10 +1,10 @@
 <?php
 /**********************************************************
-    page.class.php
+    template.class.php
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 12/24/05
+	Date Last Edited: 02/29/07
 
-	Copyright (C) 2005  Kevin Wijesekera
+	Copyright (C) 2006-2007 the MandrigoCMS Group
 
     ##########################################################
 	This program is free software; you can redistribute it and/or
@@ -29,71 +29,141 @@
 //To prevent direct script access
 //
 if(!defined("START_MANDRIGO")){
-    die("<html><head>
-            <title>Forbidden</title>
-        </head><body>
-            <h1>Forbidden</h1><hr width=\"300\" align=\"left\"/>\n<p>You do not have permission to access this file directly.</p>
-        </html></body>");
+    die($GLOBALS["MANDRIGO"]["CONFIG"]["DIE_STRING"]);
 }
 
-class template{
+define("TPL_START","<!--MG_TEMPLATE_START_");
+define("TPL_END","<!--MG_TEMPLATE_END_");
+define("TPL_CODE_START","<!--MG_CODE_START-->");
+define("TPL_CODE_END","<!--MG_CODE_END-->");
+define("TPL_E","-->");
+define("TPL_ALL","ALL");
 
-    var $tpl;
-    
-    function load($path,$file="",$deliminator=""){
-        if(!$path){
-            if(!$deliminator){
-                $this->tpl[0]=$file;
+
+class template{
+	
+	var $tpl;
+	
+	//#################################
+	//
+	// PUBLIC FUNCTIONS
+	//
+	//#################################	    
+ 	
+    //
+    //public function tpl_load($data,$section,$file)
+    //
+    //sets the template for a given section
+    //INPUTS:
+    //$data		-	path or template contents
+    //$section	-	name of section to grab
+    //$file		-	if set to true data will be treated as a file instead of a string (default: true)
+    //
+	//returns true or false 
+	function tpl_load($data,$section,$file=true){
+	 	$string="";
+		if($file){
+            if($GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
+                $f=fopen($data,"r");
+                return false;
             }
             else{
-                $this->tpl=explode($deliminator,$file);
-            }
-        }
-        else{
-            if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-                $f=fopen($path,"r");
-            }
-            else{
-                if(!(@$f=fopen($path,"r"))){
+                if(!(@$f=fopen($data,"r"))){
                     return false;
                 }
             }
-            $tmp="";
             while(!feof($f)){
-                $tmp.=fgets($f);
+                $string.=fgets($f);
             }
-            fclose($f);
-            if(!$deliminator){
-                $this->tpl[0]=$tmp;
-            }
-            else{
-                $this->tpl=explode($deliminator,$tmp);
-            }
-        }
-        return true;
-    }
-    function pparse($vars=array(),$comp=true,$vparse=true,$tplcomp=false){
-        $sot=count($this->tpl);
-        for($i=0;$i<$sot;$i++){
-          	if($tplcomp[$i]||!$tplcomp){
-	            if($comp){
-	                $this->tpl[$i]=$this->compile($vars,$this->tpl[$i]);
-	            }
-	            if($vparse){
-	                $this->tpl[$i]=$this->vparse($vars,$this->tpl[$i]);
-	            }			    
+            fclose($f);		
+		}
+		else{
+			$string=$data;
+		}
+		if(!eregi(TPL_START.$section.TPL_E,$string)||!eregi(TPL_END.$section.TPL_E,$string)){
+			return false;
+		}
+		$tmp=explode(TPL_START.$section.TPL_E,$string);
+		$tmp=explode(TPL_END.$section.TPL_E,$tmp[1]);
+		$this->tpl[(string)$section]=$tmp[0];
+		return true;		
+	}
+	
+    //
+    //public function tpl_parse($vars=(),$section=TPL_ALL,$level=1)
+    //
+    //sets the template for a given section
+    //INPUTS:
+    //$vars		-	vars to parse (default: none)
+    //$section	-	section to parse (default: TPL_ALL)
+    //$level	-	parse level to use [0 - none, 1 - vars, 2 - compile] (default: 1)
+    //
+	//returns true or false 
+	function tpl_parse($vars=array(),$section=TPL_ALL,$level=1){
+		if($section=TPL_ALL){
+			$soq=count($this->tpl);
+			$keys=array_keys($this->tpl);
+			for($i=0;$i<$soq;$i++){
+				if($level===1){
+					$this->tpl[$keys[$i]]=$this->tpl_vparse($vars,$this->tpl[$keys[$i]]);
+				}
+				else if($level===2){
+					$this->tpl[$keys[$i]]=$this->tpl_compile($vars,$this->tpl[$keys[$i]]);
+					$this->tpl[$keys[$i]]=$this->tpl_vparse($vars,$this->tpl[$keys[$i]]);
+				}
+				$this->tpl[$keys[$i]]=eregi_replace("[{]+[a-z0-9_-]+[}]","",$this->tpl[$keys[$i]]);			
 			}
-        }
-        $this->regester_type();
-        return true;
-    }
-    function return_template($pos=0){
-        return $this->tpl[$pos];
-    }
-    function vparse($vars,$string){
+		}
+		else{
+			if($level===1){
+				$this->tpl[(string)$section]=$this->tpl_vparse($vars,$this->tpl[(string)$section]);	
+			}
+			else if($level===2){
+				$this->tpl[(string)$section]=$this->tpl_compile($vars,$this->tpl[(string)$section]);
+				$this->tpl[(string)$section]=$this->tpl_vparse($vars,$this->tpl[(string)$section]);
+			}
+			$this->tpl[(string)$section]=eregi_replace("[{]+[a-z0-9_-]+[}]","",$this->tpl[(string)$section]);
+		}
+		$this->tpl_regester();
+		return true;
+	}
+	
+	//
+    //public function tpl_return($section)
+    //
+    //returns the template for the given section if set to TPL_ALL returns the entire tpl array
+    //INPUTS:
+    //$section	-	name of section to grab (default: TPL_ALL)
+    //
+	//returns template
+	function tpl_return($section=TPL_ALL){
+		if($section==TPL_ALL){
+			return $this->tpl;
+		}
+		else{
+			return $this->tpl[(string)$section];
+		}
+	}
+
+	//#################################
+	//
+	// PRIVATE FUNCTIONS
+	//
+	//#################################	 
+	
+	//
+    //public function tpl_vparse($vars,$string)
+    //
+    //parses out variables in a given string
+    //INPUTS:
+    //$vars		-	array of vars
+    //$string	-	string to parse
+    //
+	//returns parsed string	
+    function tpl_vparse($vars,$string){
         $sov=count($vars);
-        if(!$sov%2){
-            return false;
+        if(!$sov%2||!$vars){
+            return $string;
         }
         for($i=0;$i<$sov-1;$i+=2){
             $string=ereg_replace("{".$vars[$i]."}",$vars[$i+1],$string);
@@ -101,37 +171,58 @@ class template{
         $string=eregi_replace("[{]+[a-z0-9_-]+[}]","",$string);
         return $string;
     }
-    function compile($vars,$string){
-
-        if(!ereg(MANDRIGO_CODE_BLOCK,$string)){
-            return $string;
-        }
-        $tmp=explode(MANDRIGO_CODE_BLOCK,$string);
-        $sov=count($tmp);
-        if(!$sov%2){
-            return false;
-        }
-        $string="";
-        for($i=1;$i<$sov-1;$i+=2){
-            $string.=$tmp[$i-1];
-            $tmp_=$this->vparse($vars,$tmp[$i]);
-            $print_string="";
-            eval($tmp_);
-            $string.=$print_string;
-            }
-        return $string;
-    }
-    function regester_type(){
-		if(!$GLOBALS["LANGUAGE"]["REG"]){
-		  	if($GLOBALS["LANGUAGE"]["SET_ENCODING"]){
-				header("Content-type: ".$GLOBALS["LANGUAGE"]["CONTENT_TYPE"]." charset=".$GLOBALS["LANGUAGE"]["CHARSET"]);
+	
+	//
+    //public function tpl_compile($vars,$string)
+    //
+    //compiles a string using the following vars
+    //INPUTS:
+    //$vars		-	array of vars
+    //$string	-	string to compile
+    //
+	//returns parsed string	
+    function tpl_compile($vars,$string){
+        if(!eregi(TPL_CODE_START,$string)){
+			return $string;
+		}
+		$mg_return="";
+		$string=$this->tpl_vparse($vars,$string);
+		$tmp=explode(TPL_CODE_START,$string);
+		$soq=count($tmp);
+		$compiled="";
+		
+		for($i=0;$i<$soq;$i++){
+			if(eregi(TPL_CODE_END,$tmp[$i])){
+				$cur=explode(TPL_CODE_END,$tmp[$i]);
+				$compile_string=$cur[0];
+				if($GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
+					eval($compile_string);	
+				}
+				else{
+					@eval($compile_string);
+				}
+				$compiled.=$mg_return.$cur[1];
 			}
 			else{
-				header("Content-type: ".$GLOBALS["LANGUAGE"]["CONTENT_TYPE"]);
+				$compiled.=$tmp[$i];
 			}
-			$GLOBALS["LANGUAGE"]["REG"]=true;
+		}
+		return $compiled;
+    }
+    
+	//
+    //public function  tpl_regester()
+    //
+    //regesters the current charset, encoding wit the browser
+    function tpl_regester(){
+		if(!$GLOBALS["MANDRIGO"]["LANGUAGE"]["REG"]){
+		  	if($GLOBALS["MANDRIGO"]["LANGUAGE"]["SET_ENCODING"]){
+				header("Content-type: ".$GLOBALS["MANDRIGO"]["LANGUAGE"]["CONTENT_TYPE"]." charset=".$GLOBALS["MANDRIGO"]["LANGUAGE"]["CHARSET"]);
+			}
+			else{
+				header("Content-type: ".$GLOBALS["MANDRIGO"]["LANGUAGE"]["CONTENT_TYPE"]);
+			}
+			$GLOBALS["MANDRIGO"]["LANGUAGE"]["REG"]=true;
 		}
 	}
 }
-
-?>
