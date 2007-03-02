@@ -52,7 +52,6 @@ class account extends _account{
 	//sets the current username	
 	function ac_setuser($uid){
 		$r=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_ACCOUNTS,"ac_username,ac_id",array(array("ac_id","=",$uid)));
-		print_r($r);
 		if((int)$r["ac_id"]===(int)$uid){
 			$this->name=(string)$r["ac_username"];
 			$this->uid=(int)$r["ac_id"];
