@@ -69,4 +69,25 @@ else{
     }
 }
 
+//
+//sets up the page
+//
+$current_page = new page();
+
+//one final check for errors
+if($GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_getstatus()==2){
+	die($GLOBALS["MANDRIGO"]["ELOG"]["HTMLHEAD"].$GLOBALS["MANDRIGO"]["ELOG"]["TITLE"].$GLOBALS["MANDRIGO"]["ELOG"]["HTMLBODY"].
+        $GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_generatereport().$GLOBALS["MANDRIGO"]["ELOG"]["HTMLEND"]);
+}
+$bypass=(string)$GLOBALS["MANDRIGO"]["VARS"]["BYPASS_CODE"]===(string)$GLOBALS["MANDRIGO"]["SITE"]["BYPASS_CODE"];
+if($GLOBALS["MANDRIGO"]["SITE"]["SITE_STATUS"]==1||($bypass&&$GLOBALS["MANDRIGO"]["SITE"]["BYPASS_CODE"])){
+    echo $current_page->pg_display();
+}
+else{
+  	$tpl = new template();
+    $tpl->tpl_load($GLOBALS["MANDRIGO"]["CONFIG"]["TEMPLATE_PATH"].TPL_OFFSITE,"main");
+    $tpl->tpl_parse(false,"main");
+    echo $tpl->tpl_return("main");
+}
+
 ?>
