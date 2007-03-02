@@ -17,4 +17,22 @@
 			The requested page exists but has no display settings set and therefore is blank.
 		</value>
 	</msg>
+	<msg>
+		<id>4</id>
+		<value>
+			The requested page exists but had errors during the page generation process and therefore is blank.
+		</value>
+	</msg>
+	<msg>
+		<id>100</id>
+		<value>
+			The mg_pcontent package could not load the template for the current page hook.
+		</value>
+	</msg>
+	<msg>
+		<id>500</id>
+		<value>
+			The mg_pcontent package could not be loaded.
+		</value>
+	</msg>
 </error_log>

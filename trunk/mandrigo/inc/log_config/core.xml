@@ -100,4 +100,40 @@
 			Could not load the display package init.
 		</value>
 	</msg>
+	<msg>
+		<id>16</id>
+		<value>
+			Could not load the display addon globals package.
+		</value>
+	</msg>
+	<msg>
+		<id>17</id>
+		<value>
+			Could not load the package globals script.
+		</value>
+	</msg>
+	<msg>
+		<id>18</id>
+		<value>
+			Could not load the stats class.
+		</value>
+	</msg>
+	<msg>
+		<id>19</id>
+		<value>
+			Could not load the page class.
+		</value>
+	</msg>
+	<msg>
+		<id>20</id>
+		<value>
+			Could not load the template class.
+		</value>
+	</msg>
+	<msg>
+		<id>200</id>
+		<value>
+			Could not load the main site template.
+		</value>
+	</msg>
 </error_log>

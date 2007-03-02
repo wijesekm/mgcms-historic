@@ -7,7 +7,7 @@
 	<msg>
 		<id>2</id>
 		<value>
-			The page requested has a page_id of 0.  This page_id is reserved for stats information and cannot be used.
+			You do not have permission to view the current page!
 		</value>
 	</msg>
 </error_log>
