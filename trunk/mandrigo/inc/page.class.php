@@ -2,9 +2,9 @@
 /**********************************************************
     page.class.php
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 08/23/06
+	Date Last Edited: 02/29/07
 
-	Copyright (C) 2006 Kevin Wijesekera
+	Copyright (C) 2006-2007 the MandrigoCMS Group
 
     ##########################################################
 	This program is free software; you can redistribute it and/or
@@ -29,170 +29,171 @@
 //To prevent direct script access
 //
 if(!defined("START_MANDRIGO")){
-    die("<html><head>
-            <title>Forbidden</title>
-        </head><body>
-            <h1>Forbidden</h1><hr width=\"300\" align=\"left\"/>\n<p>You do not have permission to access this file directly.</p>
-        </html></body>");
+    die($GLOBALS["MANDRIGO"]["CONFIG"]["DIE_STRING"]);
 }
 
 class page{
-
-    var $page_db;
-    var $page_parse_vars;
-
-    function page(&$db){
-        
-        $this->page_db=$db;
+	
+	var $page_parse_vars;
+	
+	function page(){
         $this->page_parse_vars = array(
-            "REQUESTED_URI",$GLOBALS["HTTP_SERVER"]["URI"]
-            ,"SITE_NAME",$GLOBALS["SITE_DATA"]["SITE_NAME"]
-            ,"SITE_URL",$GLOBALS["SITE_DATA"]["SITE_URL"]
-            ,"IMG_URL",$GLOBALS["SITE_DATA"]["IMG_URL"]
-            ,"WEBMASTER_NAME",$GLOBALS["SITE_DATA"]["WEBMASTER_NAME"]
-            ,"LAST_UPDATED",$GLOBALS["SITE_DATA"]["LAST_UPDATED"]
-            ,"MANDRIGO_VER",$GLOBALS["SITE_DATA"]["MANDRIGO_VER"]
-            ,"USER_NAME",$GLOBALS["USER_DATA"]["NAME"]
-            ,"CURRENT_PAGE",$GLOBALS["PAGE_DATA"]["RNAME"]
+            "SITE_NAME",$GLOBALS["MANDRIGO"]["SITE"]["SITE_NAME"],
+            "SITE_URL",$GLOBALS["MANDRIGO"]["SITE"]["SITE_URL"],
+            "IMG_URL",$GLOBALS["MANDRIGO"]["SITE"]["IMG_URL"],
+            "SERVER_DATE",date($GLOBALS["MANDRIGO"]["SITE"]["DATE_FORMAT"],$GLOBALS["MANDRIGO"]["SITE"]["SERVERTIME"]),
+            "SERVER_TIME",date($GLOBALS["MANDRIGO"]["SITE"]["TIME_FORMAT"],$GLOBALS["MANDRIGO"]["SITE"]["SERVERTIME"]),
+            "GMT_DATE",date($GLOBALS["MANDRIGO"]["SITE"]["DATE_FORMAT"],$GLOBALS["MANDRIGO"]["SITE"]["GMT"]),
+            "GMT_TIME",date($GLOBALS["MANDRIGO"]["SITE"]["TIME_FORMAT"],$GLOBALS["MANDRIGO"]["SITE"]["GMT"]),
+            "WEBMASTER_NAME",$GLOBALS["MANDRIGO"]["SITE"]["WEBMASTER_NAME"],
+            "WEBMASTER_EMAIL",$GLOBALS["MANDRIGO"]["SITE"]["WEBMASTER_EMAIL"],
+            "SITE_LAST_UPDATED",$GLOBALS["MANDRIGO"]["SITE"]["LAST_UPDATED"],
+            "MG_VER",$GLOBALS["MANDRIGO"]["SITE"]["MANDRIGO_VER"],
+            "INDEX_NAME",$GLOBALS["MANDRIGO"]["SITE"]["INDEX_NAME"],
+            "CUSER_ID",$GLOBALS["MANDRIGO"]["CURRENTUSER"]["UID"],
+            "CUSER_FNAME",$GLOBALS["MANDRIGO"]["CURRENTUSER"]["FNAME"],
+            "CUSER_MNAME",$GLOBALS["MANDRIGO"]["CURRENTUSER"]["MNAME"],
+            "CUSER_LNAME",$GLOBALS["MANDRIGO"]["CURRENTUSER"]["LNAME"],
+            "CUSER_LANG",$GLOBALS["MANDRIGO"]["CURRENTUSER"]["LANGUAGE"],
+            "CUSER_DATE",date($GLOBALS["MANDRIGO"]["SITE"]["DATE_FORMAT"],$GLOBALS["MANDRIGO"]["CURRENTUSER"]["TIME"]),
+            "CUSER_TIME",date($GLOBALS["MANDRIGO"]["SITE"]["TIME_FORMAT"],$GLOBALS["MANDRIGO"]["CURRENTUSER"]["TIME"]),
+            "CPAGE_FNAME",$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["FULLNAME"],
+            "CPAGE_ANAME",$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["NAME"],
+            "CPAGE_ID",$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["ID"]
         );
-        if(count($GLOBALS["PAGE_DATA"]["VARS"])%2==0){
-            $this->page_parse_vars=$this->merge_arrays($GLOBALS["PAGE_DATA"]["VARS"],$this->page_parse_vars);
+        if(count($GLOBALS["MANDRIGO"]["CURRENTPAGE"]["VARS"])%2==0){
+            $this->page_parse_vars=$this->pg_appendarray($GLOBALS["MANDRIGO"]["CURRENTPAGE"]["VARS"],$this->page_parse_vars);
         }
-    }
-    function display(){
-        $tpl=new template();
-        if($GLOBALS["USER_DATA"]["AUTHENTICATED"]&&$GLOBALS["USER_DATA"]["PERMISSIONS"]["READ_RESTRICTED"]){
-            if(!$tpl->load($GLOBALS["MANDRIGO_CONFIG"]["TEMPLATE_PATH"].TPL_AUTH_SITE)){
-                if(!$tpl->load($GLOBALS["MANDRIGO_CONFIG"]["TEMPLATE_PATH"].TPL_MAIN_SITE)){
-                    if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-                        $GLOBALS["error_log"]->add_error(30,"script");
-	   					die($GLOBALS["ELOG"]["HTMLHEAD"].$GLOBALS["ELOG"]["TITLE"].$GLOBALS["ELOG"]["HTMLBODY"].
-           					$GLOBALS["error_log"]->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);
-                    }
-                }
-            }
-        }
-        else{
-            if(!$tpl->load($GLOBALS["MANDRIGO_CONFIG"]["TEMPLATE_PATH"].TPL_MAIN_SITE)){
-                if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-                    $GLOBALS["error_log"]->add_error(30,"script");
-	   				die($GLOBALS["ELOG"]["HTMLHEAD"].$GLOBALS["ELOG"]["TITLE"].$GLOBALS["ELOG"]["HTMLBODY"].
-           				$GLOBALS["error_log"]->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);
-                }
-            }
-        }
-        if($GLOBALS["error_log"]->get_status()!=0){
-                    $this->page_parse_vars=$this->merge_arrays(array("CONTENT",$GLOBALS["error_log"]->generate_report(),"PAGE_TITLE",$GLOBALS["LANGUAGE"]["ETITLE2"]),$this->page_parse_vars);
-        }
-        else if($GLOBALS["PAGE_DATA"]["PAGE_STATUS"]==="1"||($GLOBALS["HTTP_GET"]["KEY"]==$GLOBALS["SITE_DATA"]["BYPASS_CODE"]&&$GLOBALS["SITE_DATA"]["BYPASS_CODE"])){
-                if($GLOBALS["PAGE_DATA"]["AUTH_PAGE"]&&!($GLOBALS["USER_DATA"]["PERMISSIONS"]["READ_RESTRICTED"]||$GLOBALS["USER_DATA"]["PERMISSIONS"]["FULL_CONTROL"])){
-                    $GLOBALS["error_log"]->add_error(1,"access");
-                    if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-                        die($GLOBALS["ELOG"]["PERMISSION"]);
-                    }
-                }
-                if(!$GLOBALS["PAGE_DATA"]["AUTH_PAGE"]&&!($GLOBALS["USER_DATA"]["PERMISSIONS"]["READ"]||$GLOBALS["USER_DATA"]["PERMISSIONS"]["FULL_CONTROL"])){
-                    $GLOBALS["error_log"]->add_error(1,"access");
-                    if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-                        die($GLOBALS["ELOG"]["PERMISSION"]);
-                    }
-                }
-            $content=$this->gen_content();
-            if(!$content){
-                if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-                    $GLOBALS["error_log"]->add_error(2,"display");
-                }
-            }
-            if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-                if($GLOBALS["error_log"]->get_status()!=0){
-                    $this->page_parse_vars=$this->merge_arrays(array("CONTENT",$GLOBALS["error_log"]->generate_report(),"PAGE_TITLE",$GLOBALS["LANGUAGE"]["ETITLE2"]),$this->page_parse_vars);
-                }
-                else{
-                    $this->page_parse_vars=$this->merge_arrays(array("CONTENT",$content,"PAGE_TITLE",$GLOBALS["PAGE_DATA"]["TITLE"]),$this->page_parse_vars);
-                }
-            }
-            else{
-                $this->page_parse_vars=$this->merge_arrays(array("CONTENT",$content,"PAGE_TITLE",$GLOBALS["PAGE_DATA"]["TITLE"]),$this->page_parse_vars);
-            }
+	}
+	
+	//#################################
+	//
+	// PUBLIC FUNCTIONS
+	//
+	//#################################	    
+ 	
+    //
+    //public function pg_display()
+    //
+    //generates content for the site then parses out the main site template
+    //
+	//returns the main site template 
+	function pg_display(){
+	 
+	 	//
+	 	//Load the main site template
+	 	//
+		$tpl_mainsite=new template();
+		if(!$tpl_mainsite->tpl_load($GLOBALS["MANDRIGO"]["CONFIG"]["TEMPLATE_PATH"].TPL_MAINSITE,"main")){
+			if($GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
+				die();
+			}
+			else{
+				$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(200,"core");
+				die($GLOBALS["MANDRIGO"]["ELOG"]["HTMLHEAD"].$GLOBALS["MANDRIGO"]["ELOG"]["TITLE"].$GLOBALS["MANDRIGO"]["ELOG"]["HTMLBODY"].
+	           		$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_generatereport().$GLOBALS["MANDRIGO"]["ELOG"]["HTMLEND"]);
 
-        }
-        else{
-            if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-                if($GLOBALS["error_log"]->get_status()==2){
-	   				die($GLOBALS["ELOG"]["HTMLHEAD"].$GLOBALS["ELOG"]["TITLE"].$GLOBALS["ELOG"]["HTMLBODY"].
-           				$GLOBALS["error_log"]->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);
-                    return false;
-                }
-                else{
-                    $tmp_tpl=new template();
-                    $tmp_tpl->load($GLOBALS["MANDRIGO_CONFIG"]["TEMPLATE_PATH"].TPL_OFF_PAGE);
-                    $content=$tmp_tpl->return_template();
-                    $this->page_parse_vars=$this->merge_arrays(array("CONTENT",$content,"PAGE_TITLE",$GLOBALS["LANGUAGE"]["OPTITLE"]),$this->page_parse_vars);
-                }
-            }
-            else{
-                $tmp_tpl=new template();
-                $tmp_tpl->load($GLOBALS["MANDRIGO_CONFIG"]["TEMPLATE_PATH"].TPL_OFF_PAGE);
-				$content=$tmp_tpl->return_template();
-                $this->page_parse_vars=$this->merge_arrays(array("CONTENT",$content,"PAGE_TITLE",$GLOBALS["LANGUAGE"]["OPTITLE"]),$this->page_parse_vars);
-            }
-        }
-        $tpl->pparse($this->page_parse_vars);
-        return $tpl->return_template();
-    }
-    function gen_content(){
+			}
+		}
+		
+		//
+		//Main IF Statment
+		//
+		$bypass=(string)$GLOBALS["MANDRIGO"]["VARS"]["BYPASS_CODE"]===(string)$GLOBALS["MANDRIGO"]["SITE"]["BYPASS_CODE"];
+		if($GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_getstatus()!=0){
+        	if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
+				die();
+			}
+			else{
+				$this->page_parse_vars=$this->pg_appendarray(array("CONTENT",$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_generatereport(),"PAGE_TITLE",$GLOBALS["MANDRIGO"]["ELOG"]["TITLE"]),$this->page_parse_vars);			
+			}
+		}
+		else if($GLOBALS["MANDRIGO"]["CURRENTPAGE"]["STATUS"]===1||($bypass&&$GLOBALS["MANDRIGO"]["SITE"]["BYPASS_CODE"])){
+			$content=$this->pg_gencontent();
+			if(!$content&&!$GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
+				$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(4,"display");	
+			}
+			if($GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_getstatus()!=0&&!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
+				$this->page_parse_vars=$this->pg_appendarray(array("CONTENT",$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_generatereport(),"PAGE_TITLE",$GLOBALS["MANDRIGO"]["ELOG"]["TITLE"]),$this->page_parse_vars);			
+			}
+			else{
+               $this->page_parse_vars=$this->pg_appendarray(array("CONTENT",$content,"PAGE_TITLE",$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["TITLE"]),$this->page_parse_vars);
+			}
+		}
+		else{
+        	$tpl_off=new template();
+            $tpl_off->tpl_load($GLOBALS["MANDRIGO"]["CONFIG"]["TEMPLATE_PATH"].TPL_OFFPAGE,"main");
+			$content=$tpl_off->tpl_return("main");
+			$tpl_off="";
+            $this->page_parse_vars=$this->pg_appendarray(array("CONTENT",$content,"PAGE_TITLE",$GLOBALS["MANDRIGO"]["LANGUAGE"]["OPTITLE"]),$this->page_parse_vars);		
+		}
+	    $tpl_mainsite->tpl_parse($this->page_parse_vars,"main",2);
+	    return $tpl_mainsite->tpl_return("main");
+	}
+	
+	
+	//#################################
+	//
+	// PRIVATE FUNCTIONS
+	//
+	//#################################	  
+	  
+    //
+    //private function pg_gencontent()
+    //
+    //generates the page content
+    //
+    //returns the content
+    function pg_gencontent(){
+     	$soq=count($GLOBALS["MANDRIGO"]["CURRENTPAGE"]["HOOKS"]);
+     	$content="";
+     	for($i=0;$i<$soq;$i++){
+			if(!$tmp=$this->pg_regesterhook($i)){
+				return false;
+			}
+			$content.=$tmp;
+		}
+  		return $content;
+	}
+ 
+    //
+    //private function pg_regesterhook($i)
+    //
+    //generates a block of content for the given hook
+    //
+    //returns the content
+    function pg_regesterhook($i){
         $content="";
-        $soq=count($GLOBALS["PAGE_DATA"]["HOOKS"]);
-        for($i=0;$i<$soq;$i++){
-            if(!empty($GLOBALS["PAGE_DATA"]["HOOKS"][$i])){
-                if(!($sql_result=$this->page_db->db_fetcharray(TABLE_PREFIX.TABLE_PACKAGE_DATA,"",array(array("package_id","=",$GLOBALS["PAGE_DATA"]["HOOKS"][$i]))))){
-                    if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-                        $GLOBALS["error_log"]->add_error(14,"sql");
-	   					die($GLOBALS["ELOG"]["HTMLHEAD"].$GLOBALS["ELOG"]["TITLE"].$GLOBALS["ELOG"]["HTMLBODY"].
-           					$GLOBALS["error_log"]->generate_report().$GLOBALS["ELOG"]["HTMLEND"]);
-
-                    }
-                }
-                if(!$tmp=$this->regester_hook($i,$sql_result["package_name"])){
-                    return false;
-                }
-                $content.=$tmp;
-            }
-            else{
-                return false;
-            }
-        }
-        return $content;
-    }
-    function regester_hook($i,$hook){
-        $content="";
-        $string="$"."hookc=new ".$hook.HOOK_CLASS;
+        $string="$"."hookc=new ".$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["HOOKS"][$i][1].HOOK_CLASS;
         eval($string);
-        $string="$"."content=$"."hookc->".$hook.HOOK_DISPLAY;
+        $string="$"."content=$"."hookc->".$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["HOOKS"][$i][1].HOOK_DISPLAY;
         eval($string);
-        $string="$"."vars=$"."hookc->".$hook.HOOK_VARS;
+        $string="$"."vars=$"."hookc->".$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["HOOKS"][$i][1].HOOK_VARS;
         eval($string);
         //echo count($vars);
         if(count($vars)%2==0){
-            $this->page_parse_vars=$this->merge_arrays($vars,$this->page_parse_vars);
+            $this->page_parse_vars=$this->pg_appendarray($vars,$this->page_parse_vars);
         }
         return $content;
-    }
-    function merge_arrays($a1,$a2){
-		$an=array();
-		$size=count($a1)+count($a2);
-		$j=0;
-		for($i=0;$i<$size;$i++){
-			if($i<count($a1)){
-				$an[$i]=$a1[$i];
-			}
-			else{
-				$an[$i]=$a2[$j];
-				$j++;
-			}
+	}
+    
+    //
+    //private function pg_mergearrays($a1,$a2)
+    //
+    //appends $a2 onto the end of $a1
+    //
+    //INPUTS:
+    //$a1		-	array
+    //$a2		-	array
+    //
+	//returns the combined array	
+    function pg_appendarray($a1,$a2){
+		$size1=count($a1);
+		$size2=count($a2);
+		$soq=$size1+$size2;
+		for($i=$size1;$i<$soq;$i++){
+			$a1[$i]=$a2[$i-($size1)];
 		}
-		return $an;
+		return $a1;
 	}
 }
-
-?>
