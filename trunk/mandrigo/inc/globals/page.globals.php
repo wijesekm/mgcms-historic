@@ -40,12 +40,15 @@ if($GLOBALS["MANDRIGO"]["SITE"]["PAGE_TYPE"]==1){
     $pageinput_type = "pg_id";
 }
 
+$nopage=false;
+
 if($GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
     $page_data=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_PAGES,"",array(array($pageinput_type,"=",$GLOBALS["MANDRIGO"]["VARS"]["PAGE"])));
 }
 else{
     if(!$page_data=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_PAGES,"",array(array($pageinput_type,"=",$GLOBALS["MANDRIGO"]["VARS"]["PAGE"])))){
         $GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(2,"display");
+        $nopage=true;
     }
 }
 
@@ -55,7 +58,7 @@ $GLOBALS["MANDRIGO"]["CURRENTPAGE"]["ID"]=(int)trim($page_data["pg_id"]);
 //If page has ID of 0 it is a bad page
 //
 
-if($GLOBALS["MANDRIGO"]["CURRENTPAGE"]["ID"]===0){
+if($GLOBALS["MANDRIGO"]["CURRENTPAGE"]["ID"]===0&&!$nopage){
 	if($GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
 		die();
 	}
