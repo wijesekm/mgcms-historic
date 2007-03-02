@@ -47,8 +47,8 @@ for($i=0;$i<$soq;$i++){
 	}
 	$count+=2;
 }
-
-$packages=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_PACKAGES,"pkg_name,pkg_nlerror",$filter,"ASSOC",DB_ALL_ROWS);
+$newpkg=array();
+$packages=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_PACKAGES,"pkg_id,pkg_name,pkg_nlerror",$filter,"ASSOC",DB_ALL_ROWS);
 $soq=count($packages);
 if(!$GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
 	if(!$packages){
@@ -57,6 +57,9 @@ if(!$GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
 }
 
 for($i=0;$i<$soq;$i++){
+ 	if(in_array($packages[$i]["pkg_id"],$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["HOOKS"])){
+	 	$newpkg[$i]=array($packages[$i]["pkg_id"],$packages[$i]["pkg_name"]);
+	}
 	if($GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
 		include_once($GLOBALS["MANDRIGO"]["CONFIG"]["PLUGIN_PATH"].$packages[$i]["pkg_name"]."/hooks.pkg.".PHP_EXT);
 		include_once($GLOBALS["MANDRIGO"]["CONFIG"]["PLUGIN_PATH"].$packages[$i]["pkg_name"]."/globals.pkg.".PHP_EXT);
@@ -81,3 +84,8 @@ for($i=0;$i<$soq;$i++){
 		}
 	}
 }
+
+$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["HOOKS"]=$newpkg;
+
+$packages="";
+$newpkg="";
