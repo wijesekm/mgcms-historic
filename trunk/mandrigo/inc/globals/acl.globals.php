@@ -81,5 +81,10 @@ $filter="";
 $acl="";
 
 if($GLOBALS["MANDRIGO"]["CURRENTPAGE"]["READLEVEL"] > $GLOBALS["MANDRIGO"]["CURRENTUSER"]["ACL"]["READ"]){
-	$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(2,"access");
+	if(!$GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
+		$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(2,"access");	
+	}
+	else{
+		die($GLOBALS["MANDRIGO"]["ELOG"]["PERMISSION"]);
+	}
 }
