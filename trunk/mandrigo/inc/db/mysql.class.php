@@ -232,7 +232,15 @@ class db extends _db{
 			$type=MYSQL_BOTH;
 		}     
 		if($rows==DB_ALL_ROWS){
-			$rows=$this->db_numrows($table,$params)+1;
+	        if($GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
+	            $rows=mysql_num_rows($result);
+	        }
+	        else{
+	            if(!(@$rows=mysql_num_rows($result))){
+	                return false;
+	            }
+	        }
+			$rows++;
 		}
 		if(!$rows){
 	    	if($GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
