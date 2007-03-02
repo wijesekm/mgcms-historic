@@ -30,9 +30,21 @@
 		</value>
 	</msg>
 	<msg>
+		<id>110</id>
+		<value>
+			The mg_sitemap package could not load the template for the current page hook.
+		</value>
+	</msg>
+	<msg>
 		<id>500</id>
 		<value>
 			The mg_pcontent package could not be loaded.
+		</value>
+	</msg>
+	<msg>
+		<id>501</id>
+		<value>
+			The mg_sitemap package could not be loaded.
 		</value>
 	</msg>
 </error_log>
