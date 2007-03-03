@@ -265,10 +265,52 @@ class db extends _db{
 				@mysql_data_seek($result,$i);
 			}		
 		}
-        $this->db_freeresult($result);
         return $tmp_value;
 	}
-    
+	
+ 	//
+	//public db_function($table,$fields,$params="",$type="ASSOC",$rows="")
+	//
+	//fetches values from the database 
+	//INPUTS:
+	//$table 		- table we will read from (default: )
+	//$function		- function will we use (default: )
+	//$fields 		- any function data (default: )
+	//
+	//returns result or false on fail
+    function db_function($table,$function,$fields){
+     	if(!eregi("^[a-z]+$",$function)){
+			return false;
+		}
+     	$qstring="SELECT ".strtoupper($function)."(";
+		if($field==DB_ALL_ROWS){
+			$qstring.="*";
+		}
+		else{
+			$soq=count($fields);
+			for($i=0;$i<$soq;$i++){
+			    if(!eregi("^[a-z]+$",$fields[$i])){
+					return false;
+				}
+				$qstring.=mysql_real_escape_string($fields[$i]);
+				if($i+1<$soq){
+					$qstring.=",";
+				}
+			}	
+		}
+		$qstring.=") FROM `".mysql_real_escape_string($table)."`";
+	 	$result=$this->db_query($qstring);
+        $this->db_freeresult($result);
+        if($GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
+            $tmp_value=mysql_result($result,$row);
+        }
+        else{
+            if(!(@$tmp_value=mysql_result($result,$row))){
+                return false;
+            }
+        }	 	
+	}   
+	
 	//
 	//public db_update($q_type,$table,$set,$params="")
 	//

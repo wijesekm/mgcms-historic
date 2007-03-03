@@ -151,6 +151,18 @@ class _db{
 	//
 	//returns result or false on fail
     function db_fetcharray($table,$fields,$params="",$type="ASSOC",$rows=0){}
+
+	//
+	//public db_function($table,$fields,$params="",$type="ASSOC",$rows="")
+	//
+	//fetches values from the database 
+	//INPUTS:
+	//$table 		- table we will read from (default: )
+	//$function		- function will we use (default: )
+	//$fields 		- any function data (default: )
+	//
+	//returns result or false on fail
+    function db_function($table,$function,$field){}
 	
 	//
 	//public db_update($q_type,$table,$set,$params="")
