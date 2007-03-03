@@ -36,6 +36,12 @@
 		</value>
 	</msg>
 	<msg>
+		<id>120</id>
+		<value>
+			The mg_news package could not load the template for the current page hook.
+		</value>
+	</msg>
+	<msg>
 		<id>500</id>
 		<value>
 			The mg_pcontent package could not be loaded.

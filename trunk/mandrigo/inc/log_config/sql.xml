@@ -40,4 +40,10 @@
 			Could not access package table.  This usually means the table is blank or missing.
 		</value>
 	</msg>
+	<msg>
+		<id>400</id>
+		<value>
+			Could not access the news overview table.  This usually means the table is blank or missing.
+		</value>
+	</msg>
 </error_log>
