@@ -97,9 +97,10 @@ class template{
     //$vars		-	vars to parse (default: none)
     //$section	-	section to parse (default: TPL_ALL)
     //$level	-	parse level to use [0 - none, 1 - vars, 2 - compile] (default: 1)
+    //$rempty	-	remove any set vars in the template that are not defined (default: true)
     //
 	//returns true or false 
-	function tpl_parse($vars=array(),$section=TPL_ALL,$level=1){
+	function tpl_parse($vars=array(),$section=TPL_ALL,$level=1,$rempty=true){
 		if($section=TPL_ALL){
 			$soq=count($this->tpl);
 			$keys=array_keys($this->tpl);
@@ -111,7 +112,9 @@ class template{
 					$this->tpl[$keys[$i]]=$this->tpl_compile($vars,$this->tpl[$keys[$i]]);
 					$this->tpl[$keys[$i]]=$this->tpl_vparse($vars,$this->tpl[$keys[$i]]);
 				}
-				$this->tpl[$keys[$i]]=eregi_replace("[{]+[a-z0-9_-]+[}]","",$this->tpl[$keys[$i]]);			
+				if($rempty){
+					$this->tpl[$keys[$i]]=eregi_replace("[{]+[a-z0-9_-]+[}]","",$this->tpl[$keys[$i]]);	
+				}
 			}
 		}
 		else{
@@ -122,7 +125,9 @@ class template{
 				$this->tpl[(string)$section]=$this->tpl_compile($vars,$this->tpl[(string)$section]);
 				$this->tpl[(string)$section]=$this->tpl_vparse($vars,$this->tpl[(string)$section]);
 			}
-			$this->tpl[(string)$section]=eregi_replace("[{]+[a-z0-9_-]+[}]","",$this->tpl[(string)$section]);
+			if($rempty){
+				$this->tpl[(string)$section]=eregi_replace("[{]+[a-z0-9_-]+[}]","",$this->tpl[(string)$section]);
+			}
 		}
 		$this->tpl_regester();
 		return true;
@@ -138,11 +143,18 @@ class template{
 	//returns template
 	function tpl_return($section=TPL_ALL){
 		if($section==TPL_ALL){
-			return $this->tpl;
+		 	$str='';
+		 	$soq=count($this->tpl);
+		 	$keys=array_keys($this->tpl);
+		 	for($i=0;$i<$soq;$i++){
+				$string.=$this->tpl[$keys[$i]];
+			}
+			return $string;
 		}
 		else{
 			return $this->tpl[(string)$section];
 		}
+		return false;
 	}
 
 	//#################################
@@ -168,7 +180,6 @@ class template{
         for($i=0;$i<$sov-1;$i+=2){
             $string=ereg_replace("{".$vars[$i]."}",$vars[$i+1],$string);
         }
-        $string=eregi_replace("[{]+[a-z0-9_-]+[}]","",$string);
         return $string;
     }
 	
