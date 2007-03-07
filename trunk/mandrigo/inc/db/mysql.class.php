@@ -655,6 +655,7 @@ class db extends _db{
 		$qstring="SELECT ".$new_field." FROM ".$new_table;
 		$last_group=0;
 		$set=false;
+		$ob=false;
         if($params){
           	$qstring.=" WHERE";
             for($i=0;$i<count($params);$i++){
@@ -673,6 +674,9 @@ class db extends _db{
               	  		$qstring.=" `".mysql_real_escape_string($params[$i][1])."` BETWEEN '";
 						$qstring.=mysql_real_escape_string($params[$i][2][0])."' AND '".mysql_real_escape_string($params[$i][2][1])."'";
 								
+              	  	break;
+              	  	case DB_ORDERBY:
+              	  		$ob=array($params[$i][1],$params[$i][2]);
               	  	break;
 				 	default:  
 				 		if($params[$i][4]&&$params[$i][4]!=$last_group){
@@ -702,6 +706,9 @@ class db extends _db{
         }
         else{
 			$qstring.=" WHERE 1";
+		}
+		if($ob){
+			$qstring.=" ORDER BY ".$ob[0]." ".$ob[1];
 		}
         return $qstring.";";
 	}

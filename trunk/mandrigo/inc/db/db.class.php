@@ -56,6 +56,7 @@ define("DB_BETWEEN","BETWEEN");
 define("DB_NULL","NULL");
 define("DB_AUTO_INC","AUTO");
 define("DB_ALL_ROWS","ALL");
+define("DB_ORDERBY","ORDERBY");
 
 class _db{
 
