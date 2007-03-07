@@ -90,9 +90,11 @@ for($i=0;$i<$soq;$i++){
 	}
 	$count+=2;
 }
+$filter[$count]=array("lang_corename","=",CORE_PACKAGES,DB_AND,$soq+1);
+$filter[$count+1]=array("lang_appid","=","0",DB_OR,$soq+1);
 
-$filter[$count]=array("lang_corename","=",CORE_NAME,DB_OR,$soq+1);
-$filter[$count+1]=array("lang_corename","=","all","",$soq+1);
+$filter[$count+2]=array("lang_corename","=",CORE_NAME,DB_OR,$soq+2);
+$filter[$count+3]=array("lang_corename","=","all","",$soq+3);
 
 //
 //LANGUAGE array formation
