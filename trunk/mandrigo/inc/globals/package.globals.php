@@ -34,12 +34,11 @@ if(!defined("START_MANDRIGO")){
 $filter=array();
 $filter=array(array("var_corename","=",CORE_PACKAGES,DB_AND,1));
 $soq=count($GLOBALS["MANDRIGO"]["CURRENTPAGE"]["HOOKS"]);
-
 for($i=0;$i<$soq;$i++){
-	$filter[$i+1]=array("var_appid","=",$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["HOOKS"][$i],DB_OR,2);
+	$filter[$i+1]=array("var_appid","=",$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["HOOKS"][$i][0],DB_OR,2);
 }
 
-$filter[$soq]=array("var_appid","=",0,"",2);
+$filter[$soq+1]=array("var_appid","=",0,"",2);
 $vars=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_SERVER_GLOBALS,"",$filter,"ASSOC",DB_ALL_ROWS);
 
 $soa=count($vars);
