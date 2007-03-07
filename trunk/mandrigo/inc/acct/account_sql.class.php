@@ -89,7 +89,7 @@ class account extends _account{
 		if(!$this->isuser){
 			return false;
 		}
-		return $this->uname;
+		return $this->name;
 	}
 		
 	//
