@@ -1,5 +1,4 @@
-<!--MG_TEMPLATE_START_feed-->
-<?xml version="1.0" encoding="{ENCODING}"?>
+<!--MG_TEMPLATE_START_feed--><?xml version="1.0" encoding="{ENCODING}"?>
 <!-- generator="mandrigoCMS/{MANDRIGO_VERSION}" -->
 <rdf:RDF xmlns="http://purl.org/rss/1.0/" 
 		 xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
@@ -9,7 +8,7 @@
 		 xmlns:content="http://purl.org/rss/1.0/modules/content/">
 	<channel rdf:about="{FEED_URL}">
 		<title>{FEED_TITLE}</title>
-		<link>{FEED_URL}</link>
+		<link>{PAGE_URL}</link>
 		<description>{FEED_DESCRIPTION}</description>
 		<dc:language>{FEED_LANG}</dc:language>
 		<admin:generatorAgent rdf:resource="http://mandrigo.org/"/>
@@ -28,6 +27,7 @@
 
 
 <!--MG_TEMPLATE_START_feeditem-->
+<!--MG_TEMPLATE_START_feeditemsub-->
 		<item rdf:about="{POST_URL}">
 			<title>{POST_TITLE}</title>
 			<link>{POST_URL}</link>
@@ -37,8 +37,11 @@
 			<description>{CONTENT_NOHTML}</description>
 			<content:encoded><![CDATA[{CONTENT}]]></content:encoded>
 		</item>
+<!--MG_TEMPLATE_END_feeditemsub-->
 <!--MG_TEMPLATE_END_feeditem-->
 
 <!--MG_TEMPLATE_START_feedoverview-->
+<!--MG_TEMPLATE_START_feedoverviewsub-->
 <rdf:li rdf:resource="{POST_URL}"/>
+<!--MG_TEMPLATE_END_feedoverviewsub-->
 <!--MG_TEMPLATE_END_feedoverview-->

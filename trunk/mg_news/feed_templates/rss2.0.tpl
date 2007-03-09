@@ -1,6 +1,5 @@
 		
-<!--MG_TEMPLATE_START_feed-->
-<?xml version="1.0" encoding="{ENCODING}"?>
+<!--MG_TEMPLATE_START_feed--><?xml version="1.0" encoding="{ENCODING}"?>
 <!-- generator="mandrigoCMS/{MANDRIGO_VERSION}" -->
 <rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" 
 				   xmlns:admin="http://webns.net/mvcb/" 
@@ -8,7 +7,7 @@
 				   xmlns:content="http://purl.org/rss/1.0/modules/content/">
 	<channel>
 		<title>{FEED_TITLE}</title>
-		<link>{FEED_URL}</link>
+		<link>{PAGE_URL}</link>
 		<description>{FEED_DESCRIPTION}</description>
 		<language>{FEED_LANG}</language>
 		<docs>http://backend.userland.com/rss</docs>
@@ -20,6 +19,7 @@
 <!--MG_TEMPLATE_END_feed-->
 
 <!--MG_TEMPLATE_START_feeditem-->
+<!--MG_TEMPLATE_START_feeditemsub-->
 		<item>
 			<title>{POST_TITLE}</title>
 			<link>{POST_URL}</link>
@@ -29,4 +29,5 @@
 			<content:encoded>{CONTENT_ENCODED}</content:encoded>
 			<comments>{POST_URL}</comments>
 		</item>
+<!--MG_TEMPLATE_END_feeditemsub-->
 <!--MG_TEMPLATE_END_feeditem-->
