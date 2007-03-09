@@ -1,3 +1,4 @@
+<!--MG_TEMPLATE_START_feed-->
 <?xml version="1.0" encoding="{ENCODING}"?>
 <!-- generator="mandrigoCMS/{MANDRIGO_VERSION}" -->
 <rdf:RDF xmlns="http://purl.org/rss/1.0/" 
@@ -23,7 +24,10 @@
 	</channel>
 	{POSTS}
 </rdf:RDF>
-<!--FEED_DELIM-->
+<!--MG_TEMPLATE_END_feed-->
+
+
+<!--MG_TEMPLATE_START_feeditem-->
 		<item rdf:about="{POST_URL}">
 			<title>{POST_TITLE}</title>
 			<link>{POST_URL}</link>
@@ -33,5 +37,8 @@
 			<description>{CONTENT_NOHTML}</description>
 			<content:encoded><![CDATA[{CONTENT}]]></content:encoded>
 		</item>
-<!--FEED_DELIM-->
+<!--MG_TEMPLATE_END_feeditem-->
+
+<!--MG_TEMPLATE_START_feedoverview-->
 <rdf:li rdf:resource="{POST_URL}"/>
+<!--MG_TEMPLATE_END_feedoverview-->

@@ -1,3 +1,5 @@
+<!--MG_TEMPLATE_START_feed-->
+
 <?xml version="1.0" encoding="{ENCODING}"?>
 <!-- generator="mandrigoCMS/{MANDRIGO_VERSION}" -->
 <rss version="0.92">
@@ -10,9 +12,14 @@
 		{POSTS}
 	</channel>
 </rss>
-<!--FEED_DELIM-->
+
+<!--MG_TEMPLATE_END_feed-->
+
+<!--MG_TEMPLATE_START_feeditem-->
 		<item>
 			<title>{POST_TITLE}</title>
 			<description>{CONTENT_ENCODED}</description>
 			<link>{POST_URL}</link>
 		</item>
+		
+<!--MG_TEMPLATE_END_feeditem-->

@@ -1,3 +1,5 @@
+		
+<!--MG_TEMPLATE_START_feed-->
 <?xml version="1.0" encoding="{ENCODING}"?>
 <!-- generator="mandrigoCMS/{MANDRIGO_VERSION}" -->
 <rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" 
@@ -15,7 +17,9 @@
 		{POSTS}
 	</channel>
 </rss>
-<!--FEED_DELIM-->
+<!--MG_TEMPLATE_END_feed-->
+
+<!--MG_TEMPLATE_START_feeditem-->
 		<item>
 			<title>{POST_TITLE}</title>
 			<link>{POST_URL}</link>
@@ -25,3 +29,4 @@
 			<content:encoded>{CONTENT_ENCODED}</content:encoded>
 			<comments>{POST_URL}</comments>
 		</item>
+<!--MG_TEMPLATE_END_feeditem-->

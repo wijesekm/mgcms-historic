@@ -1,3 +1,5 @@
+			
+<!--MG_TEMPLATE_START_feed-->
 <?xml version="1.0" encoding="{ENCODING}"?>
 <!-- generator="mandrigoCMS/{MANDRIGO_VERSION}" -->
 <feed xml:lang="{FEED_LANG}" xmlns="http://www.w3.org/2005/Atom">
@@ -10,7 +12,9 @@
 	<updated>{LAST_UPDATED}</updated>
 	{POSTS}
 </feed>
-<!--FEED_DELIM-->
+<!--MG_TEMPLATE_END_feed-->
+
+<!--MG_TEMPLATE_START_feeditem-->
 	<entry>
 		<title type="text">{POST_TITLE}</title>
 		<link rel="alternate" type="text/html" href="{POST_URL}" />
@@ -23,3 +27,4 @@
 		<updated>{POST_DATE}</updated>
 		<content type="html"><![CDATA[{CONTENT}]]></content>
 	</entry>
+<!--MG_TEMPLATE_END_feeditem-->
