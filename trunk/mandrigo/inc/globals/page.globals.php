@@ -76,7 +76,7 @@ if($GLOBALS["MANDRIGO"]["CURRENTPAGE"]["ID"]===0&&!$nopage){
 $GLOBALS["MANDRIGO"]["CURRENTPAGE"]["NAME"]=(string)trim($page_data["pg_name"]);
 $GLOBALS["MANDRIGO"]["CURRENTPAGE"]["FULLNAME"]=(string)trim($page_data["pg_fullname"]);
 $GLOBALS["MANDRIGO"]["CURRENTPAGE"]["TITLE"]=(string)trim($page_data["pg_title"]);
-$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["VARS"]=$page_data["pg_vars"];
+$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["VARS"]=explode(";",$page_data["pg_vars"]);
 $GLOBALS["MANDRIGO"]["CURRENTPAGE"]["HOOKS"]=explode(";",(string)trim($page_data["pg_hooks"]));
 $GLOBALS["MANDRIGO"]["CURRENTPAGE"]["SUBPAGES"]=explode(";",(string)trim($page_data["pg_subpages"]));
 $GLOBALS["MANDRIGO"]["CURRENTPAGE"]["PARENT"]=(int)trim($page_data["pg_parent"]);
