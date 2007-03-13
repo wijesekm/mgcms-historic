@@ -340,29 +340,42 @@ class news{
 	//adds a user comment
 	//
 	function ne_addcomment($id){
+	 
+		if(eregi("p",$GLOBALS["MANDRIGO"]["VARS"]["ID"])){
+			$pid=(int)ereg_replace("p","",$GLOBALS["MANDRIGO"]["VARS"]["ID"]);
+		}
+		else{
+			$pid=(int)$GLOBALS["MANDRIGO"]["VARS"]["ID"];
+		}
+		
 	  	if(!$this->config["allow_com"]){
-			return $this->ne_displaypost($id,"Comments Turned Off");
+			return $this->ne_displaypost($id,$GLOBALS["MANDRIGO"]["LANGUAGE"]["NEWS_COMOFF"]);
 		}
 		if($this->config["use_captcha"]){
 			$ca=new captcha($id);
 			if(!$ca->ca_checkca()){
-				return $this->ne_displaypost($id,"Invalid Captcha");
+				return $this->ne_displaypost($id,$GLOBALS["MANDRIGO"]["LANGUAGE"]["NEWS_BADCAP"]);
 			}
 		}
 		if(!$GLOBALS["MANDRIGO"]["VARS"]["MG_NEWS_COMVALUE"]){
-			return $this->ne_displaypost($id,"Nothing to Post");	
+			return $this->ne_displaypost($id,$GLOBALS["MANDRIGO"]["LANGUAGE"]["NEWS_NOCONTENT"]);	
 		}
 		if($GLOBALS["MANDRIGO"]["CURRENTUSER"]["AUTHENTICATED"]){
 			
 		}
 		else if($this->config["allow_acom"]){
-			$name=(empty($GLOBALS["MANDRIGO"]["VARS"]["MG_NEWS_COMNAME"]))?"Guest":$GLOBALS["MANDRIGO"]["VARS"]["MG_NEWS_COMNAME"];
-			$email=(empty($GLOBALS["MANDRIGO"]["VARS"]["MG_NEWS_COMEMAIL"]))?"Guest":$GLOBALS["MANDRIGO"]["VARS"]["MG_NEWS_COMEMAIL"];
-			$post=$GLOBALS["MANDRIGO"]["VARS"]["MG_NEWS_COMVALUE"];
-			
+			$name=(empty($GLOBALS["MANDRIGO"]["VARS"]["MG_NEWS_COMNAME"]))?"Guest":trim($GLOBALS["MANDRIGO"]["VARS"]["MG_NEWS_COMNAME"]);
+			$email=(empty($GLOBALS["MANDRIGO"]["VARS"]["MG_NEWS_COMEMAIL"]))?"Guest":trim($GLOBALS["MANDRIGO"]["VARS"]["MG_NEWS_COMEMAIL"]);
+			$post=trim($GLOBALS["MANDRIGO"]["VARS"]["MG_NEWS_COMVALUE"]);
+			$items=array("com_time","com_author","com_content","post_id");
+			$values=array($GLOBALS["MANDRIGO"]["SITE"]["SERVERTIME"],"{$name}==>{$email}",$post,$pid);
+			if(!$GLOBALS["MANDRIGO"]["DB"]->db_update(DB_INSERT,TABLE_PREFIX.TABLE_NEWS_COMMENTS.$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["ID"]."_".$id,$values,$items)){
+				return $this->ne_displaypost($id,$GLOBALS["MANDRIGO"]["LANGUAGE"]["INTERNAL_ERROR"]);
+			}
+			return $this->ne_displaypost($id,$GLOBALS["MANDRIGO"]["LANGUAGE"]["NEWS_POSTED"]);
 		}
 		else{
-			return $this->ne_displaypost($id,"Permission Denied");
+			return $this->ne_displaypost($id,$GLOBALS["MANDRIGO"]["LANGUAGE"]["NOPERMISSION"]);
 		}
 		return $this->ne_displaypost($id);
 	}	
@@ -612,7 +625,24 @@ class news{
 		return (!empty($c))?$c:"0";
 	}
 	function ne_gencomauth($auth){
-		return array("na","na");
+	 	if(eregi("==>",$auth)){
+			$author=explode("==>",$auth);
+			$name=(string)trim($author[0]);
+			$email=(string)trim($author[1]);
+			if($name==BAD_DATA||!$name){
+				$name="N/A";
+			}
+			if($email==BAD_DATA||!$email){
+				$email=$this->ne_genlink(array("p",$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["NAME"],"id",$GLOBALS["MANDRIGO"]["VARS"]["ID"]));
+			}
+			else{
+				$email=$this->ne_genlink(array("p",$GLOBALS["MANDRIGO"]["SITE"]["FORM_MAIL_PAGE"],"email",$email));
+			}
+		}
+		else{
+		
+		}
+		return array($email,$name);		
 	}
     
 	//
