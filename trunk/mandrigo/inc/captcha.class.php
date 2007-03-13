@@ -165,15 +165,15 @@ class captcha{
     //
 	//returns true if it matches and false if not
 	function ca_checkca(){
-		if(!$sql_result=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_CAPTCHA,"",array(array("ca_id","=",$GLOBALS["MANDRIGO"]["VARS"]["CA_ID"])))){
+		if(!$ca_string=(string)$GLOBALS["MANDRIGO"]["DB"]->db_fetchresult(TABLE_PREFIX.TABLE_CAPTCHA,"ca_string",array(array("ca_id","=",$GLOBALS["MANDRIGO"]["VARS"]["MG_NEWS_CAID"])))){
 			return false;
 		}
-		
+
 		//cleanup
 		@unlink($GLOBALS["MANDRIGO"]["CONFIG"]["IMG_PATH"].TMP_IMG.$GLOBALS["MANDRIGO"]["VARS"]["CA_ID"].".jpg");
-		$GLOBALS["MANDRIGO"]["DB"]->db_update(DB_REMOVE,TABLE_PREFIX.TABLE_CAPTCHA,"",array(array("ca_id","=",$GLOBALS["MANDRIGO"]["VARS"]["CA_ID"])));	
-		
-		if($sql_result["ca_string"]===$GLOBALS["HTTP_POST"]["CA_STRING"]){
+		$GLOBALS["MANDRIGO"]["DB"]->db_update(DB_REMOVE,TABLE_PREFIX.TABLE_CAPTCHA,"",array(array("ca_id","=",$GLOBALS["MANDRIGO"]["VARS"]["MG_NEWS_CAID"])));	
+
+		if($ca_string===(string)$GLOBALS["MANDRIGO"]["VARS"]["MG_NEWS_CASTR"]){
 			return true;
 		}
 		return false;
