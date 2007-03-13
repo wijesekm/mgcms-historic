@@ -49,8 +49,8 @@ define("TABLE_STATS_IPS","stats_ips");
 define("TABLE_STATS_USERAGENTS","stats_uagents");
 
 define("TABLE_CAPTCHA","captcha");
-define("TABLE_CAPTCHA_DATA","captcha_data");
-define("TABLE_ENVELOPE_DATA","envelope_data");
+define("TABLE_CAPTCHA_DATA","captchad");
+define("TABLE_ENVELOPE_DATA","envelopedata");
 
 //
 //Templates
