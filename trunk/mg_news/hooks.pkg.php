@@ -1,14 +1,12 @@
 <?php
 /**********************************************************
-    hooks.pkg.php
-    news ver 1.0
+    hooks.class.php
+    mg_news ver 0.7.0
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 08/09/06
+	Date Last Edited: 03/02/07
 
-	Copyright (C) 2006 Kevin Wijesekera
-	
-	MandrigoCMS is Copyright (C) 2005-2006 the MandrigoCMS Group
-	
+	Copyright (C) 2006-2007 the MandrigoCMS Group
+
     ##########################################################
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
@@ -31,52 +29,33 @@
 //
 //To prevent direct script access
 //
-if(!defined('START_MANDRIGO')){
-    die('<html><head>
-            <title>Forbidden</title>
-        </head><body>
-            <h1>Forbidden</h1><hr width="300" align="left"/><p>You do not have permission to access this file directly.</p>
-        </html></body>');
+if(!defined("START_MANDRIGO")){
+    die($GLOBALS["MANDRIGO"]["CONFIG"]["DIE_STRING"]);
 }
 
-class news_hook{
+class mg_news_hook{
+ 
   	var $pparse_vars;
     
-	function news_display_hook(&$sql,$i){
-	  	$cur_news=new news_display($sql);
-	  	$string='';
-	  	if($GLOBALS['HTTP_GET']['IS_FEED']){
-			if(!$cur_news->nd_load($i,$GLOBALS['HTTP_GET']['FEED_TYPE'])){
-				return false;
-			}
-			$string=$cur_news->nd_displayfeed($i);
-			$this->pparse_vars=$cur_news->nd_returnvars();			
+	function mg_news_display_hook($i){
+	 	$type="";
+	  	if($GLOBALS["MANDRIGO"]["VARS"]["FEED_TYPE"]){
+			$type=$GLOBALS["MANDRIGO"]["VARS"]["FEED_TYPE"];
 		}
-		else if($GLOBALS['HTTP_GET']['ID']!=DEFAULT_ID){
-			if(!$cur_news->nd_load($i,TPL_NEWS_SINGLE)){
-				return false;
-			}
-			if($GLOBALS['HTTP_GET']['ACTION']=='p'){
-				$string=$cur_news->nd_addcomment($i);	
-			}
-			else{
-				$string=$cur_news->nd_displaypost($i);
-			}
-			$this->pparse_vars=$cur_news->nd_returnvars();	
+		else if(eregi("p",$GLOBALS["MANDRIGO"]["VARS"]["ID"])){
+			$type=NEWS_SINGLE;	
 		}
-		else{
-			if(!$cur_news->nd_load($i,TPL_NEWS)){
-				return false;
-			}
-			$string=$cur_news->nd_displayfull($i);
-			$this->pparse_vars=$cur_news->nd_returnvars();
-		}
+
+	  	$cur_news=new news($i,$type);
+
+	  	$string=$cur_news->ne_display($i,$type);
+		$this->pparse_vars=$cur_news->ne_returnvars();	
 		return $string;
     }
-    function news_vars_hook(&$sql,$i){
+    function mg_news_vars_hook($i){
 		return $this->pparse_vars;
     }
-    function news_admin_hook(&$sql,$i){
+    function mg_news_admin_hook($i){
 
     }
 }
