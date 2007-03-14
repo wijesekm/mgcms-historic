@@ -71,6 +71,9 @@ class session{
 		return true;	
 	}
 	function se_load($uid){
+	 	if($this->uid<=1){
+			return true;
+		}
 		if((int)$uid<=1){
 			return false;
 		}
