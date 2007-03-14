@@ -131,6 +131,18 @@
 		</value>
 	</msg>
 	<msg>
+		<id>21</id>
+		<value>
+			Could not load the account class.
+		</value>
+	</msg>
+	<msg>
+		<id>22</id>
+		<value>
+			Could not load the login class.
+		</value>
+	</msg>
+	<msg>
 		<id>200</id>
 		<value>
 			Could not load the main site template.
