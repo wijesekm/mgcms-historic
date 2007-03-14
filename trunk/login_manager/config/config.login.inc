@@ -43,7 +43,6 @@ if(!defined("START_MANDRIGO")){
 }
 
 $GLOBALS["MANDRIGO"]["CONFIG"]["LOGIN_ROOT_PATH"]=ereg_replace("/config/config.login.inc","",__FILE__)."/inc/";
-$GLOBALS["MANDRIGO"]["CONFIG"]["ROOT_PATH"]=ereg_replace("/login_manager/config/config.login.inc","",__FILE__)."/inc/";
 $main_cfg_path=ereg_replace("/login_manager/config/config.login.inc","",__FILE__)."/config/";
 
 //
