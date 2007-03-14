@@ -45,15 +45,66 @@ class _auth{
 	// PUBLIC FUNCTIONS
 	//
 	//#################################	  
+	
+    //
+    //public function  auth_login($uid,$ip,$timestamp,$expires)
+    //
+    //logs the user into the website
+    //
+    //INPUTS:
+    //$uid			-	user id
+    //$ip			-	users ip address
+    //$timestamp	-	current time
+    //$expires		-	cookies expire when?
+    //
+	//returns true on success or false on fail
 	function auth_login($uid,$ip,$timestamp,$expires){
-		$this->sql_db->db_update(DB_UPDATE,TABLE_PREFIX.TABLE_ACCOUNTS,array(array("ac_lastlogin",$timestamp),array("ac_lastip",$ip)),array(array("ac_id","=",$uid))));
+		$GLOBALS["MANDRIGO"]["DB"]->db_update(DB_UPDATE,TABLE_PREFIX.TABLE_ACCOUNTS,array(array("ac_lastlogin",$timestamp),array("ac_lastip",$ip)),array(array("ac_id","=",$uid)));
 		return $this->session->se_startnew($uid,$expires,$GLOBALS["MANDRIGO"]["SITE"]["LOGIN_SECURE"],$GLOBALS["MANDRIGO"]["SITE"]["LOGIN_PATH"],$GLOBALS["MANDRIGO"]["SITE"]["LOGIN_DOMAINS"]);
 	}
-	function auth_renew($expires){
+	
+    //
+    //public function auth_renew($uid,$ip,$timestamp,$expires)
+    //
+    //generates a random string
+    //
+    //INPUTS:
+    //$uid			-	user id
+    //$ip			-	users ip address
+    //$timestamp	-	current time
+    //$expires		-	cookies expire when?
+    //
+	//returns true on success or false on fail
+	function auth_renew($uid,$ip,$timestamp,$expires){
 	 	$this->session->se_load($uid);
-		$this->sql_db->db_update(DB_UPDATE,TABLE_PREFIX.TABLE_ACCOUNTS,array(array("ac_lastlogin",$timestamp),array("ac_lastip",$ip)),array(array("ac_id","=",$uid))));
+		$GLOBALS["MANDRIGO"]["DB"]->db_update(DB_UPDATE,TABLE_PREFIX.TABLE_ACCOUNTS,array(array("ac_lastlogin",$timestamp),array("ac_lastip",$ip)),array(array("ac_id","=",$uid)));
 		return $this->session->se_renew($expires,$GLOBALS["MANDRIGO"]["SITE"]["LOGIN_SECURE"],$GLOBALS["MANDRIGO"]["SITE"]["LOGIN_PATH"],$GLOBALS["MANDRIGO"]["SITE"]["LOGIN_DOMAINS"]);	
 	}
+	
+    //
+    //public function auth_check($uid,$session)
+    //
+    //generates a random string
+    //
+    //INPUTS:
+    //$uid			-	user id
+    //$session		-	given session
+    //
+	//returns true on success or false on fail
+	function auth_checkses($uid,$session){
+	 	$this->session->se_load($uid);
+		return $this->session->se_check($uid,$session);
+	}
+		
+    //
+    //public function auth_logout($uid)
+    //
+    //generates a random string
+    //
+    //INPUTS:
+    //$uid			-	user id
+    //
+	//returns true on success or false on fail
 	function auth_logout($uid){
 	 	$this->session->se_load($uid);
 		return $this->session->se_stop();

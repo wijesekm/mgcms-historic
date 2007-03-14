@@ -58,7 +58,7 @@ class auth extends _auth{
     //
 	//returns string
 	function auth_check($user_name,$user_password,$crypt_type){
-		$user_data=$this->sql_db->db_fetcharray(TABLE_PREFIX.TABLE_USER_DATA,"ac_id,ac_passwd",array(array("ac_username","=",$user_name)));
+		$user_data=$this->sql_db->db_fetcharray(TABLE_PREFIX.TABLE_ACCOUNTS,"ac_id,ac_passwd",array(array("ac_username","=",$user_name)));
 		if(!$user_data["ac_id"]||$user_data["ac_id"]<=1||!$user_password||$user_password==BAD_DATA){
 			return false;
 		}

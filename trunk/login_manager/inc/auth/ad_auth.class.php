@@ -32,7 +32,7 @@ if(!defined("START_MANDRIGO")){
     die($GLOBALS["MANDRIGO"]["CONFIG"]["DIE_STRING"]);
 }
 
-@include_once($GLOBALS["MANDRIGO"]["CONFIG"]["LOGIN_ROOT_PATH"]."auth{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}auth.class.php");
+include_once($GLOBALS["MANDRIGO"]["CONFIG"]["LOGIN_ROOT_PATH"]."auth{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}auth.class.php");
 
 class auth extends _auth{
   
@@ -58,9 +58,8 @@ class auth extends _auth{
     //
 	//returns string
 	function auth_check($user_name,$user_password,$crypt_type){
-
 		if(!$GLOBALS["MANDRIGO"]["AD"]->ad_authenticate($user_name,$user_password)){
-			return false
+			return false;
 		}
 		if(!$GLOBALS["MANDRIGO"]["DB"]->db_fetchresult(TABLE_PREFIX.TABLE_ACCOUNTS,"ac_username",array(array("ac_username","=",$user_name)))){
 			return 2;
