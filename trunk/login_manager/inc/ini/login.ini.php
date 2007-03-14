@@ -148,16 +148,15 @@ $init1=array(array("ini{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}constants.ini.$ph
 				  array("stats.class.$php_ex",18),
 				  array("template.class.$php_ex",20));			  
 $init2=array(array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}site.globals.$php_ex",6),
-					array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}server.globals.$php_ex",8));
+             array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}user.globals.$php_ex",9),
+			 array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}lang.globals.$php_ex",14),
+			 array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}server.globals.$php_ex",8));
 
 package_init($init1);
 package_init($init2);
 
-$init3=array(array("auth{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}{$GLOBALS["MANDRIGO"]["SITE"]["AUTH_TYPE"]}_auth.class.$php_ex",21),
-			 array("login.class.$php_ex",22));
-
 //Now we will initialize some extra database packages if needed
-switch($GLOBALS["MANDRIGO"]["SITE"]["ACCOUNT_TYPE"]){
+switch($GLOBALS["MANDRIGO"]["SITE"]["AUTH_TYPE"]){
 	case "ad":
 		if($GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
     		require_once($GLOBALS["MANDRIGO"]["CONFIG"]["ROOT_PATH"]."db{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}"."ad.class.$php_ex");
@@ -186,6 +185,10 @@ switch($GLOBALS["MANDRIGO"]["SITE"]["ACCOUNT_TYPE"]){
 	
 	break;	
 };
+
+$init3=array(array("auth{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}{$GLOBALS["MANDRIGO"]["SITE"]["AUTH_TYPE"]}_auth.class.$php_ex",21),
+			 array("login.class.$php_ex",22));
+package_init($init3);
 
 //
 //Gets rid of unneeded config vars
