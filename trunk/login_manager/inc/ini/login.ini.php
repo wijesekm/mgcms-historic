@@ -138,6 +138,15 @@ else{
 $GLOBALS["MANDRIGO"]["SITE"]["SERVERTIME"]=time();
 
 //
+//Some User INIT
+//
+$GLOBALS["MANDRIGO"]["CURRENTUSER"]["IP"]=(!empty($HTTP_SERVER_VARS['REMOTE_ADDR']))?$HTTP_SERVER_VARS['REMOTE_ADDR']:((!empty($HTTP_ENV_VARS['REMOTE_ADDR']))?$HTTP_ENV_VARS['REMOTE_ADDR']:getenv('REMOTE_ADDR'));
+$GLOBALS["MANDRIGO"]["CURRENTUSER"]["UAGENT"]=(!empty($HTTP_SERVER_VARS['HTTP_USER_AGENT']))?$HTTP_SERVER_VARS['HTTP_USER_AGENT']:((!empty($HTTP_ENV_VARS['HTTP_USER_AGENT']))?$HTTP_ENV_VARS['HTTP_USER_AGENT']:getenv('HTTP_USER_AGENT'));
+if(!$GLOBALS["MANDRIGO"]["CURRENTUSER"]["IP"]){
+	$GLOBALS["MANDRIGO"]["CURRENTUSER"]["IP"]="000.000.000.000";
+}
+
+//
 //Now we will load the first set of packages/globals
 //
 
@@ -148,12 +157,12 @@ $init1=array(array("ini{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}constants.ini.$ph
 				  array("stats.class.$php_ex",18),
 				  array("template.class.$php_ex",20));			  
 $init2=array(array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}site.globals.$php_ex",6),
-             array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}user.globals.$php_ex",9),
-			 array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}lang.globals.$php_ex",14),
-			 array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}server.globals.$php_ex",8));
-
+			 array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}lang.globals.$php_ex",14));
 package_init($init1);
 package_init($init2);
+
+$init3=array(array("acct{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}account_".$GLOBALS["MANDRIGO"]["SITE"]["ACCOUNT_TYPE"].".class.$php_ex",11));
+package_init($init3);
 
 //Now we will initialize some extra database packages if needed
 switch($GLOBALS["MANDRIGO"]["SITE"]["AUTH_TYPE"]){
@@ -186,9 +195,10 @@ switch($GLOBALS["MANDRIGO"]["SITE"]["AUTH_TYPE"]){
 	break;	
 };
 
-$init3=array(array("auth{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}{$GLOBALS["MANDRIGO"]["SITE"]["AUTH_TYPE"]}_auth.class.$php_ex",21),
+$init4=array(array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}server.globals.$php_ex",8),
+			 array("auth{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}{$GLOBALS["MANDRIGO"]["SITE"]["AUTH_TYPE"]}_auth.class.$php_ex",21),
 			 array("login.class.$php_ex",22));
-package_init($init3);
+package_init($init4,false);
 
 //
 //Gets rid of unneeded config vars
