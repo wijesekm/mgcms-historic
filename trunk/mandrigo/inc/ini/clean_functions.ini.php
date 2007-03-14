@@ -78,7 +78,10 @@ function clean_var($string,$method){
 			return (eregi("^[a-z0-9._-]+$",$string))?$string:BAD_DATA;
 		break;
 		case "url":
-			return (eregi("[<|>[|]{|}]",$string))?BAD_DATA:$string;
+			return (eregi("[<|>{|}]",$string))?BAD_DATA:$string;
+		break;
+		case "path":
+			return (eregi("[?\|\:\"<|>{|}]",$string))?"":$string;
 		break;
 		case "feed":
 			return (eregi("^[a-z0-9.]+$",$string))?$string:BAD_DATA; 
