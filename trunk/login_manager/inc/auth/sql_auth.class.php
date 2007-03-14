@@ -1,10 +1,10 @@
 <?php
 /**********************************************************
-    sql_auth.class.php
+    pam_auth.class.php
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 03/20/06
+	Date Last Edited: 03/14/07
 
-	Copyright (C) 2006  Kevin Wijesekera
+	Copyright (C) 2006-2007 the MandrigoCMS Group
 
     ##########################################################
 	This program is free software; you can redistribute it and/or
@@ -29,25 +29,37 @@
 //To prevent direct script access
 //
 if(!defined("START_MANDRIGO")){
-    die("<html><head>
-            <title>Forbidden</title>
-        </head><body>
-            <h1>Forbidden</h1><hr width=\"300\" align=\"left\"/>\n<p>You do not have permission to access this file directly.</p>
-        </html></body>");
+    die($GLOBALS["MANDRIGO"]["CONFIG"]["DIE_STRING"]);
 }
 
+@include_once($GLOBALS["MANDRIGO"]["CONFIG"]["LOGIN_ROOT_PATH"]."auth{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}auth.class.php");
+
 class auth extends _auth{
-  	
-	function auth($db){
-	 	$this->sql_db=$db; 
-		$this->session=new session($db);	 	
+  
+	function auth(){
+		$this->session=new session();
 	}
-	function auth_validate($user_name,$user_password,$crypt_type){
-		$user_data=$this->sql_db->db_fetcharray(TABLE_PREFIX.TABLE_USER_DATA,"",array(array("user_name","=",$user_name)));
-		if(!$user_data["user_id"]||$user_data["user_id"]==1){
-			return false;
-		}
-		if(!$user_password&&$user_password==BAD_DATA){
+	
+	//#################################
+	//
+	// PUBLIC FUNCTIONS
+	//
+	//#################################	    
+ 	
+    //
+    //public function auth_check($user_name,$user_password,$crypt_type)
+    //
+    //checks the users credentials
+    //
+    //INPUTS:
+    //$user_name		-	users login name
+    //$user_password	-	users login password
+    //$crypt_type		-	password crypt type
+    //
+	//returns string
+	function auth_check($user_name,$user_password,$crypt_type){
+		$user_data=$this->sql_db->db_fetcharray(TABLE_PREFIX.TABLE_USER_DATA,"ac_id,ac_passwd",array(array("ac_username","=",$user_name)));
+		if(!$user_data["ac_id"]||$user_data["ac_id"]<=1||!$user_password||$user_password==BAD_DATA){
 			return false;
 		}
 		$status=false;
@@ -73,28 +85,4 @@ class auth extends _auth{
 		}
 		return false;
 	}
-	function auth_loguserin($uid,$timestamp,$ip,$seslen,$secure,$path,$domains){
-		$this->sql_db->db_update(DB_UPDATE,TABLE_PREFIX.TABLE_USER_DATA,array(array("user_last_login",$timestamp),array("user_last_ip",$ip)),array(array("user_id","=",$uid)));
-		if($seslen!=0){
-			$seslen=$timestamp+$seslen;
-		}
-		return $this->session->session_start($uid,$seslen,$secure,$path,$domains);
-	}
-	function auth_loguserout($uid){
-		return $this->session->session_stop($uid);
-	}
-	function auth_validsession($uid,$session){
-	  	if(!$this->auth_cleanuid($uid)){
-			return false;
-		}	  	
-		if(!$uid||$uid==1){
-			return false;
-		}
-		$user_data=$this->sql_db->db_fetcharray(TABLE_PREFIX.TABLE_USER_DATA,"",array(array("user_id","=",$uid)));
-		if($user_data["user_session"]===$session){
-			return true;
-		}
-		return false;
-	}
 }
-?>

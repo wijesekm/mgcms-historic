@@ -2,9 +2,9 @@
 /**********************************************************
     auth.class.php
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 03/21/06
+	Date Last Edited: 03/14/07
 
-	Copyright (C) 2006  Kevin Wijesekera
+	Copyright (C) 2006-2007 the MandrigoCMS Group
 
     ##########################################################
 	This program is free software; you can redistribute it and/or
@@ -29,19 +29,51 @@
 //To prevent direct script access
 //
 if(!defined("START_MANDRIGO")){
-    die("<html><head>
-            <title>Forbidden</title>
-        </head><body>
-            <h1>Forbidden</h1><hr width=\"300\" align=\"left\"/>\n<p>You do not have permission to access this file directly.</p>
-        </html></body>");
+    die($GLOBALS["MANDRIGO"]["CONFIG"]["DIE_STRING"]);
 }
 
 class _auth{
   
-  	var $seeded;
-  	var $sql_db;
   	var $session;
-	    	
+	
+	function auth(){
+		$this->session=new session();
+	}
+
+	//#################################
+	//
+	// PUBLIC FUNCTIONS
+	//
+	//#################################	  
+	function auth_login($uid,$ip,$timestamp,$expires){
+		$this->sql_db->db_update(DB_UPDATE,TABLE_PREFIX.TABLE_ACCOUNTS,array(array("ac_lastlogin",$timestamp),array("ac_lastip",$ip)),array(array("ac_id","=",$uid))));
+		return $this->session->se_startnew($uid,$expires,$GLOBALS["MANDRIGO"]["SITE"]["LOGIN_SECURE"],$GLOBALS["MANDRIGO"]["SITE"]["LOGIN_PATH"],$GLOBALS["MANDRIGO"]["SITE"]["LOGIN_DOMAINS"]);
+	}
+	function auth_renew($expires){
+	 	$this->session->se_load($uid);
+		$this->sql_db->db_update(DB_UPDATE,TABLE_PREFIX.TABLE_ACCOUNTS,array(array("ac_lastlogin",$timestamp),array("ac_lastip",$ip)),array(array("ac_id","=",$uid))));
+		return $this->session->se_renew($expires,$GLOBALS["MANDRIGO"]["SITE"]["LOGIN_SECURE"],$GLOBALS["MANDRIGO"]["SITE"]["LOGIN_PATH"],$GLOBALS["MANDRIGO"]["SITE"]["LOGIN_DOMAINS"]);	
+	}
+	function auth_logout($uid){
+	 	$this->session->se_load($uid);
+		return $this->session->se_stop();
+	}	
+		
+	//#################################
+	//
+	// PRIVATE FUNCTIONS
+	//
+	//#################################	    
+ 	
+    //
+    //private function auth_randstring($size)
+    //
+    //generates a random string
+    //
+    //INPUTS:
+    //$size		-	size of string
+    //
+	//returns string
     function auth_randstring($size){
         $str = "";
         $char = array(
@@ -50,16 +82,22 @@ class _auth{
             'w','x','y','z','A','B','C','D','E','F','G','H','I','J','K','L',
             'M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'
         );
-        if(!$this->seeded&&phpversion()<'4.2.0'){
-            list($usec, $sec) = explode(' ', microtime());
-            mt_srand((float)$sec + ((float)$usec * 100000));
-            $this->seeded = true;
-        }
         for ($i=0; $i<$size; $i++){
             $str .= $char[mt_rand(1,61)];
         }
         return $str;
-    }  
+    }
+	
+    //
+    //private function auth_encryptpasswd($password,$type)
+    //
+    //encrypts a password using $type
+    //
+    //INPUTS:
+    //$password		-	password to encrypt
+    //$type			-	encryption type [crypt,blowfish_crypt,md5_crypt,ext_crypt,smd5,sha,ssha,md5]
+    //
+	//returns encrypted password 
 	function auth_encryptpasswd($password,$type){
         switch($type){
             case 'crypt':
@@ -118,6 +156,17 @@ class _auth{
         }
         return false;
     }  
+	
+    //
+    //private function auth_smd5comp($form_val,$db_val)
+    //
+    //checks a password using smd5
+    //
+    //INPUTS:
+    //$form_val		-	user inputted password
+    //$db_val		-	db password value
+    //
+	//returns true if they are equal or false if not
     function auth_smd5comp($form_val,$db_val){   
         $hash = base64_decode(substr($db_val,6));
         $orig_hash = substr($hash, 0, 16);
@@ -128,6 +177,17 @@ class _auth{
         }
         return false;
     }
+
+    //
+    //private function auth_shacomp($form_val,$db_val)
+    //
+    //checks a password using sha
+    //
+    //INPUTS:
+    //$form_val		-	user inputted password
+    //$db_val		-	db password value
+    //
+	//returns true if they are equal or false if not
     function auth_shacomp($form_val,$db_val){
         $hash = base64_decode(substr($db_val,5));
         $new_hash = mhash(MHASH_SHA1,$form_val);
@@ -136,6 +196,17 @@ class _auth{
         }
         return false;
     }
+
+    //
+    //private function auth_sshacomp($form_val,$db_val)
+    //
+    //checks a password using ssha
+    //
+    //INPUTS:
+    //$form_val		-	user inputted password
+    //$db_val		-	db password value
+    //
+	//returns true if they are equal or false if not
     function auth_sshacomp($form_val,$db_val){
         $hash = base64_decode(substr($db_val, 6));
         $orig_hash = substr($hash, 0, 20);
@@ -146,12 +217,35 @@ class _auth{
         }
         return false;
     }
+
+    //
+    //private function auth_md5comp($form_val,$db_val)
+    //
+    //checks a password using md5
+    //
+    //INPUTS:
+    //$form_val		-	user inputted password
+    //$db_val		-	db password value
+    //
+	//returns true if they are equal or false if not
     function auth_md5comp($form_val,$db_val){
         if(md5($form_val)==$db_val){
             return true;
         }
         return false;
     }
+
+    //
+    //private function auth_cryptcomp($form_val,$db_val,$type)
+    //
+    //checks a password using crypt
+    //
+    //INPUTS:
+    //$form_val		-	user inputted password
+    //$db_val		-	db password value
+    //$type			-	crypt type to use [blowfish_crypt,md5_crypt,ext_crypt,crypt]
+    //
+	//returns true if they are equal or false if not
     function auth_cryptcomp($form_val,$db_val,$type){
         $saltlen = array(
             'blowfish_crypt' => 16,
@@ -166,24 +260,5 @@ class _auth{
             return true;
         }
         return false;
-    }    
-    function auth_cleanusername($string){
-		if(!eregi("^[a-z0-9_.-]+$",$string)){
-            return false;
-        }
-        return true;
-	}
-	function auth_cleanpassword($string){
-		if(!eregi("^[a-z0-9_.-]+$",$string)){
-            return false;
-        }
-		return true;	
-	}
-	function auth_cleanuid($num){
-		if(!eregi("^[0-9]+$",$num)){
-            return false;
-        }
-		return true;			
-	}
+    }
 }
-?>
