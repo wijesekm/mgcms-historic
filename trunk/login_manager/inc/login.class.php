@@ -37,73 +37,125 @@ if(!defined("START_MANDRIGO")){
 }
 class login{
 
-	var $login_db;
-	var $error_log;
-
+	var $page_parse_vars;
+	var $tpl;
 	
-	function login(&$error,&$sql){
-		$this->error_log=$error;
-		$this->login_db=$sql;
+	function login(){
+        $this->page_parse_vars = array(
+            "SITE_NAME",$GLOBALS["MANDRIGO"]["SITE"]["SITE_NAME"],
+            "SITE_URL",$GLOBALS["MANDRIGO"]["SITE"]["SITE_URL"],
+            "IMG_URL",$GLOBALS["MANDRIGO"]["SITE"]["IMG_URL"],
+            "SERVER_DATE",date($GLOBALS["MANDRIGO"]["SITE"]["DATE_FORMAT"],$GLOBALS["MANDRIGO"]["SITE"]["SERVERTIME"]),
+            "SERVER_TIME",date($GLOBALS["MANDRIGO"]["SITE"]["TIME_FORMAT"],$GLOBALS["MANDRIGO"]["SITE"]["SERVERTIME"]),
+            "GMT_DATE",date($GLOBALS["MANDRIGO"]["SITE"]["DATE_FORMAT"],$GLOBALS["MANDRIGO"]["SITE"]["GMT"]),
+            "GMT_TIME",date($GLOBALS["MANDRIGO"]["SITE"]["TIME_FORMAT"],$GLOBALS["MANDRIGO"]["SITE"]["GMT"]),
+            "WEBMASTER_NAME",$GLOBALS["MANDRIGO"]["SITE"]["WEBMASTER_NAME"],
+            "WEBMASTER_EMAIL",$GLOBALS["MANDRIGO"]["SITE"]["WEBMASTER_EMAIL"],
+            "SITE_LAST_UPDATED",$GLOBALS["MANDRIGO"]["SITE"]["LAST_UPDATED"],
+            "MG_VER",$GLOBALS["MANDRIGO"]["SITE"]["MANDRIGO_VER"],
+            "INDEX_NAME",$GLOBALS["MANDRIGO"]["SITE"]["INDEX_NAME"],
+            "CUSER_DATE",date($GLOBALS["MANDRIGO"]["SITE"]["DATE_FORMAT"],$GLOBALS["MANDRIGO"]["CURRENTUSER"]["TIME"]),
+            "CUSER_TIME",date($GLOBALS["MANDRIGO"]["SITE"]["TIME_FORMAT"],$GLOBALS["MANDRIGO"]["CURRENTUSER"]["TIME"]),
+		);
 	}
-	function display($login=false,$error=""){
-		$tpl=new template();
-		if($login){
-			return $this->check_login();
+	
+	function li_display(){
+		$auth=new auth();
+		if($auth->auth_checkses($GLOBALS["MANDRIGO"]["VARS"]["COOKIE_USER"],$GLOBALS["MANDRIGO"]["VARS"]["COOKIE_SESSION"])){
+			header("Location: ".$GLOBALS["MANDRIGO"]["SITE"]["SITE_URL"].$GLOBALS["MANDRIGO"]["VARS"]["TARGET"]);
+			die();
 		}
-		if(!$tpl->load($GLOBALS["MANDRIGO_CONFIG"]["TEMPLATE_PATH"].TPL_LOGIN)){
-		  	if(!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-				$this->error_log->add_error(31,"script");	
-				die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
-                	$this->error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
-            }
-            else{
-				die();
-			}
-		}
-		$action="";
-		if($GLOBALS["SITE_DATA"]["URL_FORMAT"]){
-			$action=$GLOBALS["SITE_DATA"]["LOGIN_URL"].$GLOBALS["MANDRIGO_CONFIG"]["LOGIN"]."/a/li/chdir/".$GLOBALS["HTTP_GET"]["REDIRECT"]; 
-		}
-		else{
-	  		$action=$GLOBALS["SITE_DATA"]["LOGIN_URL"].$GLOBALS["MANDRIGO_CONFIG"]["LOGIN"]."?a=li&amp;chdir=".$GLOBALS["HTTP_GET"]["REDIRECT"]; 
-		}
-		$pparse_vars=array("ACTION",$action,"USER_NAME",$GLOBALS["USER_DATA"]["USER_NAME"],"ERROR",$error);
-		$tpl->pparse($pparse_vars);
-		return $tpl->return_template();
-	}
-	function check_login(){
-		$auth=new auth($this->login_db);
-		if($uid=$auth->auth_validate($GLOBALS["HTTP_POST"]["USER_NAME"],$GLOBALS["HTTP_POST"]["USER_PASSWORD"],$GLOBALS["SITE_DATA"]["CRYPT_TYPE"])){
-			if($uid>1){
-				if(!$auth->auth_loguserin($uid,time(),$GLOBALS["USER_DATA"]["IP"],$GLOBALS["SITE_DATA"]["SESSION_LEN"],$GLOBALS["SITE_DATA"]["COOKIE_SECURE"],$GLOBALS["SITE_DATA"]["COOKIE_PATH"],$GLOBALS["SITE_DATA"]["COOKIE_DOMAINS"])){
-					if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-						die();
+		$this->tpl=new template();
+		$this->tpl->tpl_load($GLOBALS["MANDRIGO"]["CONFIG"]["TEMPLATE_PATH"].TPL_LOGIN,"main");
+		$content="";
+		$title="";
+		
+		switch($GLOBALS["MANDRIGO"]["VARS"]["ACTION"]){
+		 	case "login":
+		 		$user_name=trim($GLOBALS["MANDRIGO"]["VARS"]["LI_USER"]);
+				$user_password=trim($GLOBALS["MANDRIGO"]["VARS"]["LI_PASSWORD"]);
+				$crypt_type=$GLOBALS["MANDRIGO"]["SITE"]["CRYPT_TYPE"];
+				$result=$auth->auth_check($user_name,$user_password,$crypt_type);
+		 		if($result==2){
+					if($GLOBALS["MANDRIGO"]["SITE"]["AUTO_REG"]=="1"){
+					 	$params=array("ac_username","ac_created","ac_lastchange");
+					 	$set=array($user_name,$GLOBALS["MANDRIGO"]["SITE"]["SERVERTIME"],$GLOBALS["MANDRIGO"]["SITE"]["SERVERTIME"]);
+							
+
+						if(!$GLOBALS["MANDRIGO"]["DB"]->db_update(DB_INSERT,TABLE_PREFIX.TABLE_ACCOUNTS,$set,$params)){
+							$content=$this->li_displaymain($GLOBALS["MANDRIGO"]["LANGUAGE"]["LI_INERROR"]);
+							$title=$GLOBALS["MANDRIGO"]["LANGUAGE"]["LI_TITLE"]." - {SITE_NAME}";								
+						}
+						else{
+							$this->li_login($auth,$user_name);		
+						}
 					}
 					else{
-						$this->error_log->add_error(300,"script");	
-						die($GLOBALS["HTML"]["EHEAD"].$GLOBALS["LANGUAGE"]["ETITLE"].$GLOBALS["HTML"]["EBODY"].
-	                		$this->error_log->generate_report().$GLOBALS["HTML"]["EEND"]);
-	                	}
+						$content=$this->li_displaymain($GLOBALS["MANDRIGO"]["LANGUAGE"]["LI_NOREG"]);
+						$title=$GLOBALS["MANDRIGO"]["LANGUAGE"]["LI_TITLE"]." - {SITE_NAME}";						
+					}
 				}
-				if(ereg("&q;",$GLOBALS["HTTP_GET"]["REDIRECT"])){
-					$GLOBALS["HTTP_GET"]["REDIRECT"]=ereg_replace("&q;","?",$GLOBALS["HTTP_GET"]["REDIRECT"]);
+				else if($result==true){
+					$this->li_login($auth,$user_name);	
 				}
-				if(ereg("&s;",$GLOBALS["HTTP_GET"]["REDIRECT"])){
-					$GLOBALS["HTTP_GET"]["REDIRECT"]=ereg_replace("&s;","/",$GLOBALS["HTTP_GET"]["REDIRECT"]);
+				else{
+					$content=$this->li_displaymain($GLOBALS["MANDRIGO"]["LANGUAGE"]["LI_BADCRED"]);
+					$title=$GLOBALS["MANDRIGO"]["LANGUAGE"]["LI_TITLE"]." - {SITE_NAME}";					
 				}
-				if(ereg("&e;",$GLOBALS["HTTP_GET"]["REDIRECT"])){
-					$GLOBALS["HTTP_GET"]["REDIRECT"]=ereg_replace("&e;","=",$GLOBALS["HTTP_GET"]["REDIRECT"]);
-				}
-				header("Location: ".$GLOBALS["HTTP_GET"]["REDIRECT"]);
-				die();
-			}
-			else{
-				return $this->display(false,$GLOBALS["LANGUAGE"]["BAD_LOGIN"]);
-			}
+		 		$user_password="";
+		 		$user_name="";
+		 		$crypt_type="";
+		 	break;
+			default:
+				$content=$this->li_displaymain();
+				$title=$GLOBALS["MANDRIGO"]["LANGUAGE"]["LI_TITLE"]." - {SITE_NAME}";
+			break;
+		}
+		$this->tpl->tpl_parse($this->li_appendarray(array("CONTENT",$content,"PAGE_TITLE",$title),$this->page_parse_vars),"main");
+		return $this->tpl->tpl_return("main");
+	}
+	
+	function li_displaymain($error=""){
+	 	if($GLOBALS['MANDRIGO']['SITE']['URL_FORMAT']==1){
+			$action=$GLOBALS['MANDRIGO']['SITE']['LOGIN_URL'].$GLOBALS['MANDRIGO']['SITE']['LOGIN_NAME']."/a/login";
 		}
 		else{
-			return $this->display(false,$GLOBALS["LANGUAGE"]["BAD_LOGIN"]);
+			$action=$GLOBALS['MANDRIGO']['SITE']['LOGIN_URL'].$GLOBALS['MANDRIGO']['SITE']['LOGIN_NAME']."?a=login";
+		} 
+		$this->tpl->tpl_load($GLOBALS["MANDRIGO"]["CONFIG"]["TEMPLATE_PATH"].TPL_LOGIN,"login");
+		$this->tpl->tpl_parse(array("ACTION",$action,"ERROR",$error),"login",1,false);
+		return $this->tpl->tpl_return("login");	
+	}
+	
+	function li_login(&$auth,$uname){
+	 	$uid=$GLOBALS["MANDRIGO"]["DB"]->db_fetchresult(TABLE_PREFIX.TABLE_ACCOUNTS,"ac_id",array(array("ac_username","=",$uname)));
+		$ip=$GLOBALS["MANDRIGO"]["CURRENTUSER"]["IP"];
+		$timestamp=$GLOBALS["MANDRIGO"]["SITE"]["SERVERTIME"];
+		$expires=$GLOBALS["MANDRIGO"]["SITE"]["LOGIN_EXPIRES"];
+		if(!$auth->auth_login($uid,$ip,$timestamp,$expires)){
+			return $this->li_displaymain($GLOBALS["MANDRIGO"]["LANGUAGE"]["LI_INERROR"]);	
 		}
-		return false;	
+		header("Location: ".$GLOBALS["MANDRIGO"]["SITE"]["SITE_URL"].$GLOBALS["MANDRIGO"]["VARS"]["TARGET"]);
+		die();
+	}    
+
+	//
+    //private function pg_mergearrays($a1,$a2)
+    //
+    //appends $a2 onto the end of $a1
+    //
+    //INPUTS:
+    //$a1		-	array
+    //$a2		-	array
+    //
+	//returns the combined array	
+    function li_appendarray($a1,$a2){
+		$size1=count($a1);
+		$size2=count($a2);
+		$soq=$size1+$size2;
+		for($i=$size1;$i<$soq;$i++){
+			$a1[$i]=$a2[$i-($size1)];
+		}
+		return $a1;
 	}
 }
