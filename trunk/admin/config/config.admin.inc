@@ -1,8 +1,8 @@
 <?php
 /**********************************************************
-    config.login.inc
+    config.admin.inc
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 01/30/07
+	Date Last Edited: 03/14/07
 
 	Copyright (C) 2006-2007 the MandrigoCMS Group
 
@@ -42,7 +42,7 @@ if(!defined("START_MANDRIGO")){
     die($GLOBALS["MANDRIGO"]["CONFIG"]["DIE_STRING"]);
 }
 
-$GLOBALS["MANDRIGO"]["CONFIG"]["LOGIN_ROOT_PATH"]=ereg_replace("/config/config.login.inc","",__FILE__)."/inc/";
+$GLOBALS["MANDRIGO"]["CONFIG"]["ADMIN_ROOT_PATH"]=ereg_replace("/config/config.login.inc","",__FILE__)."/inc/";
 $main_cfg_path=ereg_replace("/login_manager/config/config.login.inc","",__FILE__)."/config/";
 
 //
