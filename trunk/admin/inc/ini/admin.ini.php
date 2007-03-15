@@ -133,9 +133,56 @@ else{
     }
 }
 
+$init1=array(array("ini{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}constants.ini.$php_ex",3),
+				  array("ini{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}clean_functions.ini.$php_ex",4),
+				  array("server_time.class.$php_ex",5),
+				  array("session.class.$php_ex",10),
+				  array("template.class.$php_ex",20));
+package_init($init1);
+$init2=array(array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}site.globals.$php_ex",6));
+package_init($init2);
+$init3=array(array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}server.globals.$php_ex",8));
+package_init($init3,false);
 
+//Now we will initialize some extra database packages if needed
+switch($GLOBALS["MANDRIGO"]["SITE"]["ACCOUNT_TYPE"]){
+	case "ad":
+		if($GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
+    		require_once($GLOBALS["MANDRIGO"]["CONFIG"]["ROOT_PATH"]."db{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}"."ad.class.$php_ex");
+		}
+		else{
+    		if(!(@include_once($GLOBALS["MANDRIGO"]["CONFIG"]["ROOT_PATH"]."db{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}"."ad.class.$php_ex"))){
+        		$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(6,"core");
+    		}
+		}
+		
+		$GLOBALS["MANDRIGO"]["AD"] = & new ad();
+		
+		if($GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
+			$GLOBALS["MANDRIGO"]["AD"]->ad_connect($adldap_config["DN"],$adldap_config["DC"],$adldap_config["ACCT_SUFFIX"],$adldap_config["CONTROL_USER"],$adldap_config["CONTROL_PASSWORD"]);
+		}
+		else{
+		    if(!$GLOBALS["MANDRIGO"]["AD"]->ad_connect($adldap_config["DN"],$adldap_config["DC"],$adldap_config["ACCT_SUFFIX"],$adldap_config["CONTROL_USER"],$adldap_config["CONTROL_PASSWORD"])){
+		        $GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(2,"ldap");
+		    }
+		}
+	break;
+	case "ldap":
+		//no support yet (use sql)
+	break;
+	default:
+	
+	break;	
+};
 
-
+//
+//Now we will load the user data/permissions, page data, lang data, and packages
+//
+$init3=	array(array("acct{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}account_".$GLOBALS["MANDRIGO"]["SITE"]["ACCOUNT_TYPE"].".class.$php_ex",11),
+			  array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}user.globals.$php_ex",9),
+			  array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}lang.globals.$php_ex",14),
+			  array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}acl.globals.$php_ex",13));
+package_init($init3);
 //
 //Gets rid of unneeded config vars
 //
@@ -157,7 +204,7 @@ function package_init($pkg,$root=true){
 		$base=$GLOBALS["MANDRIGO"]["CONFIG"]["ROOT_PATH"];
 	}
 	else{
-		$base=$GLOBALS["MANDRIGO"]["CONFIG"]["LOGIN_ROOT_PATH"];
+		$base=$GLOBALS["MANDRIGO"]["CONFIG"]["ADMIN_ROOT_PATH"];
 	}
 	for($pkg_c=0;$pkg_c<$pkg_size;$pkg_c++){
 	 	if($pkg[$pkg_c][0]){
