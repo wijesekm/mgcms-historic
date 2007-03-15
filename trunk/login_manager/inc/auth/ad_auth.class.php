@@ -61,7 +61,7 @@ class auth extends _auth{
 		if(!$GLOBALS["MANDRIGO"]["AD"]->ad_authenticate($user_name,$user_password)){
 			return false;
 		}
-		if(!$GLOBALS["MANDRIGO"]["DB"]->db_fetchresult(TABLE_PREFIX.TABLE_ACCOUNTS,"ac_username",array(array("ac_username","=",$user_name)))){
+		if(!$GLOBALS["MANDRIGO"]["DB"]->db_fetchresult(TABLE_PREFIX.TABLE_ACCOUNTS,"ac_id",array(array("ac_username","=",$user_name)))){
 			return 2;
 		}
 		return true;

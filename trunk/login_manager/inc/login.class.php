@@ -76,7 +76,7 @@ class login{
 				$user_password=trim($GLOBALS["MANDRIGO"]["VARS"]["LI_PASSWORD"]);
 				$crypt_type=$GLOBALS["MANDRIGO"]["SITE"]["CRYPT_TYPE"];
 				$result=$auth->auth_check($user_name,$user_password,$crypt_type);
-		 		if($result==2){
+		 		if($result===2){
 					if($GLOBALS["MANDRIGO"]["SITE"]["AUTO_REG"]=="1"){
 					 	$params=array("ac_username","ac_created","ac_lastchange");
 					 	$set=array($user_name,$GLOBALS["MANDRIGO"]["SITE"]["SERVERTIME"],$GLOBALS["MANDRIGO"]["SITE"]["SERVERTIME"]);
@@ -95,7 +95,7 @@ class login{
 						$title=$GLOBALS["MANDRIGO"]["LANGUAGE"]["LI_TITLE"]." - {SITE_NAME}";						
 					}
 				}
-				else if($result==true){
+				else if($result===true){
 					$this->li_login($auth,$user_name);	
 				}
 				else{
