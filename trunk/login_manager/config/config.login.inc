@@ -49,5 +49,5 @@ $main_cfg_path=ereg_replace("/login_manager/config/config.login.inc","",__FILE__
 //DO NOT EDIT BELOW THIS
 //
 require($main_cfg_path."extension.inc");
-require($main_cfg_path."config.login.$php_ex");
+require($main_cfg_path."config.ini.$php_ex");
 require($main_cfg_path."elog.globals.$php_ex");
