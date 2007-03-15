@@ -78,8 +78,8 @@ class login{
 				$result=$auth->auth_check($user_name,$user_password,$crypt_type);
 		 		if($result===2){
 					if($GLOBALS["MANDRIGO"]["SITE"]["AUTO_REG"]=="1"){
-					 	$params=array("ac_username","ac_created","ac_lastchange");
-					 	$set=array($user_name,$GLOBALS["MANDRIGO"]["SITE"]["SERVERTIME"],$GLOBALS["MANDRIGO"]["SITE"]["SERVERTIME"]);
+					 	$params=array("ac_username","ac_created","ac_lastchange","ac_groups");
+					 	$set=array($user_name,$GLOBALS["MANDRIGO"]["SITE"]["SERVERTIME"],$GLOBALS["MANDRIGO"]["SITE"]["SERVERTIME"],$GLOBALS["MANDRIGO"]["SITE"]["DEFAULT_GROUP"].";");
 							
 
 						if(!$GLOBALS["MANDRIGO"]["DB"]->db_update(DB_INSERT,TABLE_PREFIX.TABLE_ACCOUNTS,$set,$params)){
