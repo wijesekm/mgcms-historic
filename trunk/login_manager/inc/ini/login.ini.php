@@ -101,7 +101,7 @@ if(!get_magic_quotes_gpc()){
 // If install has not been compleated we will forward to the install page
 //
 if(!$GLOBALS["MANDRIGO"]["CONFIG"]["IS_INSTALLED"]){
-    header("Location: install/install.$php_ex");
+    header("Location: ../install/install.$php_ex");
     die();
 }
 
@@ -205,8 +205,8 @@ package_init($init4,false);
 //
 $sql_config="";
 $log_config="";
-$lang="";
 $adldap_config="";
+
 //
 //Seeds random number generator
 //
