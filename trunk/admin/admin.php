@@ -56,10 +56,10 @@ $GLOBALS["MANDRIGO"]["ERROR_LOGGER"] = & new error_logger($log_config["LOG_LEVEL
 // Cleans varables, loads requires packages and starts required classes.
 //
 if($GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
-    require($GLOBALS["MANDRIGO"]["CONFIG"]["ADMIN_ROOT_PATH"]."ini{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}login.ini.$php_ex");
+    require($GLOBALS["MANDRIGO"]["CONFIG"]["ADMIN_ROOT_PATH"]."ini{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}admin.ini.$php_ex");
 }
 else{
-    if(!(@include($GLOBALS["MANDRIGO"]["CONFIG"]["LOGIN_ROOT_PATH"]."ini{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}login.ini.$php_ex"))){
+    if(!(@include($GLOBALS["MANDRIGO"]["CONFIG"]["ADMIN_ROOT_PATH"]."ini{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}admin.ini.$php_ex"))){
         $GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(2,"core");
 	   	die($GLOBALS["MANDRIGO"]["ELOG"]["HTMLHEAD"].$GLOBALS["MANDRIGO"]["ELOG"]["TITLE"].$GLOBALS["MANDRIGO"]["ELOG"]["HTMLBODY"].
         	$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_generatereport().$GLOBALS["MANDRIGO"]["ELOG"]["HTMLEND"]);
