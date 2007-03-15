@@ -53,17 +53,19 @@ class session{
 		}
 		
 		$domains=explode(";",$domains);
+		$secure=explode(";",$secure);
+		$paths=explode(";",$path);
 		for($i=0;$i<count($domains);$i++){
 		  	if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-				setcookie(SESSION_COOKIE,$this->sesid,$expires,$path,$domains[$i],$secure);
+				setcookie(SESSION_COOKIE,$this->sesid,$expires,$paths[$i],$domains[$i],$secure[$i]);
 				setcookie(USER_COOKIE,$this->uid,$expires,$path,$domains[$i],$secure);
 				return false;
 			}	
 			else{
-				if(!(@setcookie(SESSION_COOKIE,$this->sesid,$expires,$path,$domains[$i],$secure))){
+				if(!(@setcookie(SESSION_COOKIE,$this->sesid,$expires,$paths[$i],$domains[$i],$secure[$i]))){
 					return false;
 				}
-				if(!(@setcookie(USER_COOKIE,$this->uid,$expires,$path,$domains[$i],$secure))){
+				if(!(@setcookie(USER_COOKIE,$this->uid,$expires,$paths[$i],$domains[$i],$secure[$i]))){
 					return false;
 				}				
 			}
@@ -71,13 +73,13 @@ class session{
 		return true;	
 	}
 	function se_load($uid){
-	 	if($this->uid<=1){
+	 	if($this->uid>=1){
 			return true;
 		}
 		if((int)$uid<=1){
 			return false;
 		}
-		$this->sesid=(int)$GLOBALS["MANDRIGO"]["DB"]>db_fetchresult(TABLE_PREFIX.TABLE_ACCOUNTS,"ac_session",array(array("ac_id","=",$uid)));  
+		$this->sesid=(int)$GLOBALS["MANDRIGO"]["DB"]->db_fetchresult(TABLE_PREFIX.TABLE_ACCOUNTS,"ac_session",array(array("ac_id","=",$uid)));  
 		$this->uid=(int)$uid;
 		if(!$this->uid&&!$this->sesid){
 			return false;
