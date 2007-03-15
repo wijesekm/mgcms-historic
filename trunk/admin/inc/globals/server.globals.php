@@ -47,7 +47,7 @@ if($GLOBALS["MANDRIGO"]["SITE"]["URL_FORMAT"]==1){
 		$php_self=$_SERVER["PHP_SELF"];
     }
     //exploes the array into its basic chunks
-    $raw_url = eregi_replace("^.*".$GLOBALS["MANDRIGO"]["SITE"]["ADMIN_NAME"]."/p","p",$php_self);
+    $raw_url = eregi_replace("^.*".$GLOBALS["MANDRIGO"]["SITE"]["ADMIN_NAME"]."/a","a",$php_self);
     $raw_url = explode("/",$raw_url);
     $array_url = array();
     //just in case we want to do /var=value/var2=value2/ we will explode all ='s too
