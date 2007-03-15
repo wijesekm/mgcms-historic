@@ -218,8 +218,8 @@ package_init(array(array("ini{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}stats.ini.$
 //
 $sql_config="";
 $log_config="";
-$lang="";
 $adldap_config="";
+
 //
 //Seeds random number generator
 //
