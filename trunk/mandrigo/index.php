@@ -52,7 +52,7 @@ else{
            $GLOBALS["MANDRIGO"]["ELOG"]["ZERO"].$GLOBALS["MANDRIGO"]["ELOG"]["HTMLEND"]);
     }
 }
-$GLOBALS["MANDRIGO"]["ERROR_LOGGER"] = & new error_logger($log_config["LOG_LEVEL_1"],$log_config["LOG_LEVEL_2"],$log_config["ARCHIVE"],$log_config["ERROR_LOGS"],$log_config["FATAL_TYPES"]);
+$GLOBALS["MANDRIGO"]["ERROR_LOGGER"] = new error_logger($log_config["LOG_LEVEL_1"],$log_config["LOG_LEVEL_2"],$log_config["ARCHIVE"],$log_config["ERROR_LOGS"],$log_config["FATAL_TYPES"]);
 
 
 //
@@ -79,7 +79,9 @@ if($GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_getstatus()==2){
 	die($GLOBALS["MANDRIGO"]["ELOG"]["HTMLHEAD"].$GLOBALS["MANDRIGO"]["ELOG"]["TITLE"].$GLOBALS["MANDRIGO"]["ELOG"]["HTMLBODY"].
         $GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_generatereport().$GLOBALS["MANDRIGO"]["ELOG"]["HTMLEND"]);
 }
+
 $bypass=(string)$GLOBALS["MANDRIGO"]["VARS"]["BYPASS_CODE"]===(string)$GLOBALS["MANDRIGO"]["SITE"]["BYPASS_CODE"];
+
 if($GLOBALS["MANDRIGO"]["SITE"]["SITE_STATUS"]==1||($bypass&&$GLOBALS["MANDRIGO"]["SITE"]["BYPASS_CODE"])){
     echo $current_page->pg_display();
 }
