@@ -94,13 +94,13 @@ class session{
 			return false;
 		}
 		if((string)$sesid===$this->sesid&&(int)$uid===$this->uid){
-			return $this->se_checkstatus();
+			return $this->se_checkstatus($uid);
 		}
 		return false;
 	}
-	function se_checkstatus(){
+	function se_checkstatus($uid){
 		$s=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_ACCOUNTS,"ac_status,ac_expires",array(array("ac_id","=",$uid)));
-		if($s["ac_status"]=="D"||$s["ac_expires"]<$GLOBALS["MANDRIGO"]["SITE"]["SERVERTIME"]){
+		if($s["ac_status"]=="D"||($s["ac_expires"]<$GLOBALS["MANDRIGO"]["SITE"]["SERVERTIME"]&&$s["ac_expires"]!=0)){
 			return false;
 		}
 		return true;
