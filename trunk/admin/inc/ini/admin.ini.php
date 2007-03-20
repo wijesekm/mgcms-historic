@@ -141,7 +141,8 @@ $init1=array(array("ini{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}constants.ini.$ph
 package_init($init1);
 $init2=array(array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}site.globals.$php_ex",6));
 package_init($init2);
-$init3=array(array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}server.globals.$php_ex",8));
+$init3=array(array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}server.globals.$php_ex",8),
+			 array("ini{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}constants.admin.ini.$php_ex",3));
 package_init($init3,false);
 
 //Now we will initialize some extra database packages if needed
@@ -183,6 +184,10 @@ $init3=	array(array("acct{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}account_".$GLOB
 			  array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}lang.globals.$php_ex",14),
 			  array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}acl.globals.$php_ex",13));
 package_init($init3);
+
+$init4=array(array("ini{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}adminpkg.ini.php",23));
+package_init($init4,false);
+
 //
 //Gets rid of unneeded config vars
 //
@@ -223,3 +228,12 @@ function package_init($pkg,$root=true){
            	$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_generatereport().$GLOBALS["MANDRIGO"]["ELOG"]["HTMLEND"]);
     }
 }
+function appendarray($a1,$a2){
+	$size1=count($a1);
+	$size2=count($a2);
+	$soq=$size1+$size2;
+	for($i=$size1;$i<$soq;$i++){
+		$a1[$i]=$a2[$i-($size1)];
+	}
+	return $a1;
+}	
