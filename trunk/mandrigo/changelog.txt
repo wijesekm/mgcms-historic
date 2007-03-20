@@ -7,6 +7,10 @@
 6) Added AD class
 7) New global MANDRIGO array which all globals are apart of
 8) SQL DB now in the global array
+9) Major performance improvement in SQL database classes
+10) New templating system support multiple templates per file and limited php scripting
+11) Login Manager Finished
+12) Admin Section Finished
 
 0.6.0
 1) lang and template data is now drawn from the sql database
