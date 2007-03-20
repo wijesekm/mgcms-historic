@@ -101,7 +101,7 @@ class template{
     //
 	//returns true or false 
 	function tpl_parse($vars=array(),$section=TPL_ALL,$level=1,$rempty=true){
-		if($section=TPL_ALL){
+		if($section==TPL_ALL){
 			$soq=count($this->tpl);
 			$keys=array_keys($this->tpl);
 			for($i=0;$i<$soq;$i++){
