@@ -36,11 +36,10 @@ if(!defined("START_MANDRIGO")){
 //Checks to see if the user is authenticated.  If the user is then the current user becomes that users id.
 //If not the userid is set to 1 for the 'Guest' account.
 //
-$auth=false;
 $ses=new session();
 $ses->se_load($GLOBALS["MANDRIGO"]["VARS"]["COOKIE_USER"]);
-if($ses->se_check($GLOBALS["MANDRIGO"]["VARS"]["COOKIE_USER"],$GLOBALS["MANDRIGO"]["VARS"]["COOKIE_SESSION"])){
-	$auth=true;
+$auth=$ses->se_check($GLOBALS["MANDRIGO"]["VARS"]["COOKIE_USER"],$GLOBALS["MANDRIGO"]["VARS"]["COOKIE_SESSION"]);
+if($auth){
 	$GLOBALS["MANDRIGO"]["CURRENTUSER"]["UID"]=$ses->se_uid();
 }
 else{
