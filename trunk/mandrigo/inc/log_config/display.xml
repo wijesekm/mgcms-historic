@@ -24,6 +24,24 @@
 		</value>
 	</msg>
 	<msg>
+		<id>5</id>
+		<value>
+			The main admin template could not be loaded.
+		</value>
+	</msg>
+	<msg>
+		<id>6</id>
+		<value>
+			The admin index page template could not be loaded.
+		</value>
+	</msg>
+	<msg>
+		<id>7</id>
+		<value>
+			The admin check page template could not be loaded.
+		</value>
+	</msg>
+	<msg>
 		<id>100</id>
 		<value>
 			The mg_pcontent package could not load the template for the current page hook.

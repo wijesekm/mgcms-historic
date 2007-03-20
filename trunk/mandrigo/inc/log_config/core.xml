@@ -143,6 +143,36 @@
 		</value>
 	</msg>
 	<msg>
+		<id>23</id>
+		<value>
+			Could not load the admin package class.
+		</value>
+	</msg>
+	<msg>
+		<id>24</id>
+		<value>
+			Could not load the set_mainconfig packages.
+		</value>
+	</msg>
+	<msg>
+		<id>25</id>
+		<value>
+			Could not load the mainconfig packages.
+		</value>
+	</msg>
+	<msg>
+		<id>26</id>
+		<value>
+			Could not load the checkinstall package
+		</value>
+	</msg>
+	<msg>
+		<id>27</id>
+		<value>
+			Could not load the checksys package
+		</value>
+	</msg>
+	<msg>
 		<id>200</id>
 		<value>
 			Could not load the main site template.
