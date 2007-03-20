@@ -83,20 +83,20 @@ class checksys{
 	}
 	
     //
-    //public cs_checperms($path,$conds)
+    //public cs_checkperms($path,$conds)
     //
     //checks the permissions of a path or file
     //$path			-	path/file location
     //$conds		-	array of conditions
     //
 	//returns error signal	
-	function cs_checperms($path,$conds){
+	function cs_checkperms($path,$conds){
 	    clearstatcache();
 	    $configmod = substr(sprintf('%o', fileperms($path)), -4);
 	    $soq=count($conds);
 		$errors="";
 	    for($i=0;$i<$soq;$i++){
-			$w=substr($configmod,$conds[$i][0],1);	
+			$w=substr($configmod,$conds[$i][0],1);
 		    $perms=array();
 		    switch($w){
 				case 1:
@@ -144,6 +144,51 @@ class checksys{
 	}
 	
     //
+    //public cs_checkpath($path,$returnok=true,$fail=true)
+    //
+    //checks to see if a file is there
+    //$path			-	path/file location
+    //$returnok		-	if file exists return ok (true) or err/warn (false)
+    //$fail			-	if conditions not met return err (true) or warn (false)
+    //
+	//returns error signal	
+	function cs_checkpath($path,$returnok=true,$fail=true){
+	    if(is_dir($path)&&$returnok){
+			return 0;
+		}
+		else{
+			if($fail){
+				return 2;
+			}
+			else{
+				return 1;
+			}
+		}
+	}
+	
+    //
+    //public cs_checkwebwrite($path,$returnok=true,$fail=true)
+    //
+    //checks to see if a file is writable
+    //$path			-	path/file location
+    //$returnok		-	if file is writable return ok (true) or err/warn (false)
+    //$fail			-	if conditions not met return err (true) or warn (false)
+    //
+	//returns error signal	
+	function cs_checkwebwrite($path,$returnok=true,$fail=true){
+	    if(is_writable($path)&&$returnok){
+			return 0;
+		}
+		else{
+			if($fail){
+				return 2;
+			}
+			else{
+				return 1;
+			}
+		}
+	}	
+    //
     //public cs_phpini($ini_var,$cond,$size=false)
     //
     //checks a php ini var
@@ -154,12 +199,45 @@ class checksys{
 	//returns error signal	
 	function cs_phpini($ini_var,$cond,$size=false){
 		$ini_value=ini_get($ini_var);
+		
 		if($size){
 			$ini_value=$this->cs_strtosize($ini_value);
 		}
-		return $this->cs_compare($ini_value,$cond);
+		
+		return $this->cs_compare($ini_value,$cond,$size);
 	}
-	
+    //
+    //public cs_phpver($warn,$err)
+    //
+    //checks a php ini var
+    //$warn			-	array of minimum php version or warning
+    //$conds		-	array of minimum php versions or error
+    //
+	//returns error signal	
+	function cs_phpver($warn,$err){
+		$v_warn=false;
+		$v_error=false;
+		$soq=count($warn);
+		for($i=0;$i<$soq;$i++){
+			if(version_compare(phpversion(),$warn[$i])==-1){
+				$v_warn=true;
+			}
+		}
+		$soq=count($err);
+		for($i=0;$i<$soq;$i++){
+			if(version_compare(phpversion(),$err[$i])==-1){
+				$v_error=true;
+			}
+		}
+		if($v_error){
+			return 2;
+		}
+		else if($v_warn){
+			return 1;
+		}
+		return 0;
+	}
+		
 	//#################################
 	//
 	// PRIVATE FUNCTIONS
@@ -174,11 +252,13 @@ class checksys{
     //$cond			-	conditional array
     //
 	//returns error signal	
-	function cs_compare($value,$cond){
-	 	echo $value;
+	function cs_compare($value,$cond,$size=false){
 		$soq=count($cond);
 		$err_level="";
 		for($i=0;$i<$soq;$i++){
+		 	if($size){
+				$cond[$i][1]=$this->cs_strtosize($cond[$i][1]);
+			}
 			switch($cond[$i][0]){
 				case ">=":
 					if($value >= $cond[$i][1]){
@@ -215,6 +295,16 @@ class checksys{
 						$err_level.=$this->cs_elvl($cond[$i][2]);
 					}						
 				break;
+				case "in":
+					if(!eregi($cond[$i][1],$value)){
+						$err_level.=$this->cs_elvl($cond[$i][2]);
+					}
+				break;
+				case "notin":
+					if(eregi($cond[$i][1],$value)){
+						$err_level.=$this->cs_elvl($cond[$i][2]);
+					}
+				break;					
 				case "set":
 				default:
 					if($value){
