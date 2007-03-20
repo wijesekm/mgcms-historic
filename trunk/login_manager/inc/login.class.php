@@ -111,6 +111,10 @@ class login{
 		 		$crypt_type="";
 		 	break;
 			default:
+				if($auth->auth_checkses($GLOBALS["MANDRIGO"]["VARS"]["COOKIE_USER"],$GLOBALS["MANDRIGO"]["VARS"]["COOKIE_SESSION"])){
+					header("Location: ".$GLOBALS["MANDRIGO"]["SITE"]["SITE_URL"].$GLOBALS["MANDRIGO"]["VARS"]["TARGET"]);
+					die();
+				}
 				$content=$this->li_displaymain();
 				$title=$GLOBALS["MANDRIGO"]["LANGUAGE"]["LI_TITLE"]." - {SITE_NAME}";
 			break;
