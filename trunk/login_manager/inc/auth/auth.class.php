@@ -107,7 +107,7 @@ class _auth{
 	//returns true on success or false on fail
 	function auth_logout($uid){
 	 	$this->session->se_load($uid);
-		return $this->session->se_stop();
+		return $this->session->se_stop(time()-100000,$GLOBALS["MANDRIGO"]["SITE"]["LOGIN_SECURE"],$GLOBALS["MANDRIGO"]["SITE"]["LOGIN_PATH"],$GLOBALS["MANDRIGO"]["SITE"]["LOGIN_DOMAINS"]);
 	}	
 		
 	//#################################
