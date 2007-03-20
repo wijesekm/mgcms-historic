@@ -61,25 +61,29 @@ class login{
 	
 	function li_display(){
 		$auth=new auth();
-		if($auth->auth_checkses($GLOBALS["MANDRIGO"]["VARS"]["COOKIE_USER"],$GLOBALS["MANDRIGO"]["VARS"]["COOKIE_SESSION"])){
-			header("Location: ".$GLOBALS["MANDRIGO"]["SITE"]["SITE_URL"].$GLOBALS["MANDRIGO"]["VARS"]["TARGET"]);
-			die();
-		}
 		$this->tpl=new template();
 		$this->tpl->tpl_load($GLOBALS["MANDRIGO"]["CONFIG"]["TEMPLATE_PATH"].TPL_LOGIN,"main");
 		$content="";
 		$title="";
-		
 		switch($GLOBALS["MANDRIGO"]["VARS"]["ACTION"]){
+		 	case "logout":
+		 		$auth->auth_logout($GLOBALS["MANDRIGO"]["VARS"]["COOKIE_USER"]);
+		 		header("Location: ".$GLOBALS["MANDRIGO"]["SITE"]["SITE_URL"].$GLOBALS["MANDRIGO"]["VARS"]["TARGET"]);
+		 		die();
+		 	break;
 		 	case "login":
+				if($auth->auth_checkses($GLOBALS["MANDRIGO"]["VARS"]["COOKIE_USER"],$GLOBALS["MANDRIGO"]["VARS"]["COOKIE_SESSION"])){
+					header("Location: ".$GLOBALS["MANDRIGO"]["SITE"]["SITE_URL"].$GLOBALS["MANDRIGO"]["VARS"]["TARGET"]);
+					die();
+				}
 		 		$user_name=trim($GLOBALS["MANDRIGO"]["VARS"]["LI_USER"]);
 				$user_password=trim($GLOBALS["MANDRIGO"]["VARS"]["LI_PASSWORD"]);
 				$crypt_type=$GLOBALS["MANDRIGO"]["SITE"]["CRYPT_TYPE"];
 				$result=$auth->auth_check($user_name,$user_password,$crypt_type);
 		 		if($result===2){
 					if($GLOBALS["MANDRIGO"]["SITE"]["AUTO_REG"]=="1"){
-					 	$params=array("ac_username","ac_created","ac_lastchange","ac_groups");
-					 	$set=array($user_name,$GLOBALS["MANDRIGO"]["SITE"]["SERVERTIME"],$GLOBALS["MANDRIGO"]["SITE"]["SERVERTIME"],$GLOBALS["MANDRIGO"]["SITE"]["DEFAULT_GROUP"].";");
+					 	$params=array("ac_username","ac_created","ac_lastchange");
+					 	$set=array($user_name,$GLOBALS["MANDRIGO"]["SITE"]["SERVERTIME"],$GLOBALS["MANDRIGO"]["SITE"]["SERVERTIME"]);
 							
 
 						if(!$GLOBALS["MANDRIGO"]["DB"]->db_update(DB_INSERT,TABLE_PREFIX.TABLE_ACCOUNTS,$set,$params)){
@@ -117,10 +121,10 @@ class login{
 	
 	function li_displaymain($error=""){
 	 	if($GLOBALS['MANDRIGO']['SITE']['URL_FORMAT']==1){
-			$action=$GLOBALS['MANDRIGO']['SITE']['LOGIN_URL'].$GLOBALS['MANDRIGO']['SITE']['LOGIN_NAME']."/a/login";
+			$action=$GLOBALS['MANDRIGO']['SITE']['LOGIN_URL'].$GLOBALS['MANDRIGO']['SITE']['LOGIN_NAME']."/a/login/t/".$GLOBALS["MANDRIGO"]["VARS"]["TARGET"];
 		}
 		else{
-			$action=$GLOBALS['MANDRIGO']['SITE']['LOGIN_URL'].$GLOBALS['MANDRIGO']['SITE']['LOGIN_NAME']."?a=login";
+			$action=$GLOBALS['MANDRIGO']['SITE']['LOGIN_URL'].$GLOBALS['MANDRIGO']['SITE']['LOGIN_NAME']."?a=login&amp;t=".$GLOBALS["MANDRIGO"]["VARS"]["TARGET"];
 		} 
 		$this->tpl->tpl_load($GLOBALS["MANDRIGO"]["CONFIG"]["TEMPLATE_PATH"].TPL_LOGIN,"login");
 		$this->tpl->tpl_parse(array("ACTION",$action,"ERROR",$error),"login",1,false);
