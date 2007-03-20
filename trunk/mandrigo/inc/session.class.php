@@ -79,7 +79,7 @@ class session{
 		if((int)$uid<=1){
 			return false;
 		}
-		$this->sesid=(int)$GLOBALS["MANDRIGO"]["DB"]->db_fetchresult(TABLE_PREFIX.TABLE_ACCOUNTS,"ac_session",array(array("ac_id","=",$uid)));  
+		$this->sesid=(string)$GLOBALS["MANDRIGO"]["DB"]->db_fetchresult(TABLE_PREFIX.TABLE_ACCOUNTS,"ac_session",array(array("ac_id","=",$uid)));  
 		$this->uid=(int)$uid;
 		if(!$this->uid&&!$this->sesid){
 			return false;
@@ -93,10 +93,10 @@ class session{
 		if(!$this->uid&&!$this->sesid){
 			return false;
 		}
-		if((int)$sesid===$this->sesid&&(int)$uid===$this->uid){
-			return true;
+		if((string)$sesid===$this->sesid&&(int)$uid===$this->uid){
+			return $this->se_checkstatus();
 		}
-		return $this->se_checkstatus();
+		return false;
 	}
 	function se_checkstatus(){
 		$s=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_ACCOUNTS,"ac_status,ac_expires",array(array("ac_id","=",$uid)));
@@ -110,29 +110,49 @@ class session{
 			return false;
 		}		
 		$domains=explode(";",$domains);
+		$secure=explode(";",$secure);
+		$paths=explode(";",$path);
 		for($i=0;$i<count($domains);$i++){
 		  	if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-				setcookie(SESSION_COOKIE,$this->sesid,$expires,$path,$domains[$i],$secure);
+				setcookie(SESSION_COOKIE,$this->sesid,$expires,$paths[$i],$domains[$i],$secure[$i]);
 				setcookie(USER_COOKIE,$this->uid,$expires,$path,$domains[$i],$secure);
+				return false;
 			}	
 			else{
-				if(!(@setcookie(SESSION_COOKIE,$this->sesid,$expires,$path,$domains[$i],$secure))){
+				if(!(@setcookie(SESSION_COOKIE,$this->sesid,$expires,$paths[$i],$domains[$i],$secure[$i]))){
 					return false;
 				}
-				if(!(@setcookie(USER_COOKIE,$this->uid,$expires,$path,$domains[$i],$secure))){
+				if(!(@setcookie(USER_COOKIE,$this->uid,$expires,$paths[$i],$domains[$i],$secure[$i]))){
 					return false;
 				}				
 			}
 		}
 		return true;		
 	}
-	function se_stop(){
+	function se_stop($expires,$domains,$secure,$path){
 		if(!$GLOBALS["MANDRIGO"]["DB"]->db_update(DB_UPDATE,TABLE_PREFIX.TABLE_ACCOUNTS,array(array("ac_session","")),array(array("ac_id","=",$this->uid)))){
 			return false;
-		}	
+		}
 		$this->uid=false;
-		$this->sesid=false;
-		
+		$this->sesid=false;	
+		$domains=explode(";",$domains);
+		$secure=explode(";",$secure);
+		$paths=explode(";",$path);
+		for($i=0;$i<count($domains);$i++){
+		  	if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
+				setcookie(SESSION_COOKIE,"none",$expires,$paths[$i],$domains[$i],$secure[$i]);
+				setcookie(USER_COOKIE,"1",$expires,$path,$domains[$i],$secure);
+				return false;
+			}	
+			else{
+				if(!(@setcookie(SESSION_COOKIE,"none",$expires,$paths[$i],$domains[$i],$secure[$i]))){
+					return false;
+				}
+				if(!(@setcookie(USER_COOKIE,"1",$expires,$paths[$i],$domains[$i],$secure[$i]))){
+					return false;
+				}
+			}
+		}
 		return true;	  
 	}
 	function se_uid(){
