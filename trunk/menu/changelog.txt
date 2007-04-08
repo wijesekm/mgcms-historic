@@ -1,7 +1,0 @@
-0.6.0
-1) Updated to be compatible with mandrigo version 0.6.0
-
-1.0
-1) First revision
-2) Supports basic menu generation
-3) Supports the template engine
