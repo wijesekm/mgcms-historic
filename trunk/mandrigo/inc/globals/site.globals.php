@@ -37,7 +37,7 @@ $config=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_MAIN_DATA,"
 
 $soq=count($config);
 
-if(!$soq){
+if($soq<=1){
 	$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(3,"sql");
 }
 
