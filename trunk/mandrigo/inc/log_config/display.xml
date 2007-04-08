@@ -71,4 +71,10 @@
 			The mg_sitemap package could not be loaded.
 		</value>
 	</msg>
+	<msg>
+		<id>502</id>
+		<value>
+			The mg_news package could not be loaded.
+		</value>
+	</msg>
 </error_log>
