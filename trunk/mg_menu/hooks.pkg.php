@@ -1,14 +1,12 @@
 <?php
 /**********************************************************
     hooks.pkg.php
-    menu ver 0.6.0
+    mg_news ver 0.7.0
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 08/23/06
+	Date Last Edited: 04/08/07
 
-	Copyright (C) 2006 Kevin Wijesekera
-	
-	MandrigoCMS is Copyright (C) 2005-2006 the MandrigoCMS Group
-	
+	Copyright (C) 2006-2007 the MandrigoCMS Group
+
     ##########################################################
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
@@ -31,31 +29,20 @@
 //
 //To prevent direct script access
 //
-if(!defined('START_MANDRIGO')){
-    die('<html><head>
-            <title>Forbidden</title>
-        </head><body>
-            <h1>Forbidden</h1><hr width="300" align="left"/><p>You do not have permission to access this file directly.</p>
-        </html></body>');
+if(!defined("START_MANDRIGO")){
+    die($GLOBALS["MANDRIGO"]["CONFIG"]["DIE_STRING"]);
 }
 
-class menu_hook{
-    function menu_display_hook(&$sql,$i){
-        $menu = new menu_display($sql);
-        if(!$menu->md_load($i)){
-			$GLOBALS["error_log"]->add_error(7,"display");
-			return false;
-		}
-		$string=$menu->md_display();
-		unset($menu);
-        return $string;
+
+class mg_menu_hook{
+    function mg_menu_display_hook($i){
+        $menu = new mg_menu($i);
+		return $menu->mm_display();
     }
-    function menu_vars_hook(&$sql,$i){
+    function mg_menu_vars_hook($i){
 		return array();
     }
-    function menu_admin_hook(&$sql,$i){
+    function mg_menu_admin_hook($i){
         return true;
     }
 }
-
-?>
