@@ -46,4 +46,10 @@
 			Could not access the news overview table.  This usually means the table is blank or missing.
 		</value>
 	</msg>
+	<msg>
+		<id>410</id>
+		<value>
+			Could not access the menu table.  This usually means the table is blank or missing.
+		</value>
+	</msg>
 </error_log>

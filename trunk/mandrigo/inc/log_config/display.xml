@@ -60,6 +60,12 @@
 		</value>
 	</msg>
 	<msg>
+		<id>130</id>
+		<value>
+			The mg_menu package could not load the template for the current page hook.
+		</value>
+	</msg>
+	<msg>
 		<id>500</id>
 		<value>
 			The mg_pcontent package could not be loaded.
@@ -75,6 +81,12 @@
 		<id>502</id>
 		<value>
 			The mg_news package could not be loaded.
+		</value>
+	</msg>
+	<msg>
+		<id>503</id>
+		<value>
+			The mg_menu package could not be loaded.
 		</value>
 	</msg>
 </error_log>
