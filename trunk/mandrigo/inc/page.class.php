@@ -79,7 +79,14 @@ class page{
     //
 	//returns the main site template 
 	function pg_display(){
-	 
+	 	//
+	 	//Checks for redir
+	 	//
+	 	if($GLOBALS["MANDRIGO"]["CURRENTPAGE"]["PAGE_REDIR"]){
+			header("Location: ".$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["PAGE_REDIR"]);
+			die();
+		}
+	 	
 	 	//
 	 	//Load the main site template
 	 	//
