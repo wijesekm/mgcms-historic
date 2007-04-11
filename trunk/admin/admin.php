@@ -1,8 +1,8 @@
 <?php
 /**********************************************************
-    login_router.php
+    admin.php
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 01/30/07
+	Date Last Edited: 02/21/07
 
 	Copyright (C) 2006-2007 the MandrigoCMS Group
 
@@ -69,72 +69,15 @@ else{
 if(!$GLOBALS["MANDRIGO"]["CURRENTUSER"]["AUTHENTICATED"]){
 	header("Location: ".$GLOBALS["MANDRIGO"]["SITE"]["LOGIN_URL"].$GLOBALS["MANDRIGO"]["SITE"]["LOGIN_NAME"]."/a/display/t/admin");
 }
-switch($GLOBALS["MANDRIGO"]["VARS"]["ACTION"]){
-	case "check":
-		if($GLOBALS["MANDRIGO"]["CURRENTUSER"]["ACL"]["CONFIG"]<1){
-			$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(2,"access");
-		}
-	break;
-}
-$tpl_m=new template();
-if(!$tpl_m->tpl_load($GLOBALS["MANDRIGO"]["CONFIG"]["TEMPLATE_PATH"].TPL_ADMINPATH.TPL_ADMIN,"main")){
-	$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(5,"display");
+
+$current_page = new admin_page();
+
+//one final check for errors
+if($GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_getstatus()==2){
 	die($GLOBALS["MANDRIGO"]["ELOG"]["HTMLHEAD"].$GLOBALS["MANDRIGO"]["ELOG"]["TITLE"].$GLOBALS["MANDRIGO"]["ELOG"]["HTMLBODY"].
         $GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_generatereport().$GLOBALS["MANDRIGO"]["ELOG"]["HTMLEND"]);
 }
 
-$page_parse_vars = array(
-            "SITE_NAME",$GLOBALS["MANDRIGO"]["SITE"]["SITE_NAME"],
-            "SITE_URL",$GLOBALS["MANDRIGO"]["SITE"]["SITE_URL"],
-            "ADMIN_URL",$GLOBALS["MANDRIGO"]["SITE"]["ADMIN_URL"],
-            "ADMIN_NAME",$GLOBALS["MANDRIGO"]["SITE"]["ADMIN_NAME"],
-            "LOGIN_URL",$GLOBALS["MANDRIGO"]["SITE"]["LOGIN_URL"],
-            "LOGIN_NAME",$GLOBALS["MANDRIGO"]["SITE"]["LOGIN_NAME"],
-            "IMG_URL",$GLOBALS["MANDRIGO"]["SITE"]["IMG_URL"],
-            "SERVER_DATE",date($GLOBALS["MANDRIGO"]["SITE"]["DATE_FORMAT"],$GLOBALS["MANDRIGO"]["SITE"]["SERVERTIME"]),
-            "SERVER_TIME",date($GLOBALS["MANDRIGO"]["SITE"]["TIME_FORMAT"],$GLOBALS["MANDRIGO"]["SITE"]["SERVERTIME"]),
-            "GMT_DATE",date($GLOBALS["MANDRIGO"]["SITE"]["DATE_FORMAT"],$GLOBALS["MANDRIGO"]["SITE"]["GMT"]),
-            "GMT_TIME",date($GLOBALS["MANDRIGO"]["SITE"]["TIME_FORMAT"],$GLOBALS["MANDRIGO"]["SITE"]["GMT"]),
-            "WEBMASTER_NAME",$GLOBALS["MANDRIGO"]["SITE"]["WEBMASTER_NAME"],
-            "WEBMASTER_EMAIL",$GLOBALS["MANDRIGO"]["SITE"]["WEBMASTER_EMAIL"],
-            "SITE_LAST_UPDATED",$GLOBALS["MANDRIGO"]["SITE"]["LAST_UPDATED"],
-            "MG_VER",$GLOBALS["MANDRIGO"]["SITE"]["MANDRIGO_VER"],
-            "INDEX_NAME",$GLOBALS["MANDRIGO"]["SITE"]["INDEX_NAME"],
-            "CUSER_ID",$GLOBALS["MANDRIGO"]["CURRENTUSER"]["UID"],
-            "CUSER_FNAME",$GLOBALS["MANDRIGO"]["CURRENTUSER"]["FNAME"],
-            "CUSER_MNAME",$GLOBALS["MANDRIGO"]["CURRENTUSER"]["MNAME"],
-            "CUSER_LNAME",$GLOBALS["MANDRIGO"]["CURRENTUSER"]["LNAME"],
-            "CUSER_LANG",$GLOBALS["MANDRIGO"]["CURRENTUSER"]["LANGUAGE"],
-            "CUSER_DATE",date($GLOBALS["MANDRIGO"]["SITE"]["DATE_FORMAT"],$GLOBALS["MANDRIGO"]["CURRENTUSER"]["TIME"]),
-            "CUSER_TIME",date($GLOBALS["MANDRIGO"]["SITE"]["TIME_FORMAT"],$GLOBALS["MANDRIGO"]["CURRENTUSER"]["TIME"]),
-);
+echo $current_page->ap_display();
 
-error_log_check($tpl_m,$page_parse_vars);
-
-switch($GLOBALS["MANDRIGO"]["VARS"]["ACTION"]){
- 	case "check":
- 		$check=new checkinstall();
- 		$content=$check->ci_display();
-		error_log_check($tpl_m,$page_parse_vars);
- 		$tpl_m->tpl_parse(appendarray(array("CONTENT",$content,"PAGE_TITLE",$GLOBALS["MANDRIGO"]["LANGUAGE"]["ADMIN_CHECKTITLE"]),$page_parse_vars));
- 	
- 	break;
-	default:
-		$tpl=new template();
-		if(!$tpl->tpl_load($GLOBALS["MANDRIGO"]["CONFIG"]["TEMPLATE_PATH"].TPL_ADMINPATH.TPL_ADMINMAIN,"main")){
-			$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(6,"display");
-			error_log_check($tpl_m,$page_parse_vars);
-		}
-		$tpl_m->tpl_parse(appendarray(array("CONTENT",$tpl->tpl_return("main"),"PAGE_TITLE",$GLOBALS["MANDRIGO"]["LANGUAGE"]["ADMIN_MAINTITLE"]),$page_parse_vars));
-	break;
-}
-echo $tpl_m->tpl_return("main");
-
-function error_log_check($tpl_m,$page_parse_vars){
-	if($GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_getstatus()!=0){
-		$tpl_m->tpl_parse(appendarray(array("CONTENT",$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_generatereport(),"PAGE_TITLE",$GLOBALS["MANDRIGO"]["ELOG"]["TITLE"]),$page_parse_vars));	
-		echo $tpl_m->tpl_return("main");
-		die();
-	}
-}
 ?>
