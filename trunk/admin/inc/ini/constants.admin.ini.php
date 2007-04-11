@@ -32,6 +32,8 @@ if(!defined("START_MANDRIGO")){
     die($GLOBALS["MANDRIGO"]["CONFIG"]["DIE_STRING"]);
 }
 
+define("TABLE_ADMIN_PAGES","admin_pages");
+
 define("CFGTPL_PATH","/config_templates/");
 define("EXT_TPL","extension.inc.".TPL_EXT);
 define("CFG_TPL","config.ini.php.".TPL_EXT);
@@ -40,5 +42,3 @@ define("CFG_NAME","config.ini.".PHP_EXT);
 
 define("TPL_ADMINPATH","/admin/");
 define("TPL_ADMIN","admin.".TPL_EXT);
-define("TPL_ADMINMAIN","admin_main.".TPL_EXT);
-define("TPL_ADMINCHECK","admin_check.".TPL_EXT);
