@@ -1,8 +1,8 @@
 <?php
 /**********************************************************
-    adminpkg.ini.php
+    adminpackage.ini.php
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 03/16/07
+	Date Last Edited: 04/11/07
 
 	Copyright (C) 2006-2007 the MandrigoCMS Group
 
@@ -31,18 +31,124 @@
 if(!defined("START_MANDRIGO")){
     die($GLOBALS["MANDRIGO"]["CONFIG"]["DIE_STRING"]);
 }
+//
+//For Admin Stuff
+//
+$soq=count($GLOBALS["MANDRIGO"]["CURRENTAPAGE"]["HOOKS"]);
 
-switch($GLOBALS["MANDRIGO"]["VARS"]["ACTION"]){
-	case "check":
-		$pkg=array(array("checkinstall.class.".PHP_EXT,26),array("checksys.class.".PHP_EXT,27));
-		package_init($pkg,false);		
-	break;
-	case "maincfg":
-		$pkg=array(array("set_mainconfig.class.".PHP_EXT,24),array("mainconfig.class.".PHP_EXT,25));
-		package_init($pkg,false);
-	break;
-	default:
-	
-	break;	
-	
-};
+$filter=array();
+$count=0;
+for($i=0;$i<$soq;$i++){
+ 	if($i+1<$soq){
+		$filter[$count]=array("pkg_id","=",$GLOBALS["MANDRIGO"]["CURRENTAPAGE"]["HOOKS"][$i],DB_AND,$i+1);
+		$filter[$count+1]=array("pkg_status","=","E",DB_OR,$i+1);
+	}
+	else{
+		$filter[$count]=array("pkg_id","=",$GLOBALS["MANDRIGO"]["CURRENTAPAGE"]["HOOKS"][$i],DB_AND,$i+1);
+		$filter[$count+1]=array("pkg_status","=","E","",$i+1);
+	}
+	$count+=2;
+}
+$newpkg=array();
+$packages=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_PACKAGES,"pkg_id,pkg_name,pkg_nlerror",$filter,"ASSOC",DB_ALL_ROWS);
+$soq=count($packages);
+if(!$GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
+	if(!$packages){
+		$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(3,"display");
+	}
+}
+
+for($i=0;$i<$soq;$i++){
+ 	if(in_array($packages[$i]["pkg_id"],$GLOBALS["MANDRIGO"]["CURRENTAPAGE"]["HOOKS"])){
+	 	$newpkg[$i]=array($packages[$i]["pkg_id"],$packages[$i]["pkg_name"]);
+	}
+	if($GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
+		include_once($GLOBALS["MANDRIGO"]["CONFIG"]["PLUGIN_PATH"].$packages[$i]["pkg_name"]."/hooks.pkg.".PHP_EXT);
+		include_once($GLOBALS["MANDRIGO"]["CONFIG"]["PLUGIN_PATH"].$packages[$i]["pkg_name"]."/globals.pkg.".PHP_EXT);
+		include_once($GLOBALS["MANDRIGO"]["CONFIG"]["PLUGIN_PATH"].$packages[$i]["pkg_name"]."/display.pkg.".PHP_EXT);
+	}
+	else{
+	 	$fail=false;
+		if(!(@include_once($GLOBALS["MANDRIGO"]["CONFIG"]["PLUGIN_PATH"].$packages[$i]["pkg_name"]."/hooks.pkg.".PHP_EXT))){
+			$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror((int)$packages[$i]["pkg_nlerror"],"display");
+			$fail=true;	
+		}
+		if(!(@include_once($GLOBALS["MANDRIGO"]["CONFIG"]["PLUGIN_PATH"].$packages[$i]["pkg_name"]."/globals.pkg.".PHP_EXT))){
+			if(!$fail){
+				$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror((int)$packages[$i]["pkg_nlerror"],"display");
+				$fail=true;
+			}
+		}
+		if(!(@include_once($GLOBALS["MANDRIGO"]["CONFIG"]["PLUGIN_PATH"].$packages[$i]["pkg_name"]."/display.pkg.".PHP_EXT))){
+			if(!$fail){
+				$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror((int)$packages[$i]["pkg_nlerror"],"display");
+			}
+		}
+	}
+}
+
+$GLOBALS["MANDRIGO"]["CURRENTAPAGE"]["HOOKS"]=$newpkg;
+
+$packages="";
+$newpkg="";
+
+//
+//For Pages
+//
+$soq=count($GLOBALS["MANDRIGO"]["CURRENTPAGE"]["HOOKS"]);
+
+$filter=array();
+$count=0;
+for($i=0;$i<$soq;$i++){
+ 	if($i+1<$soq){
+		$filter[$count]=array("pkg_id","=",$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["HOOKS"][$i],DB_AND,$i+1);
+		$filter[$count+1]=array("pkg_status","=","E",DB_OR,$i+1);
+	}
+	else{
+		$filter[$count]=array("pkg_id","=",$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["HOOKS"][$i],DB_AND,$i+1);
+		$filter[$count+1]=array("pkg_status","=","E","",$i+1);
+	}
+	$count+=2;
+}
+$newpkg=array();
+$packages=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_PACKAGES,"pkg_id,pkg_name,pkg_nlerror",$filter,"ASSOC",DB_ALL_ROWS);
+$soq=count($packages);
+if(!$GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
+	if(!$packages){
+		$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(3,"display");
+	}
+}
+
+for($i=0;$i<$soq;$i++){
+ 	if(in_array($packages[$i]["pkg_id"],$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["HOOKS"])){
+	 	$newpkg[$i]=array($packages[$i]["pkg_id"],$packages[$i]["pkg_name"]);
+	}
+	if($GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
+		include_once($GLOBALS["MANDRIGO"]["CONFIG"]["PLUGIN_PATH"].$packages[$i]["pkg_name"]."/hooks.pkg.".PHP_EXT);
+		include_once($GLOBALS["MANDRIGO"]["CONFIG"]["PLUGIN_PATH"].$packages[$i]["pkg_name"]."/globals.pkg.".PHP_EXT);
+		include_once($GLOBALS["MANDRIGO"]["CONFIG"]["PLUGIN_PATH"].$packages[$i]["pkg_name"]."/admin.pkg.".PHP_EXT);
+	}
+	else{
+	 	$fail=false;
+		if(!(@include_once($GLOBALS["MANDRIGO"]["CONFIG"]["PLUGIN_PATH"].$packages[$i]["pkg_name"]."/hooks.pkg.".PHP_EXT))){
+			$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror((int)$packages[$i]["pkg_nlerror"],"display");
+			$fail=true;	
+		}
+		if(!(@include_once($GLOBALS["MANDRIGO"]["CONFIG"]["PLUGIN_PATH"].$packages[$i]["pkg_name"]."/globals.pkg.".PHP_EXT))){
+			if(!$fail){
+				$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror((int)$packages[$i]["pkg_nlerror"],"display");
+				$fail=true;
+			}
+		}
+		if(!(@include_once($GLOBALS["MANDRIGO"]["CONFIG"]["PLUGIN_PATH"].$packages[$i]["pkg_name"]."/admin.pkg.".PHP_EXT))){
+			if(!$fail){
+				$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror((int)$packages[$i]["pkg_nlerror"],"display");
+			}
+		}
+	}
+}
+
+$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["HOOKS"]=$newpkg;
+
+$packages="";
+$newpkg="";
