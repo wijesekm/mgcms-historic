@@ -34,57 +34,75 @@ if(!defined("START_MANDRIGO")){
 
 
 $GLOBALS["MANDRIGO"]["CURRENTUSER"]["ACL"]["READ"]=0;
+$GLOBALS["MANDRIGO"]["CURRENTUSER"]["ACL"]["AREAD"]=0;
 $GLOBALS["MANDRIGO"]["CURRENTUSER"]["ACL"]["POST"]=0;
 $GLOBALS["MANDRIGO"]["CURRENTUSER"]["ACL"]["EDIT"]=0;
 $GLOBALS["MANDRIGO"]["CURRENTUSER"]["ACL"]["CONFIG"]=0;
 
-$soq=count($GLOBALS["MANDRIGO"]["CURRENTUSER"]["GROUPS"]);
-if(!$soq){
-	if(!$GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
-		$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(8,"sql");
+if($GLOBALS["MANDRIGO"]["CURRENTUSER"]["AUTHENTICATED"]===true){
+	$soq=count($GLOBALS["MANDRIGO"]["CURRENTUSER"]["GROUPS"]);
+	if(!$soq){
+		if(!$GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
+			$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(8,"sql");
+		}
 	}
+	$filter=array(array("acl_pageid","=",$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["ID"],DB_OR,1),array("acl_pageid","=",0,DB_AND,1));
+	for($k=0;$k<$soq;$k++){
+	 	if($k+1<$soq){
+			$filter[$k+2]=array("acl_groupid","=",$GLOBALS["MANDRIGO"]["CURRENTUSER"]["GROUPS"][$k],DB_OR,2);	
+		}
+		else{
+			$filter[$k+2]=array("acl_groupid","=",$GLOBALS["MANDRIGO"]["CURRENTUSER"]["GROUPS"][$k],"",2);	
+		}
+	}
+	
+	$acl=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_ACL,"",$filter,"ASSOC",DB_ALL_ROWS);
+	$soq=count($acl);
+	for($k=0;$k<$soq;$k++){
+		if((int)$acl[$k]["read_level"]>$GLOBALS["MANDRIGO"]["CURRENTUSER"]["ACL"]["READ"]){
+			$GLOBALS["MANDRIGO"]["CURRENTUSER"]["ACL"]["READ"]=(int)$acl[$k]["read_level"];
+		}
+		if((int)$acl[$k]["aread_level"]>$GLOBALS["MANDRIGO"]["CURRENTUSER"]["ACL"]["AREAD"]){
+			$GLOBALS["MANDRIGO"]["CURRENTUSER"]["ACL"]["AREAD"]=(int)$acl[$k]["aread_level"];
+		}
+		if((int)$acl[$k]["post_level"]>$GLOBALS["MANDRIGO"]["CURRENTUSER"]["ACL"]["POST"]){
+			$GLOBALS["MANDRIGO"]["CURRENTUSER"]["ACL"]["POST"]=(int)$acl[$k]["post_level"];
+		}
+		if((int)$acl[$k]["edit_level"]>$GLOBALS["MANDRIGO"]["CURRENTUSER"]["ACL"]["EDIT"]){
+			$GLOBALS["MANDRIGO"]["CURRENTUSER"]["ACL"]["EDIT"]=(int)$acl[$k]["edit_level"];
+		}
+		if((int)$acl[$k]["config_level"]>$GLOBALS["MANDRIGO"]["CURRENTUSER"]["ACL"]["CONFIG"]){
+			$GLOBALS["MANDRIGO"]["CURRENTUSER"]["ACL"]["CONFIG"]=(int)$acl[$k]["config_level"];
+		}
+		if((int)$acl[$k]["full_control"]===1){
+			$GLOBALS["MANDRIGO"]["CURRENTUSER"]["ACL"]["READ"]=4;
+			$GLOBALS["MANDRIGO"]["CURRENTUSER"]["ACL"]["AREAD"]=4;
+			$GLOBALS["MANDRIGO"]["CURRENTUSER"]["ACL"]["POST"]=4;
+			$GLOBALS["MANDRIGO"]["CURRENTUSER"]["ACL"]["EDIT"]=4;
+			$GLOBALS["MANDRIGO"]["CURRENTUSER"]["ACL"]["CONFIG"]=4;	
+			break;	
+		}
+	}
+	$filter="";
+	$acl="";
 }
-$filter=array(array("acl_pageid","=",$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["ID"],DB_OR,1),array("acl_pageid","=",0,DB_AND,1));
-for($k=0;$k<$soq;$k++){
- 	if($k+1<$soq){
-		$filter[$k+2]=array("acl_groupid","=",$GLOBALS["MANDRIGO"]["CURRENTUSER"]["GROUPS"][$k],DB_OR,2);	
-	}
-	else{
-		$filter[$k+2]=array("acl_groupid","=",$GLOBALS["MANDRIGO"]["CURRENTUSER"]["GROUPS"][$k],"",2);	
-	}
+if(CORE_NAME=="mg_admin"){
+	if($GLOBALS["MANDRIGO"]["CURRENTAPAGE"]["READLEVEL"] > $GLOBALS["MANDRIGO"]["CURRENTUSER"]["ACL"]["AREAD"]){
+		if(!$GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
+			$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(2,"access");	
+		}
+		else{
+			die($GLOBALS["MANDRIGO"]["ELOG"]["PERMISSION"]);
+		}
+	}	
 }
-
-$acl=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_ACL,"",$filter,"ASSOC",DB_ALL_ROWS);
-$soq=count($acl);
-for($k=0;$k<$soq;$k++){
-	if((int)$acl[$k]["read_level"]>$GLOBALS["MANDRIGO"]["CURRENTUSER"]["ACL"]["READ"]){
-		$GLOBALS["MANDRIGO"]["CURRENTUSER"]["ACL"]["READ"]=(int)$acl[$k]["read_level"];
-	}
-	if((int)$acl[$k]["post_level"]>$GLOBALS["MANDRIGO"]["CURRENTUSER"]["ACL"]["POST"]){
-		$GLOBALS["MANDRIGO"]["CURRENTUSER"]["ACL"]["POST"]=(int)$acl[$k]["post_level"];
-	}
-	if((int)$acl[$k]["edit_level"]>$GLOBALS["MANDRIGO"]["CURRENTUSER"]["ACL"]["EDIT"]){
-		$GLOBALS["MANDRIGO"]["CURRENTUSER"]["ACL"]["EDIT"]=(int)$acl[$k]["edit_level"];
-	}
-	if((int)$acl[$k]["config_level"]>$GLOBALS["MANDRIGO"]["CURRENTUSER"]["ACL"]["CONFIG"]){
-		$GLOBALS["MANDRIGO"]["CURRENTUSER"]["ACL"]["CONFIG"]=(int)$acl[$k]["config_level"];
-	}
-	if((int)$acl[$k]["full_control"]===1){
-		$GLOBALS["MANDRIGO"]["CURRENTUSER"]["ACL"]["READ"]=4;
-		$GLOBALS["MANDRIGO"]["CURRENTUSER"]["ACL"]["POST"]=4;
-		$GLOBALS["MANDRIGO"]["CURRENTUSER"]["ACL"]["EDIT"]=4;
-		$GLOBALS["MANDRIGO"]["CURRENTUSER"]["ACL"]["CONFIG"]=4;	
-		break;	
-	}
-}
-$filter="";
-$acl="";
-
-if($GLOBALS["MANDRIGO"]["CURRENTPAGE"]["READLEVEL"] > $GLOBALS["MANDRIGO"]["CURRENTUSER"]["ACL"]["READ"]){
-	if(!$GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
-		$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(2,"access");	
-	}
-	else{
-		die($GLOBALS["MANDRIGO"]["ELOG"]["PERMISSION"]);
+else{
+	if($GLOBALS["MANDRIGO"]["CURRENTPAGE"]["READLEVEL"] > $GLOBALS["MANDRIGO"]["CURRENTUSER"]["ACL"]["READ"]){
+		if(!$GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
+			$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(2,"access");	
+		}
+		else{
+			die($GLOBALS["MANDRIGO"]["ELOG"]["PERMISSION"]);
+		}
 	}
 }
