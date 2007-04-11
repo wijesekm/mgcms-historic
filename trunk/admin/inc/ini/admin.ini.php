@@ -1,8 +1,8 @@
 <?php
 /**********************************************************
-    ini.php
+    admin.ini.php
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 01/31/07
+	Date Last Edited: 04/11/07
 
 	Copyright (C) 2006-2007 the MandrigoCMS Group
 
@@ -133,17 +133,15 @@ else{
     }
 }
 
-$init1=array(array("ini{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}constants.ini.$php_ex",3),
-				  array("ini{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}clean_functions.ini.$php_ex",4),
-				  array("server_time.class.$php_ex",5),
-				  array("session.class.$php_ex",10),
-				  array("template.class.$php_ex",20));
-package_init($init1);
-$init2=array(array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}site.globals.$php_ex",6));
-package_init($init2);
-$init3=array(array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}server.globals.$php_ex",8),
-			 array("ini{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}constants.admin.ini.$php_ex",3));
-package_init($init3,false);
+package_init(array(array("ini{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}constants.ini.$php_ex",28,false),
+			 array("ini{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}constants.admin.ini.$php_ex",28,true),
+			 array("ini{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}clean_functions.ini.$php_ex",4,false),
+			 array("server_time.class.$php_ex",5,false),
+			 array("session.class.$php_ex",10,false),
+			 array("adminpage.class.$php_ex",19,true),
+			 array("template.class.$php_ex",20,false)));
+package_init(array(array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}site.globals.$php_ex",6,false),
+			 array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}server.globals.$php_ex",8,true)));
 
 //Now we will initialize some extra database packages if needed
 switch($GLOBALS["MANDRIGO"]["SITE"]["ACCOUNT_TYPE"]){
@@ -179,14 +177,14 @@ switch($GLOBALS["MANDRIGO"]["SITE"]["ACCOUNT_TYPE"]){
 //
 //Now we will load the user data/permissions, page data, lang data, and packages
 //
-$init3=	array(array("acct{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}account_".$GLOBALS["MANDRIGO"]["SITE"]["ACCOUNT_TYPE"].".class.$php_ex",11),
-			  array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}user.globals.$php_ex",9),
-			  array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}lang.globals.$php_ex",14),
-			  array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}acl.globals.$php_ex",13));
-package_init($init3);
-
-$init4=array(array("ini{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}adminpkg.ini.php",23));
-package_init($init4,false);
+package_init(array(array("acct{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}account_".$GLOBALS["MANDRIGO"]["SITE"]["ACCOUNT_TYPE"].".class.$php_ex",11,false),
+			 array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}user.globals.$php_ex",9,false),
+			 array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}page.globals.$php_ex",12,true),
+			 array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}page.globals.$php_ex",12,false),
+			 array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}acl.globals.$php_ex",13,false),
+			 array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}lang.globals.$php_ex",14,false),
+			 array("ini{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}adminpkg.ini.$php_ex",23,true),
+		     array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}package.globals.$php_ex",17,false)));
 
 //
 //Gets rid of unneeded config vars
@@ -203,16 +201,16 @@ mt_srand(doubleval(microtime()) * 1000003);
 //
 //Init Script
 //
-function package_init($pkg,$root=true){
+function package_init($pkg){
 	$pkg_size=count($pkg);
-	if($root){
-		$base=$GLOBALS["MANDRIGO"]["CONFIG"]["ROOT_PATH"];
-	}
-	else{
-		$base=$GLOBALS["MANDRIGO"]["CONFIG"]["ADMIN_ROOT_PATH"];
-	}
 	for($pkg_c=0;$pkg_c<$pkg_size;$pkg_c++){
 	 	if($pkg[$pkg_c][0]){
+	 	 	if(!$pkg[$pkg_c][2]){
+				$base=$GLOBALS["MANDRIGO"]["CONFIG"]["ROOT_PATH"];
+			}
+			else{
+				$base=$GLOBALS["MANDRIGO"]["CONFIG"]["ADMIN_ROOT_PATH"];
+			}
 			if($GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
 				include_once($base.$pkg[$pkg_c][0]);
 			}
@@ -228,12 +226,3 @@ function package_init($pkg,$root=true){
            	$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_generatereport().$GLOBALS["MANDRIGO"]["ELOG"]["HTMLEND"]);
     }
 }
-function appendarray($a1,$a2){
-	$size1=count($a1);
-	$size2=count($a2);
-	$soq=$size1+$size2;
-	for($i=$size1;$i<$soq;$i++){
-		$a1[$i]=$a2[$i-($size1)];
-	}
-	return $a1;
-}	
