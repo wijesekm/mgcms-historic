@@ -78,6 +78,12 @@
 		</value>
 	</msg>
 	<msg>
+		<id>1001</id>
+		<value>
+			The mga_package package could not be loaded.
+		</value>
+	</msg>
+	<msg>
 		<id>2000</id>
 		<value>
 			The mga_pcontent package could not load the requested template file.
