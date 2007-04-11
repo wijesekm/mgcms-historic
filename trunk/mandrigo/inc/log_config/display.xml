@@ -30,18 +30,6 @@
 		</value>
 	</msg>
 	<msg>
-		<id>6</id>
-		<value>
-			The admin index page template could not be loaded.
-		</value>
-	</msg>
-	<msg>
-		<id>7</id>
-		<value>
-			The admin check page template could not be loaded.
-		</value>
-	</msg>
-	<msg>
 		<id>100</id>
 		<value>
 			The mg_pcontent package could not load the template for the current page hook.
@@ -87,6 +75,18 @@
 		<id>503</id>
 		<value>
 			The mg_menu package could not be loaded.
+		</value>
+	</msg>
+	<msg>
+		<id>1000</id>
+		<value>
+			The mga_pcontent package could not be loaded.
+		</value>
+	</msg>
+	<msg>
+		<id>2000</id>
+		<value>
+			The mga_pcontent package could not load the requested template file.
 		</value>
 	</msg>
 </error_log>

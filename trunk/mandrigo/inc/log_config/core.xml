@@ -173,9 +173,21 @@
 		</value>
 	</msg>
 	<msg>
+		<id>28</id>
+		<value>
+			Could not load the constants package.		
+		</value>
+	</msg>
+	<msg>
 		<id>200</id>
 		<value>
 			Could not load the main site template.
+		</value>
+	</msg>
+	<msg>
+		<id>201</id>
+		<value>
+			Could not load the admin site template.
 		</value>
 	</msg>
 </error_log>
