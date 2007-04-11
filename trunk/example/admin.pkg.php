@@ -7,7 +7,7 @@
 
 	Copyright (C) {year} {yourname}
 	
-	MandrigoCMS is Copyright (C) 2005-2006 the MandrigoCMS Group
+	MandrigoCMS is Copyright (C) 2005-2007 the MandrigoCMS Group
 	
     ##########################################################
 	This program is free software; you can redistribute it and/or
@@ -31,23 +31,20 @@
 //
 //To prevent direct script access
 //
-if(!defined('START_MANDRIGO')){
-    die('<html><head>
-            <title>Forbidden</title>
-        </head><body>
-            <h1>Forbidden</h1><hr width="300" align="left"/><p>You do not have permission to access this file directly.</p>
-        </html></body>');
+if(!defined("START_MANDRIGO")){
+    die($GLOBALS["MANDRIGO"]["CONFIG"]["DIE_STRING"]);
 }
+
 
 //this file will contain admin functionality which will be called by the
 //{packagename}_admin_hook function which you will write.  Basically do what ever you want with it.
 
-class example_admin{
+class admin_example{
 
-    function example_admin{
+    function admin_example{
         return true;
     }
-    function admin(){
+    function exa_admin(){
         return '';
     }
 }
