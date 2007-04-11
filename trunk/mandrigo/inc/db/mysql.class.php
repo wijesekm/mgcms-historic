@@ -657,8 +657,12 @@ class db extends _db{
 		$set=false;
 		$ob=false;
         if($params){
-          	$qstring.=" WHERE";
-            for($i=0;$i<count($params);$i++){
+         	$soparms=count($params);
+         	if(!($params[0][0]==DB_ORDERBY&&$soparms<=1)){
+				$qstring.=" WHERE";
+			}
+
+            for($i=0;$i<$soparms;$i++){
               	switch($params[$i][0]){
               	  	case DB_IN:
               	  		$qstring.=" `".mysql_real_escape_string($params[$i][1])."` IN (";
