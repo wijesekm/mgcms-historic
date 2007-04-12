@@ -136,24 +136,33 @@ $log_config["FATAL_TYPES"]=array("sql"=>1,"core"=>1,"ldap"=>1);
 //
 //NOTE: Only the IMG_PATH has to be accessibly by the webserver.  All other paths can be to non web locations.
 //
+//ROOT_PATH - path to the index.php folder ex: /var/www/htdocs/
+//
 //ROOT_PATH - path to the inc folder ex: /var/www/htdocs/inc/
 //
 //PLUGIN_PATH - path to the plugins folder (usually a subdir of inc) ex: /var/www/htdocs/inc/packages/
 //
-//TEMPLATE_PATH - path to the templates folders ex /var/www/templates/ (it is recommended that this path not be web accessible)
+//TEMPLATE_PATH - path to the templates folders ex: /var/www/templates/ (it is recommended that this path not be web accessible)
 //
-//LOG_PATH - path to the logs folder ex /var/www/logs/ (it is recommended that this path not be web accessible)
+//LOG_PATH - path to the logs folder ex: /var/www/logs/ (it is recommended that this path not be web accessible)
 //
-//IMG_PATH - path to the mandrigo images folder ex /var/www/htdocs/images/
+//IMG_PATH - path to the mandrigo images folder ex: /var/www/htdocs/images/
+//
+//ADMIN_ROOT_PATH -  path to the admin inc folder ex: /var/www/htdocs/admin/inc/
+//
+//LOGIN_ROOT_PATH - path to the login inc folder ex: /var/www/htdocs/login_manager/inc/
 //
 //TMP_PATH - path to the tmp folder ex /tmp/
 //
 
+$GLOBALS["MANDRIGO"]["CONFIG"]["BASE_PATH"]=ereg_replace("/config/config.ini.php","",__FILE__);
 $GLOBALS["MANDRIGO"]["CONFIG"]["ROOT_PATH"]=ereg_replace("/config/config.ini.php","",__FILE__)."/inc/";
 $GLOBALS["MANDRIGO"]["CONFIG"]["PLUGIN_PATH"]=ereg_replace("/config/config.ini.php","",__FILE__)."/inc/packages/";
 $GLOBALS["MANDRIGO"]["CONFIG"]["TEMPLATE_PATH"]=ereg_replace("/htdocs/config/config.ini.php","",__FILE__)."/templates/";
 $GLOBALS["MANDRIGO"]["CONFIG"]["LOG_PATH"]=ereg_replace("/htdocs/config/config.ini.php","",__FILE__)."/logs/";
 $GLOBALS["MANDRIGO"]["CONFIG"]["IMG_PATH"]=ereg_replace("/config/config.ini.php","",__FILE__)."/images/mg_images/";
+$GLOBALS["MANDRIGO"]["CONFIG"]["ADMIN_ROOT_PATH"]=ereg_replace("/config/config.ini.php","",__FILE__)."/admin/inc/";
+$GLOBALS["MANDRIGO"]["CONFIG"]["LOGIN_ROOT_PATH"]=ereg_replace("/config/config.ini.php","",__FILE__)."/login_manager/inc/";
 $GLOBALS["MANDRIGO"]["CONFIG"]["TMP_PATH"]="/tmp/";
 
 //
