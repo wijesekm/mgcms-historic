@@ -1,92 +1,143 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<error_log>
-	<msg>
-		<id>1</id>
-		<value>&lt;h3 style="margin: 0px;"&gt;Display Errors&lt;/h3&gt;</value>
-	</msg>
-	<msg>
-		<id>2</id>
-		<value>
-			Data for the current page does not exist in mandrigo CMS.  Please check the spelling of the page name or go back 
-			the sites index and look for the correct page.
-		</value>
-	</msg>
-	<msg>
-		<id>3</id>
-		<value>
-			The requested page exists but has no display settings set and therefore is blank.
-		</value>
-	</msg>
-	<msg>
-		<id>4</id>
-		<value>
-			The requested page exists but had errors during the page generation process and therefore is blank.
-		</value>
-	</msg>
-	<msg>
-		<id>100</id>
-		<value>
-			The mg_pcontent package could not load the template for the current page hook.
-		</value>
-	</msg>
-	<msg>
-		<id>110</id>
-		<value>
-			The mg_sitemap package could not load the template for the current page hook.
-		</value>
-	</msg>
-	<msg>
-		<id>120</id>
-		<value>
-			The mg_news package could not load the template for the current page hook.
-		</value>
-	</msg>
-	<msg>
-		<id>130</id>
-		<value>
-			The mg_menu package could not load the template for the current page hook.
-		</value>
-	</msg>
-	<msg>
-		<id>500</id>
-		<value>
-			The mg_pcontent package could not be loaded.
-		</value>
-	</msg>
-	<msg>
-		<id>501</id>
-		<value>
-			The mg_sitemap package could not be loaded.
-		</value>
-	</msg>
-	<msg>
-		<id>502</id>
-		<value>
-			The mg_news package could not be loaded.
-		</value>
-	</msg>
-	<msg>
-		<id>503</id>
-		<value>
-			The mg_menu package could not be loaded.
-		</value>
-	</msg>
-	<msg>
-		<id>1000</id>
-		<value>
-			The mga_pcontent package could not be loaded.
-		</value>
-	</msg>
-	<msg>
-		<id>1001</id>
-		<value>
-			The mga_package package could not be loaded.
-		</value>
-	</msg>
-	<msg>
-		<id>2000</id>
-		<value>
-			The mga_pcontent package could not load the requested template file.
-		</value>
-	</msg>
-</error_log>
+				<error_log>		
+				
+						<msg>
+							<id>1</id>
+							<value>
+								&lt;h3 style="margin: 0px;"&gt;Display Errors&lt;/h3&gt;
+							</value>
+						</msg>
+					
+						<msg>
+							<id>2</id>
+							<value>
+								Data for the current page does not exist in mandrigo CMS.  Please check the spelling of the page name or go backthe sites index and look for the correct page.
+							</value>
+						</msg>
+					
+						<msg>
+							<id>3</id>
+							<value>
+								The requested page exists but has no display settings set and therefore is blank.
+							</value>
+						</msg>
+					
+						<msg>
+							<id>4</id>
+							<value>
+								The requested page exists but had errors during the page generation process and therefore is blank.
+							</value>
+						</msg>
+					
+						<msg>
+							<id>100</id>
+							<value>
+								The mg_pcontent package could not load the template for the current page hook.
+							</value>
+						</msg>
+					
+						<msg>
+							<id></id>
+							<value>
+								
+							</value>
+						</msg>
+					
+						<msg>
+							<id></id>
+							<value>
+								
+							</value>
+						</msg>
+					
+						<msg>
+							<id></id>
+							<value>
+								
+							</value>
+						</msg>
+					
+						<msg>
+							<id></id>
+							<value>
+								
+							</value>
+						</msg>
+					
+						<msg>
+							<id></id>
+							<value>
+								
+							</value>
+						</msg>
+					
+						<msg>
+							<id></id>
+							<value>
+								
+							</value>
+						</msg>
+					
+						<msg>
+							<id></id>
+							<value>
+								
+							</value>
+						</msg>
+					
+						<msg>
+							<id></id>
+							<value>
+								
+							</value>
+						</msg>
+					
+						<msg>
+							<id></id>
+							<value>
+								
+							</value>
+						</msg>
+					
+						<msg>
+							<id>450</id>
+							<value>
+								some random error yo.
+							</value>
+						</msg>
+					
+						<msg>
+							<id></id>
+							<value>
+								
+							</value>
+						</msg>
+					
+						<msg>
+							<id></id>
+							<value>
+								
+							</value>
+						</msg>
+					
+						<msg>
+							<id></id>
+							<value>
+								
+							</value>
+						</msg>
+					
+						<msg>
+							<id></id>
+							<value>
+								
+							</value>
+						</msg>
+					
+						<msg>
+							<id></id>
+							<value>
+								
+							</value>
+						</msg>
+					</error_log>

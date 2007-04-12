@@ -1,13 +1,24 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<error_log>
-	<msg>
-		<id>1</id>
-		<value>&lt;h3 style="margin: 0px;"&gt;Access Errors&lt;/h3&gt;</value>
-	</msg>
-	<msg>
-		<id>2</id>
-		<value>
-			You do not have permission to view the current page!
-		</value>
-	</msg>
-</error_log>
+				<error_log>		
+				
+						<msg>
+							<id>1</id>
+							<value>
+								&lt;h3 style="margin: 0px;"&gt;Access Errors&lt;/h3&gt;
+							</value>
+						</msg>
+					
+						<msg>
+							<id>2</id>
+							<value>
+								You do not have permission to view the current page!
+							</value>
+						</msg>
+					
+						<msg>
+							<id>450</id>
+							<value>
+								ahhh i fail =()
+							</value>
+						</msg>
+					</error_log>

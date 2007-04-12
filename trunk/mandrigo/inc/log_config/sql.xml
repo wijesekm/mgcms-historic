@@ -1,55 +1,73 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<error_log>
-	<msg>
-		<id>1</id>
-		<value>&lt;h3 style="margin: 0px;"&gt;SQL Errors&lt;/h3&gt;</value>
-	</msg>
-	<msg>
-		<id>2</id>
-		<value>
-			Could not connect to the database.
-		</value>
-	</msg>
-	<msg>
-		<id>3</id>
-		<value>
-			No site variables set.  This usually means the config table is blank or missing.
-		</value>
-	</msg>
-	<msg>
-		<id>4</id>
-		<value>
-			No server globals set.  This usually means the server globals table is blank or missing.
-		</value>
-	</msg>
-	<msg>
-		<id>5</id>
-		<value>
-			No language globals set.  This usually means the table is blank or missing.
-		</value>
-	</msg>
-	<msg>
-		<id>6</id>
-		<value>
-			No html version globals set.  This usually means the table is blank or missing.
-		</value>
-	</msg>
-	<msg>
-		<id>7</id>
-		<value>
-			Could not access package table.  This usually means the table is blank or missing.
-		</value>
-	</msg>
-	<msg>
-		<id>400</id>
-		<value>
-			Could not access the news overview table.  This usually means the table is blank or missing.
-		</value>
-	</msg>
-	<msg>
-		<id>410</id>
-		<value>
-			Could not access the menu table.  This usually means the table is blank or missing.
-		</value>
-	</msg>
-</error_log>
+				<error_log>		
+				
+						<msg>
+							<id>1</id>
+							<value>
+								&lt;h3 style="margin: 0px;"&gt;SQL Errors&lt;/h3&gt;
+							</value>
+						</msg>
+					
+						<msg>
+							<id>2</id>
+							<value>
+								Could not connect to the database.
+							</value>
+						</msg>
+					
+						<msg>
+							<id>3</id>
+							<value>
+								No site variables set.  This usually means the config table is blank or missing.
+							</value>
+						</msg>
+					
+						<msg>
+							<id>4</id>
+							<value>
+								No server globals set.  This usually means the server globals table is blank or missing.
+							</value>
+						</msg>
+					
+						<msg>
+							<id>5</id>
+							<value>
+								No language globals set.  This usually means the table is blank or missing.
+							</value>
+						</msg>
+					
+						<msg>
+							<id>6</id>
+							<value>
+								No html version globals set.  This usually means the table is blank or missing.
+							</value>
+						</msg>
+					
+						<msg>
+							<id>7</id>
+							<value>
+								Could not access package table.  This usually means the table is blank or missing.
+							</value>
+						</msg>
+					
+						<msg>
+							<id></id>
+							<value>
+								
+							</value>
+						</msg>
+					
+						<msg>
+							<id></id>
+							<value>
+								
+							</value>
+						</msg>
+					
+						<msg>
+							<id></id>
+							<value>
+								
+							</value>
+						</msg>
+					</error_log>
