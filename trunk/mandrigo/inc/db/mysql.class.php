@@ -444,7 +444,7 @@ class db extends _db{
 							else{
 								$qstring.="KEY `".mysql_real_escape_string($params[$i][1])."` (`".mysql_real_escape_string($params[$i][2])."`)"; 					
 							}
-							if($i<count($fields)-1){
+							if($i<count($params)-1){
 								$qstring.=",";
 							}
 						}
