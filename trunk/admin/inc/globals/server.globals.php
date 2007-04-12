@@ -47,7 +47,7 @@ if($GLOBALS["MANDRIGO"]["SITE"]["URL_FORMAT"]==1){
 		$php_self=$_SERVER["PHP_SELF"];
     }
     //exploes the array into its basic chunks
-    $raw_url = eregi_replace("^.*".$GLOBALS["MANDRIGO"]["SITE"]["ADMIN_NAME"]."/a","a",$php_self);
+    $raw_url = eregi_replace("^.*".$GLOBALS["MANDRIGO"]["SITE"]["ADMIN_NAME"]."/pa","pa",$php_self);
     $raw_url = explode("/",$raw_url);
     $array_url = array();
     //just in case we want to do /var=value/var2=value2/ we will explode all ='s too
@@ -66,7 +66,8 @@ if($GLOBALS["MANDRIGO"]["SITE"]["URL_FORMAT"]==1){
 }
 
 //gets vars array
-$vars=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_SERVER_GLOBALS,"",array(array("var_corename","=",CORE_NAME,DB_OR),array("var_corename","=","all")),"ASSOC",DB_ALL_ROWS);
+$conds=array(array("var_corename","=",CORE_NAME,DB_OR),array("var_corename","=","all"));
+$vars=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_SERVER_GLOBALS,"",$conds,"ASSOC",DB_ALL_ROWS);
 $soa=count($vars);
 
 if(!$soa){

@@ -37,7 +37,6 @@ $GLOBALS["MANDRIGO"]["CONFIG"]["ADMIN_ROOT_PATH"]=dirname(__FILE__)."/";
 //Initial includes (php extension, config vars, language array, html array)
 //
 require($GLOBALS["MANDRIGO_CONFIG"]["ADMIN_ROOT_PATH"]."config/config.admin.inc");
-
 //
 //Error Logger Init
 //

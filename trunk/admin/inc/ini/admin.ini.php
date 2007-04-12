@@ -184,13 +184,15 @@ package_init(array(array("acct{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}account_".
 			 array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}acl.globals.$php_ex",13,false),
 			 array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}lang.globals.$php_ex",14,false),
 			 array("ini{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}adminpkg.ini.$php_ex",23,true),
-		     array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}package.globals.$php_ex",17,false)));
+		     array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}package.globals.$php_ex",17,false),
+			 array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}package.globals.$php_ex",17,true)));
 
 //
 //Gets rid of unneeded config vars
 //
 $sql_config="";
 $log_config="";
+$GLOBALS["TMPURL"]="";
 $adldap_config="";
 //
 //Seeds random number generator
