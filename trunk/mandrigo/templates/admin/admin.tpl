@@ -36,12 +36,10 @@ Released for free under a Creative Commons Attribution 2.5 License
 	</div>
 	<div id="menu">
 		<ul>
-			<li><a href="{ADMIN_URL}{ADMIN_NAME}" accesskey="1" title="Home">Home</a></li>
-			<li><a href="{ADMIN_URL}{ADMIN_NAME}/a/sconfig" accesskey="1" title="Home">Site Config</a></li>
-			<li><a href="{ADMIN_URL}{ADMIN_NAME}/a/pconfig" accesskey="1" title="Home">Page Config</a></li>
-			<li><a href="{ADMIN_URL}{ADMIN_NAME}/a/check" accesskey="1" title="Home">Check</a></li>
-			<li><a href="{SITE_URL}" accesskey="1" title="Home" id="first" target="_blank">View Site</a></li>
-			<li><a href="{LOGIN_URL}{LOGIN_NAME}/a/logout" accesskey="1" title="Home">Logout</a></li>
+			<li><a href="{ADMIN_URL}{ADMIN_NAME}" title="Home">Home</a></li>
+			<li><a href="{ADMIN_URL}{ADMIN_NAME}/pa/packages" title="Package Manager">Packages</a></li>
+			<li><a href="{SITE_URL}" title="Home" id="first" target="_blank">View Site</a></li>
+			<li><a href="{LOGIN_URL}{LOGIN_NAME}/a/logout" title="Logout">Logout</a></li>
 		</ul>
 	</div>
 </div>
@@ -52,7 +50,19 @@ Released for free under a Creative Commons Attribution 2.5 License
 		{CONTENT}
 	</div>
 	<div id="colTwo">
-		<h4>Logged in As: {CUSER_LNAME}, {CUSER_FNAME} {CUSER_MNAME}</h4>
+		<h3 id="stitle">Logged In As</h3>
+		<p>{CUSER_LNAME}, {CUSER_FNAME} {CUSER_MNAME}</p>
+		<h3 id="stitle">Navigation</h3>
+		<ul>
+		<!--MG_CODE_START-->
+			$page="{APAGE_FNAME}";
+			if($page=="packages"||$page=="languages"||$page=="html_types"){
+				$mg_return='<li><a href="{ADMIN_URL}{ADMIN_NAME}/pa/packages">Package Manager</a></li>';
+				$mg_return.='<li><a href="{ADMIN_URL}{ADMIN_NAME}/pa/languages">Language Manager</a></li>';
+				$mg_return.='<li><a href="{ADMIN_URL}{ADMIN_NAME}/pa/htmls">HTML Manager</a></li>';
+			}
+		<!--MG_CODE_END-->
+		</ul>
 		<div style="text-align: center;">
 		<a href="http://sf.net/projects/mandrigo"><img src="{IMG_URL}/sflogo.png" alt="SF Logo" /></a>
 		</div>
