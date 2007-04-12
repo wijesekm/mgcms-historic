@@ -40,8 +40,43 @@ $pkg["email"]="k_wijesekera@yahoo.com";
 $pkg["website"]="http://kevinwijesekera.net";
 
 $pkg["enabled"]=true;
-$pkg["no_load_error"]["id"]="502";
-$pkg["no_load_error"]["message"]="The mg_news package could not be loaded.";
+$pkg["no_load_error"]="502";
+
+$pkg["errors"]=array("sql"=>array(array("400","Could not access the news overview table.  This usually means the table is blank or missing.")),
+					 "access"=>array(),
+					 "core"=>array(),
+					 "display"=>array(array("120","The mg_news package could not load the template for the current page hook."),array("502","The mg_news package could not be loaded.")),
+					 "ldap"=>array());
+
+$pkg["languages"]=array("en-US");
+
+$pkg_language_install["en-US"]=array(array("NEWS_NO_POSTS","There are currently no posts."),
+								array("NEWS_INV_POST","There is currently no post with the given post ID."),
+								array("NEWS_OUTOFRANGE","This page has no posts on it."),
+								array("NEWS_COMOFF","Comments Turned Off."),
+								array("NEWS_BADCAP","Invalid Security Code."),
+								array("NEWS_NOCONTENT","Nothing to Post."),
+								array("NEWS_POSTED","Posted"));
+$pkg["tables"]=array("news");
+
+$pkg_table_install["news"]["struct"]=array(array("page_id","int","11","","0"),
+									       array("part_id","tinyint","4","","0"),
+										   array("posts_num","smallint","6","","5"),
+										   array("com_num","smallint","6","","5"),
+										   array("date_struct","varchar","15","","l F jS, Y"),
+										   array("time_struct","varchar","15","","h:i:s a"),
+										   array("allow_com","tinyint","1","","1"),
+										   array("allow_acom","tinyint","1","","0"),
+										   array("merge_sameday","tinyint","1","","1"),
+										   array("feed_allow","tinyint","1","","1"),
+										   array("use_captcha","tinyint","1","","1"),
+										   array("feed_ttl","varchar","10","","60"),
+										   array("feed_ud_freq","varchar","10","","1"),
+										   array("nav0_delim","varchar","3","",","),
+										   array("nav1_delim","varchar","3","","|"));
+										   
+$pkg_table_install["news"]["keys"]=array(array(DB_PRIMARY,"page_id"));
+$pkg_table_install["news"]["records"]=array();
 
 //Do Not Edit Below This Line
 if($pkg["enabled"]){
