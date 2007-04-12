@@ -40,9 +40,17 @@ $pkg["email"]="k_wijesekera@yahoo.com";
 $pkg["website"]="http://kevinwijesekera.net";
 
 $pkg["enabled"]=true;
-$pkg["no_load_error"]["id"]="500";
-$pkg["no_load_error"]["message"]="The mg_pcontent package could not be loaded.";
+$pkg["no_load_error"]="500";
 
+$pkg["errors"]=array("sql"=>array(),
+					 "access"=>array(),
+					 "core"=>array(),
+					 "display"=>array(array("500","The mg_pcontent package could not be loaded.")),
+					 "ldap"=>array());
+
+$pkg["tables"]=array();
+
+$pkg_table[""]="";
 //Do Not Edit Below This Line
 if($pkg["enabled"]){
 	$pkg["enabled"]="E";	
