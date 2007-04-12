@@ -62,4 +62,3 @@ for($i=0;$i<$soa;$i++){
 }
 //cleanup
 $vars="";
-$GLOBALS["TMPURL"]="";
