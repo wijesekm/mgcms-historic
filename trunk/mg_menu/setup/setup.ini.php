@@ -39,7 +39,7 @@ $pkg["maintainer"]="Kevin Wijesekera";
 $pkg["email"]="k_wijesekera@yahoo.com";
 $pkg["website"]="http://kevinwijesekera.net";
 
-$pkg["enabled"]=false;
+$pkg["enabled"]=true;
 $pkg["no_load_error"]="503";
 
 $pkg["errors"]=array("sql"=>array(array("410","Could not access the menu overview table.  This usually means the table is blank or missing.")),
