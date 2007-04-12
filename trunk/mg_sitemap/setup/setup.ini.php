@@ -40,8 +40,18 @@ $pkg["email"]="k_wijesekera@yahoo.com";
 $pkg["website"]="http://kevinwijesekera.net";
 
 $pkg["enabled"]=true;
-$pkg["no_load_error"]["id"]="501";
-$pkg["no_load_error"]["message"]="The mg_sitemap package could not be loaded.";
+$pkg["no_load_error"]="501";
+
+$pkg["errors"]=array("sql"=>array(),
+					 "access"=>array(),
+					 "core"=>array(),
+					 "display"=>array(array("110","The mg_sitemap package could not load the template for the current page hook."),array("501","The mg_sitemap package could not be loaded.")),
+					 "ldap"=>array());
+
+$pkg["languages"]=array();
+
+$pkg["tables"]=array();
+
 
 //Do Not Edit Below This Line
 if($pkg["enabled"]){
