@@ -34,6 +34,7 @@ if(!defined("START_MANDRIGO")){
 }
 
 $pkg["name"]="mg_pcontent";
+$pkg["id"]=1;
 $pkg["version"]="0.7.0";
 $pkg["maintainer"]="Kevin Wijesekera";
 $pkg["email"]="k_wijesekera@yahoo.com";

@@ -34,6 +34,7 @@ if(!defined("START_MANDRIGO")){
 }
 
 $pkg["name"]="mg_sitemap";
+$pkg["id"]=2;
 $pkg["version"]="0.7.0";
 $pkg["maintainer"]="Kevin Wijesekera";
 $pkg["email"]="k_wijesekera@yahoo.com";
