@@ -218,6 +218,7 @@ package_init(array(array("ini{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}stats.ini.$
 //
 $sql_config="";
 $log_config="";
+$GLOBALS["TMPURL"]="";
 $adldap_config="";
 
 //
