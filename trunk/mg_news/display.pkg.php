@@ -74,14 +74,14 @@ class news{
 			}
 		}
 		else if($type==FEED_RSS1){
-		 	$file=$GLOBALS['MANDRIGO']['CONFIG']['PLUGIN_PATH'].FEED_PATH.$type.'.'.TPL_EXT;;
+		 	$file=$GLOBALS['MANDRIGO']['CONFIG']['PLUGIN_PATH'].PACKAGE_TEMPLATE_PATH.FEED_PATH.$type.'.'.TPL_EXT;;
 			if(!$this->tpl->tpl_load($file,"feed")||!$this->tpl->tpl_load($file,"feeditem")||!$this->tpl->tpl_load($file,"feedoverview")){
 				$GLOBALS['MANDRIGO']["ERROR_LOGGER"]->el_adderror(120,'display');
 				return false;					
 			}			
 		}
 		else if($type==FEED_RSS092||$type==FEED_RSS2||$type==FEED_ATOM){
-		 	$file=$GLOBALS['MANDRIGO']['CONFIG']['PLUGIN_PATH'].FEED_PATH.$type.'.'.TPL_EXT;;
+		 	$file=$GLOBALS['MANDRIGO']['CONFIG']['PLUGIN_PATH'].PACKAGE_TEMPLATE_PATH.FEED_PATH.$type.'.'.TPL_EXT;;
 			if(!$this->tpl->tpl_load($file,"feed")||!$this->tpl->tpl_load($file,"feeditem")){
 				$GLOBALS['MANDRIGO']["ERROR_LOGGER"]->el_adderror(120,'display');
 				return false;
