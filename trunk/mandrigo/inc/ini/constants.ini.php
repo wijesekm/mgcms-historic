@@ -59,6 +59,7 @@ define("TPL_MAINSITE","main_site.".TPL_EXT);
 define("TPL_OFFSITE","off_site.".TPL_EXT);
 define("TPL_OFFPAGE","off_page.".TPL_EXT);
 define("TPL_LOGIN","login.".TPL_EXT);
+define("PACKAGE_TEMPLATE_PATH","/templates/");
 
 //
 //Server Globals
