@@ -3,7 +3,7 @@
     display.pkg.php
     mga_package ver 0.7.0
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 04/11/07
+	Date Last Edited: 04/12/07
 
 	Copyright (C) 2006-2007 the MandrigoCMS Group
 
@@ -36,6 +36,7 @@ if(!defined("START_MANDRIGO")){
 class package_admin{
 	
 	var $tpl;
+	
     //for xml parsing
    	var $document;
    	var $curr_tag;
@@ -55,42 +56,77 @@ class package_admin{
 		};
 		return true;
 	}
+	
+	//#################################
+	//
+	// PUBLIC FUNCTIONS
+	//
+	//#################################
+    
+	
+	//
+	//public function pa_display();
+	//
+	//Displays the page
+	//
 	function pa_display(){
 	 	$string="";
+	 	$msg="";
 		switch($GLOBALS["MANDRIGO"]["VARS"]["ACTION"]){
 		 	case "add":
 		 		include($GLOBALS["MANDRIGO"]["CONFIG"]["PLUGIN_PATH"].$GLOBALS["MANDRIGO"]["VARS"]["PACKAGE"].SETUP_FOLDER.SETUP_NAME);
 		 		if($pkg["name"]){
-					$GLOBALS["MANDRIGO"]["DB"]->db_update(DB_INSERT,TABLE_PREFIX.TABLE_PACKAGES,array($pkg["name"],$pkg["no_load_error"],$pkg["version"],$pkg["maintainer"],$pkg["email"],$pkg["website"],($pkg["enabled"])?"E":"D"),array("pkg_name","pkg_nlerror","pkg_ver","pkg_maintainer","pkg_email","pkg_web","pkg_status"));
-					$pid=$GLOBALS["MANDRIGO"]["DB"]->db_fetchresult(TABLE_PREFIX.TABLE_PACKAGES,"pkg_id",array(array("pkg_name","=",$pkg["name"])));
-					$this->pa_changelog($pkg["errors"],true);
-					$this->pa_updatelang($pkg["languages"],$pkg_language_install,$pid,true);
-					$this->pa_updatedb($pkg["tables"],$pkg_table_install,true);
+					if(!$this->pa_changelog($pkg["errors"],true)){
+						$msg=$GLOBALS["MANDRIGO"]["LANGUAGE"]["PK_LOGERROR"];	
+					}
+					else if(!$this->pa_updatelang($pkg["languages"],$pkg_language_install,$pkg["id"],true)){
+						$msg=$GLOBALS["MANDRIGO"]["LANGUAGE"]["PKG_LANGERROR"];	
+					}
+					else if(!$this->pa_updatedb($pkg["tables"],$pkg_table_install,true)){
+						$msg=$GLOBALS["MANDRIGO"]["LANGUAGE"]["PK_DBERROR"];	
+					}
+					else{
+						$GLOBALS["MANDRIGO"]["DB"]->db_update(DB_INSERT,TABLE_PREFIX.TABLE_PACKAGES,array($pkg["id"],$pkg["name"],$pkg["no_load_error"],$pkg["version"],$pkg["maintainer"],$pkg["email"],$pkg["website"],($pkg["enabled"]==true)?"E":"D"),array("pkg_id","pkg_name","pkg_nlerror","pkg_ver","pkg_maintainer","pkg_email","pkg_web","pkg_status"));
+						$msg=$GLOBALS["MANDRIGO"]["LANGUAGE"]["PK_PACKAGEINSTALLED"];
+					}
 				}
-				$string=$this->pa_genoverview();
+				$string=$this->pa_genoverview($msg);
 		 	break;
 		 	case "remove":
-		 		if($GLOBALS["MANDRIGO"]["VARS"]["PACKAGE"]&&$GLOBALS["MANDRIGO"]["VARS"]["PACKAGE"]>0){
+		 		if($GLOBALS["MANDRIGO"]["VARS"]["PACKAGE"]&&($GLOBALS["MANDRIGO"]["VARS"]["PACKAGE"]!=MANDRIGO_PKGID&&$GLOBALS["MANDRIGO"]["VARS"]["PACKAGE"]!=PCONTENT_ID&&$GLOBALS["MANDRIGO"]["VARS"]["PACKAGE"]!=SELF_ID)){
 		 		 	$package=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_PACKAGES,"",array(array("pkg_id","=",$GLOBALS["MANDRIGO"]["VARS"]["PACKAGE"])));
-		 			$GLOBALS["MANDRIGO"]["DB"]->db_update(DB_REMOVE,TABLE_PREFIX.TABLE_PACKAGES,"",array(array("pkg_id","=",$GLOBALS["MANDRIGO"]["VARS"]["PACKAGE"])));
 		 			include($GLOBALS["MANDRIGO"]["CONFIG"]["PLUGIN_PATH"].$package["pkg_name"].SETUP_FOLDER.SETUP_NAME);
-		 			$this->pa_changelog($pkg["errors"]);
-		 			$this->pa_updatelang($pkg["languages"],$pkg_language_install,0,false);
-		 			$this->pa_updatedb($pkg["tables"],$pkg_table_install,false);
+		 			if($pkg["name"]){
+						if(!$this->pa_changelog($pkg["errors"])){
+							$msg=$GLOBALS["MANDRIGO"]["LANGUAGE"]["PK_LOGERROR"];	
+						}
+						else if(!$this->pa_updatelang($pkg["languages"],$pkg_language_install,0,false)){
+							$msg=$GLOBALS["MANDRIGO"]["LANGUAGE"]["PKG_LANGERROR"];		
+						}
+						else if(!$this->pa_updatedb($pkg["tables"],$pkg_table_install,false)){
+							$msg=$GLOBALS["MANDRIGO"]["LANGUAGE"]["PK_DBREMOVEERROR"];
+						}
+						else{
+		 					$GLOBALS["MANDRIGO"]["DB"]->db_update(DB_REMOVE,TABLE_PREFIX.TABLE_PACKAGES,"",array(array("pkg_id","=",$GLOBALS["MANDRIGO"]["VARS"]["PACKAGE"])));
+							$msg=$GLOBALS["MANDRIGO"]["LANGUAGE"]["PK_REMOVED"];
+						}
+					}
 				}
-		 		$string=$this->pa_genoverview();
-		 	break;
+		 		$string=$this->pa_genoverview($msg);
+		 	break;//PK_PACKAGE
 		 	case "disable":
 		 		if($GLOBALS["MANDRIGO"]["VARS"]["PACKAGE"]&&$GLOBALS["MANDRIGO"]["VARS"]["PACKAGE"]>0){
 					$package=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_PACKAGES,"",array(array("pkg_id","=",$GLOBALS["MANDRIGO"]["VARS"]["PACKAGE"])));
 					if($package["pkg_status"]=="E"){
 						$GLOBALS["MANDRIGO"]["DB"]->db_update(DB_UPDATE,TABLE_PREFIX.TABLE_PACKAGES,array(array("pkg_status","D")),array(array("pkg_id","=",$GLOBALS["MANDRIGO"]["VARS"]["PACKAGE"])));
+						$msg=$GLOBALS["MANDRIGO"]["LANGUAGE"]["PK_PACKAGEDISABLED"];
 					}
 					else if($package["pkg_status"]=="D"){
 						$GLOBALS["MANDRIGO"]["DB"]->db_update(DB_UPDATE,TABLE_PREFIX.TABLE_PACKAGES,array(array("pkg_status","E")),array(array("pkg_id","=",$GLOBALS["MANDRIGO"]["VARS"]["PACKAGE"])));						
+						$msg=$GLOBALS["MANDRIGO"]["LANGUAGE"]["PK_PACKAGEENABELED"];
 					}
 				}
-				$string=$this->pa_genoverview();
+				$string=$this->pa_genoverview($msg);
 		 	break;
 			default:
 				$string=$this->pa_genoverview();
@@ -98,7 +134,20 @@ class package_admin{
 		};
 		return $string;
 	}
-	function pa_genoverview(){
+	
+	//#################################
+	//
+	// PRIVATE FUNCTIONS
+	//
+	//#################################
+    
+	
+	//
+	//private function pa_genoverview();
+	//
+	//Generates the package overview
+	//
+	function pa_genoverview($msg=""){
 		$string="";
 		$this->pa_xmlparse(PACKAGE_VER_PREFIX.$GLOBALS["MANDRIGO"]["SITE"]["UPDATE_SERVER"].PACKAGE_FILE);
 		$this->document=$this->document["MANDRIGO_PACKAGES"][0];
@@ -115,20 +164,25 @@ class package_admin{
 			$keys=array_keys($this->document);
 			if(in_array(mb_strtoupper($packages[$i]["pkg_name"]),$keys)){
 				if($this->pa_versioncomp($this->document[mb_strtoupper($packages[$i]["pkg_name"])][0]["VERSION"][0]["data"],$packages[$i]["pkg_ver"])){
-					$status="<acronym title=\"Up-To-Date\">OK</acronym>";
+					$status=ereg_replace("{VALUE}","OK",$GLOBALS["MANDRIGO"]["HTML"]["ACRONYM"]);
+					$status=ereg_replace("{ATTRIB}","title=\"".$GLOBALS["MANDRIGO"]["LANGUAGE"]["PK_UP_TO_DATE"]."\"",$status);
 				}
 				else{
-					$status="<acronym title=\"Needs Updating\">NU</acronym>";
+					$status=ereg_replace("{VALUE}","NU",$GLOBALS["MANDRIGO"]["HTML"]["ACRONYM"]);
+					$status=ereg_replace("{ATTRIB}","title=\"".$GLOBALS["MANDRIGO"]["LANGUAGE"]["PK_NEEDS_UPDATING"]."\"",$status);
 				}
 			}
 			else{
-				$status="<acronym title=\"Unknown\">U</acronym>";
+					$status=ereg_replace("{VALUE}","U",$GLOBALS["MANDRIGO"]["HTML"]["ACRONYM"]);
+					$status=ereg_replace("{ATTRIB}","title=\"".$GLOBALS["MANDRIGO"]["LANGUAGE"]["PK_UNKNOWN"]."\"",$status);
 			}
 			if($packages[$i]["pkg_status"]=="E"){
-				$dname="<acronym title=\"Disable\">D</acronym>";
+					$dname=ereg_replace("{VALUE}","D",$GLOBALS["MANDRIGO"]["HTML"]["ACRONYM"]);
+					$dname=ereg_replace("{ATTRIB}","title=\"".$GLOBALS["MANDRIGO"]["LANGUAGE"]["PK_DISABLE"]."\"",$dname);
 			}
 			else{
-				$dname="<acronym title=\"Enable\">E</acronym>";
+					$dname=ereg_replace("{VALUE}","E",$GLOBALS["MANDRIGO"]["HTML"]["ACRONYM"]);
+					$dname=ereg_replace("{ATTRIB}","title=\"".$GLOBALS["MANDRIGO"]["LANGUAGE"]["PK_ENABLE"]."\"",$dname);
 			}
 			//
 			//Display
@@ -162,9 +216,20 @@ class package_admin{
 				$string2.=$tpl_item->tpl_return("itemi");
 			}
 		}
-		$this->tpl->tpl_parse(array("PACKAGES",$string,"IPACKAGES",$string2),"index",1,false);
+		$this->tpl->tpl_parse(array("PACKAGES",$string,"IPACKAGES",$string2,"MSG",$msg),"index",1,false);
 		return $this->tpl->tpl_return("index"); 
 	}
+	
+	//
+	//private pa_versioncomp($reference,$local);
+	//
+	//compares the $local version to the $reference
+	//
+	//INPUTS:
+	//$reference	-	reference version
+	//$local		-	local version
+	//
+	//returns true if the local >= the reference or false otherwise
 	function pa_versioncomp($reference,$local){
 		$reference=explode(".",$reference);
 		$local=explode(".",$local);
@@ -173,6 +238,19 @@ class package_admin{
 		}
 		return true;
 	}
+	
+	//
+	//private pa_genlink($url_data,$name,$conf=false,$conf_msg="");
+	//
+	//generates a link
+	//
+	//INPUTS:
+	//$url_data		-	array of url data [format: array("var","value")]
+	//$name			-	link name
+	//$conf			-	use javascript conformation box
+	//$conf_msg		-	conformation message
+	//
+	//returns the link
     function pa_genlink($url_data,$name,$conf=false,$conf_msg=""){
       	$link='';
  		if($GLOBALS['MANDRIGO']['SITE']['URL_FORMAT']==1){
@@ -206,45 +284,96 @@ class package_admin{
 		return ereg_replace("{VALUE}",$name,$link);
 	}
 	
+	//
+	//private pa_updatelang($keys,$lang,$pid,$add=false);
+	//
+	//updates the lang table
+	//
+	//INPUTS:
+	//$keys			-	lang tables to update
+	//$lang			-	array of lang data
+	//$pid			-	package id
+	//$add			-	if set to true we will add, otherwise we will remove
+	//
+	//returns true on success or false on fail	
 	function pa_updatelang($keys,$lang,$pid,$add=false){
 		$solang=count($keys);
 		for($i=0;$i<$solang;$i++){
 			$soj=count($lang[$keys[$i]]);
 			$lang_data=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_LANGSETS,"",array(array("lang_name","=",$keys[$i])));
+			if(!$lang_data){
+				return false;
+			}
 			for($j=0;$j<$soj;$j++){
 				if($add){
-					$GLOBALS["MANDRIGO"]["DB"]->db_update(DB_INSERT,TABLE_PREFIX.TABLE_LANG.$lang_data["lang_id"],array($lang[$keys[$i]][$j][0],$lang[$keys[$i]][$j][1],"mg_packages",$pid),array("lang_callname","lang_value","lang_corename","lang_appid"));		
+					if(!$GLOBALS["MANDRIGO"]["DB"]->db_update(DB_INSERT,TABLE_PREFIX.TABLE_LANG.$lang_data["lang_id"],array($lang[$keys[$i]][$j][0],$lang[$keys[$i]][$j][1],"mg_packages",$pid),array("lang_callname","lang_value","lang_corename","lang_appid"))){
+						return false;
+					}		
 				}
 				else{
-					$GLOBALS["MANDRIGO"]["DB"]->db_update(DB_REMOVE,TABLE_PREFIX.TABLE_LANG.$lang_data["lang_id"],"",array(array("lang_callname","=",$lang[$keys[$i]][$j][0])));		
+					if(!$GLOBALS["MANDRIGO"]["DB"]->db_update(DB_REMOVE,TABLE_PREFIX.TABLE_LANG.$lang_data["lang_id"],"",array(array("lang_callname","=",$lang[$keys[$i]][$j][0])))){
+						return false;
+					}
 				}
 			}
 		}
+		return true;
 	}
 	
+	//
+	//private pa_updatedb($keys,$table,$add=false);
+	//
+	//updates the lang table
+	//
+	//INPUTS:
+	//$keys			-	database tables to add
+	//$lang			-	array of database table data
+	//$add			-	if set to true we will add, otherwise we will remove
+	//
+	//returns true on success or false on fail		
 	function pa_updatedb($keys,$table,$add=false){
 		$sodb=count($keys);
 		for($i=0;$i<$sodb;$i++){
 		 	if($add){
-				$GLOBALS["MANDRIGO"]["DB"]->db_dbcommands(DB_CREATE,DB_TABLE,"",TABLE_PREFIX.$keys[$i],$table[$keys[$i]]["struct"],$table[$keys[$i]]["keys"]);
+				if(!$GLOBALS["MANDRIGO"]["DB"]->db_dbcommands(DB_CREATE,DB_TABLE,"",TABLE_PREFIX.$keys[$i],$table[$keys[$i]]["struct"],$table[$keys[$i]]["keys"])){
+					return false;
+				}
 				$soj=count($table[$keys[$i]]["records"]);
 				for($j=0;$j<$soj;$j++){
 				 	$tmp=$table[$keys[$i]]["records"][$j];
-					$GLOBALS["MANDRIGO"]["DB"]->db_update(DB_INSERT,TABLE_PREFIX.$keys[$i],$tmp[1],$tmp[0]);
+					if(!$GLOBALS["MANDRIGO"]["DB"]->db_update(DB_INSERT,TABLE_PREFIX.$keys[$i],$tmp[1],$tmp[0])){
+						return false;
+					}
 				}
 			}
 			else{
-				$GLOBALS["MANDRIGO"]["DB"]->db_dbcommands(DB_DROP,DB_TABLE,"",TABLE_PREFIX.$keys[$i]);
+				if(!$GLOBALS["MANDRIGO"]["DB"]->db_dbcommands(DB_DROP,DB_TABLE,"",TABLE_PREFIX.$keys[$i])){
+					return false;
+				}
 			}
 		}
+		return true;
 	}
 	
+	//
+	//private pa_changelog($array,$add=false);
+	//
+	//updates the log xml files
+	//
+	//INPUTS:
+	//$array		-	array of log data
+	//$add			-	if set to true we will add, otherwise we will remove
+	//
+	//returns true on success or false on fail		
 	function pa_changelog($array,$add=false){
 		$keys=array_keys($array);
 		$soi=count($keys);
 		for($i=0;$i<$soi;$i++){
 			$soj=count($array[$keys[$i]]);
 			$this->pa_xmlparse($GLOBALS["MANDRIGO"]["CONFIG"]["ROOT_PATH"].LOG_SETUP.$keys[$i].".".XML_EXT);
+			if(!$this->document["ERROR_LOG"][0]["MSG"]){
+				return false;
+			}
 			$this->document=$this->document["ERROR_LOG"][0]["MSG"];
 			if($array[$keys[$i]][0][0]){
 				for($j=0;$j<$soj;$j++){
@@ -285,11 +414,24 @@ class package_admin{
 				}
 		
 				$xml_doc.="</error_log>";
-				fwrite($f,$xml_doc);
+				if(!fwrite($f,$xml_doc)){
+					return false;
+				}
 				fclose($f);
 			}
 		}
+		return true;
 	}
+	
+	//
+	//private pa_changelog($num,$add=false,$error="");
+	//
+	//updates the xml array
+	//
+	//INPUTS:
+	//$num			-	error number
+	//$add			-	if set to true we will add, otherwise we will remove
+	//$error		-	error string
 	function pa_editlogconf($num,$add=false,$error=""){
 	 	$string="";	
 
@@ -338,7 +480,7 @@ class package_admin{
 	}
 
     //
-    //private function el_xmlparse($path)
+    //private function pa_xmlparse($path)
     //
     //Loads and parses an xml file
     //
@@ -368,7 +510,7 @@ class package_admin{
 	}
 	
     //
-    //private function el_starthandler($parser, $name, $attribs)
+    //private function pa_starthandler($parser, $name, $attribs)
     //
     //Required funtion to parse the beginning of each xml tag
     //
@@ -393,7 +535,7 @@ class package_admin{
 	}
 
     //
-    //private function el_datahandler($parser, $data)
+    //private function pa_datahandler($parser, $data)
     //
     //Required funtion to parse the middle of each xml tag
     //
@@ -413,7 +555,7 @@ class package_admin{
 	}
 	
     //
-    //private function el_endhandler($parser, $name)
+    //private function pa_endhandler($parser, $name)
     //
     //Required funtion to parse the end of each xml tag
     //
