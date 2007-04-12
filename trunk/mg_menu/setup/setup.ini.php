@@ -39,9 +39,26 @@ $pkg["maintainer"]="Kevin Wijesekera";
 $pkg["email"]="k_wijesekera@yahoo.com";
 $pkg["website"]="http://kevinwijesekera.net";
 
-$pkg["enabled"]=true;
-$pkg["no_load_error"]["id"]="503";
-$pkg["no_load_error"]["message"]="The mg_menu package could not be loaded.";
+$pkg["enabled"]=false;
+$pkg["no_load_error"]="503";
+
+$pkg["errors"]=array("sql"=>array(array("410","Could not access the menu overview table.  This usually means the table is blank or missing.")),
+					 "access"=>array(),
+					 "core"=>array(),
+					 "display"=>array(array("130","The mg_menu package could not load the template for the current page hook."),array("503","The mg_menu package could not be loaded.")),
+					 "ldap"=>array());
+
+$pkg["languages"]=array();
+
+$pkg["tables"]=array("menu");
+
+$pkg_table_install["menu"]["struct"]=array(array("menu_id","int","11",DB_AUTO_INC),
+										   array("page_id","int","11","","0"),
+									       array("part_id","tinyint","4","","0"),
+										   array("menu_items","varchar","250",DB_NULL));
+										   
+$pkg_table_install["menu"]["keys"]=array(array(DB_PRIMARY,"menu_id"));
+$pkg_table_install["menu"]["records"]=array();
 
 //Do Not Edit Below This Line
 if($pkg["enabled"]){
