@@ -42,3 +42,5 @@ define("SETUP_FOLDER","/setup/");
 define("SETUP_NAME","setup.ini.".PHP_EXT);
 define("LOG_SETUP","/log_config/");
 define("DISPLAY_LOG","display.".XML_EXT);
+define("LANG_LOCATION","languages");
+define("HTML_LOCATION","html");

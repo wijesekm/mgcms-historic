@@ -49,7 +49,7 @@ class package_admin{
 			default:
 				$this->tpl=new template();
 				if(!$this->tpl->tpl_load($file,"index")||!$this->tpl->tpl_load($file,"index_item")||!$this->tpl->tpl_load($file,"install_item")){
-					$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(2001,"display");
+					$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(2000,"display");
 					return false;					
 				}
 			break;
@@ -198,7 +198,7 @@ class package_admin{
 			else{
 				$parse=array("ID",$packages[$i]["pkg_id"],"NAME",$packages[$i]["pkg_name"],"STATUS",$status
 						,"DISABLE_URL",$this->pa_genlink(array("pa",$GLOBALS["MANDRIGO"]["CURRENTAPAGE"]["NAME"],"pkg",$packages[$i]["pkg_id"],"a","disable"),$dname)
-						,"REMOVE_URL",$this->pa_genlink(array("pa",$GLOBALS["MANDRIGO"]["CURRENTAPAGE"]["NAME"],"pkg",$packages[$i]["pkg_id"],"a","remove"),"X",true,"Remove Package? Data will be lost!"));	
+						,"REMOVE_URL",$this->pa_genlink(array("pa",$GLOBALS["MANDRIGO"]["CURRENTAPAGE"]["NAME"],"pkg",$packages[$i]["pkg_id"],"a","remove"),"X",true,$GLOBALS["MANDRIGO"]["LANGUAGE"]["ADMIN_REMOVE"]));	
 			}
 			$tpl_item->tpl_parse($parse,"item",1,false);
 			$string.=$tpl_item->tpl_return("item");
@@ -208,7 +208,7 @@ class package_admin{
 		$string2="";
 		for($i=0;$i<$soq;$i++){
 		 	//echo !in_array($upackages[$i],$names);
-			if(!in_array($upackages[$i],$names)&&$upackages[$i]!="."&&$upackages[$i]!=".."){
+			if(!in_array($upackages[$i],$names)&&$upackages[$i]!="."&&$upackages[$i]!=".."&&$upackages[$i]!=LANG_LOCATION&&$upackages[$i]!=HTML_LOCATION){
 				$tpl_item=new template();
 				$tpl_item->tpl_load($this->tpl->tpl_return("install_item"),"itemi",false);
 				$parse=array("NAME",$upackages[$i],"INSTALL",$this->pa_genlink(array("pa",$GLOBALS["MANDRIGO"]["CURRENTAPAGE"]["NAME"],"pkg",$upackages[$i],"a","add"),"X"));
@@ -233,11 +233,20 @@ class package_admin{
 	function pa_versioncomp($reference,$local){
 		$reference=explode(".",$reference);
 		$local=explode(".",$local);
-		if($local[2]<$reference[2]||$local[1]<$reference[1]||$local[0]<$reference[0]){
+		if($local[0]<$reference[0]){
 			return false;
 		}
+		else{
+			if($local[1]<$reference[1]){
+				return false;
+			}
+			else{
+				if($local[2]<$reference[2]){
+					return false;
+				}
+			}
+		}
 		return true;
-	}
 	
 	//
 	//private pa_genlink($url_data,$name,$conf=false,$conf_msg="");
