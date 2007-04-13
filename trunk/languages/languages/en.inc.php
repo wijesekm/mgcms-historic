@@ -1,4 +1,16 @@
-$language["en-US"]=array(array("LI_TITLE","Login","mg_login","0"),
+<?php
+$language_init=array("lang_name"=>"en",
+						 "lang_type"=>"L",
+						 "lang_charset"=>"utf-8",
+						 "lang_encoding"=>"iso-8859-1",
+						 "lang_maintainer"=>"Kevin Wijesekera",
+						 "lang_email"=>"k_wijesekera@yahoo.com",
+						 "lang_web"=>"http://kevinwijesekera.net",
+						 "lang_ver"=>"0.0.0.7"
+						);
+
+
+$language_vals=array(array("LI_TITLE","Login","mg_login","0"),
 						 array("LI_BADCRED","Incorrect username or password!","mg_login","0"),
 						 array("LI_NOREG","You're Username and Password are correct but mandrigo couldnt not find a database record for you and Automatic Regestration is disabeled.  Please contact the webmaster of this site.","mg_login","0"),
 						 array("LI_INERROR","Internal Error","mg_login","0"),
