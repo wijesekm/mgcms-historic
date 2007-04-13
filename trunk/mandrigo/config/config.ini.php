@@ -192,12 +192,12 @@ $path_style="unix";
 /////////////////////
 
 //
-//LANGUAGE - language script is in.  See documentation for valid types (ex en-US)
+//LANGUAGE - language script is in.  See documentation for valid types (ex en)
 //
 //Html Version - html version that the script is in (ex xhtml_1_0_trans)
 //
 
-$GLOBALS["MANDRIGO"]["CONFIG"]["LANGUAGE"]="en-US";
+$GLOBALS["MANDRIGO"]["CONFIG"]["LANGUAGE"]="en";
 $GLOBALS["MANDRIGO"]["CONFIG"]["HTML_VER"]="xhtml_1_0_trans";
 
 //
