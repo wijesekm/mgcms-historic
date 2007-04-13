@@ -1,0 +1,18 @@
+$language["en-US"]=array(array("LI_TITLE","Login","mg_login","0"),
+						 array("LI_BADCRED","Incorrect username or password!","mg_login","0"),
+						 array("LI_NOREG","You're Username and Password are correct but mandrigo couldnt not find a database record for you and Automatic Regestration is disabeled.  Please contact the webmaster of this site.","mg_login","0"),
+						 array("LI_INERROR","Internal Error","mg_login","0"),
+						 array("ADMIN_REMOVE","Remove Package? All Data Will Be Lost!"),
+						 array("PK_PACKAGEENABELED","Package Enabeled","mg_packages","-2"),
+						 array("PK_PACKAGEDISABLED","Package Disabled","mg_packages","-2"),
+						 array("PK_REMOVED","Package Removed!","mg_admin","0"),
+						 array("DBREMOVEERROR","Could not remove tables! Installer will halt!","mg_packages","-2"),
+						 array("PK_DBERROR","Could not add tables required by package! Installer will halt!","mg_packages","-2"),
+						 array("PKG_LANGERROR","Could not update the language table! Installer will halt!","mg_packages","-2"),
+						 array("PK_ENABLE","Enable","mg_admin","0"),
+						 array("PK_LOGERROR","Could not update the log files! Installer will halt!","mg_packages","-2"),
+						 array("PK_DISABLE","Disable","mg_admin","0"),
+						 array("PK_NEEDS_UPDATING","Needs Updating","mg_admin","0"),
+						 array("PK_UNKNOWN","Unknown","mg_admin","0"),
+						 array("PK_UP_TO_DATE","Up-To-Date","mg_admin","0")
+						 );
