@@ -35,109 +35,46 @@
 								The mg_pcontent package could not load the template for the current page hook.
 							</value>
 						</msg>
-					
+		
 						<msg>
-							<id></id>
+							<id>110</id>
 							<value>
-								
+								The mg_sitemap package could not load the template for the current page hook.
 							</value>
 						</msg>
 					
 						<msg>
-							<id></id>
+							<id>120</id>
 							<value>
-								
+								The mg_news package could not load the template for the current page hook.
 							</value>
 						</msg>
-					
 						<msg>
-							<id></id>
+							<id>1000</id>
 							<value>
-								
+								The mga_pcontent package could not be loaded.
 							</value>
 						</msg>
-					
 						<msg>
-							<id></id>
+							<id>1001</id>
 							<value>
-								
-							</value>
+								The mga_packages package could not be loaded.
 						</msg>
-					
 						<msg>
-							<id></id>
+							<id>1002</id>
 							<value>
-								
-							</value>
+								The mga_language package could not be loaded.
 						</msg>
-					
 						<msg>
-							<id></id>
+							<id>2000</id>
 							<value>
-								
+								The mga_package package could not load the template for the current page hook.
 							</value>
-						</msg>
-					
-						<msg>
-							<id></id>
+						</msg>					
+					<msg>
+							<id>2001</id>
 							<value>
-								
-							</value>
-						</msg>
-					
-						<msg>
-							<id></id>
-							<value>
-								
-							</value>
-						</msg>
-					
-						<msg>
-							<id></id>
-							<value>
-								
-							</value>
-						</msg>
-					
-						<msg>
-							<id>450</id>
-							<value>
-								some random error yo.
-							</value>
-						</msg>
-					
-						<msg>
-							<id></id>
-							<value>
-								
-							</value>
-						</msg>
-					
-						<msg>
-							<id></id>
-							<value>
-								
-							</value>
-						</msg>
-					
-						<msg>
-							<id></id>
-							<value>
-								
-							</value>
-						</msg>
-					
-						<msg>
-							<id></id>
-							<value>
-								
-							</value>
-						</msg>
-					
-						<msg>
-							<id></id>
-							<value>
-								
+								The mga_language package could not load the template for the current page hook.
 							</value>
 						</msg>
 					</error_log>

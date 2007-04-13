@@ -49,25 +49,4 @@
 								Could not access package table.  This usually means the table is blank or missing.
 							</value>
 						</msg>
-					
-						<msg>
-							<id></id>
-							<value>
-								
-							</value>
-						</msg>
-					
-						<msg>
-							<id></id>
-							<value>
-								
-							</value>
-						</msg>
-					
-						<msg>
-							<id></id>
-							<value>
-								
-							</value>
-						</msg>
 					</error_log>
