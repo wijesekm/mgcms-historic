@@ -40,7 +40,12 @@ $GLOBALS["MANDRIGO"]["CONFIG"]["LANGUAGE"]=(!empty($GLOBALS["MANDRIGO"]["CURRENT
 
 $lang_curset=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_LANGSETS,"",array(array("lang_name","=",$GLOBALS["MANDRIGO"]["CONFIG"]["LANGUAGE"],DB_AND),array("lang_type","=","L")));
 $html_curset=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_LANGSETS,"",array(array("lang_name","=",$GLOBALS["MANDRIGO"]["CONFIG"]["HTML_VER"],DB_AND),array("lang_type","=","H")));
-
+if(!$lang_curset){
+	$lang_curset=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_LANGSETS,"",array(array("lang_id","=","1",DB_AND),array("lang_type","=","L")));
+}
+if(!$html_curset){
+	$html_curset=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_LANGSETS,"",array(array("lang_id","=","1",DB_AND),array("lang_type","=","H")));
+}
 //
 //Errors for no language stuff
 //
