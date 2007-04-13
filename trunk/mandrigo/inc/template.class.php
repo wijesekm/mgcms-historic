@@ -206,6 +206,7 @@ class template{
 			if(eregi(TPL_CODE_END,$tmp[$i])){
 				$cur=explode(TPL_CODE_END,$tmp[$i]);
 				$compile_string=$cur[0];
+				$mg_return="";
 				if($GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
 					eval($compile_string);	
 				}
