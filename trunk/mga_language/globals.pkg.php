@@ -36,8 +36,9 @@ if(!defined("START_MANDRIGO")){
 define("LANGUAGE_VER_PREFIX","http://");
 define("LANGUAGE_FILE","/languages.xml");
 
-define("LANG_PATH","languages".$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]."languages");
-define("HTML_PATH","languages".$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]."htmls");
+define("LANG_PATH",LANG_LOCATION.$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]."languages");
+define("HTML_PATH",LANG_LOCATION.$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]."htmls");
+
 $GLOBALS["MANDRIGO"]["LANG_INIT"]["STRUCTURE"]=array(array("lang_callname","varchar","40","",""),
 										   			 array("lang_value","varchar","250","",""),
 									      			 array("lang_corename","varchar","15","","mg_display"),

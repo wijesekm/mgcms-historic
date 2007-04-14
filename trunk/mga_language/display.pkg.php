@@ -255,6 +255,9 @@ class language_admin{
 					return false;
 				}				
 			}
+			if(!$this->la_alterpkglang($init_array["lang_name"],$langid)){
+				return false;
+			}
 		}
 		else{
 			$langid=$GLOBALS["MANDRIGO"]["DB"]->db_fetchresult(TABLE_PREFIX.TABLE_LANGSETS,"lang_id",array(array("lang_name","=",$init_array["lang_name"])));
@@ -268,6 +271,34 @@ class language_admin{
 		return true;
 	}
 	
+	//
+	//private la_alterpkglang($langname,$langid,$add=false);
+	//
+	//adds all package language data
+	//
+	//INPUTS:
+	//$langname		-	the name of the language
+	//$langid		-	the id of the language
+	//
+	//returns true on success or false on fail	
+	function la_alterpkglang($langname,$langid){
+		$pkglist=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_PACKAGES,"",array(array("pkg_id",">","0"),array(DB_ORDERBY,"pkg_id","ASC")),"ASSOC",DB_ALL_ROWS);
+		$soq=count($pkglist);
+		for($i=0;$i<$soq;$i++){
+			include($GLOBALS["MANDRIGO"]["CONFIG"]["PLUGIN_PATH"].$pkglist[$i]["pkg_name"].SETUP_FOLDER.SETUP_NAME);
+			if(in_array($langname,$pkg["languages"])){
+				$solang=count($pkg_language_install[$langname]);
+				for($j=0;$j<$solang;$j++){
+				 	$vals=array($pkg_language_install[$langname][$j][0],$pkg_language_install[$langname][$j][1],"mg_packages",$pkglist["pkg_id"]);
+					if(!$GLOBALS["MANDRIGO"]["DB"]->db_update(DB_INSERT,TABLE_PREFIX.TABLE_LANG.$langid,$vals,array("lang_callname","lang_value","lang_corename","lang_appid"))){
+						return false;
+					}
+				}
+			}
+		}
+		return true;
+	}
+
 	//
 	//private la_genlink($url_data,$name,$conf=false,$conf_msg="");
 	//
