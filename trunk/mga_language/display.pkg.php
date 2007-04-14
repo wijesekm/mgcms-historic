@@ -37,6 +37,11 @@ class language_admin{
 	
 	var $tpl;
 	
+    //for xml parsing
+   	var $document;
+   	var $curr_tag;
+   	var $tag_stack;
+	   	
 	function language_admin($i){
 	    $file=$GLOBALS['MANDRIGO']['CONFIG']['TEMPLATE_PATH'].$GLOBALS['MANDRIGO']['CURRENTAPAGE']['DATAPATH'].$GLOBALS['MANDRIGO']['CURRENTAPAGE']['NAME'].'_'.$i.'.'.TPL_EXT;
 		switch($GLOBALS["MANDRIGO"]["VARS"]["SECONDARYACTION"]){
@@ -49,6 +54,20 @@ class language_admin{
 			break;
 		};
 	}
+	
+	
+	//#################################
+	//
+	// PUBLIC FUNCTIONS
+	//
+	//#################################
+    
+	
+	//
+	//public function la_display();
+	//
+	//Displays the page
+	//
 	function la_display(){
 	 	$id="L";
 	 	if($GLOBALS["MANDRIGO"]["VARS"]["SECONDARYACTION"]=="html"){
@@ -62,20 +81,20 @@ class language_admin{
 			case 'add':
 				include($GLOBALS["MANDRIGO"]["CONFIG"]["PLUGIN_PATH"].$path.$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"].strtolower($GLOBALS["MANDRIGO"]["VARS"]["PACKAGE"]).".inc.".PHP_EXT);
 				if(!$this->la_alterlang($language_init,$language_vals,true)){
-					return $this->la_overview("Could Not Add Language!",$id);	
+					return $this->la_overview($GLOBALS["MANDRIGO"]["LANGUAGE"]["LANG_ADDERR"],$id);	
 				}
-				return $this->la_overview("Language Added!",$id);				 		
+				return $this->la_overview($GLOBALS["MANDRIGO"]["LANGUAGE"]["LANG_ADDED"],$id);				 		
 			break;
 			case 'remove':
 				$lid=$GLOBALS["MANDRIGO"]["DB"]->db_fetchresult(TABLE_PREFIX.TABLE_LANGSETS,"lang_id",array(array("lang_name","=",$GLOBALS["MANDRIGO"]["VARS"]["PACKAGE"])));
 				if($lid<3){
-					return $this->la_overview("Cannot Remove!",$id);	
+					return $this->la_overview($GLOBALS["MANDRIGO"]["LANGUAGE"]["LANG_NOREMOVE"],$id);	
 				}
 				include($GLOBALS["MANDRIGO"]["CONFIG"]["PLUGIN_PATH"].$path.$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"].strtolower($GLOBALS["MANDRIGO"]["VARS"]["PACKAGE"]).".inc.".PHP_EXT);
 				if(!$this->la_alterlang($language_init,$language_vals,false)){
-					return $this->la_overview("Could Not Remove Language!",$id);	
+					return $this->la_overview($GLOBALS["MANDRIGO"]["LANGUAGE"]["LANG_DELERR"],$id);	
 				}
-				return $this->la_overview("Language Removed!",$id);
+				return $this->la_overview($GLOBALS["MANDRIGO"]["LANGUAGE"]["LANG_REMOVED"],$id);
 			break;
 			default:
 				return $this->la_overview("",$id);					
@@ -83,6 +102,23 @@ class language_admin{
 		};
 
 	}
+	
+	//#################################
+	//
+	// PRIVATE FUNCTIONS
+	//
+	//#################################
+    	
+	//
+	//private function la_overview($msg="",$id="L");
+	//
+	//Displays the overview page
+	//
+	//INPUTS
+	//$msg	-	status message to display
+	//$id	-	[L,H] L is language H is html
+	//
+	//returns the parsed template
 	function la_overview($msg="",$id="L"){
 	 	$langs=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_LANGSETS,"",array(array("lang_type","=",$id),array(DB_ORDERBY,"lang_name","ASC")),"ASSOC",DB_ALL_ROWS);
 		$html=array("","");
@@ -154,6 +190,17 @@ class language_admin{
 		$this->tpl->tpl_parse(array("LANGUAGES",$content,"MSG",$msg,"ILANGUAGES",$string2),"index",1,false);
 		return $this->tpl->tpl_return("index");
 	}
+	
+	//
+	//private la_versioncomp($reference,$local);
+	//
+	//compares the $local version to the $reference
+	//
+	//INPUTS:
+	//$reference	-	reference version
+	//$local		-	local version
+	//
+	//returns true if the local >= the reference or false otherwise
 	function la_versioncomp($reference,$local){
 		$reference=explode(".",$reference);
 		$local=explode(".",$local);
@@ -180,14 +227,13 @@ class language_admin{
 	
 	
 	//
-	//private pa_alterlang($keys,$lang,$pid,$add=false);
+	//private la_alterlang($init_array,$lang_array,$add=false);
 	//
-	//updates the lang table
+	//adds a language to the db
 	//
 	//INPUTS:
-	//$keys			-	lang tables to update
-	//$lang			-	array of lang data
-	//$pid			-	package id
+	//$init_array	-	array of language init data
+	//$lang			-	array of language values
 	//$add			-	if set to true we will add, otherwise we will remove
 	//
 	//returns true on success or false on fail	
@@ -221,6 +267,7 @@ class language_admin{
 		}
 		return true;
 	}
+	
 	//
 	//private la_genlink($url_data,$name,$conf=false,$conf_msg="");
 	//
@@ -266,8 +313,9 @@ class language_admin{
 		$link=ereg_replace("{ATTRIB}","href=\"".$url."\"",$GLOBALS["MANDRIGO"]["HTML"]["A"]);
 		return ereg_replace("{VALUE}",$name,$link);
 	}	
+	
     //
-    //private function pa_xmlparse($path)
+    //private function la_xmlparse($path)
     //
     //Loads and parses an xml file
     //
@@ -297,7 +345,7 @@ class language_admin{
 	}
 	
     //
-    //private function pa_starthandler($parser, $name, $attribs)
+    //private function la_starthandler($parser, $name, $attribs)
     //
     //Required funtion to parse the beginning of each xml tag
     //
@@ -322,7 +370,7 @@ class language_admin{
 	}
 
     //
-    //private function pa_datahandler($parser, $data)
+    //private function la_datahandler($parser, $data)
     //
     //Required funtion to parse the middle of each xml tag
     //
@@ -342,7 +390,7 @@ class language_admin{
 	}
 	
     //
-    //private function pa_endhandler($parser, $name)
+    //private function la_endhandler($parser, $name)
     //
     //Required funtion to parse the end of each xml tag
     //
