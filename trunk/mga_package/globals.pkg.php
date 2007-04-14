@@ -35,12 +35,3 @@ if(!defined("START_MANDRIGO")){
 
 define("PACKAGE_VER_PREFIX","http://");
 define("PACKAGE_FILE","/packages.xml");
-define("MANDRIGO_PKGID",-1337);
-define("SELF_ID",-2);
-define("PCONTENT_ID",-1);
-define("SETUP_FOLDER","/setup/");
-define("SETUP_NAME","setup.ini.".PHP_EXT);
-define("LOG_SETUP","/log_config/");
-define("DISPLAY_LOG","display.".XML_EXT);
-define("LANG_LOCATION","languages");
-define("HTML_LOCATION","html");

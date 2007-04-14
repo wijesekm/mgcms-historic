@@ -190,7 +190,7 @@ class package_admin{
 
 			$tpl_item=new template();
 			$tpl_item->tpl_load($this->tpl->tpl_return("index_item"),"item",false);
-			if($packages[$i]["pkg_id"]<1){
+			if($packages[$i]["pkg_id"]>-2000&&$packages[$i]["pkg_id"]<0){
 				$parse=array("ID",$packages[$i]["pkg_id"],"NAME",$packages[$i]["pkg_name"],"STATUS",$status
 						,"DISABLE_URL",""
 						,"REMOVE_URL","");
@@ -208,7 +208,7 @@ class package_admin{
 		$string2="";
 		for($i=0;$i<$soq;$i++){
 		 	//echo !in_array($upackages[$i],$names);
-			if(!in_array($upackages[$i],$names)&&$upackages[$i]!="."&&$upackages[$i]!=".."&&$upackages[$i]!=LANG_LOCATION&&$upackages[$i]!=HTML_LOCATION){
+			if(!in_array($upackages[$i],$names)&&$upackages[$i]!="."&&$upackages[$i]!=".."&&$upackages[$i]!=LANG_LOCATION){
 				$tpl_item=new template();
 				$tpl_item->tpl_load($this->tpl->tpl_return("install_item"),"itemi",false);
 				$parse=array("NAME",$upackages[$i],"INSTALL",$this->pa_genlink(array("pa",$GLOBALS["MANDRIGO"]["CURRENTAPAGE"]["NAME"],"pkg",$upackages[$i],"a","add"),"X"));
