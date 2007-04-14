@@ -682,17 +682,34 @@ class db extends _db{
               	  	case DB_ORDERBY:
               	  		$ob=array($params[$i][1],$params[$i][2]);
               	  	break;
-				 	default:  
-				 		if($params[$i][4]&&$params[$i][4]!=$last_group){
-							$qstring.=" (";
-							$set=true;
-							$last_group=$params[$i][4];	
-						}
-						$qstring.=" `".mysql_real_escape_string($params[$i][0])."`".$params[$i][1]."'".mysql_real_escape_string($params[$i][2])."'";
-				 		if(($params[$i+1][4]&&$params[$i+1][4]!=$last_group)||($set&&($i+1)==count($params))){
-							$qstring.=" )";
-							$set=false;
-						}
+				 	default:
+				 		switch ($params[$i][1]){
+							case "=":
+						 		if($params[$i][4]&&$params[$i][4]!=$last_group){
+									$qstring.=" (";
+									$set=true;
+									$last_group=$params[$i][4];	
+								}
+								$qstring.=" `".mysql_real_escape_string($params[$i][0])."`".$params[$i][1]."'".mysql_real_escape_string($params[$i][2])."'";
+						 		if(($params[$i+1][4]&&$params[$i+1][4]!=$last_group)||($set&&($i+1)==count($params))){
+									$qstring.=" )";
+									$set=false;
+								}							
+							break;
+							default:
+							 	if($params[$i][4]&&$params[$i][4]!=$last_group){
+									$qstring.=" (";
+									$set=true;
+									$last_group=$params[$i][4];	
+								}
+								$qstring.=" `".mysql_real_escape_string($params[$i][0])."`".$params[$i][1].mysql_real_escape_string($params[$i][2]);
+						 		if(($params[$i+1][4]&&$params[$i+1][4]!=$last_group)||($set&&($i+1)==count($params))){
+									$qstring.=" )";
+									$set=false;
+								}						
+							break;	
+						};
+
 				    break;
 				};
             	switch($params[$i][3]){
