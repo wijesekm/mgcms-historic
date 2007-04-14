@@ -42,3 +42,9 @@ define("CFG_NAME","config.ini.".PHP_EXT);
 
 define("TPL_ADMINPATH","/admin/");
 define("TPL_ADMIN","admin.".TPL_EXT);
+
+define("SETUP_FOLDER","/setup/");
+define("SETUP_NAME","setup.ini.".PHP_EXT);
+define("LOG_SETUP","/log_config/");
+define("DISPLAY_LOG","display.".XML_EXT);
+define("LANG_LOCATION","languages");
