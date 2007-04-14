@@ -247,6 +247,7 @@ class package_admin{
 			}
 		}
 		return true;
+	}
 	
 	//
 	//private pa_genlink($url_data,$name,$conf=false,$conf_msg="");
