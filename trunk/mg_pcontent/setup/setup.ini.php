@@ -50,6 +50,7 @@ $pkg["errors"]=array("sql"=>array(),
 					 "ldap"=>array());
 
 $pkg["tables"]=array();
+$pkg["languages"]=array();
 
 $pkg_table[""]="";
 //Do Not Edit Below This Line
