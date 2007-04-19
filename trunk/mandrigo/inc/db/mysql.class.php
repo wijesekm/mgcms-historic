@@ -62,7 +62,7 @@ class db extends _db{
 	//$persistant	- use persistant connections (default: true)
 	//$secure		- use a ssl connection (default: false) !!Not Supported!!
 	//$ssl			- ssl data string (default: ) !!Not Supported!!
-    function db_connect($host,$port,$socket,$user,$password,$database,$persistant=true,$secure=false,$ssl=""){
+    function db_connect($host,$port,$socket,$user,$password,$database,$persistent=true,$secure=false,$ssl=""){
      
      	//we need these to be set
      	if(!$user||!$password||!$database){
@@ -73,9 +73,17 @@ class db extends _db{
         if(!$host){
 			$host="localhost";
 		}
-		//sets default socket if host is localhost and no port or socket is set
+		//sets default socket if host is localhost and no port or socket
 		if($host=="localhost"&&!$port&&!$socket){
 			$socket="/tmp/mysql.sock";
+		}
+		if($port&&$socket){
+			if($host=="localhost"){
+				$port="";
+			}
+			else{
+				$socket="";
+			}
 		}
 		
 		//adds port/socket to host string
@@ -88,7 +96,7 @@ class db extends _db{
 	
 		//connects to the database
         if($GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){      
-            if($persistant){
+            if($persistent){
                 $this->db_id=mysql_pconnect($host,$user,$password);
             }
             else{
@@ -96,7 +104,7 @@ class db extends _db{
             }
         }
         else{
-            if($persistant){
+            if($persistent){
                 if(!(@$this->db_id=mysql_pconnect($host,$user,$password))){
                     return false;
                 }
