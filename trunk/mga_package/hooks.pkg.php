@@ -36,6 +36,7 @@ if(!defined("START_MANDRIGO")){
 class mga_package_hook{
  
     function mga_package_display_hook($i){
+     	@include_once("display.pkg.php");
         $package_admin=new package_admin($i);
         $content=$package_admin->pa_display();
         return $content;

@@ -36,6 +36,7 @@ if(!defined("START_MANDRIGO")){
 class mga_language_hook{
  
     function mga_language_display_hook($i){
+     	@include_once("display.pkg.php");
         $lang_admin=new language_admin($i);
         $content=$lang_admin->la_display();
         return $content;
