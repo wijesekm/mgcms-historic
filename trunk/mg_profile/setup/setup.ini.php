@@ -46,7 +46,7 @@ $pkg["no_load_error"]="504";
 $pkg["errors"]=array("sql"=>array(),
 					 "access"=>array(),
 					 "core"=>array(),
-					 "display"=>array(array("504","The mg_profile package could not be loaded.")),
+					 "display"=>array(array("150","The mg_profile package could not load the current hooks template."),array("504","The mg_profile package could not be loaded.")),
 					 "ldap"=>array());
 
 $pkg["languages"]=array();

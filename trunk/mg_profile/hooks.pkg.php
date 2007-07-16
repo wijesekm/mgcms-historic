@@ -35,17 +35,18 @@ if(!defined("START_MANDRIGO")){
 
 class mg_profile_hook{
     function mg_profile_display_hook($i){
-      	$profile=new profile_display($sql);
-      	$string='';
-      	if(ereg('g',$GLOBALS['HTTP_GET']['ID'])){
-			$GLOBALS['HTTP_GET']['ID']=substr($GLOBALS['HTTP_GET']['ID'],1);	
-			$string=$cur_profile->display_group($i);
+      	$profile=new mg_profile($i);
+      	if(ereg('g',$GLOBALS['MANDRIGO']['VARS']['ID'])){
+			$GLOBALS['MANDRIGO']['VARS']['ID']=substr($GLOBALS['MANDRIGO']['VARS']['ID'],1);	
+			return $profile->pr_display('group');
+		}
+		else if(ereg('u',$GLOBALS['MANDRIGO']['VARS']['ID'])){
+			$GLOBALS['MANDRIGO']['VARS']['ID']=substr($GLOBALS['MANDRIGO']['VARS']['ID'],1);
+			return $profile->pr_display('user');
 		}
 		else{
-			$GLOBALS['HTTP_GET']['ID']=substr($GLOBALS['HTTP_GET']['ID'],1);
-			$string=$cur_profile->display_user($i);
+			return $profile->pr_display('');	
 		}
-		return $string;
     }
     function mg_profile_vars_hook($i){
         return array();

@@ -37,12 +37,26 @@ class mg_profile{
 
 	var $tpl;
 
-    function mg_profile(&$db){
+    function mg_profile($id){
 		$this->tpl=new template();
         $file=$GLOBALS['MANDRIGO']['CONFIG']['TEMPLATE_PATH'].$GLOBALS['MANDRIGO']['CURRENTPAGE']['DATAPATH'].$GLOBALS['MANDRIGO']['CURRENTPAGE']['NAME'].'_'.$i.'.'.TPL_EXT;
-		
+		if(!$this->tpl->tpl_load($file,"overview")||!$this->tpl->tpl_load($file,"user")||!$this->tpl->tpl_load($file,"group")){
+			$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror('display',150);
+			return false;
+		}		
     }
-    function pr_display($id){
-		
+    function pr_display($type){
+		switch($type){
+			case 'group':
+				$group=new group()
+				//display group
+			break;
+			case 'user':
+				//display user
+			break;
+			default:
+				//display current users profile
+			break;	
+		};
 	}
 }
