@@ -1,3 +1,7 @@
+0.7.0
+1) Updated to work with mandrigo version 0.7.0
+2) Updated to use new account classes instead of just database so it will work with AD/LDAP
+
 0.6.0
 1) Updated to work with mandrigo version 0.6.0
 2) Added support for about second for groups
