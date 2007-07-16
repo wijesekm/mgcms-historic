@@ -38,6 +38,7 @@ class mg_news_hook{
   	var $pparse_vars;
     
 	function mg_news_display_hook($i){
+	 	@include_once("display.pkg.php");
 	 	$type="";
 	  	if($GLOBALS["MANDRIGO"]["VARS"]["FEED_TYPE"]){
 			$type=$GLOBALS["MANDRIGO"]["VARS"]["FEED_TYPE"];
@@ -56,6 +57,7 @@ class mg_news_hook{
 		return $this->pparse_vars;
     }
     function mg_news_admin_hook($i){
+     	@include_once("admin.pkg.php")
 
     }
 }
