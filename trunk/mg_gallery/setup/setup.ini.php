@@ -44,9 +44,11 @@ $pkg["enabled"]=true;
 $pkg["no_load_error"]="505";
 
 $pkg["errors"]=array("sql"=>array(),
-					 "access"=>array(),
+					 "access"=>array(array("420","The mg_gallery package could not load the gallery table.  This usually means the table is blank or missing.")),
 					 "core"=>array(),
-					 "display"=>array(array("505","The mg_gallery package could not be loaded.")),
+					 "display"=>array(array("140","The mg_gallery package could not load the template for the current page."),
+					 				  array("505","The mg_gallery package could not be loaded.")
+									 ),
 					 "ldap"=>array());
 
 $pkg["languages"]=array("en-US");
