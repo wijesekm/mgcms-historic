@@ -35,6 +35,7 @@ if(!defined("START_MANDRIGO")){
 
 class mg_sitemap_hook{
     function mg_sitemap_display_hook($i){
+     	@include_once("display.pkg.php");
         if(!$map = new site_map($i)){
 			return false;
 		}
@@ -44,6 +45,7 @@ class mg_sitemap_hook{
         return array();
     }
     function mg_sitemap_admin_hook($i){
+     	@include_once("display.pkg.php");
         return true;
     }
 }
