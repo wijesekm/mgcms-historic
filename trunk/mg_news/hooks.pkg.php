@@ -57,7 +57,7 @@ class mg_news_hook{
 		return $this->pparse_vars;
     }
     function mg_news_admin_hook($i){
-     	@include_once("admin.pkg.php")
+     	@include_once("admin.pkg.php");
 
     }
 }
