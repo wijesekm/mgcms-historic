@@ -329,7 +329,34 @@ class package_admin{
 		}
 		return true;
 	}
+	//
+	//private pa_updateimg($add=false);
+	//
+	//updates the image files
+	//
+	//INPUTS:
+	//$add			-	if set to true we will add, otherwise we will remove
+	//
+	//returns true on success or false on fail	
+	function pa_updateimg($name,$add=false){
+		if(!is_dir($GLOBALS["MANDRIGO"]["CONFIG"]["PLUGIN_PATH"].$name.PACKAGE_IMGLOC)){
+			return false
+		}
+		if($add){
+			if(!@mkdir($GLOBALS["MANDRIGO"]["CONFIG"]["IMG_PATH"].$name)){
+				return false;
+			}
+			if(!@copy($GLOBALS["MANDRIGO"]["CONFIG"]["PLUGIN_PATH"].$name.PACKAGE_IMGLOC,$GLOBALS["MANDRIGO"]["CONFIG"]["IMG_PATH"].$name)){
+				return false;
+			}
+		}
+		else{
+			return $this->pa_removedir($GLOBALS["MANDRIGO"]["CONFIG"]["IMG_PATH"].$name);
+		}
+		return true;
+	}
 	
+		
 	//
 	//private pa_updatedb($keys,$table,$add=false);
 	//
@@ -580,5 +607,28 @@ class package_admin{
 	        $t =& $this->currTag[$this->tagStack[$i]];
 	        $this->currTag =& $t[count($t)-1];
 	    }
+	}
+    //
+    //private function pa_removedir($dir)
+    //
+    //Removes a directory and all the files in it
+    //
+    //INPUTS:
+    //$dir		-	Directory to remove(default: )
+    //
+    //return true on sucess or false on fail
+	function pa_removedir($dir){
+	    if(!$dh = @opendir($dir)){
+			return false;
+		}
+	    while(($obj = @readdir($dh))){
+	        if($obj=='.' || $obj=='..'){}
+	        else if(!@unlink($dir.$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"].$obj)){
+				$this->pa_removedir($dir.$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"].$obj);	
+			}
+	    }
+	    @closedir($dh);
+	    @rmdir($dir);
+		return true;
 	}
 }

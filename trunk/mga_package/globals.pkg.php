@@ -35,3 +35,4 @@ if(!defined("START_MANDRIGO")){
 
 define("PACKAGE_VER_PREFIX","http://");
 define("PACKAGE_FILE","/packages.xml");
+define("PACKAGE_IMGLOC","/templates/images/");
