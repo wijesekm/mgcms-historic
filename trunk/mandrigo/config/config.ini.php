@@ -77,9 +77,9 @@ $sql_config["SQL_TYPE"]="mysql";
 $sql_config["SQL_HOST"]="localhost";
 $sql_config["SQL_PORT"]="3306";
 $sql_config["SQL_SOCKET"]="";
-$sql_config["SQL_USER"]="some_user";
-$sql_config["SQL_PASSWORD"]="some_password";
-$sql_config["SQL_DATABASE"]="mandrigo";
+$sql_config["SQL_USER"]="";
+$sql_config["SQL_PASSWORD"]="";
+$sql_config["SQL_DATABASE"]="";
 $sql_config["TABLE_PREFIX"]="mg_";
 $sql_config["USE_SSL"]=false;
 $sql_config["SSL"]=array("KEY"=>"",
@@ -92,16 +92,24 @@ $sql_config["SSL"]=array("KEY"=>"",
 // AD/LDAP array
 /////////////////////
 
-//Enter in the information for your AD/LDAP database (if used):
 //
+//Enter in the information for your AD/LDAP database (if used)
+//Currently this only works for Active Directory.  General LDAP support 
+//is in the works.
 //
-//	
+//DN				-	Base Domain for LDAP Server (ie DC=MS,DC=TEST,DC=ORG)
+//DC				-	Array of Domain Controllers []specify more then one for load balancing] 
+//						(ie dc1.test.org or 192.168.1.12)
+//ACCT_SUFFIX		-	Account Suffix [generally just the DN in general notation] (ie @ms.test.org)
+//CONTROL_USER		-	Username with ability to search on the domain
+//CONTROL_PASSWORD	-	That users password
+//
 $adldap_config="";
-$adldap_config["DN"]="DC=MS,DC=TEST,DC=ORG";
-$adldap_config["DC"]=array("dc1.test.org");
-$adldap_config["ACCT_SUFFIX"]="@ms.test.org";
-$adldap_config["CONTROL_USER"]="control_user";
-$adldap_config["CONTROL_PASSWORD"]="some_password";
+$adldap_config["DN"]="";
+$adldap_config["DC"]=array("");
+$adldap_config["ACCT_SUFFIX"]="";
+$adldap_config["CONTROL_USER"]="";
+$adldap_config["CONTROL_PASSWORD"]="";
 
 //////////////////////
 // Error Logging
@@ -156,13 +164,14 @@ $log_config["FATAL_TYPES"]=array("sql"=>1,"core"=>1,"ldap"=>1);
 //
 
 $GLOBALS["MANDRIGO"]["CONFIG"]["BASE_PATH"]=ereg_replace("/config/config.ini.php","",__FILE__);
-$GLOBALS["MANDRIGO"]["CONFIG"]["ROOT_PATH"]=ereg_replace("/config/config.ini.php","",__FILE__)."/inc/";
-$GLOBALS["MANDRIGO"]["CONFIG"]["PLUGIN_PATH"]=ereg_replace("/config/config.ini.php","",__FILE__)."/inc/packages/";
-$GLOBALS["MANDRIGO"]["CONFIG"]["TEMPLATE_PATH"]=ereg_replace("/htdocs/config/config.ini.php","",__FILE__)."/templates/";
-$GLOBALS["MANDRIGO"]["CONFIG"]["LOG_PATH"]=ereg_replace("/htdocs/config/config.ini.php","",__FILE__)."/logs/";
-$GLOBALS["MANDRIGO"]["CONFIG"]["IMG_PATH"]=ereg_replace("/config/config.ini.php","",__FILE__)."/images/mg_images/";
-$GLOBALS["MANDRIGO"]["CONFIG"]["ADMIN_ROOT_PATH"]=ereg_replace("/config/config.ini.php","",__FILE__)."/admin/inc/";
-$GLOBALS["MANDRIGO"]["CONFIG"]["LOGIN_ROOT_PATH"]=ereg_replace("/config/config.ini.php","",__FILE__)."/login_manager/inc/";
+$GLOBALS["MANDRIGO"]["CONFIG"]["ROOT_PATH"]=$GLOBALS["MANDRIGO"]["CONFIG"]["BASE_PATH"]."/inc/";
+$GLOBALS["MANDRIGO"]["CONFIG"]["PLUGIN_PATH"]=$GLOBALS["MANDRIGO"]["CONFIG"]["BASE_PATH"]."/inc/packages/";
+$GLOBALS["MANDRIGO"]["CONFIG"]["IMG_PATH"]=$GLOBALS["MANDRIGO"]["CONFIG"]["BASE_PATH"]."/images/mg_images/";
+$GLOBALS["MANDRIGO"]["CONFIG"]["ADMIN_ROOT_PATH"]=$GLOBALS["MANDRIGO"]["CONFIG"]["BASE_PATH"]."/admin/inc/";
+$GLOBALS["MANDRIGO"]["CONFIG"]["LOGIN_ROOT_PATH"]=$GLOBALS["MANDRIGO"]["CONFIG"]["BASE_PATH"]."/login_manager/inc/";
+$GLOBALS["MANDRIGO"]["CONFIG"]["EXTERNAL_PATH"]=ereg_replace("/htdocs/config/config.ini.php","",__FILE__);
+$GLOBALS["MANDRIGO"]["CONFIG"]["TEMPLATE_PATH"]=$GLOBALS["MANDRIGO"]["CONFIG"]["EXTERNAL_PATH"]."/templates/";
+$GLOBALS["MANDRIGO"]["CONFIG"]["LOG_PATH"]=$GLOBALS["MANDRIGO"]["CONFIG"]["EXTERNAL_PATH"]."/logs/";
 $GLOBALS["MANDRIGO"]["CONFIG"]["TMP_PATH"]="/tmp/";
 
 //
