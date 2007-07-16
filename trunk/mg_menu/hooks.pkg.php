@@ -33,9 +33,9 @@ if(!defined("START_MANDRIGO")){
     die($GLOBALS["MANDRIGO"]["CONFIG"]["DIE_STRING"]);
 }
 
-
 class mg_menu_hook{
     function mg_menu_display_hook($i){
+     	@include_once("display.pkg.php");
         $menu = new mg_menu($i);
 		return $menu->mm_display();
     }
@@ -43,6 +43,7 @@ class mg_menu_hook{
 		return array();
     }
     function mg_menu_admin_hook($i){
+     	@include_once("admin.pkg.php");
         return true;
     }
 }
