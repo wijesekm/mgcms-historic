@@ -64,7 +64,6 @@ for($i=0;$i<$soq;$i++){
 		if($GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
 			include_once($GLOBALS["MANDRIGO"]["CONFIG"]["PLUGIN_PATH"].$packages[$i]["pkg_name"]."/hooks.pkg.".PHP_EXT);
 			include_once($GLOBALS["MANDRIGO"]["CONFIG"]["PLUGIN_PATH"].$packages[$i]["pkg_name"]."/globals.pkg.".PHP_EXT);
-			include_once($GLOBALS["MANDRIGO"]["CONFIG"]["PLUGIN_PATH"].$packages[$i]["pkg_name"]."/admin.pkg.".PHP_EXT);
 		}
 		else{
 		 	$fail=false;
@@ -76,11 +75,6 @@ for($i=0;$i<$soq;$i++){
 				if(!$fail){
 					$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror((int)$packages[$i]["pkg_nlerror"],"display");
 					$fail=true;
-				}
-			}
-			if(!(@include_once($GLOBALS["MANDRIGO"]["CONFIG"]["PLUGIN_PATH"].$packages[$i]["pkg_name"]."/admin.pkg.".PHP_EXT))){
-				if(!$fail){
-					$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror((int)$packages[$i]["pkg_nlerror"],"display");
 				}
 			}
 		}	
