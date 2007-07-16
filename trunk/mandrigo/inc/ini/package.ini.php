@@ -51,7 +51,7 @@ $newpkg=array();
 $packages=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_PACKAGES,"pkg_id,pkg_name,pkg_nlerror",$filter,"ASSOC",DB_ALL_ROWS);
 $soq=count($packages);
 if(!$GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
-	if(!$packages){
+	if(!$packages&&$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["EXISTS"]){
 		$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(3,"display");
 	}
 }

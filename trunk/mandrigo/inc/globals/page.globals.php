@@ -73,15 +73,19 @@ if($GLOBALS["MANDRIGO"]["CURRENTPAGE"]["ID"]===0&&!$nopage){
 //
 //Now we will get the page data
 //
-$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["NAME"]=(string)trim($page_data["pg_name"]);
-$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["FULLNAME"]=(string)trim($page_data["pg_fullname"]);
-$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["TITLE"]=(string)trim($page_data["pg_title"]);
-$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["PAGE_REDIR"]=(string)trim($page_data["page_redir"]);
-$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["VARS"]=explode(";",$page_data["pg_vars"]);
-$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["HOOKS"]=explode(";",(string)trim($page_data["pg_hooks"]));
-$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["SUBPAGES"]=explode(";",(string)trim($page_data["pg_subpages"]));
-$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["PARENT"]=(int)trim($page_data["pg_parent"]);
-$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["ISROOT"]=(int)trim($page_data["pg_root"]);
-$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["DATAPATH"]=(string)trim($page_data["pg_datapath"]);
-$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["STATUS"]=(int)trim($page_data["pg_status"]);
-$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["READLEVEL"]=(int)trim($page_data["pg_readlevel"]);
+$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["EXISTS"]=false;
+if(!$nopage){
+ 	$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["EXISTS"]=true;
+	$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["NAME"]=(string)trim($page_data["pg_name"]);
+	$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["FULLNAME"]=(string)trim($page_data["pg_fullname"]);
+	$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["TITLE"]=(string)trim($page_data["pg_title"]);
+	$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["PAGE_REDIR"]=(string)trim($page_data["page_redir"]);
+	$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["VARS"]=explode(";",$page_data["pg_vars"]);
+	$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["HOOKS"]=explode(";",(string)trim($page_data["pg_hooks"]));
+	$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["SUBPAGES"]=explode(";",(string)trim($page_data["pg_subpages"]));
+	$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["PARENT"]=(int)trim($page_data["pg_parent"]);
+	$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["ISROOT"]=(int)trim($page_data["pg_root"]);
+	$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["DATAPATH"]=(string)trim($page_data["pg_datapath"]);
+	$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["STATUS"]=(int)trim($page_data["pg_status"]);
+	$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["READLEVEL"]=(int)trim($page_data["pg_readlevel"]);
+}
