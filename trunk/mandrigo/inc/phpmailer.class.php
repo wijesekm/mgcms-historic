@@ -2,7 +2,7 @@
 /**********************************************************
     phpmailer.class.php
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 08/18/06
+	Date Last Edited: 07/17/07
 
 	Copyright (C) 2006 the MandrigoCMS Group
 
@@ -42,7 +42,17 @@ if(!defined('START_MANDRIGO')){
 
 class phpmailer{
  
-	var $config=array("sendmail"=>"/usr/sbin/sendmail"
+	var $config;
+	
+    //
+    //public phpmailer($conf="")
+    //
+    //sets the template for a given section
+    //INPUTS:
+    //$config	-	config array
+    //
+	function phpmailer($conf=""){
+	 	$this->config=array("sendmail"=>"/usr/sbin/sendmail"
 			  				,"lf"=>"\n"
 							,"crlf"=>"\r\n"
 							,"mailer"=>"mail"
@@ -51,8 +61,6 @@ class phpmailer{
 							,"dctype"=>TEXT_PLAIN
 							,"wrap"=>40
 							,"priority"=>3);
-	
-	function phpmailer($conf=""){
 	 	$host=explode("/",ereg_replace("^[a-z]+://","",$GLOBALS["SITE_DATA"]["SITE_URL"]));
 	 	$this->config["hostname"]=$host[0];
 		if($conf){
@@ -66,11 +74,19 @@ class phpmailer{
 	//
 	//#################################
 
-	//
-	//public function pm_mail($recipients,$sender,$subject,$body,$attachments);
-	//
-	//sends a message
-	//	
+    //
+    //public pm_mail($recipients,$sender,$subject,$body,$attachments=array(),$alt=true)
+    //
+    //sets the template for a given section
+    //INPUTS:
+    //$recipiants		-	list of recipients [array]
+    //$sender			-	name and address of sender [array]
+    //$subject			-	subject of message [string]
+    //$body				-	message body [string]
+    //$attachments		-	array of attachments [array]
+    //$alt				-	sending using alt instead of plain [boolean] (default: true)
+    //
+	//returns true or false 
 	function pm_mail($recipients,$sender,$subject,$body,$attachments=array(),$alt=true){
 	  	$subject=strip_tags($subject);
 	  	print_r($attachments);
@@ -118,11 +134,19 @@ class phpmailer{
 	//
 	//#################################
 
-	//
-	//private function pm_phpmail($send_to,$subject,$body,$headers,$sender);
-	//
-	//sends the message using the php mail function
-	//
+
+    //
+    //private pm_phpmail($send_to,$subject,$body,$headers,$sender)
+    //
+    //sets the template for a given section
+    //INPUTS:
+    //$send_to		-	recipiant to send to
+    //$subject		-	subject
+    //$body			-	body of message
+    //$headers		-	message headers
+    //$sender		-	message sender
+    //
+	//returns true or false 
 	function pm_phpmail($send_to,$subject,$body,$headers,$sender){
 	  	$params="";
 		if($sender!=""&&strlen(ini_get("safe_mode"))<1){
@@ -629,4 +653,3 @@ class phpmailer{
         return $str;
     }
 }
-?>
