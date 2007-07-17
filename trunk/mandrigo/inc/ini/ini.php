@@ -2,7 +2,7 @@
 /**********************************************************
     ini.php
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 01/31/07
+	Date Last Edited: 07/17/07
 
 	Copyright (C) 2006-2007 the MandrigoCMS Group
 
@@ -171,11 +171,17 @@ switch($GLOBALS["MANDRIGO"]["SITE"]["ACCOUNT_TYPE"]){
 		
 		if($GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
 			$GLOBALS["MANDRIGO"]["AD"]->ad_connect($adldap_config["DN"],$adldap_config["DC"],$adldap_config["ACCT_SUFFIX"],$adldap_config["CONTROL_USER"],$adldap_config["CONTROL_PASSWORD"]);
+			$GLOBALS["MANDRIGO"]["AD"]->ad_binduser();
 		}
 		else{
 		    if(!$GLOBALS["MANDRIGO"]["AD"]->ad_connect($adldap_config["DN"],$adldap_config["DC"],$adldap_config["ACCT_SUFFIX"],$adldap_config["CONTROL_USER"],$adldap_config["CONTROL_PASSWORD"])){
 		        $GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(2,"ldap");
 		    }
+		    if(!$GLOBALS["MANDRIGO"]["AD"]->ad_binduser()){
+				if($GLOBALS["MANDRIGO"]["SITE"]["ACCOUNT_TYPE"]=="ad"){
+					$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(3,"ldap");	
+				}
+			}
 		}
 	break;
 	case "ldap":

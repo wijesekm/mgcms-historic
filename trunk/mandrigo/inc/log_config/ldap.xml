@@ -10,4 +10,10 @@
 			Could not connect to the database.
 		</value>
 	</msg>
+	<msg>
+		<id>3</id>
+		<value>
+			Given control user and password are invalid!
+		</value>
+	</msg>
 </error_log>

@@ -3,7 +3,7 @@
 /**********************************************************
     ad.class.php
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 02/10/07
+	Date Last Edited: 07/17/07
 	
 	Mandrigo CMS is Copyright (C) 2006-2007 the MandrigoCMS Group
 	
@@ -109,13 +109,9 @@ class ad{
 		//set some ldap options for talking to AD
 		@ldap_set_option($this->conn, LDAP_OPT_PROTOCOL_VERSION, 3);
 		@ldap_set_option($this->conn, LDAP_OPT_REFERRALS, 0);
-		
-		if(!$this->ad_binduser($c_user,$c_pass)){
-			return false;
-		}	
 		return true;
 	}
-	function ad_binduser($b_user,$b_pass){
+	function ad_binduser($b_user=$this->config["CUSER"],$b_pass$this->config["CPASS"]){
 		if($b_user&&$b_pass){
 		 	if($GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
 		 		if(!$this->bind=ldap_bind($this->conn,$b_user.$this->config["ASUFF"],$b_pass)){
