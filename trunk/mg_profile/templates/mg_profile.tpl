@@ -17,11 +17,9 @@
 <ul>
 	{IM}
 </ul>
-<font style="font-weight: bold">Groups:</font>
+<font style="font-weight: bold">Groups:</font><br/>
+{GROUPS}
 </p>
-<ul>
-	{GROUPS}
-</ul>
 <h4>About</h4>
 <p>
 {ABOUT}
@@ -29,7 +27,20 @@
 <!--MG_TEMPLATE_END_user->
 
 <!--MG_TEMPLATE_START_group-->
-
+<img class="imgright" src="{PICTURE_PATH}" />
+<h3>{GROUP_NAME}</h3>
+<h4>General</h4>
+<p>
+<font style="font-weight: bold">Name: </font>{GROUP_NAME}<br/>
+<font style="font-weight: bold">Admins:</font><br/>
+{GP_ADMINS}<br/>
+<font style="font-weight: bold">Users:</font><br/>
+{GP_ADMINS}
+</p>
+<h4>About</h4>
+<p>
+{GROUP_ABOUT}
+</p>
 <!--MG_TEMPLATE_END_group-->
 
 <!--MG_TEMPLATE_START_userdelim-->
