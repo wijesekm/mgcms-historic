@@ -72,5 +72,6 @@ $GLOBALS["MANDRIGO"]["CURRENTUSER"]["DST"]=$tz["DST"];
 $GLOBALS["MANDRIGO"]["CURRENTUSER"]["LANGUAGE"]=$act->ac_language();
 $GLOBALS["MANDRIGO"]["CURRENTUSER"]["AUTHENTICATED"]=$auth;
 $GLOBALS["MANDRIGO"]["CURRENTUSER"]["GROUPS"]=$act->ac_groups();
+$GLOBALS["MANDRIGO"]["CURRENTUSER"]["GROUPNAMES"]=$act->ac_groupnames();
 $act="";
 $tz="";
