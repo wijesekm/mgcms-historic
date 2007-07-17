@@ -34,3 +34,4 @@ if(!defined("START_MANDRIGO")){
 }
 
 define('BLANK_ICON','blank.png');
+define('USER_IMG_PATH',"/user_images/");
