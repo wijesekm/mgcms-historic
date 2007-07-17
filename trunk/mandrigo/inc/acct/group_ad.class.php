@@ -2,7 +2,7 @@
 /**********************************************************
     group_ad.class.php
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 02/27/07
+	Date Last Edited: 07/19/07
 
 	Copyright (C) 2006-2007 the MandrigoCMS Group
 
@@ -32,14 +32,16 @@ if(!defined("START_MANDRIGO")){
     die($GLOBALS["MANDRIGO"]["CONFIG"]["DIE_STRING"]);
 }
 
-class group extends _group{
+class _group{
 	
 	var $name;
 	var $gid;
 	var $isgroup;
 	var $g_data;
 	
-	function _group($gname){}
+	function group($gid){
+		return $this->gp_setid($gid)
+	}
 
 	//#################################
 	//
@@ -51,9 +53,20 @@ class group extends _group{
 	//public gp_setname()
 	//
 	//sets the current group name	
-	function gp_setname($gname){
-		
-		
+	function gp_setid($gid){
+		$r=$GLOBALS["MANDRIGO"]["DB"]->db_fetchresult(TABLE_PREFIX.TABLE_GROUPS,"gp_name,gp_id",array(array("gp_id","=",$gid)));
+		if((int)$r["gp_id"]===(int)$gid){
+			$this->name=(string)$r["gp_name"];
+			$this->gid=(int)$r["gp_id"];
+			$this->isgroup=true;
+			return $this->gp_getgpdata();
+		}
+		else{
+			$this->isgroup=false;
+			$this->gid=false;
+			return false;
+		}
+		return true;
 	}
 		
 	//
@@ -62,21 +75,37 @@ class group extends _group{
 	//gets the id of the current group
 	//
 	//returns id on success or false on fail	
-	function gp_id(){}
+	function gp_id(){
+		if(!$this->isgroup){
+			return false;
+		}
+		return $this->gid;
+	}
 	//
 	//public gp_name()
 	//
 	//gets the id of the current group
 	//
 	//returns id on success or false on fail	
-	function gp_name(){}	
+	function gp_name(){
+		if(!$this->isgroup){
+			return false;
+		}
+		return $this->name;
+	}	
 	//
 	//public gp_data()
 	//
 	//gets the data for the current group
 	//
 	//returns data on success or false on fail	
-	function gp_data(){}	
+	function gp_data(){
+		if(!$this->isgroup){
+			return false;
+		}
+		return array("NAME"=>$this->name,
+					 "GID"=>$this->gid);
+	}
 
 	//
 	//public gp_data()
@@ -84,7 +113,9 @@ class group extends _group{
 	//gets the usernames of the admins of the group
 	//
 	//returns array of unames on success or false on fail		
-	function gp_admins(){}
+	function gp_admins(){
+
+	}
 
 	//
 	//public gp_members()
@@ -92,7 +123,9 @@ class group extends _group{
 	//gets the usernames of the members of the group
 	//
 	//returns array of unames on success or false on fail		
-	function gp_members(){}	
+	function gp_members(){
+	
+	}	
 	
 	
 	//#################################
@@ -107,5 +140,7 @@ class group extends _group{
 	//gets the groupdata from the database
 	//
 	//returns true on success or false on fail
-	function gp_getgpdata(){}	
+	function gp_getgpdata(){
+
+	}	
 }
