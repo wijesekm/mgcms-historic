@@ -37,6 +37,7 @@ if(!defined("START_MANDRIGO")){
 class account extends _account{
 	
 	var $u_data_sql;
+	var $groups;
 	
 	function account($uid){
 		$this->ac_setuser($uid);
@@ -197,6 +198,7 @@ class account extends _account{
 	 	if(!$this->isuser){
 			return false;
 		}
+		$this->groups=array();
 		$tgroups=array();
 		$groups=$GLOBALS["MANDRIGO"]["AD"]->ad_usergroups($this->name);
 		$mg_groups=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_GROUPS,"gp_name,gp_id","","ASSOC",DB_ALL_ROWS);
@@ -209,12 +211,26 @@ class account extends _account{
 		for($k=0;$k<$soq;$k++){
 			if(in_array($mg_groups[$k]["gp_name"],$groups)&&!in_array($groups[$k],$tmp_groups)){
 				$tmp_groups[$count]=$mg_groups[$k]["gp_id"];
+				$this->groups[$count]=array($mg_groups[$k]["gp_id"]=>$mg_groups[$k]["gp_name"]);
 				$count++;
 			}
 		}
 		return $tmp_groups;
 	}
 	
+	//
+	//public ac_groups()
+	//
+	//gets the names of the groups of the current user
+	//
+	//returns groups on success or false on fail	
+	function ac_groupnames(){
+	 	if(!$this->isuser){
+			return false;
+		}
+		return $this->groups;
+	}
+		
 	//#################################
 	//
 	// PRIVATE FUNCTIONS

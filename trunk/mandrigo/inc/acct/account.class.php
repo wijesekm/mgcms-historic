@@ -109,6 +109,14 @@ class _account{
 	//returns groups on success or false on fail	
 	function ac_groups(){}
 	
+	//
+	//public ac_groups()
+	//
+	//gets the names of the groups of the current user
+	//
+	//returns groups on success or false on fail	
+	function ac_groupnames(){}
+	
 	//#################################
 	//
 	// PRIVATE FUNCTIONS

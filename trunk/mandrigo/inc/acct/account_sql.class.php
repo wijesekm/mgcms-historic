@@ -177,6 +177,31 @@ class account extends _account{
 		return explode(";",$this->u_data["ac_groups"]);
 	}
 	
+	//
+	//public ac_groups()
+	//
+	//gets the names of the groups of the current user
+	//
+	//returns groups on success or false on fail	
+	function ac_groupnames(){
+	 	if(!$this->isuser){
+			return false;
+		}
+		$q=array();
+		$gid=explode(";",$this->u_data["ac_groups"]);
+		$soq=count($gid);
+		for($i=0;$i<$soq;$i++){
+			$q[$i]=array("gp_id","=",$gid[$i],"",DB_OR);
+		}
+		$groups=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_GROUPS,"gp_id,gp_name",$q,"ASSOC",DB_ALL_ROWS);
+		$soq=count($groups);
+		$retgroups=array();
+		for($i=0;$i<$soq;$i++){
+			$retgroups[$i]=array($groups[$i]["gp_id"]=>$groups[$i]["gp_name"]);
+		}
+		return $retgroups;
+	}	
+	
 	//#################################
 	//
 	// PRIVATE FUNCTIONS
