@@ -32,3 +32,8 @@
 
 <!--MG_TEMPLATE_END_group-->
 
+<!--MG_TEMPLATE_START_userdelim-->
+<!--MG_TEMPLATE_START_userdelimsub-->
+{USER} , 
+<!--MG_TEMPLATE_END_userdelimsub-->
+<!--MG_TEMPLATE_END_userdelim-->
