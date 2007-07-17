@@ -3,7 +3,7 @@
     hooks.pkg.php
     mg_profile ver 0.7.0
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 05/16/07
+	Date Last Edited: 07/17/07
 
 	Copyright (C) 2006-2007 the MandrigoCMS Group
 
