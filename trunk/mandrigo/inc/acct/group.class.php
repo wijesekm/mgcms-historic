@@ -2,7 +2,7 @@
 /**********************************************************
     group.class.php
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 02/27/07
+	Date Last Edited: 07/19/07
 
 	Copyright (C) 2006-2007 the MandrigoCMS Group
 
@@ -51,7 +51,7 @@ class _group{
 	//public gp_setname()
 	//
 	//sets the current group name	
-	function gp_setname($gname){}
+	function gp_setid($gname){}
 		
 	//
 	//public gp_id()
