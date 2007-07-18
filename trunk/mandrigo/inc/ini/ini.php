@@ -195,6 +195,7 @@ switch($GLOBALS["MANDRIGO"]["SITE"]["ACCOUNT_TYPE"]){
 //
 //Now we will load the user data/permissions, page data, lang data, and packages
 $init3=	array(array("acct{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}account_".$GLOBALS["MANDRIGO"]["SITE"]["ACCOUNT_TYPE"].".class.$php_ex",11),
+array("acct{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}group_".$GLOBALS["MANDRIGO"]["SITE"]["ACCOUNT_TYPE"].".class.$php_ex",11),
 			  array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}user.globals.$php_ex",9),
 			  array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}page.globals.$php_ex",12),
 			  array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}acl.globals.$php_ex",13),
