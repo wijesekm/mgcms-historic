@@ -32,7 +32,10 @@ if(!defined("START_MANDRIGO")){
     die($GLOBALS["MANDRIGO"]["CONFIG"]["DIE_STRING"]);
 }
 
-class _group{
+
+@include_once($GLOBALS["MANDRIGO"]["CONFIG"]["ROOT_PATH"]."acct{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}group.class.".PHP_EXT);
+
+class group extends _group{
 	
 	var $name;
 	var $gid;
@@ -40,7 +43,7 @@ class _group{
 	var $g_data;
 	
 	function group($gid){
-		return $this->gp_setid($gid)
+		return $this->gp_setid($gid);
 	}
 
 	//#################################
@@ -54,7 +57,7 @@ class _group{
 	//
 	//sets the current group name	
 	function gp_setid($gid){
-		$r=$GLOBALS["MANDRIGO"]["DB"]->db_fetchresult(TABLE_PREFIX.TABLE_GROUPS,"gp_name,gp_id",array(array("gp_id","=",$gid)));
+		$r=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_GROUPS,"gp_id,gp_name",array(array("gp_id","=",$gid)));
 		if((int)$r["gp_id"]===(int)$gid){
 			$this->name=(string)$r["gp_name"];
 			$this->gid=(int)$r["gp_id"];
@@ -116,22 +119,27 @@ class _group{
 	//
 	//returns array of unames on success or false on fail		
 	function gp_admins(){
-		if(!$this->isgroup){
+	 	if(!$this->isuser){
 			return false;
 		}
 		$q=array();
-		$uid=explode(";",$this->u_data["gp_admins"]);
+		$uid=explode(";",$this->g_data["gp_admins"]);
 		$soq=count($uid);
 		for($i=0;$i<$soq;$i++){
-			$q[$i]=array("ac_id","=",$uid[$i],"",DB_OR);
+			if($uid[$i]&&$uid[$i+1]){
+				$q[$i]=array("ac_id","=",$uid[$i],DB_OR);
+			}
+			else if($gid[$i]){
+				$q[$i]=array("ac_id","=",$uid[$i]);
+			}
 		}
-		$groups=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_GROUPS,"ac_id,ac_username",$q,"ASSOC",DB_ALL_ROWS);
-		$soq=count($groups);
-		$users=array();
+		$users=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_GROUPS,"ac_id,ac_username",$q,"ASSOC",DB_ALL_ROWS);
+		$soq=count($users);
+		$retusers=array();
 		for($i=0;$i<$soq;$i++){
-			$users[$i]=array($groups[$i]["ac_id"]=>$groups[$i]["ac_username"]);
+			$retusers[$i]=array($users[$i]["gp_id"]=>$users[$i]["gp_name"]);
 		}
-		return $users;
+		return $retusers;
 	}
 
 	//
@@ -141,22 +149,27 @@ class _group{
 	//
 	//returns array of unames on success or false on fail		
 	function gp_members(){
-		if(!$this->isgroup){
+	 	if(!$this->isuser){
 			return false;
-		}		
+		}
 		$q=array();
-		$uid=explode(";",$this->u_data["gp_users"]);
+		$uid=explode(";",$this->g_data["gp_users"]);
 		$soq=count($uid);
 		for($i=0;$i<$soq;$i++){
-			$q[$i]=array("ac_id","=",$uid[$i],"",DB_OR);
+			if($uid[$i]&&$uid[$i+1]){
+				$q[$i]=array("ac_id","=",$uid[$i],DB_OR);
+			}
+			else if($gid[$i]){
+				$q[$i]=array("ac_id","=",$uid[$i]);
+			}
 		}
-		$groups=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_GROUPS,"ac_id,ac_username",$q,"ASSOC",DB_ALL_ROWS);
-		$soq=count($groups);
-		$users=array();
+		$users=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_GROUPS,"ac_id,ac_username",$q,"ASSOC",DB_ALL_ROWS);
+		$soq=count($users);
+		$retusers=array();
 		for($i=0;$i<$soq;$i++){
-			$users[$i]=array($groups[$i]["ac_id"]=>$groups[$i]["ac_username"]);
+			$retusers[$i]=array($users[$i]["gp_id"]=>$users[$i]["gp_name"]);
 		}
-		return $users;	
+		return $retusers;
 	}	
 	
 	

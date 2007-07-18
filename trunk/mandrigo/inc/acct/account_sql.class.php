@@ -191,7 +191,12 @@ class account extends _account{
 		$gid=explode(";",$this->u_data["ac_groups"]);
 		$soq=count($gid);
 		for($i=0;$i<$soq;$i++){
-			$q[$i]=array("gp_id","=",$gid[$i],"",DB_OR);
+			if($gid[$i]&&$gid[$i+1]){
+				$q[$i]=array("gp_id","=",$gid[$i],DB_OR);
+			}
+			else if($gid[$i]){
+				$q[$i]=array("gp_id","=",$gid[$i]);
+			}
 		}
 		$groups=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_GROUPS,"gp_id,gp_name",$q,"ASSOC",DB_ALL_ROWS);
 		$soq=count($groups);
