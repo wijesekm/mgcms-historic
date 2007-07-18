@@ -35,7 +35,10 @@ if(!defined("START_MANDRIGO")){
 
 class mg_profile_hook{
     function mg_profile_display_hook($i){
-      	$profile=new mg_profile($i);
+	
+		include_once("display.pkg.php");
+    
+     	$profile=new mg_profile($i);
       	if(ereg('g',$GLOBALS['MANDRIGO']['VARS']['ID'])){
 			$GLOBALS['MANDRIGO']['VARS']['ID']=substr($GLOBALS['MANDRIGO']['VARS']['ID'],1);	
 			return $profile->pr_display('group');
