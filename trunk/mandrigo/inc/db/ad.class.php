@@ -111,7 +111,7 @@ class ad{
 		@ldap_set_option($this->conn, LDAP_OPT_REFERRALS, 0);
 		return true;
 	}
-	function ad_binduser($b_user=$this->config["CUSER"],$b_pass$this->config["CPASS"]){
+	function ad_binduser($b_user="",$b_pass="",$auth=false){
 		if($b_user&&$b_pass){
 		 	if($GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
 		 		if(!$this->bind=ldap_bind($this->conn,$b_user.$this->config["ASUFF"],$b_pass)){
@@ -124,9 +124,12 @@ class ad{
 				}
 			} 
 		}
+		else if(!$auth){
+			return $this->ad_binduser($this->config["CUSER"],$this->config["CPASS"],true);
+		}		
 		else{
 			return false;
-		}		
+		}
 		return true;
 	}
 	function ad_close(){
