@@ -1,11 +1,11 @@
 <?php
 /**********************************************************
     admin.pkg.php
-    {package_name} ver {version}
-	Last Edited By: {yourname}
-	Date Last Edited: {date}
+    mg_newsreader ver 0.7.0
+	Last Edited By: Kevin Wijesekera
+	Date Last Edited: 07/18/07
 
-	Copyright (C) {year} {yourname}
+	Copyright (C) 2006-2007 the MandrigoCMS Group
 
     ##########################################################
 	This program is free software; you can redistribute it and/or
@@ -30,23 +30,5 @@
 //To prevent direct script access
 //
 if(!defined("START_MANDRIGO")){
-    die("<html><head>
-            <title>Forbidden</title>
-        </head><body>
-            <h1>Forbidden</h1><hr width=\"300\" align=\"left\"/>\n<p>You do not have permission to access this file directly.</p>
-        </html></body>");
+    die($GLOBALS["MANDRIGO"]["CONFIG"]["DIE_STRING"]);
 }
-
-//this file will contain admin functionality which will be called by the
-//{packagename}_admin_hook function which you will write.  Basically do what ever you want with it.
-
-class example_admin{
-
-    function example_admin{
-        return true;
-    }
-    function admin(){
-        return "hi";
-    }
-}
-?>

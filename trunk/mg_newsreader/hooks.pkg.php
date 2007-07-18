@@ -1,11 +1,11 @@
 <?php
 /**********************************************************
     hooks.pkg.php
-    newssum ver 0.6.0
+    mg_newsreader ver 0.7.0
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 7-17-06
+	Date Last Edited: 07/18/07
 
-	Copyright (C) 2006 Kevin Wijesekera
+	Copyright (C) 2006-2007 the MandrigoCMS Group
 
     ##########################################################
 	This program is free software; you can redistribute it and/or
@@ -29,28 +29,21 @@
 //
 //To prevent direct script access
 //
-if(!defined('START_MANDRIGO')){
-    die('<html><head>
-            <title>Forbidden</title>
-        </head><body>
-            <h1>Forbidden</h1><hr width="300" align="left"/>\n<p>You do not have permission to access this file directly.</p>
-        </html></body>');
+if(!defined("START_MANDRIGO")){
+    die($GLOBALS["MANDRIGO"]["CONFIG"]["DIE_STRING"]);
 }
-class newssum_hook{
+
+class mg_newsreader_hook{
   	var $pparse_vars;
     
-	function newssum_display_hook(&$sql,$i){
-	  	$cur_newssum=new newssum_display($sql);
-	  	$string=$cur_newssum->display($i);
-	  	$this->pparse_vars=$cur_newssum->return_vars();
-		return $string;
+	function mg_newsreader_display_hook(&$sql,$i){
+	 	@include_once("display.pkg.php");
+
     }
-    function newssum_vars_hook(&$sql,$i){
+    function mg_newsreader_vars_hook(&$sql,$i){
 		return $this->pparse_vars;
     }
-    function newssum_admin_hook(&$sql,$i){
+    function mg_newsreader_admin_hook(&$sql,$i){
 
     }
 }
-
-?>

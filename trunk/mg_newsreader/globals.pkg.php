@@ -1,11 +1,11 @@
 <?php
 /**********************************************************
     globals.pkg.php
-    newssum ver 0.6.0
+    mg_newsreader ver 0.7.0
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 7-17-06
+	Date Last Edited: 07/18/07
 
-	Copyright (C) 2006 Kevin Wijesekera
+	Copyright (C) 2006-2007 the MandrigoCMS Group
 
     ##########################################################
 	This program is free software; you can redistribute it and/or
@@ -29,19 +29,6 @@
 //
 //To prevent direct script access
 //
-if(!defined('START_MANDRIGO')){
-    die('<html><head>
-            <title>Forbidden</title>
-        </head><body>
-            <h1>Forbidden</h1><hr width="300" align="left"/>\n<p>You do not have permission to access this file directly.</p>
-        </html></body>');
+if(!defined("START_MANDRIGO")){
+    die($GLOBALS["MANDRIGO"]["CONFIG"]["DIE_STRING"]);
 }
-
-define('TABLE_NEWS_SUM_DATA','newssum_data');
-define('TABLE_NEWSSUM','newssum');
-define('TABLE_NEWS','news');
-define('TPL_NEWSSUM','newssum');
-define('TPL_NEWSSUM_MINI','_newssum_mini');
-define('SKIN_MINI','mini');
-
-?>
