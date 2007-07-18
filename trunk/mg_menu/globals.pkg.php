@@ -1,7 +1,7 @@
 <?php
 /**********************************************************
     globals.pkg.php
-    mg_news ver 0.7.0
+    mg_menu ver 0.7.0
 	Last Edited By: Kevin Wijesekera
 	Date Last Edited: 04/08/07
 
