@@ -103,6 +103,7 @@ $sql_config["SSL"]=array("KEY"=>"",
 //ACCT_SUFFIX		-	Account Suffix [generally just the DN in general notation] (ie @ms.test.org)
 //CONTROL_USER		-	Username with ability to search on the domain
 //CONTROL_PASSWORD	-	That users password
+//USE_SSL			-	This MUST be on for Active Directory if you are using ad for accounts
 //
 $adldap_config="";
 $adldap_config["DN"]="";
@@ -110,6 +111,7 @@ $adldap_config["DC"]=array("");
 $adldap_config["ACCT_SUFFIX"]="";
 $adldap_config["CONTROL_USER"]="";
 $adldap_config["CONTROL_PASSWORD"]="";
+$adldap_config["USE_SSL"]=true;
 
 //////////////////////
 // Error Logging
