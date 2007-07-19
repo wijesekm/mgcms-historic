@@ -137,7 +137,7 @@ class group extends _group{
 		$soq=count($users);
 		$retusers=array();
 		for($i=0;$i<$soq;$i++){
-			$retusers[$i]=array($users[$i]["gp_id"]=>$users[$i]["gp_name"]);
+			$retusers=array_merge(array($users[$i]["ac_id"]=>$users[$i]["ac_username"]),$retusers);
 		}
 		return $retusers;
 	}
@@ -167,7 +167,7 @@ class group extends _group{
 		$soq=count($users);
 		$retusers=array();
 		for($i=0;$i<$soq;$i++){
-			$retusers[$i]=array($users[$i]["gp_id"]=>$users[$i]["gp_name"]);
+			$retusers=array_merge(array($users[$i]["ac_id"]=>$users[$i]["ac_username"]),$retusers);
 		}
 		return $retusers;
 	}	
