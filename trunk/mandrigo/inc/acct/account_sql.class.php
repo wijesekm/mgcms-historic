@@ -189,6 +189,9 @@ class account extends _account{
 		}
 		$q=array();
 		$gid=explode(";",$this->u_data["ac_groups"]);
+		if(!$gid[0]){
+			return array();
+		}
 		$soq=count($gid);
 		for($i=0;$i<$soq;$i++){
 			if($gid[$i]&&$gid[$i+1]){
@@ -202,7 +205,7 @@ class account extends _account{
 		$soq=count($groups);
 		$retgroups=array();
 		for($i=0;$i<$soq;$i++){
-			$retgroups=array_merge(array($groups[$i]["gp_id"]=>$groups[$i]["gp_name"]),$retgroups);
+			$retgroups=array_merge($retgroups,array($groups[$i]["gp_id"]=>$groups[$i]["gp_name"]));
 		}
 		return $retgroups;
 	}	
