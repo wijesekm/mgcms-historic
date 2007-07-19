@@ -133,15 +133,15 @@ else{
     }
 }
 
-package_init(array(array("ini{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}constants.ini.$php_ex",28,false),
-			 array("ini{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}constants.admin.ini.$php_ex",28,true),
-			 array("ini{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}clean_functions.ini.$php_ex",4,false),
-			 array("server_time.class.$php_ex",5,false),
-			 array("session.class.$php_ex",10,false),
-			 array("adminpage.class.$php_ex",19,true),
-			 array("template.class.$php_ex",20,false)));
-package_init(array(array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}site.globals.$php_ex",6,false),
-			 array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}server.globals.$php_ex",8,true)));
+package_init(array(array("ini{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}constants.ini.$php_ex",4,false),
+			 array("ini{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}constants.admin.ini.$php_ex",4,true),
+			 array("ini{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}clean_functions.ini.$php_ex",5,false),
+			 array("server_time.class.$php_ex",6,false),
+			 array("session.class.$php_ex",7,false),
+			 array("adminpage.class.$php_ex",70,true),
+			 array("template.class.$php_ex",10,false)));
+package_init(array(array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}site.globals.$php_ex",11,false),
+			 array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}server.globals.$php_ex",12,true)));
 
 //Now we will initialize some extra database packages if needed
 switch($GLOBALS["MANDRIGO"]["SITE"]["ACCOUNT_TYPE"]){
@@ -151,7 +151,7 @@ switch($GLOBALS["MANDRIGO"]["SITE"]["ACCOUNT_TYPE"]){
 		}
 		else{
     		if(!(@include_once($GLOBALS["MANDRIGO"]["CONFIG"]["ROOT_PATH"]."db{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}"."ad.class.$php_ex"))){
-        		$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(6,"core");
+        		$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(13,"core");
     		}
 		}
 		
@@ -167,7 +167,28 @@ switch($GLOBALS["MANDRIGO"]["SITE"]["ACCOUNT_TYPE"]){
 		}
 	break;
 	case "ldap":
-		//no support yet (use sql)
+		if($GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
+    		require_once($GLOBALS["MANDRIGO"]["CONFIG"]["ROOT_PATH"]."db{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}"."ldap.class.$php_ex");
+		}
+		else{
+    		if(!(@include_once($GLOBALS["MANDRIGO"]["CONFIG"]["ROOT_PATH"]."db{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}"."ldap.class.$php_ex"))){
+        		$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(14,"core");
+    		}
+		}
+		$GLOBALS["MANDRIGO"]["LDAP"] = & new ldap();
+		
+		if($GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
+			$GLOBALS["MANDRIGO"]["LDAP"]->ldap_connect($adldap_config["DN"],$adldap_config["DC"],$adldap_config["ACCT_SUFFIX"],$adldap_config["CONTROL_USER"],$adldap_config["CONTROL_PASSWORD"],$adldap_config["USE_SSL"]);
+			$GLOBALS["MANDRIGO"]["LDAP"]->ldap_binduser();
+		}
+		else{
+		    if(!$GLOBALS["MANDRIGO"]["LDAP"]->ldap_connect($adldap_config["DN"],$adldap_config["DC"],$adldap_config["ACCT_SUFFIX"],$adldap_config["CONTROL_USER"],$adldap_config["CONTROL_PASSWORD"],$adldap_config["USE_SSL"])){
+		        $GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(2,"ldap");
+		    }
+		    if(!$GLOBALS["MANDRIGO"]["LDAP"]->ldap_binduser()){
+				$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(3,"ldap");	
+			}
+		}
 	break;
 	default:
 	
@@ -177,16 +198,16 @@ switch($GLOBALS["MANDRIGO"]["SITE"]["ACCOUNT_TYPE"]){
 //
 //Now we will load the user data/permissions, page data, lang data, and packages
 //
-package_init(array(array("acct{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}account_".$GLOBALS["MANDRIGO"]["SITE"]["ACCOUNT_TYPE"].".class.$php_ex",11,false),
-			 array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}user.globals.$php_ex",9,false),
-			 array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}page.globals.$php_ex",12,true),
-			 array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}page.globals.$php_ex",12,false),
-			 array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}acl.globals.$php_ex",13,false),
-			 array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}lang.globals.$php_ex",14,false),
-			 array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}lang.globals.$php_ex",14,true),
-			 array("ini{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}adminpkg.ini.$php_ex",23,true),
-		     array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}package.globals.$php_ex",17,false),
-			 array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}package.globals.$php_ex",17,true)));
+package_init(array(array("acct{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}account_".$GLOBALS["MANDRIGO"]["SITE"]["ACCOUNT_TYPE"].".class.$php_ex",15,false),
+			 array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}user.globals.$php_ex",17,false),
+			 array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}page.globals.$php_ex",18,true),
+			 array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}page.globals.$php_ex",18,false),
+			 array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}acl.globals.$php_ex",19,false),
+			 array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}lang.globals.$php_ex",20,false),
+			 array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}lang.globals.$php_ex",20,true),
+			 array("ini{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}adminpkg.ini.$php_ex",21,true),
+		     array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}package.globals.$php_ex",22,false),
+			 array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}package.globals.$php_ex",22,true)));
 
 //
 //Gets rid of unneeded config vars
