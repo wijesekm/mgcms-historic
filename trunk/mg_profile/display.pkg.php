@@ -147,7 +147,8 @@ class mg_profile{
 	}
 	function pr_genpicurl($path){
 		$url=$GLOBALS["MANDRIGO"]["SITE"]["IMG_URL"].USER_IMG_PATH;
-		if(is_file($url.$path)){
+		$img_path=$GLOBALS["MANDRIGO"]["CONFIG"]["IMG_PATH"].USER_IMG_PATH;
+		if(file_exists($img_path.$path)&&!is_dir($img_path.$path)){
 			return $url.$path;
 		}
 		else{
