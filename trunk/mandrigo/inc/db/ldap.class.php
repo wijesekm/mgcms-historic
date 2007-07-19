@@ -55,7 +55,7 @@ class ldap{
 			return false;
 		}
 		
-		$dc=$this->ad_randcontroller($dc);
+		$dc=$this->ldap_randcontroller($dc);
 		
 		if(!is_array($dc)){
 			$dc=array($dc);
@@ -129,4 +129,34 @@ class ldap{
         }
         return true;
 	}
+	
+
+	//#############
+    //Query Commands
+    //#############	
+    function ldap_authenticate($username,$password,$revert=true){
+		if(!$username||!$password){
+			return false;
+		}
+		if(!$this->ldap_binduser($username,$password)){
+			return false;
+		}
+		if($revert){
+			if(!$this->ldap_binduser($this->config["CUSER"],$this->config["CPASS"])){
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	//#################################
+	//
+	// PRIVATE FUNCTIONS
+	//
+	//#################################		
+	
+	function ldap_randcontroller($dcs){
+		return $dcs[array_rand($dcs)];
+	}
+	
 }
