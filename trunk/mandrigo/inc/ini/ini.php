@@ -170,11 +170,11 @@ switch($GLOBALS["MANDRIGO"]["SITE"]["ACCOUNT_TYPE"]){
 		$GLOBALS["MANDRIGO"]["AD"] = & new ad();
 		
 		if($GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
-			$GLOBALS["MANDRIGO"]["AD"]->ad_connect($adldap_config["DN"],$adldap_config["DC"],$adldap_config["ACCT_SUFFIX"],$adldap_config["CONTROL_USER"],$adldap_config["CONTROL_PASSWORD"]);
+			$GLOBALS["MANDRIGO"]["AD"]->ad_connect($adldap_config["DN"],$adldap_config["DC"],$adldap_config["ACCT_SUFFIX"],$adldap_config["CONTROL_USER"],$adldap_config["CONTROL_PASSWORD"],$adldap_config["USE_SSL"]);
 			$GLOBALS["MANDRIGO"]["AD"]->ad_binduser();
 		}
 		else{
-		    if(!$GLOBALS["MANDRIGO"]["AD"]->ad_connect($adldap_config["DN"],$adldap_config["DC"],$adldap_config["ACCT_SUFFIX"],$adldap_config["CONTROL_USER"],$adldap_config["CONTROL_PASSWORD"])){
+		    if(!$GLOBALS["MANDRIGO"]["AD"]->ad_connect($adldap_config["DN"],$adldap_config["DC"],$adldap_config["ACCT_SUFFIX"],$adldap_config["CONTROL_USER"],$adldap_config["CONTROL_PASSWORD"],$adldap_config["USE_SSL"])){
 		        $GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(2,"ldap");
 		    }
 		    if(!$GLOBALS["MANDRIGO"]["AD"]->ad_binduser()){
