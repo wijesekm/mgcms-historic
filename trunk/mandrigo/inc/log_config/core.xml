@@ -23,159 +23,135 @@
 		</value>
 	</msg>
 	<msg>
-		<id>4</id>
+		<id>5</id>
 		<value>
 			Could not load the variable cleaning package.		
 		</value>
 	</msg>
 	<msg>
-		<id>5</id>
-		<value>
-			Could not load the server time package.
-		</value>
-	</msg>
-	<msg>
-		<id>5</id>
-		<value>
-			Could not load the site globals package.
-		</value>
-	</msg>
-	<msg>
 		<id>6</id>
 		<value>
-			Could not load the active directory package.
+			Could not load the server time class.
 		</value>
 	</msg>
 	<msg>
 		<id>7</id>
 		<value>
-			Could not load the LDAP package.
+			Could not load the session class.
 		</value>
 	</msg>
 	<msg>
 		<id>8</id>
 		<value>
-			Could not load the server globals package.
+			Could not load the stats class.
 		</value>
 	</msg>
 	<msg>
 		<id>9</id>
 		<value>
-			Could not load the user globals package.
+			Could not load the page class.
 		</value>
 	</msg>
 	<msg>
 		<id>10</id>
 		<value>
-			Could not load the session package.
+			Could not load the template class.
 		</value>
 	</msg>
 	<msg>
 		<id>11</id>
 		<value>
-			Could not load the account package.
+			Could not load the site globals script.
 		</value>
 	</msg>
 	<msg>
 		<id>12</id>
 		<value>
-			Could not load the site globals package.
+			Could not load the server globals script.
 		</value>
 	</msg>
 	<msg>
 		<id>13</id>
 		<value>
-			Could not load the acl globals package.
+			Could not load the active directory class.
 		</value>
 	</msg>
 	<msg>
 		<id>14</id>
 		<value>
-			Could not load the language globals package.
+			Could not load the ldap class.
 		</value>
-	</msg>
+	</msg>	
 	<msg>
 		<id>15</id>
 		<value>
-			Could not load the display package init.
+			Could not load the account class.
 		</value>
-	</msg>
+	</msg>	
 	<msg>
 		<id>16</id>
 		<value>
-			Could not load the display addon globals package.
+			Could not load the group class.
 		</value>
-	</msg>
+	</msg>	
 	<msg>
 		<id>17</id>
 		<value>
-			Could not load the package globals script.
+			Could not load the user globals script.
 		</value>
-	</msg>
+	</msg>	
 	<msg>
 		<id>18</id>
 		<value>
-			Could not load the stats class.
+			Could not load the page globals script.
 		</value>
-	</msg>
+	</msg>	
 	<msg>
 		<id>19</id>
 		<value>
-			Could not load the page class.
+			Could not load the acl globals script.
 		</value>
-	</msg>
+	</msg>	
 	<msg>
 		<id>20</id>
 		<value>
-			Could not load the template class.
+			Could not load the language globals script.
 		</value>
-	</msg>
+	</msg>	
 	<msg>
 		<id>21</id>
 		<value>
-			Could not load the account class.
+			Could not load the package init script.
+		</value>
+	</msg>	
+	<msg>
+		<id>22</id>
+		<value>
+			Could not load the package globals script.
+		</value>
+	</msg>	
+	<msg>
+		<id>22</id>
+		<value>
+			Could not load the stats script.
+		</value>
+	</msg>		
+	<msg>
+		<id>40</id>
+		<value>
+			Could not load the authentication class.
 		</value>
 	</msg>
 	<msg>
-		<id>22</id>
+		<id>41</id>
 		<value>
 			Could not load the login class.
 		</value>
 	</msg>
 	<msg>
-		<id>23</id>
+		<id>70</id>
 		<value>
 			Could not load the admin package class.
-		</value>
-	</msg>
-	<msg>
-		<id>24</id>
-		<value>
-			Could not load the set_mainconfig packages.
-		</value>
-	</msg>
-	<msg>
-		<id>25</id>
-		<value>
-			Could not load the mainconfig packages.
-		</value>
-	</msg>
-	<msg>
-		<id>26</id>
-		<value>
-			Could not load the checkinstall package
-		</value>
-	</msg>
-	<msg>
-		<id>27</id>
-		<value>
-			Could not load the checksys package
-		</value>
-	</msg>
-	<msg>
-		<id>28</id>
-		<value>
-			Could not load the constants package.		
 		</value>
 	</msg>
 	<msg>
