@@ -211,7 +211,7 @@ class account extends _account{
 		for($k=0;$k<$soq;$k++){
 			if(in_array($mg_groups[$k]["gp_name"],$groups)&&!in_array($groups[$k],$tmp_groups)){
 				$tmp_groups[$count]=$mg_groups[$k]["gp_id"];
-				$this->groups[$count]=array($mg_groups[$k]["gp_id"]=>$mg_groups[$k]["gp_name"]);
+				$this->groups=array_merge($this->groups,array($mg_groups[$k]["gp_id"]=>$mg_groups[$k]["gp_name"]));
 				$count++;
 			}
 		}
