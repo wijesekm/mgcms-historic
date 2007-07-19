@@ -202,7 +202,7 @@ class account extends _account{
 		$soq=count($groups);
 		$retgroups=array();
 		for($i=0;$i<$soq;$i++){
-			$retgroups[$i]=array($groups[$i]["gp_id"]=>$groups[$i]["gp_name"]);
+			$retgroups=array_merge(array($groups[$i]["gp_id"]=>$groups[$i]["gp_name"]),$retgroups);
 		}
 		return $retgroups;
 	}	
