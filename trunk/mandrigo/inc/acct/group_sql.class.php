@@ -119,11 +119,14 @@ class group extends _group{
 	//
 	//returns array of unames on success or false on fail		
 	function gp_admins(){
-	 	if(!$this->isuser){
+	 	if(!$this->isgroup){
 			return false;
 		}
 		$q=array();
 		$uid=explode(";",$this->g_data["gp_admins"]);
+		if(!$uid[0]){
+			return array();
+		}
 		$soq=count($uid);
 		for($i=0;$i<$soq;$i++){
 			if($uid[$i]&&$uid[$i+1]){
@@ -133,11 +136,11 @@ class group extends _group{
 				$q[$i]=array("ac_id","=",$uid[$i]);
 			}
 		}
-		$users=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_GROUPS,"ac_id,ac_username",$q,"ASSOC",DB_ALL_ROWS);
+		$users=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_ACCOUNTS,"ac_id,ac_username",$q,"ASSOC",DB_ALL_ROWS);
 		$soq=count($users);
 		$retusers=array();
 		for($i=0;$i<$soq;$i++){
-			$retusers=array_merge(array($users[$i]["ac_id"]=>$users[$i]["ac_username"]),$retusers);
+			$retusers=array_merge($retusers,array($users[$i]["ac_id"]=>$users[$i]["ac_username"]));
 		}
 		return $retusers;
 	}
@@ -149,11 +152,14 @@ class group extends _group{
 	//
 	//returns array of unames on success or false on fail		
 	function gp_members(){
-	 	if(!$this->isuser){
+	 	if(!$this->isgroup){
 			return false;
 		}
 		$q=array();
 		$uid=explode(";",$this->g_data["gp_users"]);
+		if(!$uid[0]){
+			return array();
+		}
 		$soq=count($uid);
 		for($i=0;$i<$soq;$i++){
 			if($uid[$i]&&$uid[$i+1]){
@@ -163,14 +169,14 @@ class group extends _group{
 				$q[$i]=array("ac_id","=",$uid[$i]);
 			}
 		}
-		$users=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_GROUPS,"ac_id,ac_username",$q,"ASSOC",DB_ALL_ROWS);
+		$users=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_ACCOUNTS,"ac_id,ac_username",$q,"ASSOC",DB_ALL_ROWS);
 		$soq=count($users);
 		$retusers=array();
 		for($i=0;$i<$soq;$i++){
-			$retusers=array_merge(array($users[$i]["ac_id"]=>$users[$i]["ac_username"]),$retusers);
+			$retusers=array_merge($retusers,array($users[$i]["ac_id"]=>$users[$i]["ac_username"]));
 		}
 		return $retusers;
-	}	
+	}
 	
 	
 	//#################################
