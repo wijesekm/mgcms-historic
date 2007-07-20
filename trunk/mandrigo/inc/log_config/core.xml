@@ -155,6 +155,24 @@
 		</value>
 	</msg>
 	<msg>
+		<id>100</id>
+		<value>
+			Could not load the img class.
+		</value>
+	</msg>
+	<msg>
+		<id>101</id>
+		<value>
+			Could not load the captcha class.
+		</value>
+	</msg>
+	<msg>
+		<id>102</id>
+		<value>
+			Could not load the PHP mailer class.
+		</value>
+	</msg>
+	<msg>
 		<id>200</id>
 		<value>
 			Could not load the main site template.
