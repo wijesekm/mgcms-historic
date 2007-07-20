@@ -43,6 +43,11 @@ define("TPL_ALL","ALL");
 class template{
 	
 	var $tpl;
+	var $cur_filter;
+	
+	function template(){
+		$this->cur_filter=false;
+	}
 	
 	//#################################
 	//
@@ -75,7 +80,7 @@ class template{
             while(!feof($f)){
                 $string.=fgets($f);
             }
-            fclose($f);		
+            fclose($f);
 		}
 		else{
 			$string=$data;
@@ -86,7 +91,7 @@ class template{
 		$tmp=explode(TPL_START.$section.TPL_E,$string);
 		$tmp=explode(TPL_END.$section.TPL_E,$tmp[1]);
 		$this->tpl[(string)$section]=$tmp[0];
-		return true;		
+		return true;	
 	}
 	
     //
@@ -193,6 +198,9 @@ class template{
     //
 	//returns parsed string	
     function tpl_compile($vars,$string){
+     	if(!$this->cur_filter){
+			$this->cur_filter=new mfilter("mg_code");
+		}
         if(!mb_eregi(TPL_CODE_START,$string)){
 			return $string;
 		}
@@ -207,6 +215,11 @@ class template{
 				$cur=explode(TPL_CODE_END,$tmp[$i]);
 				$compile_string=$cur[0];
 				$mg_return="";
+				$this->cur_filter->fi_settext($compile_string);
+				if($this->cur_filter->fi_filter(1)){
+					$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(5,"display");
+					return false;
+				}
 				if($GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
 					eval($compile_string);	
 				}
