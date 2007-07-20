@@ -33,8 +33,6 @@ if(!defined("START_MANDRIGO")){
     die($GLOBALS["MANDRIGO"]["CONFIG"]["DIE_STRING"]);
 }
 
-@include_once($GLOBALS["MANDRIGO"]["CONFIG"]["ROOT_PATH"]."captcha.class.".PHP_EXT);
-
 class news{
 
 
