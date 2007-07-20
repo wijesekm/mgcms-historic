@@ -114,7 +114,7 @@ for($j=0;$j<$soc;$j++){
 	$sof=count($files);
 	for($i=0;$i<$sof;$i++){
 		$file=$GLOBALS["MANDRIGO"]["CONFIG"]["ROOT_PATH"].$files[$i];
-		if(file_exists()&&!is_dir()){
+		if(file_exists($file)&&!is_dir($file)){
 			if($GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
 				include_once($file);
 			}
