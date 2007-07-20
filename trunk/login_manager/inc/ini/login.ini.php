@@ -155,7 +155,7 @@ $init1=array(array("ini{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}constants.ini.$ph
 				  array("server_time.class.$php_ex",6),
 				  array("session.class.$php_ex",7),
 				  array("stats.class.$php_ex",8),
-				  array("filter.class.$php_ex",23),
+				  array("mfilter.class.$php_ex",23),
 				  array("template.class.$php_ex",10));			  
 $init2=array(array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}site.globals.$php_ex",11),
 			 array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}lang.globals.$php_ex",20));

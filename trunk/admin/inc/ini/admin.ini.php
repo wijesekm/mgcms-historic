@@ -138,7 +138,7 @@ package_init(array(array("ini{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}constants.i
 			 array("ini{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}clean_functions.ini.$php_ex",5,false),
 			 array("server_time.class.$php_ex",6,false),
 			 array("session.class.$php_ex",7,false),
-			 array("filter.class.$php_ex",23,false),
+			 array("mfilter.class.$php_ex",23,false),
 			 array("adminpage.class.$php_ex",70,true),
 			 array("template.class.$php_ex",10,false)));
 package_init(array(array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}site.globals.$php_ex",11,false),

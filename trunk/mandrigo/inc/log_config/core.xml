@@ -139,7 +139,7 @@
 	<msg>
 		<id>23</id>
 		<value>
-			Could not load the filter class.
+			Could not load the mfilter class.
 		</value>
 	</msg>			
 	<msg>
