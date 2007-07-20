@@ -139,3 +139,9 @@ $GLOBALS["MANDRIGO"]["CURRENTPAGE"]["HOOKS"]=$newpkg;
 
 $packages="";
 $newpkg="";
+$classes="";
+$filter="";
+$files="";
+$file="";
+$hooks_temp="";
+$hooks="";
