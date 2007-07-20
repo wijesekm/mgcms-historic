@@ -60,7 +60,7 @@ class mfilter{
 		else{
 			return false;
 		}
-		$this->cur_filter=$filter;
+		$this->cur_filter=$filter_list;
 		$filter=array();
 		$this->filter_size=count(this->cur_filter);
 		return true;		

@@ -32,7 +32,7 @@ if(!defined("START_MANDRIGO")){
     die($GLOBALS["MANDRIGO"]["CONFIG"]["DIE_STRING"]);
 }
 
-$filter=array("$"."i",
+$filter_list=array("$"."i",
 			  "$"."soq",
 			  "$"."string",
 			  "$"."tmp",
