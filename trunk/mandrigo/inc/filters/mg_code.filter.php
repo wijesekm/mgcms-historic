@@ -32,16 +32,20 @@ if(!defined("START_MANDRIGO")){
     die($GLOBALS["MANDRIGO"]["CONFIG"]["DIE_STRING"]);
 }
 
-$filter_list=array("$"."i",
-			  "$"."soq",
-			  "$"."string",
-			  "$"."tmp",
-			  "$"."compiled",
-			  "$"."cur",
-			  "$"."compile_string",
-			  "$"."GLOBALS",
-			  "$"."_POST",
-			  "$"."_GET",
-			  "$"."_COOKIE",
-			  "$"."_SERVER"
+$filter_list=array(array("$"."i",false),
+			  array("$"."soq",false),
+			  array("$"."string",false),
+			  array("$"."tmp",false),
+			  array("$"."compiled",false),
+			  array("$"."cur",false),
+			  array("$"."compile_string",false),
+			  array("$"."GLOBALS",false),
+			  array("$"."_POST",false),
+			  array("$"."_GET",false),
+			  array("$"."_COOKIE",false),
+			  array("$"."_SERVER",false),
+			  array("$"."_ENV",false),
+			  array("echo",false),
+			  array("print_r",false),
+			  array("mysql",false)
 			  );

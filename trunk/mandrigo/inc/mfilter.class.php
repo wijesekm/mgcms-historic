@@ -76,14 +76,14 @@ class mfilter{
 		for($i=0;$i<$this->filter_size;$i++){
 			switch($mode){
 				case 1:
-					if($this->fi_search($this->cur_filter[$i])){
+					if($this->fi_search($this->cur_filter[$i][0],$this->cur_filter[$i][1])){
 						$found_something=true;
 					}
 				break;
 				case 2:
-					if($this->fi_search($this->cur_filter[$i])){
+					if($this->fi_search($this->cur_filter[$i][0],$this->cur_filter[$i][1])){
 						$found_something=true;
-						$this->fi_destroy($this->cur_filter[$i]);
+						$this->fi_destroy($this->cur_filter[$i][0],"",$this->cur_filter[$i][1]);
 					}				
 				break;
 				default:
@@ -93,10 +93,16 @@ class mfilter{
 		}
 		return $found_something
 	}
-	function fi_search($item){
-		return @mb_ereg($item,$this->str);
+	function fi_search($item,$case){
+	 	if($case){
+			return @mb_ereg($item,$this->str);		
+		}
+		return @mb_eregi($item,$this->str);
 	}
-	function fi_destroy($item,$censor=""){
-		return @mg_ereg_replace($item,$censor,$this->str);
+	function fi_destroy($item,$censor="",$case){
+		if($case){
+			return @mg_ereg_replace($item,$censor,$this->str);			
+		}
+		return @mg_eregi_replace($item,$censor,$this->str);	
 	}
 }
