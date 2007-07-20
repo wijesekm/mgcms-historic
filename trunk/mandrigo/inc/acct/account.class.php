@@ -68,7 +68,17 @@ class _account{
 	//
 	//returns user data on success or false on fail	
 	function ac_userdata(){}
-
+	
+	//
+	//public ac_updateuserdata()
+	//
+	//updates the user data for the current user
+	//INPUTS:
+	//$user_data		-	array of user data
+	//
+	//returns true on success or false on fail
+	function ac_updateuserdata($user_data){}
+	 
 	//
 	//public ac_lastlogin()
 	//
@@ -86,21 +96,34 @@ class _account{
 	function ac_language(){}
 	
 	//
+	//public ac_updatelanguage()
+	//
+	//updates the user language for the current user
+	//INPUTS:
+	//$new_lang		-	new language
+	//
+	//returns true on success or false on fail	
+	function ac_updatelanguage($new_lang){}
+		
+	//
 	//public ac_timezone()
 	//
 	//gets the timezone/dst of the current user
 	//
 	//returns timezone/dst on success or false on fail	
 	function ac_timezone(){}
-
+	
 	//
-	//public ac_logindata()
+	//public ac_updatetz()
 	//
-	//gets the login data of the current user
+	//updates the user language for the current user
+	//INPUTS:
+	//$tz		-	new time zone
+	//$dst		-	new dst
 	//
-	//returns login data on success or false on fail	
-	function ac_logindata(){}
-
+	//returns true on success or false on fail	
+	function ac_updatetz($tz,$dst){}
+	
 	//
 	//public ac_groups()
 	//
