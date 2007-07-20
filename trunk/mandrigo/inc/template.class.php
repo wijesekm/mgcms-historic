@@ -80,7 +80,7 @@ class template{
 		else{
 			$string=$data;
 		}
-		if(!eregi(TPL_START.$section.TPL_E,$string)||!eregi(TPL_END.$section.TPL_E,$string)){
+		if(!mb_eregi(TPL_START.$section.TPL_E,$string)||!eregi(TPL_END.$section.TPL_E,$string)){
 			return false;
 		}
 		$tmp=explode(TPL_START.$section.TPL_E,$string);
@@ -113,7 +113,7 @@ class template{
 					$this->tpl[$keys[$i]]=$this->tpl_vparse($vars,$this->tpl[$keys[$i]]);
 				}
 				if($rempty){
-					$this->tpl[$keys[$i]]=eregi_replace("[{]+[a-z0-9_-]+[}]","",$this->tpl[$keys[$i]]);	
+					$this->tpl[$keys[$i]]=mb_eregi_replace("[{]+[a-z0-9_-]+[}]","",$this->tpl[$keys[$i]]);	
 				}
 			}
 		}
@@ -126,7 +126,7 @@ class template{
 				$this->tpl[(string)$section]=$this->tpl_vparse($vars,$this->tpl[(string)$section]);
 			}
 			if($rempty){
-				$this->tpl[(string)$section]=eregi_replace("[{]+[a-z0-9_-]+[}]","",$this->tpl[(string)$section]);
+				$this->tpl[(string)$section]=mb_eregi_replace("[{]+[a-z0-9_-]+[}]","",$this->tpl[(string)$section]);
 			}
 		}
 		$this->tpl_regester();
@@ -178,7 +178,7 @@ class template{
             return $string;
         }
         for($i=0;$i<$sov-1;$i+=2){
-            $string=ereg_replace("{".$vars[$i]."}",$vars[$i+1],$string);
+            $string=mb_ereg_replace("{".$vars[$i]."}",$vars[$i+1],$string);
         }
         return $string;
     }
@@ -193,7 +193,7 @@ class template{
     //
 	//returns parsed string	
     function tpl_compile($vars,$string){
-        if(!eregi(TPL_CODE_START,$string)){
+        if(!mb_eregi(TPL_CODE_START,$string)){
 			return $string;
 		}
 		$mg_return="";
@@ -203,7 +203,7 @@ class template{
 		$compiled="";
 		
 		for($i=0;$i<$soq;$i++){
-			if(eregi(TPL_CODE_END,$tmp[$i])){
+			if(mb_eregi(TPL_CODE_END,$tmp[$i])){
 				$cur=explode(TPL_CODE_END,$tmp[$i]);
 				$compile_string=$cur[0];
 				$mg_return="";
