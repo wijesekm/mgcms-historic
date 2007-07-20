@@ -28,7 +28,12 @@
 								The requested page exists but had errors during the page generation process and therefore is blank.
 							</value>
 						</msg>
-					
+						<msg>
+							<id>5</id>
+							<value>
+								The requested page is using illegal variables or functions in a template code block.  To see the page please remove these.
+							</value>
+						</msg>				
 						<msg>
 							<id>100</id>
 							<value>
