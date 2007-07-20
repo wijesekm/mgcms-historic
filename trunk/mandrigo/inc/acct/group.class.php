@@ -48,9 +48,13 @@ class _group{
 	//#################################	
 		
 	//
-	//public gp_setname()
+	//public gp_setid()
 	//
-	//sets the current group name	
+	//loads a group given its id
+	//INPUT:
+	//$gid		-	group id
+	//
+	//returns id on success or false on fail
 	function gp_setid($gname){}
 		
 	//
@@ -85,7 +89,7 @@ class _group{
 	function gp_updatedata($new_data){}
 		
 	//
-	//public gp_data()
+	//public gp_admins()
 	//
 	//gets the usernames of the admins of the group
 	//
@@ -96,7 +100,7 @@ class _group{
 	//public gp_updateadmins()
 	//
 	//replaces the current admins list with the new list
-	//$new_admins		-	array of new admins
+	//$new_admins		-	array of new admins uids
 	//
 	//returns true on sucess or false on fail
 	function gp_updateadmins($new_admins){}
@@ -113,7 +117,7 @@ class _group{
 	//public gp_updatemembers()
 	//
 	//replaces the current users list with the new list
-	//$new_users		-	array of new users
+	//$new_users		-	array of new members uids
 	//
 	//returns true on sucess or false on fail
 	function gp_updatemembers($new_users){}	

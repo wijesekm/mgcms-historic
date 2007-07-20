@@ -53,9 +53,13 @@ class group extends _group{
 	//#################################	
 		
 	//
-	//public gp_setname()
+	//public gp_setid()
 	//
-	//sets the current group name	
+	//loads a group given its id
+	//INPUT:
+	//$gid		-	group id
+	//
+	//returns id on success or false on fail	
 	function gp_setid($gid){
 		$r=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_GROUPS,"gp_id,gp_name",array(array("gp_id","=",$gid)));
 		if((int)$r["gp_id"]===(int)$gid){
@@ -111,9 +115,31 @@ class group extends _group{
 					 "GP_ABOUT"=>$this->g_data["gp_about"],
 					 "GP_PICTURE"=>$this->g_data["gp_picture"]);
 	}
-
+	
 	//
-	//public gp_data()
+	//public gp_updatedata()
+	//
+	//updates the group data
+	//$new_data			-	array of new group data
+	//
+	//returns true on sucess or false on fail
+	function gp_updatedata($new_data){
+		if(!$this->isgroup){
+			return false;
+		}
+		$update=array(
+						array("gp_name",$new_data["NAME"]),
+						array("gp_about",$new_data["ABOUT"]),
+						array("gp_picture",$new_data["PICTURE"])	
+					 );
+		if(!$GLOBALS["MANDRIGO"]["DB"]->db_update(DB_UPDATE,TABLE_PREFIX.TABLE_GROUPS,$update,array(array("gp_id","=",$this->gid)))){
+			return false;
+		}
+		return true;	
+	}
+	
+	//
+	//public gp_admins()
 	//
 	//gets the usernames of the admins of the group
 	//
@@ -144,7 +170,25 @@ class group extends _group{
 		}
 		return $retusers;
 	}
-
+	
+	//
+	//public gp_updateadmins()
+	//
+	//replaces the current admins list with the new list
+	//$new_admins		-	array of new admins uids
+	//
+	//returns true on sucess or false on fail
+	function gp_updateadmins($new_admins){
+	 	if(!$this->isgroup){
+			return false;
+		}
+		$admin_string=implode(";",$new_admins);
+		if(!$GLOBALS["MANDRIGO"]["DB"]->db_update(DB_UPDATE,TABLE_PREFIX.TABLE_GROUPS,array(array("gp_admins",$new_admins)),array(array("gp_id","=",$this->gid)))){
+			return false;
+		}
+		return true;			
+	}
+	
 	//
 	//public gp_members()
 	//
@@ -178,7 +222,24 @@ class group extends _group{
 		return $retusers;
 	}
 	
-	
+	//
+	//public gp_updatemembers()
+	//
+	//replaces the current users list with the new list
+	//$new_users		-	array of new members uids
+	//
+	//returns true on sucess or false on fail
+	function gp_updatemembers($new_users){
+	 	if(!$this->isgroup){
+			return false;
+		}
+		$user_string=implode(";",$new_users);
+		if(!$GLOBALS["MANDRIGO"]["DB"]->db_update(DB_UPDATE,TABLE_PREFIX.TABLE_GROUPS,array(array("gp_users",$user_string)),array(array("gp_id","=",$this->gid)))){
+			return false;
+		}
+		return true;
+	}	
+		
 	//#################################
 	//
 	// PRIVATE FUNCTIONS
