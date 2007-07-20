@@ -253,7 +253,36 @@ class ad{
 		}
 
 		return $ret_groups;
-	}	
+	}
+	function ad_groupuseradd($group,$user){
+		$user_info=$this->ad_userinfo($user,array("cn"));
+		$group_info=$this->ad_groupinfo($group,array("cn"));
+		if($user_info[0]["dn"]==NULL||$group_info[0]["dn"]==Null){
+			return false;
+		}
+		
+		$add=array();
+		$add["member"]=$user_info[0]["dn"];
+		if(!(@ldap_mod_add($this->conn,$group_info[0]["dn"],$add))){
+			return false;
+		}
+		return true;
+	}
+	function ad_groupuserdel($group,$user){
+	
+		$user_info=$this->ad_userinfo($user,array("cn"));
+		$group_info=$this->ad_groupinfo($group,array("cn"));
+		if($user_info[0]["dn"]==NULL||$group_info[0]["dn"]==Null){
+			return false;
+		}
+
+		$del=array();
+		$del["member"]=$user_info[0]["dn"];
+		if(!(@ldap_mod_del($this->conn,$group_info[0]["dn"],$add))){
+			return false;
+		}
+		return true;
+	}
 	function ad_allusers($search="*",$include_desc=false,$sorted=true){
 	 	if(!$this->bind){
 			return false;	
@@ -392,5 +421,14 @@ class ad{
 			}
 		}
 		return $group_array;	
-	}	
+	}
+	function ad_encodepassword($password){
+		$password="\"".$password."\"";
+		$encoded="";
+		$soq=strlen($password);
+		for($i=0;$i<$soq;$i++){
+			$encoded.="{$password{$i}}\000"; 
+		}
+		return $encoded;
+	}
 }
