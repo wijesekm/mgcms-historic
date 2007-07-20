@@ -135,7 +135,13 @@
 		<value>
 			Could not load the stats script.
 		</value>
-	</msg>		
+	</msg>
+	<msg>
+		<id>23</id>
+		<value>
+			Could not load the filter class.
+		</value>
+	</msg>			
 	<msg>
 		<id>40</id>
 		<value>
