@@ -34,13 +34,13 @@ if(!defined("START_MANDRIGO")){
 
 define("FILTER_PATH","/filters/");
 
-class filter{
+class mfilter{
 	
 	var $cur_filter;
 	var $str;
 	var $filter_size;
 	
-	function filter($name){
+	function mfilter($name){
 		$this->change_filter($name);
 	}
 	function fi_change($name){
