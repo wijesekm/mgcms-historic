@@ -75,12 +75,12 @@ class mfilter{
 	 	$found_something=false;
 		for($i=0;$i<$this->filter_size;$i++){
 			switch($mode){
-				case 2:
+				case 1:
 					if($this->fi_search($this->cur_filter[$i])){
 						$found_something=true;
 					}
 				break;
-				case 1:
+				case 2:
 					if($this->fi_search($this->cur_filter[$i])){
 						$found_something=true;
 						$this->fi_destroy($this->cur_filter[$i]);
