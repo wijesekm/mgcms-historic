@@ -76,7 +76,7 @@ class account extends _account{
 	 	if(!$this->isuser){
 			return false;
 		}
-		return $this->u_data["ac_id"];
+		return $this->uid;
 	}
 	
 	//
@@ -111,9 +111,36 @@ class account extends _account{
 					 "WEBSITE"=>$this->u_data["ac_website"],
 					 "ABOUT"=>$this->u_data["ac_about"],
 					 "PICTURE_PATH"=>$this->u_data["ac_picture"],
-					 "UID"=>$this->ac_id(),
-					 "USERNAME"=>$this->ac_uname());
+					 "UID"=>$this->uid,
+					 "USERNAME"=>$this->name);
 	}
+		
+	//
+	//public ac_updateuserdata()
+	//
+	//updates the user data for the current user
+	//INPUTS:
+	//$user_data		-	array of user data
+	//
+	//returns true on success or false on fail
+	function ac_updateuserdata($user_data){
+	 	if(!$this->isuser){
+			return false;
+		}
+		$update=array(
+						array("ac_fullname",$user_data["FNAME"].";".$user_data["MNAME"].";".$user_data["LNAME"]),
+						array("ac_email",$user_data["EMAIL"]),
+						array("ac_im",implode(";",$user_data["IM"])),
+						array("ac_website",$user_data["WEBSITE"]),
+						array("ac_about",$user_data["ABOUT"]),
+						array("ac_picture",$user_data["PICTURE_PATH"])
+					 );
+		if(!$GLOBALS["MANDRIGO"]["DB"]->db_update(DB_UPDATE,TABLE_PREFIX.TABLE_ACCOUNTS,$update,array(array("ac_id","=",$this->uid)))){
+			return false;
+		}
+		return true;
+	}
+
 	//
 	//public ac_last()
 	//
@@ -140,8 +167,26 @@ class account extends _account{
 			return false;
 		}
 		return $this->u_data["ac_lang"];
-		
 	}
+	
+	//
+	//public ac_updatelanguage()
+	//
+	//updates the user language for the current user
+	//INPUTS:
+	//$new_lang		-	new language
+	//
+	//returns true on success or false on fail	
+	function ac_updatelanguage($new_lang){
+	 	if(!$this->isuser){
+			return false;
+		}		
+		if(!$GLOBALS["MANDRIGO"]["DB"]->db_update(DB_UPDATE,TABLE_PREFIX.TABLE_ACCOUNTS,array(array("ac_lang",$new_lang)),array(array("ac_id","=",$this->uid)))){
+			return false;
+		}
+		return true;
+	}
+	
 	//
 	//public ac_timezone()
 	//
@@ -155,14 +200,25 @@ class account extends _account{
 		return array("TZ"=>$this->u_data["ac_tz"],
 					 "DST"=>$this->u_data["ac_dst"]);		
 	}
-
+	
 	//
-	//public ac_logindata()
+	//public ac_updatetz()
 	//
-	//gets the login data of the current user
+	//updates the user language for the current user
+	//INPUTS:
+	//$tz		-	new time zone
+	//$dst		-	new dst
 	//
-	//returns login data on success or false on fail	
-	function ac_logindata(){}
+	//returns true on success or false on fail	
+	function ac_updatetz($tz,$dst){
+	 	if(!$this->isuser){
+			return false;
+		}		
+		if(!$GLOBALS["MANDRIGO"]["DB"]->db_update(DB_UPDATE,TABLE_PREFIX.TABLE_ACCOUNTS,array(array("ac_tz",$tz),array("ac_dst",$dst)),array(array("ac_id","=",$this->uid)))){
+			return false;
+		}
+		return true;
+	}
 
 	//
 	//public ac_groups()
