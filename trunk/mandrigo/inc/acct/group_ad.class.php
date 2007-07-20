@@ -106,7 +106,17 @@ class _group{
 		return array("NAME"=>$this->name,
 					 "GID"=>$this->gid);
 	}
-
+	
+	//
+	//public gp_updatedata()
+	//
+	//updates the group data
+	//$new_data			-	array of new group data
+	//
+	//returns true on sucess or false on fail
+	function gp_updatedata($new_data){
+		return false;
+	}
 	//
 	//public gp_data()
 	//
@@ -116,7 +126,18 @@ class _group{
 	function gp_admins(){
 
 	}
-
+	
+	//
+	//public gp_updateadmins()
+	//
+	//replaces the current admins list with the new list
+	//$new_admins		-	array of new admins uids
+	//
+	//returns true on sucess or false on fail
+	function gp_updateadmins($new_admins){
+		return false;
+	}
+	
 	//
 	//public gp_members()
 	//
@@ -127,6 +148,16 @@ class _group{
 	
 	}	
 	
+	//
+	//public gp_updatemembers()
+	//
+	//replaces the current users list with the new list
+	//$new_users		-	array of new members uids
+	//
+	//returns true on sucess or false on fail
+	function gp_updatemembers($new_users){
+		return false;
+	}		
 	
 	//#################################
 	//
