@@ -49,11 +49,15 @@ class mg_newsreader{
 	function nr_readrss(){
 		
 	}
-	function nr_readmg(){
+	function nr_readmg($page,$part){
 		
 	}
-	function nr_readsql(){
-	
+	function nr_readsql($config,$data,$url,$num_fetch=DB_ALL_ROWS){
+		$db_new = & new db();
+		if(!$db_new->db_connect($config["HOST"],$config["PORT"],$config["SOCKET"],$config["USER"],$config["PASS"],$config["DB"],true,$config["USSL"],$config["SSL"])){
+			return false;
+		}
+		$posts=$db_new->db_fetcharray($config["table"],$data["post_id"].",".$data["post_timestamp"].",".$data["post"].",".$data["post_author"],"","ASSOC",$num_fetch);
+		return $posts;
 	}
-	
 }
