@@ -74,7 +74,16 @@ class _group{
 	//
 	//returns data on success or false on fail	
 	function gp_data(){}	
-
+	
+	//
+	//public gp_updatedata()
+	//
+	//updates the group data
+	//$new_data			-	array of new group data
+	//
+	//returns true on sucess or false on fail
+	function gp_updatedata($new_data){}
+		
 	//
 	//public gp_data()
 	//
@@ -82,7 +91,16 @@ class _group{
 	//
 	//returns array of unames on success or false on fail		
 	function gp_admins(){}
-
+	
+	//
+	//public gp_updateadmins()
+	//
+	//replaces the current admins list with the new list
+	//$new_admins		-	array of new admins
+	//
+	//returns true on sucess or false on fail
+	function gp_updateadmins($new_admins){}
+	
 	//
 	//public gp_members()
 	//
@@ -91,6 +109,14 @@ class _group{
 	//returns array of unames on success or false on fail		
 	function gp_members(){}	
 	
+	//
+	//public gp_updatemembers()
+	//
+	//replaces the current users list with the new list
+	//$new_users		-	array of new users
+	//
+	//returns true on sucess or false on fail
+	function gp_updatemembers($new_users){}	
 	
 	//#################################
 	//
