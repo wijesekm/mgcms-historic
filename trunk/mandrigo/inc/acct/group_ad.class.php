@@ -93,6 +93,7 @@ class _group{
 		}
 		return $this->name;
 	}	
+	
 	//
 	//public gp_data()
 	//
@@ -104,7 +105,9 @@ class _group{
 			return false;
 		}
 		return array("NAME"=>$this->name,
-					 "GID"=>$this->gid);
+					 "GID"=>$this->gid,
+					 "GP_ABOUT"=>$this->g_data["gp_about"],
+					 "GP_PICTURE"=>$this->g_data["gp_picture"]);
 	}
 	
 	//
@@ -115,16 +118,52 @@ class _group{
 	//
 	//returns true on sucess or false on fail
 	function gp_updatedata($new_data){
-		return false;
+		if(!$this->isgroup){
+			return false;
+		}
+		$update=array(
+						array("gp_name",$new_data["NAME"]),
+						array("gp_about",$new_data["ABOUT"]),
+						array("gp_picture",$new_data["PICTURE"])	
+					 );
+		if(!$GLOBALS["MANDRIGO"]["DB"]->db_update(DB_UPDATE,TABLE_PREFIX.TABLE_GROUPS,$update,array(array("gp_id","=",$this->gid)))){
+			return false;
+		}
+		return true;	
 	}
+	
+	
 	//
-	//public gp_data()
+	//public gp_admins()
 	//
 	//gets the usernames of the admins of the group
 	//
 	//returns array of unames on success or false on fail		
 	function gp_admins(){
-
+	 	if(!$this->isgroup){
+			return false;
+		}
+		$q=array();
+		$uid=explode(";",$this->g_data["gp_admins"]);
+		if(!$uid[0]){
+			return array();
+		}
+		$soq=count($uid);
+		for($i=0;$i<$soq;$i++){
+			if($uid[$i]&&$uid[$i+1]){
+				$q[$i]=array("ac_id","=",$uid[$i],DB_OR);
+			}
+			else if($gid[$i]){
+				$q[$i]=array("ac_id","=",$uid[$i]);
+			}
+		}
+		$users=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_ACCOUNTS,"ac_id,ac_username",$q,"ASSOC",DB_ALL_ROWS);
+		$soq=count($users);
+		$retusers=array();
+		for($i=0;$i<$soq;$i++){
+			$retusers=array_merge($retusers,array($users[$i]["ac_id"]=>$users[$i]["ac_username"]));
+		}
+		return $retusers;
 	}
 	
 	//
@@ -135,8 +174,17 @@ class _group{
 	//
 	//returns true on sucess or false on fail
 	function gp_updateadmins($new_admins){
-		return false;
+	 	if(!$this->isgroup){
+			return false;
+		}
+		$admin_string=implode(";",$new_admins);
+		if(!$GLOBALS["MANDRIGO"]["DB"]->db_update(DB_UPDATE,TABLE_PREFIX.TABLE_GROUPS,array(array("gp_admins",$new_admins)),array(array("gp_id","=",$this->gid)))){
+			return false;
+		}
+		return true;			
 	}
+	
+
 	
 	//
 	//public gp_members()
@@ -145,7 +193,10 @@ class _group{
 	//
 	//returns array of unames on success or false on fail		
 	function gp_members(){
-	
+	 	if(!$this->isgroup){
+			return false;
+		}
+		$ad_gp_data=$GLOBALS["MANDRIGO"]["AD"]->ad_groupinfo($this->name,array())
 	}	
 	
 	//
@@ -172,6 +223,10 @@ class _group{
 	//
 	//returns true on success or false on fail
 	function gp_getgpdata(){
-
+		if(!$this->isgroup){
+			return false;
+		}
+		$this->g_data=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_GROUPS,"",array(array("gp_id","=",$this->gid)));		
+		return true;		
 	}	
 }
