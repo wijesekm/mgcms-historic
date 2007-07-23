@@ -126,7 +126,7 @@ class mg_profile{
 			$link=$this->pr_genlink($this->pr_genurl(array("p",$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["NAME"],"id",$prefix.$uid)),$username);
 			$tpl_n=new template();
 			$tpl_n->tpl_load($this->tpl->tpl_return('userdelim'),'userdelimsub',false);
-			$tpl_n->tpl_parse(array("NAME",$link),"userdelimsub",2,false);
+			$tpl_n->tpl_parse(array("NAME",$link,"INDEX",(string)($i+1),"SOQ",(string)$soq),"userdelimsub",2,false);
 			$str.=$tpl_n->tpl_return("userdelimsub");
 		}
 		return $str;
