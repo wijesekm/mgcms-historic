@@ -47,7 +47,11 @@ class cache{
 			$cache_data["cache_time"]=0;
 		}
 		if($GLOBALS["MANDRIGO"]["CURRENTPAGE"]["LASTUPDATED"]>$cache_data["cache_time"]){
-			return $this->cache_write($page_contents,$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["NAME"].$GLOBALS["MANDRIGO"]["CURRENTUSER"]["UID"]);	
+			if($this->cache_write($page_contents,$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["NAME"].$GLOBALS["MANDRIGO"]["CURRENTUSER"]["UID"])){
+				$GLOBALS["MANDRIGO"]["DB"]->db_update(DB_UPDATE,TABLE_PREFIX.TABLE_CACHE,array(array("cache_time",$GLOBALS["MANDRIGO"]["SITE"]["SERVERTIME"])),array(array("pg_id","=",$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["ID"])));
+				return true;	
+			}
+			return false;
 		}
 		return 2;
 	}
