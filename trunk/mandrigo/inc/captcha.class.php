@@ -171,9 +171,9 @@ class captcha{
 
 		//cleanup
 		@unlink($GLOBALS["MANDRIGO"]["CONFIG"]["IMG_PATH"].TMP_IMG.$GLOBALS["MANDRIGO"]["VARS"]["CA_ID"].".jpg");
-		$GLOBALS["MANDRIGO"]["DB"]->db_update(DB_REMOVE,TABLE_PREFIX.TABLE_CAPTCHA,"",array(array("ca_id","=",$GLOBALS["MANDRIGO"]["VARS"]["MG_NEWS_CAID"])));	
+		$GLOBALS["MANDRIGO"]["DB"]->db_update(DB_REMOVE,TABLE_PREFIX.TABLE_CAPTCHA,"",array(array("ca_id","=",$GLOBALS["MANDRIGO"]["VARS"]["CA_ID"])));	
 
-		if($ca_string===(string)$GLOBALS["MANDRIGO"]["VARS"]["MG_NEWS_CASTR"]){
+		if($ca_string===(string)$GLOBALS["MANDRIGO"]["VARS"]["CA_STRING"]){
 			return true;
 		}
 		return false;
