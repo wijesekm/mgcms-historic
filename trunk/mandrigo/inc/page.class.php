@@ -86,6 +86,23 @@ class page{
 			header("Location: ".$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["PAGE_REDIR"]);
 			die();
 		}
+	 	//
+	 	//Checks for cache
+	 	//
+	 	if($GLOBALS["MANDRIGO"]["SITE"]["CACHE_PAGES"]){
+			$cache=new cache();
+			$content=$cache->cache_rpage();
+			if($content==false){
+				if(!$GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
+					$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(6,"display");
+				}			
+			}
+			else if($content!=3&&$content!=2){
+				$tpl_mainsite=new template();
+				$tpl->tpl_load("<!--MG_TEMPLATE_START_main-->".$content."<!--MG_TEMPLATE_END_main-->","main",false);
+				return $tpl->tpl_return("main");
+			}
+		}
 	 	
 	 	//
 	 	//Load the main site template
@@ -135,6 +152,17 @@ class page{
             $this->page_parse_vars=$this->pg_appendarray(array("CONTENT",$content,"PAGE_TITLE",$GLOBALS["MANDRIGO"]["LANGUAGE"]["OPTITLE"]),$this->page_parse_vars);		
 		}
 	    $tpl_mainsite->tpl_parse($this->page_parse_vars,"main",2);
+	    if($GLOBALS["MANDRIGO"]["SITE"]["CACHE_PAGES"]){
+			$result=$cache->cache_wpage($tpl_mainsite->tpl_return("main"));
+			if($result==false){
+				if(!$GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
+					$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(7,"display");
+					die($GLOBALS["MANDRIGO"]["ELOG"]["HTMLHEAD"].$GLOBALS["MANDRIGO"]["ELOG"]["TITLE"].$GLOBALS["MANDRIGO"]["ELOG"]["HTMLBODY"].
+		           		$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_generatereport().$GLOBALS["MANDRIGO"]["ELOG"]["HTMLEND"]);
+	
+				}				
+			}
+	    }
 	    return $tpl_mainsite->tpl_return("main");
 	}
 	

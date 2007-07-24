@@ -33,7 +33,19 @@
 							<value>
 								The requested page is using illegal variables or functions in a template code block.  To see the page please remove these.
 							</value>
-						</msg>				
+						</msg>	
+						<msg>
+							<id>6</id>
+							<value>
+								The requested page is cached but the cache could not be read.  This is usually caused by permissions problems.
+							</value>
+						</msg>
+						<msg>
+							<id>6</id>
+							<value>
+								The requested page is cached but the cache could not be wrote to.  This is usually caused by permissions problems.
+							</value>
+						</msg>								
 						<msg>
 							<id>100</id>
 							<value>
