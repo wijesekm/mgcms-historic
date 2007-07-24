@@ -175,7 +175,7 @@ $GLOBALS["MANDRIGO"]["CONFIG"]["EXTERNAL_PATH"]=ereg_replace("/htdocs/config/con
 $GLOBALS["MANDRIGO"]["CONFIG"]["TEMPLATE_PATH"]=$GLOBALS["MANDRIGO"]["CONFIG"]["EXTERNAL_PATH"]."/templates/";
 $GLOBALS["MANDRIGO"]["CONFIG"]["LOG_PATH"]=$GLOBALS["MANDRIGO"]["CONFIG"]["EXTERNAL_PATH"]."/logs/";
 $GLOBALS["MANDRIGO"]["CONFIG"]["TMP_PATH"]="/tmp/";
-
+$GLOBALS["MANDRIGO"]["CONFIG"]["CACHE_PATH"]=$GLOBALS["MANDRIGO"]["CONFIG"]["EXTERNAL_PATH"]."/cache/";
 //
 //DEBUG_MODE- Shows php errors instead of Mandrigo errors.
 //
