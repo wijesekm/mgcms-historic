@@ -88,4 +88,6 @@ if(!$nopage){
 	$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["DATAPATH"]=(string)trim($page_data["pg_datapath"]);
 	$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["STATUS"]=(int)trim($page_data["pg_status"]);
 	$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["READLEVEL"]=(int)trim($page_data["pg_readlevel"]);
+	$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["CACHE"]=(int)trim($page_data["pg_cache"]);
+	$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["LASTUPDATED"]=(int)trim($page_data["pg_lastupdated"]);
 }
