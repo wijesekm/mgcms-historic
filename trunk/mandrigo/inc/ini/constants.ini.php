@@ -48,6 +48,7 @@ define("TABLE_STATS_HITS","stats_hits");
 define("TABLE_STATS_IPS","stats_ips");
 define("TABLE_STATS_USERAGENTS","stats_uagents");
 define("TABLE_CLASSES","classes");
+define("TABLE_CACHE","cache")
 define("TABLE_CAPTCHA","captcha");
 define("TABLE_CAPTCHA_DATA","captchad");
 define("TABLE_ENVELOPE_DATA","envelopedata");
@@ -92,3 +93,4 @@ define("MULTIPART_ALT","multipart/alternative");
 define("TEXT_PLAIN","text/plain");
 define("TEXT_HTML","text/html");
 define("MULTI_ALT","multipart/alternative");
+define("CACHE_EXT",".cache");
