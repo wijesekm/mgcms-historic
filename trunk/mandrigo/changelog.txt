@@ -11,6 +11,9 @@
 10) New templating system support multiple templates per file and limited php scripting
 11) Login Manager Finished
 12) Admin Section Finished
+13) New system for loading classes for packages
+14) cache system
+15) Added img, xml, and mfilter classes
 
 0.6.0
 1) lang and template data is now drawn from the sql database
