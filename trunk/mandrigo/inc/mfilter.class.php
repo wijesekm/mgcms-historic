@@ -1,8 +1,8 @@
 <?php
 /**********************************************************
-    filter.class.php
+    mfilter.class.php
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 07/20/07
+	Date Last Edited: 07/24/07
 
 	Copyright (C) 2006-2007 the MandrigoCMS Group
 
