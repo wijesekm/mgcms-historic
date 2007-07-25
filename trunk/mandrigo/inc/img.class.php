@@ -39,7 +39,11 @@ class img{
 	var $image;
 	var $type;
 	
-	function img{}
+	function img{
+		if($this->img_gdversion() < 2){
+			return false;
+		}
+	}
 	
 	function img_read($file){
 		$tmp=getimagesize($file);
@@ -47,40 +51,40 @@ class img{
 		$this->height=$tmp[1];
 		
 		$ext=exif_imagetype($file);
-		$tmp_img=false;
 		switch($ext){
 			case IMAGETYPE_JPEG:
-				$tmp_img=@imagecreatefromjpeg($file);
+				$this->image=@imagecreatefromjpeg($file);
 			break;
 			case IMAGETYPE_GIF:
-				$tmp_img=@imagecreatefromgif($file);
+				$this->image=@imagecreatefromgif($file);
 			break;
 			case IMAGETYPE_PNG:
-				$tmp_img=@imagecreatefrompng($file);
+				$this->image=@imagecreatefrompng($file);
 			break;
 			default:
 				return false;
 			break;
 		};
-		if($tmp_img==false){
+		if($this->image==false){
 			return false;
 		}
-		$this->image=$ext;
-		$this->image=$tmp_img;
-		@imagedestroy($tmp_img);
+		$this->type=$ext;
 		return true;
 	}
 	
 	function img_create($width,$height,$type=IMAGETYPE_JPEG){
 		$this->width=$width;
 		$this->height=$height;
-		$tmp_img=@imagecreatetruecolor($width,$height);
-		if($tmp_img==false){
+		if($type==IMAGETYPE_GIF){
+			$this->image=@imagecreate($width,$height);
+		}
+		else{
+			$this->image=@imagecreatetruecolor($width,$height);
+		}
+		if($this->image==false){
 			return false;
 		}
 		$this->type=$type;
-		$this->image=$tmp_img;
-		@imagedestroy($tmp_img);
 		return true;
 	}
 	
@@ -90,30 +94,50 @@ class img{
 				if(!$params["quality"]){
 					$params["quality"]=80;
 				}
-				header('Content-type: image/jpeg');
-				header('Content-Length: ' . strlen($this->image));
-				imagejpeg($this->image,$file,$params["quality"]);
-				die();
+				if(!$file){
+					header('Content-type: image/jpeg');
+					header('Content-Length: ' . strlen($this->image));
+					imagejpeg($this->image,"",$params["quality"]);
+					imagedestroy($this->image);
+					die();				
+				}
+				else{
+					imagejpeg($this->image,$file,$params["quality"]);	
+				}
+
 			break;
 			case IMAGETYPE_GIF:
-				header('Content-type: image/gif');
-				header('Content-Length: ' . strlen($this->image));
-				imagegif($this->image,$file);
-				die();
+				if(!$file){
+					header('Content-type: image/gif');
+					header('Content-Length: ' . strlen($this->image));
+					imagegif($this->image,$file);
+					imagedestroy($this->image);
+					die();			
+				}
+				else{
+					imagegif($this->image,$file);
+				}
 			break;
 			case IMAGETYPE_PNG:
 				if(!$params["quality"]){
 					$params["quality"]=4;
 				}
-				header('Content-type: image/png');
-				header('Content-Length: ' . strlen($this->image));
-				imagepng($this->image,$file,$params["quality"]);
-				die();
+				if(!$file){
+					header('Content-type: image/png');
+					header('Content-Length: ' . strlen($this->image));
+					imagepng($this->image,"",$params["quality"]);
+					imagedestroy($this->image);
+					die();			
+				}
+				else{
+					imagepng($this->image,$file,$params["quality"]);
+				}
 			break;
 			default:
 				return false;
 			break;
 		}
+		return true;
 	}
 	
 	function img_presizelimit($width_max,$height_max){
@@ -124,7 +148,7 @@ class img{
 			$height_max = $this->height;
 		}
 		return $this->img_presize($width_max,$height_max);
-	} 
+	}
 	
 	function img_presize($width_max,$height_max){
 		$ratio=$this->width/$this->height;
@@ -139,7 +163,12 @@ class img{
 	}
 	
 	function img_resize($new_width,$new_height){
-		$tmp_img=@imagecreatetruecolor($new_width, $new_height);
+		if($this->type==IMAGETYPE_GIF){
+			$tmp_img=@imagecreate($width,$height);
+		}
+		else{
+			$tmp_img=@imagecreatetruecolor($width,$height);
+		}
 		if(!$tmp_img){
 			return false;
 		}
@@ -168,5 +197,36 @@ class img{
  			}
 		}
 		return $gd_version_number;		
+	}
+	function img_line($x,$y,$color,$ctype){
+		$color=$this->img_getcolor($color,$ctype);
+		@imageline($this->image,$x[0],$y[0],$x[1],$y[1],$color);
+	}
+	
+	function img_ttftext($string,$size,$angle,$x,$y,$color,$ttf_file,$ctype=""){
+		$color=$this->img_getcolor($color,$ctype);
+		@imagettftext($this->image,$size,$angle,$x,$y,$color,$ttf_file,$string);
+	}
+	function img_fillbackground($color,$ctype=""){
+		$this->img_drawrectangle($color,array(0,$this->width),array(0,$this->height),true,$ctype);
+	}
+	
+	function img_drawrectangle($color,$x,$y,$filled=true,$ctype=""){
+		$color=$this->img_getcolor($color,$ctype);
+		if($filled){
+			@imagefilledrectangle($this->image,$x[0],$y[0],$x[1],$y[1],$color);	
+		}
+		else{
+			@imagerectangle($this->image,$x[0],$y[0],$x[1],$y[1],$color);	
+		}
+	}
+	
+	function img_getcolor($color,$type=""){
+		if($type="close"){
+			return @imagecolorclosest($this->image,$c["r"],$c["g"],$c["b"]);
+		}
+		else{
+			return @imagecolorallocate($this->image,$c["r"],$c["g"],$c["b"]);
+		}
 	}
 }
