@@ -32,7 +32,7 @@ if(!defined("START_MANDRIGO")){
     die($GLOBALS["MANDRIGO"]["CONFIG"]["DIE_STRING"]);
 }
 
-@include_once("phpmailer.class.php");
+@include_once($GLOBALS["MANDRIGO"]["CONFIG"]["ROOT_PATH"]."phpmailer.class.".PHP_EXT);
 
 class envelope extends phpmailer{
 	
