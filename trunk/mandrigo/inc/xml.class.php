@@ -54,8 +54,8 @@ class mxml{
 		}
 		return $this->document;
 	}
-	function xml_write($xml_array){
-	
+	function mxml_write($xml_array){
+		return $this->xml_writearray($xml_array);
 	}
 
 	//#################################
@@ -63,6 +63,25 @@ class mxml{
 	// PRIVATE FUNCTIONS
 	//
 	//#################################
+	
+	
+	function mxml_writearray($xml_array){
+		$keys=array_keys($xml_array);
+		$soq=count($keys);
+		$xml_string="";
+		for($i=0;$i<$soq;$i++){
+		 	$cur=$xml_array[strtoupper($keys[$i])][$i];
+			$string.="<".$keys[$i]." ".$cur['attr'].">";
+			if($cur["data"]){
+				$string.=$cur["data"];
+			}
+			else{
+				$string.=$this->xml_writearray($xml_array[strtoupper($keys[$i])][$i]);		
+			}
+			$string.="</".$keys[$i].">";
+		}
+		return $string;
+	}
 	
     //
     //private function xml_parsefile($path)
