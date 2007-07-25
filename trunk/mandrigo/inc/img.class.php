@@ -2,7 +2,7 @@
 /**********************************************************
     img.class.php
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 07/16/07
+	Date Last Edited: 07/25/07
 
 	Copyright (C) 2006-2007 the MandrigoCMS Group
 
@@ -38,13 +38,37 @@ class img{
 	var $height;
 	var $image;
 	var $type;
-	
+
+    //
+    //constructor img()
+    //
+    //Initializes the img script
+    //
+    //returns object on sucess or false on fail		
 	function img{
 		if($this->img_gdversion() < 2){
 			return false;
 		}
 	}
+
+	//#################################
+	//
+	// PUBLIC FUNCTIONS
+	//
+	//#################################	  	
 	
+	//
+	//Read/Write Functions
+	//
+ 	
+    //
+    //public function img_read($file)
+    //
+    //Loads an image from a file
+    //INPUTS:
+    //$file		-	file to read from [string]
+    //
+	//returns true on sucess or false on fail
 	function img_read($file){
 		$tmp=getimagesize($file);
 		$this->width=$tmp[0];
@@ -71,7 +95,17 @@ class img{
 		$this->type=$ext;
 		return true;
 	}
-	
+ 	
+    //
+    //public function img_create($width,$height,$type=IMAGETYPE_JPEG)
+    //
+    //Makes a new imeage
+    //INPUTS:
+    //$width		-	image width [int]
+    //$height		-	image height [int]
+    //$type			-	type of image from standard php image constants [string] (default: IMAGETYPE_JPEG)
+    //
+	//returns true on sucess or false on fail	
 	function img_create($width,$height,$type=IMAGETYPE_JPEG){
 		$this->width=$width;
 		$this->height=$height;
@@ -87,7 +121,16 @@ class img{
 		$this->type=$type;
 		return true;
 	}
-	
+ 	
+    //
+    //public function img_write($params=array(),$file="")
+    //
+    //Write an image to a file or the screen if no filepath is given
+    //INPUTS:
+    //$params		-	parameters [array:attributes (quality)] (default: )
+    //$file			-	file path [string] (default: )	
+    //
+	//returns true on sucess or false on fail		
 	function img_write($params=array(),$file=""){
 		switch($this->type){
 			case IMAGETYPE_JPEG:
@@ -140,16 +183,94 @@ class img{
 		return true;
 	}
 	
-	function img_presizelimit($width_max,$height_max){
-		if($width_max > $this->width){
-			$width_max=$this->width;
-		}
-		if($heigh_max > $this->height){
-			$height_max = $this->height;
-		}
-		return $this->img_presize($width_max,$height_max);
+	//
+	//Draw Functions
+	//
+		
+    //
+    //public function img_line($x,$y,$color,$ctype)
+    //
+    //Draws a line on the current image
+    //INPUTS:
+    //$x			-	2 x positions [array]
+    //$y			-	2 y positions [array]
+    //$color		-	rgb color numbers [array:attributes (r,g,b)]
+    //$ctype		-	color type: close,default [string] (default: )
+    //
+	//returns true on sucess or false on fail	
+	function img_line($x,$y,$color,$ctype){
+		$color=$this->img_getcolor($color,$ctype);
+		@imageline($this->image,$x[0],$y[0],$x[1],$y[1],$color);
 	}
 	
+    //
+    //public function img_ttftext($string,$size,$angle,$x,$y,$color,$ttf_file,$ctype="")
+    //
+    //Draws a string of text on the current image
+    //INPUTS:
+    //$string		-	text to draw [string]
+    //$size			-	point size of text [int]
+    //$angle		-	angle of rotation in degrees [int]
+    //$x			-	x position of base of first character
+    //$y			-	y position of base of first character
+    //$color		-	rgb color numbers [array:attributes (r,g,b)]
+    //$ttf_file		-	file path to ttf font file to use
+    //$ctype		-	color type: close,default [string] (default: )
+    //
+	//returns true on sucess or false on fail		
+	function img_ttftext($string,$size,$angle,$x,$y,$color,$ttf_file,$ctype=""){
+		$color=$this->img_getcolor($color,$ctype);
+		@imagettftext($this->image,$size,$angle,$x,$y,$color,$ttf_file,$string);
+	}
+	
+    //
+    //public function img_fillbackground($color,$ctype="")
+    //
+    //Fills in the background of the image
+    //INPUTS:
+    //$color		-	rgb color numbers [array:attributes (r,g,b)]
+    //$ctype		-	color type: close,default [string] (default: )
+    //
+	//returns true on sucess or false on fail		
+	function img_fillbackground($color,$ctype=""){
+		$this->img_drawrectangle($color,array(0,$this->width),array(0,$this->height),true,$ctype);
+	}
+	
+    //
+    //public function img_drawrectangle($color,$x,$y,$filled=true,$ctype="")
+    //
+    //Draws a string of text on the current image
+    //INPUTS:
+    //$color		-	rgb color numbers [array:attributes (r,g,b)]
+    //$x			-	2 x positions [array]
+    //$y			-	2 y positions [array]
+    //$filled		-	rectangle is filled with color or not [boolean] (default: true)
+    //$ctype		-	color type: close,default [string] (default: )
+    //
+	//returns true on sucess or false on fail			
+	function img_drawrectangle($color,$x,$y,$filled=true,$ctype=""){
+		$color=$this->img_getcolor($color,$ctype);
+		if($filled){
+			@imagefilledrectangle($this->image,$x[0],$y[0],$x[1],$y[1],$color);	
+		}
+		else{
+			@imagerectangle($this->image,$x[0],$y[0],$x[1],$y[1],$color);	
+		}
+	}
+	
+	//
+	//Image Manipulation Functions
+	//	
+	
+    //
+    //public function mg_presize($width_max,$height_max)
+    //
+    //Resizes the image use a proportional method.
+    //INPUTS:
+    //$width_max		-	maximum width for image [int]
+    //$height_max		-	maximum heigh for image [int]
+    //
+	//returns true on sucess or false on fail			
 	function img_presize($width_max,$height_max){
 		$ratio=$this->width/$this->height;
 		$new_ratio=$width_max/$height_max;
@@ -162,6 +283,15 @@ class img{
 		return $this->img_resize($width_max,$height_max);
 	}
 	
+    //
+    //public function img_resize($new_width,$new_height)
+    //
+    //Resizes the image
+    //INPUTS:
+    //$new_width		-	new image width [int]
+    //$new_height		-	new image height [int]
+    //
+	//returns true on sucess or false on fail		
 	function img_resize($new_width,$new_height){
 		if($this->type==IMAGETYPE_GIF){
 			$tmp_img=@imagecreate($width,$height);
@@ -182,6 +312,19 @@ class img{
 		return true;
 	}
 	
+	//#################################
+	//
+	// PRIVATE FUNCTIONS
+	//
+	//#################################	  
+	
+	
+    //
+    //private function img_gdversion()
+    //
+    //Gets the current GD version
+    //
+	//returns GD version		
 	function img_gdversion(){
 		static $gd_version_number = null;
 		if($gd_version_number === null){
@@ -198,29 +341,16 @@ class img{
 		}
 		return $gd_version_number;		
 	}
-	function img_line($x,$y,$color,$ctype){
-		$color=$this->img_getcolor($color,$ctype);
-		@imageline($this->image,$x[0],$y[0],$x[1],$y[1],$color);
-	}
-	
-	function img_ttftext($string,$size,$angle,$x,$y,$color,$ttf_file,$ctype=""){
-		$color=$this->img_getcolor($color,$ctype);
-		@imagettftext($this->image,$size,$angle,$x,$y,$color,$ttf_file,$string);
-	}
-	function img_fillbackground($color,$ctype=""){
-		$this->img_drawrectangle($color,array(0,$this->width),array(0,$this->height),true,$ctype);
-	}
-	
-	function img_drawrectangle($color,$x,$y,$filled=true,$ctype=""){
-		$color=$this->img_getcolor($color,$ctype);
-		if($filled){
-			@imagefilledrectangle($this->image,$x[0],$y[0],$x[1],$y[1],$color);	
-		}
-		else{
-			@imagerectangle($this->image,$x[0],$y[0],$x[1],$y[1],$color);	
-		}
-	}
-	
+
+    //
+    //private function img_getcolor($color,$type="")
+    //
+    //Gets the color for an image given the rgb color value
+    //INPUTS:
+    //$color		-	rgb color numbers [array:attributes (r,g,b)]
+    //$ctype		-	color type: close,default [string] (default: )
+    //
+	//returns color on sucess or false on fail		
 	function img_getcolor($color,$type=""){
 		if($type="close"){
 			return @imagecolorclosest($this->image,$c["r"],$c["g"],$c["b"]);

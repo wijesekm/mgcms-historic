@@ -42,7 +42,7 @@ class captcha extends img{
     //
     //constructor captcha($id)
     //
-    //Initializes the phpmailer script
+    //Initializes the captcha script
     //
     //INPUTS:
     //$id	-	page part id [int]
