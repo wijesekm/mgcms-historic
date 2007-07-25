@@ -32,6 +32,7 @@ if(!defined("START_MANDRIGO")){
     die($GLOBALS["MANDRIGO"]["CONFIG"]["DIE_STRING"]);
 }
 
+@include_once("img.class.php");
 
 class captcha extends img{
 
