@@ -2,7 +2,7 @@
 /**********************************************************
     captcha.class.php
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 03/13/07
+	Date Last Edited: 07/25/07
 
 	Copyright (C) 2006-2007 the MandrigoCMS Group
 
@@ -33,11 +33,20 @@ if(!defined("START_MANDRIGO")){
 }
 
 
-class captcha{
+class captcha extends img{
 
 	var $config;
 	var $app;
 	
+    //
+    //constructor captcha($id)
+    //
+    //Initializes the phpmailer script
+    //
+    //INPUTS:
+    //$id	-	page part id [int]
+    //
+    //returns object on sucess or false on fail		
 	function captcha($id){
 		if(!$this->config=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_CAPTCHA_DATA,"",array(array("page_id","=",$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["ID"],DB_AND),array("part_id","=",$id)))){
 			$this->config=array("chars"=>5,
@@ -71,29 +80,24 @@ class captcha{
     //
     //public function ca_genca()
     //
-    //generates a captcha id and image.
+    //Generates the captcha
     //
-	//returns id
+	//returns captcha id on sucess or false on fail
 	function ca_genca(){
 		$id=$this->ca_genid();
-		$gd_version=$this->ca_getgdver();
-		if($gd_version >= 2 && !$this->config["websafecolors"]){
-			$func1 = 'imagecreatetruecolor';
-			$func2 = 'imagecolorallocate';
+		$ctype="";
+		if($this->config["websafecolors"]){
+			$ctype="close";
 		}
-		else{
-			$func1 = 'imageCreate';
-			$func2 = 'imagecolorclosest';
-		}
-		$image = $func1($this->config["x"],$this->config["y"]);
+
+		$this->img_create($this->config["x"],$this->config["y"]);
 
 		// Set Backgroundcolor
 		$c=$this->ca_randcolor(224, 255);
-		$back= @imagecolorallocate($image,$c["r"],$c["g"],$c["b"]);
-		imagefilledrectangle($image,0,0,$this->config["x"],$this->config["y"],$back);
+		$this->img_fillbackground($c);
 
 		// allocates the 216 websafe color palette to the image
-		if($gd_version<2||$this->config["websafecolors"]){
+		if($this->config["websafecolors"]){
 			$image=$this->ca_websafecolors($image);
 		}
 
@@ -110,23 +114,20 @@ class captcha{
 				srand((double)microtime()*1000000);
 				$y=intval(rand(0,(int)($this->config["y"]-($size/5))));
 				$c=$this->ca_randcolor(160, 224);
-				$color=$func2($image,$c["r"],$c["g"],$c["b"]);
 				srand((double)microtime()*1000000);
 				$text=chr(intval(rand(45,250)));
-				imagettftext($image,$size,$angle,$x,$y,$color, $this->ca_randttf(),$text);
+				$this->img_ttftext($text,$size,$angle,$x,$y,$c,this->ca_randttf(),$ctype);
 			}
 		}
 		else{
 			// generate grid
 			for($i=0;$i<$this->config["x"];$i+=(int)($this->config["minsize"]/1.5)){
 				$c=$this->ca_randcolor(160, 224);
-				$color=$func2($image,$c["r"],$c["g"],$c["b"]);
-				imageline($image,$i,0,$i,$this->config["y"],$color);
+				$this->img_line(array($i,$i),array(0,$this->config["y"]),$c,$ctype)
 			}
 			for($i=0;$i<$this->config["y"];$i+=(int)($this->config["minsize"]/1.8)){
 				$c=$this->ca_randcolor(160, 224);
-				$color=$func2($image,$c["r"],$c["g"],$c["b"]);
-				imageline($image,0,$i,$this->config["x"],$i,$color);
+				$this->img_line(array(0,$this->config["x"]),array($i,$i),$c,$ctype)
 			}
 		}
 
@@ -142,16 +143,17 @@ class captcha{
 			srand((double)microtime()*1000000);
 			$y=intval(rand((int)($size*1.5),(int)($this->config["y"]-($size/7))));
 			$c=$this->ca_randcolor(0, 127);
-			$color=$func2($image,$c["r"],$c["g"],$c["b"]);
+			$color=$c;
 			$c=$this->ca_randcolor(0, 127);
-			$shadow=$func2($image,$c["r"]+127,$c["g"]+127,$c["b"]+127);
+			$shadow=$c
 			$ttf_file=$this->ca_randttf();
-			imagettftext($image,$size,$angle,$x+(int)($size/15),$y,$shadow,$ttf_file,$text);
-			imagettftext($image,$size,$angle,$x,$y-(int)($size/15),$color,$ttf_file,$text);
+			$this->img_ttftext($text,$size,$angle,$x+(int)($size/15),$y,$shadow,$ttf_file,$ctype);
+			$this->img_ttftext($text,$size,$angle,$x,$y-(int)($size/15),$color,$ttf_file,$ctype);
 			$x+=(int)($size+($this->config["minsize"]/5));
 		}
-		imagejpeg($image,$GLOBALS["MANDRIGO"]["CONFIG"]["IMG_PATH"].TMP_IMG.$this->app."_".$id.".jpg",$this->config["jpgquality"]);
-		imagedestroy($image);
+		if(!$this->img_write(array("quality"=>$this->config["jpgquality"]),$GLOBALS["MANDRIGO"]["CONFIG"]["IMG_PATH"].TMP_IMG.$this->app."_".$id.".jpg")){
+			return false;
+		}
 		if(!$GLOBALS["MANDRIGO"]["DB"]->db_update(DB_INSERT,TABLE_PREFIX.TABLE_CAPTCHA,array($this->app."_".$id,$rnd_text),array("ca_id","ca_string"))){
 			return false;
 		}
@@ -161,9 +163,9 @@ class captcha{
     //
     //public function  ca_checkca()
     //
-    //checks user inputted data to see if it matches
+    //Checks to see if the user correclty id'd the captcha
     //
-	//returns true if it matches and false if not
+	//returns true if user input matches database or false if not
 	function ca_checkca(){
 		if(!$ca_string=(string)$GLOBALS["MANDRIGO"]["DB"]->db_fetchresult(TABLE_PREFIX.TABLE_CAPTCHA,"ca_string",array(array("ca_id","=",$GLOBALS["MANDRIGO"]["VARS"]["MG_NEWS_CAID"])))){
 			return false;
@@ -206,28 +208,26 @@ class captcha{
 	}
 	
 	//
-	//private function ca_websafecolors($image)
+	//private function ca_websafecolors()
 	//
     //colors using only web safe colors
-    //
-	//returns the colored image
-	function ca_websafecolors($image){
-	  	//$a = array();
+	function ca_websafecolors(){
 		for($r = 0; $r <= 255; $r += 51){
 			for($g = 0; $g <= 255; $g += 51){
 				for($b = 0; $b <= 255; $b += 51){
-					$color = imagecolorallocate($image, $r, $g, $b);
-					//$a[$color] = array('r'=>$r,'g'=>$g,'b'=>$b);
+					$this->img_getcolor(array("r"=>$r,"g"=>$g,"b"=>$b));
 				}
 			}
 		}
-		return $image;
 	}
 	
 	//
 	//private function ca_randcolor($min,$max)
 	//
     //generates a random color 
+    //INPUTS:
+    //$min		-	minimum color value [int]
+    //$max		-	maximum color value [int]
     //
 	//returns the color
 	function ca_randcolor($min,$max){
@@ -240,36 +240,13 @@ class captcha{
 		$colors['b'] = intval(rand($min,$max));
 		return $colors;
 	}
-	
-	//
-	//private function ca_getgdver()
-	//
-    //gets the gd version
-    //
-	//returns the gd version
-	function ca_getgdver(){
-		static $gd_version_number = null;
-		if($gd_version_number === null){
-			ob_start();
-			phpinfo(8);
-			$module_info = ob_get_contents();
-			ob_end_clean();
-			if(preg_match("/\bgd\s+version\b[^\d\n\r]+?([\d\.]+)/i", $module_info, $matches)){
-				$gd_version_number = $matches[1];
-			}
-			else{
-				$gd_version_number = 0;
-			}
-		}
-		return $gd_version_number;
-	}
 
 	//
 	//private function ca_genid()
 	//
     //Makes a captcha id to identify the captcha
     //
-	//returns the id		
+	//returns the id	
 	function ca_genid(){
 	  	$raw_key=rand(0,999999);
 		$enc_key = substr(md5($raw_key),16-($this->config["chars"])/2,15);
