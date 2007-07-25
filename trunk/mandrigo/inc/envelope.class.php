@@ -2,13 +2,9 @@
 /**********************************************************
     envelope.class.php
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 08/24/06
+	Date Last Edited: 07/25/07
 
-	Copyright (C) 2006 the MandrigoCMS Group
-
-	phpmailer.class.php is a rewrite of PHPMailer which is
-	Copyright (C) 2001 - 2003  Brent R. Matzelle and is licensed
-	under the Light General Public License
+	Copyright (C) 2006-2007 the MandrigoCMS Group
 
     ##########################################################
 	This program is free software; you can redistribute it and/or
@@ -32,12 +28,8 @@
 //
 //To prevent direct script access
 //
-if(!defined('START_MANDRIGO')){
-    die('<html><head>
-            <title>Forbidden</title>
-        </head><body>
-            <h1>Forbidden</h1><hr width="300" align="left"/><p>You do not have permission to access this file directly.</p>
-        </html></body>');
+if(!defined("START_MANDRIGO")){
+    die($GLOBALS["MANDRIGO"]["CONFIG"]["DIE_STRING"]);
 }
 
 class envelope extends phpmailer{
@@ -48,44 +40,78 @@ class envelope extends phpmailer{
 	var $attachment="";
 	var $subject="";
 	var $alt=false;
-	var $db;
 	
-	function envelope($id,&$sql_db){
-	 	$this->db=$sql_db;
-	 	$conf=$this->ev_load($id);
-	 	$this->phpmailer($conf);
-		$this->recipients["to"]=array();
-		$this->recipients["cc"]=array();
-		$this->recipients["bcc"]=array();
-	}
-	function ev_load($id){
-      	if(!$sql_result=$this->db->db_fetcharray(TABLE_PREFIX.TABLE_ENVELOPE_DATA,"",array(array("page_id","=",$GLOBALS["PAGE_DATA"]["ID"],DB_AND),array("part_id","=",$i)))){
+    //
+    //constructor envelope($id)
+    //
+    //Initializes the envelope script
+    //
+    //INPUTS:
+    //$id		-	page id
+    //
+    //returns object on sucess or false on fail
+	function envelope($id){
+      	if(!$sql_result=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_ENVELOPE_DATA,"",array(array("page_id","=",$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["ID"],DB_AND),array("part_id","=",$id)))){
             return false;
         }	
         if($sql_result['alt']){
 			$this->ev_setalt(true);
 		}
-		return array("sendmail"=>$sql_result['sendmail']
-						,"mailer"=>$sql_result['mailer']
-						,"encoding"=>$sql_result['encoding']
-						,"dctype"=>$sql_result['dctype']
-						,"wrap"=>$sql_result['wrap']
-						,"priority"=>$sql_result['priority']);
+		$conf=array("sendmail"=>$sql_result['sendmail'],
+				    "mailer"=>$sql_result['mailer'],
+				    "encoding"=>$sql_result['encoding'],
+				    "dctype"=>$sql_result['dctype'],
+				    "wrap"=>$sql_result['wrap'],
+				    "priority"=>$sql_result['priority']);
+
+	 	$this->phpmailer($conf);
+		$this->recipients["to"]=array();
+		$this->recipients["cc"]=array();
+		$this->recipients["bcc"]=array();
 	}
+	
 	//#################################
 	//
 	// PUBLIC FUNCTIONS
 	//
-	//#################################	
+	//#################################
+	
+    //
+    //public function ev_send()
+    //
+    //Sends the current message as is
+    //
+    //returns true on sucess or false on fail
 	function ev_send(){
 		return $this->pm_mail($this->recipients,$this->sender,$this->subject,$this->body,$this->attachment,$this->alt);	
 	}
+	
+    //
+    //public function ev_setalt($a=true)
+    //
+    //Sets the ALT of the current message
+    //INPUTS:
+    //$a	-	alt [boolean] (default: true)
+    //
+    //returns true on sucess or false on fail
 	function ev_setalt($a=true){
 		if($a){
 			$this->alt=true;
 		}
 		return true;
 	}
+	
+	
+    //
+    //public function ev_addsender($sender_addr,$sender_name,$alt_addr="")
+    //
+    //Adds a sender to the message
+    //INPUTS:
+    //$sender_addr		-	address of the sender [string]
+    //$sender_name		-	name of the sender [string]
+    //$alt_addr			-	alternative address for the sender [string]
+    //
+    //returns true on sucess or false on fail
 	function ev_addsender($sender_addr,$sender_name,$alt_addr=""){
 	 	if(!$sender_addr){
 			return false;
@@ -98,6 +124,17 @@ class envelope extends phpmailer{
 		}
 		return true;
 	}
+		
+    //
+    //public function ev_addrecipient($addr,$name,$type="to")
+    //
+    //Adds a recipient to the message
+    //INPUTS:
+    //$addr				-	address of the recipient [string]
+    //$sender_name		-	name of the recipient [string]
+    //$type				-	type to add: to,cc,bcc [string] (default: to)
+    //
+    //returns true on sucess or false on fail
 	function ev_addrecipient($addr,$name,$type="to"){
 	 	if(!$addr){
 			return false;
@@ -105,18 +142,48 @@ class envelope extends phpmailer{
 		$this->recipients[$type]=array_merge($this->recipients[$type],array(array($name,$addr)));
 		return true;
 	}
+		
+    //
+    //public function ev_addbody($body)
+    //
+    //Adds the body of the message
+    //INPUTS:
+    //$body		-	body of the message [string]
+    //
+    //returns true on sucess or false on fail
 	function ev_addbody($body){
 	 	if(!$body){
 			return false;
 		}
 		$this->body=$body;	
 	}
+	
+    //
+    //public function ev_addsubject($subject)
+    //
+    //Adds the subject of the message
+    //INPUTS:
+    //$subject		-	subject of the message [string]
+    //
+    //returns true on sucess or false on fail
 	function ev_addsubject($subject){
 		if(!$subject){
 			return false;
 		}
 		$this->subject=$subject;
 	}
+	
+    //
+    //public function ev_addattachment($params,$atype="misc",$encoding="base64",$type="application/octet-stream")
+    //
+    //Adds an attachment to the message
+    //INPUTS:
+    //$params		-	parameters of the attachment [array:attrs (filename,path,name,string)]
+    //$atype		-	type of the attachment: string,img,misc [string] (default: misc)
+    //$encoding		-	the way the attachment is going to be encoded [string] (default: base64)
+    //$type			-	the attachment file type [string] (default: application/octet-stream)
+    //
+    //returns true on sucess or false on fail
 	function ev_addattachment($params,$atype="misc",$encoding="base64",$type="application/octet-stream"){
     	if($atype!='string'){
 			if(!@is_file($params["path"])){
@@ -165,5 +232,6 @@ class envelope extends phpmailer{
 			
 		}
         return true;
-	}	
+	}
+
 }

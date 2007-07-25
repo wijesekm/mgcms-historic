@@ -51,7 +51,7 @@ class error_logger{
    	var $tag_stack;
     
     //
-    //constructor function error_logger($lvl1,$lvl2,$format,$type,$fatal_type)
+    //constructor error_logger($lvl1,$lvl2,$format,$type,$fatal_type)
     //
     //Initializes the error logging script
     //
