@@ -41,7 +41,7 @@
 							</value>
 						</msg>
 						<msg>
-							<id>6</id>
+							<id>7</id>
 							<value>
 								The requested page is cached but the cache could not be wrote to.  This is usually caused by permissions problems.
 							</value>

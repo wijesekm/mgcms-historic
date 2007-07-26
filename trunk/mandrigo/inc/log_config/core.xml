@@ -141,6 +141,12 @@
 		<value>
 			Could not load the mfilter class.
 		</value>
+	</msg>	
+	<msg>
+		<id>24</id>
+		<value>
+			Could not load the cache class.
+		</value>
 	</msg>			
 	<msg>
 		<id>40</id>

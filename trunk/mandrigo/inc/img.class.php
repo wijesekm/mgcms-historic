@@ -45,7 +45,7 @@ class img{
     //Initializes the img script
     //
     //returns object on sucess or false on fail		
-	function img{
+	function img(){
 		if($this->img_gdversion() < 2){
 			return false;
 		}

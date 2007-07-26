@@ -92,40 +92,42 @@ for($i=0;$i<$soq;$i++){
 }
 $soh=count($hooks);
 $count=0;
-$filter=array();
-for($j=0;$j<$soh;$j++){
-	if($hooks[$j]){
-		if($i+1<$soq){
-			$filter[$count]=array("class_id","=",(string)$hooks[$j],DB_AND,$j+1);
-			$filter[$count+1]=array("class_status","=","E",DB_OR,$j+1);
-		}
-		else{
-			$filter[$count]=array("class_id","=",(string)$hooks[$j],DB_AND,$j+1);
-			$filter[$count+1]=array("class_status","=","E",DB_OR,$j+1);
-		}
-		$count+=2;
-	}	
-}
-
-$classes=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_CLASSES,"class_id,class_files,class_error",$filter,"ASSOC",DB_ALL_ROWS);
-$soc=count($classes);
-for($j=0;$j<$soc;$j++){
-	$files=explode(";",$classes["class_files"]);
-	$sof=count($files);
-	for($i=0;$i<$sof;$i++){
-		$file=$GLOBALS["MANDRIGO"]["CONFIG"]["ROOT_PATH"].$files[$i];
-		if(file_exists($file)&&!is_dir($file)){
-			if($GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
-				include_once($file);
+if($soh > 0){
+	$filter=array();
+	for($j=0;$j<$soh;$j++){
+		if($hooks[$j]){
+			if($j+1<$soh){
+				$filter[$count]=array("class_id","=",(string)$hooks[$j],DB_AND,$j+1);
+				$filter[$count+1]=array("class_status","=","E",DB_OR,$j+1);
 			}
 			else{
-				if(!(@include_once($file))){
-					$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror((int)$classes[$j]["class_error"],"core");
-				}
+				$filter[$count]=array("class_id","=",(string)$hooks[$j],DB_AND,$j+1);
+				$filter[$count+1]=array("class_status","=","E");
 			}
+			$count+=2;
 		}	
 	}
+	$classes=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_CLASSES,"class_id,class_files,class_error",$filter,"ASSOC",DB_ALL_ROWS);
+	$soc=count($classes);
+	for($j=0;$j<$soc;$j++){
+		$files=explode(";",$classes[$j]["class_files"]);
+		$sof=count($files);
+		for($i=0;$i<$sof;$i++){
+			$file=$GLOBALS["MANDRIGO"]["CONFIG"]["ROOT_PATH"].$files[$i].PHP_EXT;
+			if(file_exists($file)&&!is_dir($file)){
+				if($GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
+					include_once($file);
+				}
+				else{
+					if(!(@include_once($file))){
+						$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror((int)$classes[$j]["class_error"],"core");
+					}
+				}
+			}	
+		}
+	}
 }
+
 
 $soq2=count($GLOBALS["MANDRIGO"]["CURRENTPAGE"]["HOOKS"]);
 for($i=0;$i<$soq2;$i++){

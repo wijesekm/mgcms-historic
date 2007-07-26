@@ -32,8 +32,6 @@ if(!defined("START_MANDRIGO")){
     die($GLOBALS["MANDRIGO"]["CONFIG"]["DIE_STRING"]);
 }
 
-@include_once($GLOBALS["MANDRIGO"]["CONFIG"]["ROOT_PATH"]."img.class.".PHP_EXT);
-
 class captcha extends img{
 
 	var $config;
@@ -117,18 +115,18 @@ class captcha extends img{
 				$c=$this->ca_randcolor(160, 224);
 				srand((double)microtime()*1000000);
 				$text=chr(intval(rand(45,250)));
-				$this->img_ttftext($text,$size,$angle,$x,$y,$c,this->ca_randttf(),$ctype);
+				$this->img_ttftext($text,$size,$angle,$x,$y,$c,$this->ca_randttf(),$ctype);
 			}
 		}
 		else{
 			// generate grid
 			for($i=0;$i<$this->config["x"];$i+=(int)($this->config["minsize"]/1.5)){
 				$c=$this->ca_randcolor(160, 224);
-				$this->img_line(array($i,$i),array(0,$this->config["y"]),$c,$ctype)
+				$this->img_line(array($i,$i),array(0,$this->config["y"]),$c,$ctype);
 			}
 			for($i=0;$i<$this->config["y"];$i+=(int)($this->config["minsize"]/1.8)){
 				$c=$this->ca_randcolor(160, 224);
-				$this->img_line(array(0,$this->config["x"]),array($i,$i),$c,$ctype)
+				$this->img_line(array(0,$this->config["x"]),array($i,$i),$c,$ctype);
 			}
 		}
 
@@ -143,10 +141,8 @@ class captcha extends img{
 			$size=intval(rand($this->config["minsize"],$this->config["maxsize"]));
 			srand((double)microtime()*1000000);
 			$y=intval(rand((int)($size*1.5),(int)($this->config["y"]-($size/7))));
-			$c=$this->ca_randcolor(0, 127);
-			$color=$c;
-			$c=$this->ca_randcolor(0, 127);
-			$shadow=$c
+			$color=$this->ca_randcolor(0, 127);
+			$shadow=$this->ca_randcolor(0, 127);
 			$ttf_file=$this->ca_randttf();
 			$this->img_ttftext($text,$size,$angle,$x+(int)($size/15),$y,$shadow,$ttf_file,$ctype);
 			$this->img_ttftext($text,$size,$angle,$x,$y-(int)($size/15),$color,$ttf_file,$ctype);

@@ -41,7 +41,7 @@ class mfilter{
 	var $filter_size;
 	
 	function mfilter($name){
-		$this->change_filter($name);
+		$this->fi_change($name);
 	}
 	function fi_change($name){
 	 	$file=$GLOBALS["MANDRIGO"]["CONFIG"]["ROOT_PATH"].$name.".filter.".PHP_EXT;
@@ -62,7 +62,7 @@ class mfilter{
 		}
 		$this->cur_filter=$filter_list;
 		$filter=array();
-		$this->filter_size=count(this->cur_filter);
+		$this->filter_size=count($this->cur_filter);
 		return true;		
 	}
 	function fi_settext($stri){
@@ -91,7 +91,7 @@ class mfilter{
 				break;
 			};
 		}
-		return $found_something
+		return $found_something;
 	}
 	function fi_search($item,$case){
 	 	if($case){

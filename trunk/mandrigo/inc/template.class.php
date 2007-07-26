@@ -69,8 +69,9 @@ class template{
 	 	$string="";
 		if($file){
             if($GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
-                $f=fopen($data,"r");
-                return false;
+                if(!$f=fopen($data,"r")){
+					return false;
+				}
             }
             else{
                 if(!(@$f=fopen($data,"r"))){
@@ -183,7 +184,7 @@ class template{
             return $string;
         }
         for($i=0;$i<$sov-1;$i+=2){
-            $string=mb_ereg_replace("{".$vars[$i]."}",$vars[$i+1],$string);
+            $string=mb_ereg_replace("\{".$vars[$i]."\}",$vars[$i+1],$string);
         }
         return $string;
     }
