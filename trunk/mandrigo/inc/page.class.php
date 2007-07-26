@@ -146,7 +146,10 @@ class page{
 			$tpl_off="";
             $this->page_parse_vars=$this->pg_appendarray(array("CONTENT",$content,"PAGE_TITLE",$GLOBALS["MANDRIGO"]["LANGUAGE"]["OPTITLE"]),$this->page_parse_vars);		
 		}
-	    $tpl_mainsite->tpl_parse($this->page_parse_vars,"main",2);
+	    if(!$tpl_mainsite->tpl_parse($this->page_parse_vars,"main",2)){
+			die($GLOBALS["MANDRIGO"]["ELOG"]["HTMLHEAD"].$GLOBALS["MANDRIGO"]["ELOG"]["TITLE"].$GLOBALS["MANDRIGO"]["ELOG"]["HTMLBODY"].
+				$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_generatereport().$GLOBALS["MANDRIGO"]["ELOG"]["HTMLEND"]);
+		}
 	    if($GLOBALS["MANDRIGO"]["SITE"]["CACHE_PAGES"]){
 			$result=$cache->cache_wpage($tpl_mainsite->tpl_return("main"));
 			if($result==false){
@@ -154,7 +157,6 @@ class page{
 					$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(7,"display");
 					die($GLOBALS["MANDRIGO"]["ELOG"]["HTMLHEAD"].$GLOBALS["MANDRIGO"]["ELOG"]["TITLE"].$GLOBALS["MANDRIGO"]["ELOG"]["HTMLBODY"].
 		           		$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_generatereport().$GLOBALS["MANDRIGO"]["ELOG"]["HTMLEND"]);
-	
 				}				
 			}
 	    }

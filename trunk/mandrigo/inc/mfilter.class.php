@@ -44,7 +44,7 @@ class mfilter{
 		$this->fi_change($name);
 	}
 	function fi_change($name){
-	 	$file=$GLOBALS["MANDRIGO"]["CONFIG"]["ROOT_PATH"].$name.".filter.".PHP_EXT;
+	 	$file=$GLOBALS["MANDRIGO"]["CONFIG"]["ROOT_PATH"].FILTER_PATH.$name.".filter.".PHP_EXT;
 		if(file_exists($file)&&!is_dir($file)){
 			if($GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
 				if(!include_once($file)){
@@ -63,7 +63,7 @@ class mfilter{
 		$this->cur_filter=$filter_list;
 		$filter=array();
 		$this->filter_size=count($this->cur_filter);
-		return true;		
+		return true;
 	}
 	function fi_settext($stri){
 		$this->str=$stri;
@@ -95,14 +95,14 @@ class mfilter{
 	}
 	function fi_search($item,$case){
 	 	if($case){
-			return @mb_ereg($item,$this->str);		
+			return @mg_ereg($item,$this->str);		
 		}
 		return @mb_eregi($item,$this->str);
 	}
 	function fi_destroy($item,$censor="",$case){
 		if($case){
-			return @mg_ereg_replace($item,$censor,$this->str);			
+			return @ereg_replace($item,$censor,$this->str);			
 		}
-		return @mg_eregi_replace($item,$censor,$this->str);	
+		return @eregi_replace($item,$censor,$this->str);	
 	}
 }

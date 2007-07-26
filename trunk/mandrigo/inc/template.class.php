@@ -128,7 +128,11 @@ class template{
 				$this->tpl[(string)$section]=$this->tpl_vparse($vars,$this->tpl[(string)$section]);	
 			}
 			else if($level===2){
-				$this->tpl[(string)$section]=$this->tpl_compile($vars,$this->tpl[(string)$section]);
+				$tmp=$this->tpl_compile($vars,$this->tpl[(string)$section]);
+				if(!$tmp){
+					return false;
+				}
+				$this->tpl[(string)$section]=$tmp;
 				$this->tpl[(string)$section]=$this->tpl_vparse($vars,$this->tpl[(string)$section]);
 			}
 			if($rempty){
