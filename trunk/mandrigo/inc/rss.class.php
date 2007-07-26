@@ -65,9 +65,12 @@ class rss extends xml{
 			break;
 		};
 	}
-	function rss_setchannel($title,$link,$description,$ttl,$vesion="2.0"){
+	function rss_returnversion(){
+		return $this->version
+	}
+	function rss_setchannel($title,$link,$description,$ttl){
 	 	
-	 	switch($version){
+	 	switch($this->version){
 			case "0.92":
 				$this->rss_array["rss"][0]=array(
 											"channel"=>
@@ -129,13 +132,16 @@ class rss extends xml{
 			break;
 		};		
 	}
-	function rss_setpost($post_title,$post_link,$timestamp,$post_id,$content,$version="2.0"){
+	function rss_returnchannelattr($item){
+		return $this->rss_array['rss'][0]['channel'][0][(string)$item];
+	}
+	function rss_setpost($post_title,$post_link,$timestamp,$post_id,$content){
 	 	$c_encoded=htmlspecialchars($content,ENT_QUOTES,$GLOBALS['MANDRIGO']['LANGUAGE']['CHARSET']);
 	 	$c_nohtml=htmlspecialchars(strip_tags($content),ENT_QUOTES,$GLOBALS['MANDRIGO']['LANGUAGE']['CHARSET']);
 	 	$post_title=strip_tags($post_title);
 	 	$guid=$post_id."@".$GLOBALS["MANDRIGO"]["SITE"]["SITE_URL"].$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["NAME"];
 	 	
-	 	switch($version){
+	 	switch($this->version){
 			case "0.92":
 				$this->rss_array["rss"][0]["channel"]=array(
 														"item"=>
