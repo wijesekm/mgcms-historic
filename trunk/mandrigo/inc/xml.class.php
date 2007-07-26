@@ -98,8 +98,8 @@ class mxml{
 		$this->curr_tag =& $this->document;
 		$this->tag_stack = array();
 	    xml_set_object($parser, $this);
-	    xml_set_character_data_handler($parser, 'pa_datahandler');
-	    xml_set_element_handler($parser, 'pa_starthandler', 'pa_endhandler');
+	    xml_set_character_data_handler($parser, 'mxml_datahandler');
+	    xml_set_element_handler($parser, 'mxml_starthandler', 'mxml_endhandler');
 	   	if(!($fp = @fopen($path, "r"))){
 	           return false;
 	    }
