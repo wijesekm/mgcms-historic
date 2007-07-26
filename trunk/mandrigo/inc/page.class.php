@@ -124,13 +124,8 @@ class page{
 		//Main IF Statment
 		//
 		$bypass=(string)$GLOBALS["MANDRIGO"]["VARS"]["BYPASS_CODE"]===(string)$GLOBALS["MANDRIGO"]["SITE"]["BYPASS_CODE"];
-		if($GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_getstatus()!=0){
-        	if($GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
-				die();
-			}
-			else{
-				$this->page_parse_vars=$this->pg_appendarray(array("CONTENT",$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_generatereport(),"PAGE_TITLE",$GLOBALS["MANDRIGO"]["ELOG"]["TITLE"]),$this->page_parse_vars);			
-			}
+		if($GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_getstatus()!=0&&!$GLOBALS["MANDRIGO_CONFIG"]["DEBUG_MODE"]){
+			$this->page_parse_vars=$this->pg_appendarray(array("CONTENT",$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_generatereport(),"PAGE_TITLE",$GLOBALS["MANDRIGO"]["ELOG"]["TITLE"]),$this->page_parse_vars);			
 		}
 		else if($GLOBALS["MANDRIGO"]["CURRENTPAGE"]["STATUS"]===1||($bypass&&$GLOBALS["MANDRIGO"]["SITE"]["BYPASS_CODE"])){
 			$content=$this->pg_gencontent();
