@@ -42,15 +42,26 @@ class rss extends xml{
 	
 	function rss_load($data,$isfile=true){
 		return $this->rss_array=$this->mxml_read($data,$isfile);
+		$this->version=$this->rss_array["rss"]["attr"]["version"];
 	}
 	
 	function rss_setblank($version="2.0"){
+	 	$this->version=$version;
 	 	switch($version){
 			case "0.92":
-				$this->rss_array=array("RSS"=>array("attr"=>'version="0.92"'));			
+				$this->rss_array=array("rss"=>
+									array("attr"=>
+											array('version'=>"0.92")));			
 			break;
 			case "2.0":
-				$this->rss_array=array("RSS"=>array("attr"=>'version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:admin="http://webns.net/mvcb/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:content="http://purl.org/rss/1.0/modules/content/"'));	
+			case "0.92":
+				$this->rss_array=array("rss"=>
+									array("attr"=>
+											array('version'=>"0.92"),
+											array('xmlns:dc'=>"http://purl.org/dc/elements/1.1/"),
+											array('xmlns:admin'=>"http://webns.net/mvcb/"),
+											array('xmlns:rdf'=>"http://www.w3.org/1999/02/22-rdf-syntax-ns#"),
+											array('xmlns:content'=>" http://purl.org/rss/1.0/modules/content/")));
 			break;
 		};
 	}
@@ -58,114 +69,123 @@ class rss extends xml{
 	 	
 	 	switch($version){
 			case "0.92":
-				$this->rss_array["RSS"][0]=array(
-											"CHANNEL"=>
+				$this->rss_array["rss"][0]=array(
+											"channel"=>
 												array(
-													"TITLE"=>
-														array("data"=>$title);
-												);
+													"title"=>
+														array("data"=>$title)
+												),
 												array(
-													"LINK"=>
-														array("data"=>$link);
-												);
+													"link"=>
+														array("data"=>$link)
+												),
 												array(
-													"DESCRIPTION"=>
-														array("data"=>$description);
-												);
+													"description"=>
+														array("data"=>$description)
+												),
 												array(
-													"LANGUAGE"=>
-														array("data"=>$GLOBALS["MANDRIGO"]["LANGUAGE"]["NAME"]);
-												);
+													"language"=>
+														array("data"=>$GLOBALS["MANDRIGO"]["LANGUAGE"]["NAME"])
+												),
 												array(
-													"DOCS"=>
-														array("data"=>"http://backend.userland.com/rss092/");
-												);
+													"docs"=>
+														array("data"=>"http://backend.userland.com/rss092/")
+												)
 											);			
 			break;
 			case "2.0":
-				$this->rss_array["RSS"][0]=array(
-											"CHANNEL"=>
+				$this->rss_array["rss"][0]=array(
+											"channel"=>
 												array(
-													"TITLE"=>
-														array("data"=>$title);
-												);
+													"title"=>
+														array("data"=>$title)
+												),
 												array(
-													"LINK"=>
-														array("data"=>$link);
-												);
+													"link"=>
+														array("data"=>$link)
+												),
 												array(
-													"DESCRIPTION"=>
-														array("data"=>$description);
-												);
+													"description"=>
+														array("data"=>$description)
+												),
 												array(
-													"LANGUAGE"=>
-														array("data"=>$GLOBALS["MANDRIGO"]["LANGUAGE"]["NAME"]);
-												);
+													"language"=>
+														array("data"=>$GLOBALS["MANDRIGO"]["LANGUAGE"]["NAME"])
+												),
 												array(
-													"DOCS"=>
-														array("data"=>"http://backend.userland.com/rss/");
-												);
+													"docs"=>
+														array("data"=>"http://backend.userland.com/rss/")
+												),
 												array(
-													"ADMIN:GENERATORAGENT"=>
-														array("attr"=>'rdf:resource="http://mandrigo.org/"')
-														array("data"=>"");
-												);
+													"admin:generatorAgent"=>
+														array("attr"=>
+															array("rdf:resource"=>"http://mandrigo.org/"))
+												),
 												array(
 													"TTL"=>
 														array("data"=>$ttl);
-												);
+												)
 											);
 			break;
 		};		
 	}
-	function rss_setpost($post_title,$feed_link,$timestamp,$post_id,$content,$version="2.0"){
+	function rss_setpost($post_title,$post_link,$timestamp,$post_id,$content,$version="2.0"){
 	 	$c_encoded=htmlspecialchars($content,ENT_QUOTES,$GLOBALS['MANDRIGO']['LANGUAGE']['CHARSET']);
-	 	$c_nohtml=strip_tags($content);
+	 	$c_nohtml=htmlspecialchars(strip_tags($content),ENT_QUOTES,$GLOBALS['MANDRIGO']['LANGUAGE']['CHARSET']);
 	 	$post_title=strip_tags($post_title);
 	 	$guid=$post_id."@".$GLOBALS["MANDRIGO"]["SITE"]["SITE_URL"].$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["NAME"];
 	 	
 	 	switch($version){
 			case "0.92":
-				$this->rss_array["RSS"][0]["CHANNEL"]=array(
-														"ITEM"=>
+				$this->rss_array["rss"][0]["channel"]=array(
+														"item"=>
 															array(
-																"TITLE"=>
+																"title"=>
 																	array("data"=>$post_title);
-															);
+															),
 															array(
-																"DESCRIPTION"=>
+																"description"=>
 																	array("data"=>$c_nohtml);
-															);
+															),
 															array(
-																"LINK"=>
-																	array("data"=>$feed_link);
-															);
+																"link"=>
+																	array("data"=>$post_link);
+															)
 														);			
 			break;
 			case "2.0":
-				$this->rss_array["RSS"][0]["CHANNEL"]=array(
-														"ITEM"=>
+				$this->rss_array["rss"][0]["channel"]=array(
+														"item"=>
 															array(
-																"TITLE"=>
+																"title"=>
 																	array("data"=>$post_title);
-															);
+															),
 															array(
-																"LINK"=>
-																	array("data"=>$feed_link);
-															);
+																"link"=>
+																	array("data"=>$post_link);
+															),
 															array(
 																"pubDate"=>
 																	array("data"=>date('D, d M Y H:i:s O',$timestamp))
-															);
+															),
 															array(
-																"GUID"=>
-																	array("attr"=>'isPermaLink="false"'),
+																"guid"=>
+																	array("attr"=>
+																		array('isPermaLink'=>"false")),
 																	array("data"=>$guid)
-															);
+															),
 															array(
-																"DESCRIPTION"=>
-																	array("data"=>$c_nohtml);
-															);
+																"description"=>
+																	array("data"=>$c_nohtml)
+															),
+															array(
+																"content:encoded"=>
+																	array("data"=>"<![CDATA[".$c_encoded."]]>")
+															),
+															array(
+																"comments"=>
+																	array("data"=>$post_link)
+															),															
 
 														);		
 			break;

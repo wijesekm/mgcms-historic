@@ -70,15 +70,33 @@ class mxml{
 		$soq=count($keys);
 		$xml_string="";
 		for($i=0;$i<$soq;$i++){
-		 	$cur=$xml_array[strtoupper($keys[$i])][$i];
-			$string.="<".$keys[$i]." ".$cur['attr'].">";
-			if($cur["data"]){
-				$string.=$cur["data"];
+		 	if($keys[$i]!="attr"&&$keys[$i]!="data"){
+			 	$cur=$xml_array[$keys[$i]][$i];
+				$xml_string.='<'.$keys[$i].' '.$this->mxml_writeattr($cur['attr']);
+				$cur_keys=array_keys($cur);
+				if($cur_keys[0]==""||($cur_keys[0]=="attr"&&$cur_keys[1]=="")){
+					$xml_string.="/>";
+				}
+				else if($cur["data"]){
+					$xml_string.=">".$cur["data"]."</".$keys[$i].">";
+				}
+				else{
+					$xml_string.=$this->xml_writearray($xml_array[strtoupper($keys[$i])][$i]);		
+				}	
 			}
-			else{
-				$string.=$this->xml_writearray($xml_array[strtoupper($keys[$i])][$i]);		
-			}
-			$string.="</".$keys[$i].">";
+		}
+		return $xml_string;
+	}
+
+	function mxml_writeattr($attr){
+		$keys=array_keys($attr);
+		$soa=count($keys);
+		if(!$soa){
+			return false;
+		}
+		$string='';
+		for($j=0;$j<$soa;$j++){
+			$string.=$keys[$i].'='.$attr[$keys[$i]].' ';
 		}
 		return $string;
 	}
