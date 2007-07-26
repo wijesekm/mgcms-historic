@@ -584,7 +584,7 @@ class db extends _db{
 	//returns true on sucess or false on fail
     function db_freeresult($result){
         if($GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
-            mysql_free_result($result);
+            mssql_free_result($result);
         }
         else{
             if(!@mssql_free_result($result)){
