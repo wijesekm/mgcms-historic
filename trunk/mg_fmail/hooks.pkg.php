@@ -1,14 +1,12 @@
 <?php
 /**********************************************************
     hooks.pkg.php
-    f_mail ver 0.6.0
+    mg_fmail version 0.7.0
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 08/24/06
+	Date Last Edited: 07/31/07
 
-	Copyright (C) 2006 Kevin Wijesekera
-	
-	MandrigoCMS is Copyright (C) 2005-2006 the MandrigoCMS Group
-	
+	Copyright (C) 2006-2007 the MandrigoCMS Group
+
     ##########################################################
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
@@ -31,12 +29,8 @@
 //
 //To prevent direct script access
 //
-if(!defined('START_MANDRIGO')){
-    die('<html><head>
-            <title>Forbidden</title>
-        </head><body>
-            <h1>Forbidden</h1><hr width="300" align="left"/><p>You do not have permission to access this file directly.</p>
-        </html></body>');
+if(!defined("START_MANDRIGO")){
+    die($GLOBALS["MANDRIGO"]["CONFIG"]["DIE_STRING"]);
 }
 
 

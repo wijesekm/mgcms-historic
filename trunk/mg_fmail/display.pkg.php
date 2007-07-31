@@ -1,14 +1,12 @@
 <?php
 /**********************************************************
     display.pkg.php
-    f_mail ver 0.6.0
+    mg_fmail version 0.7.0
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 08/24/06
+	Date Last Edited: 07/31/07
 
-	Copyright (C) 2006 Kevin Wijesekera
-	
-	MandrigoCMS is Copyright (C) 2005-2006 the MandrigoCMS Group
-	
+	Copyright (C) 2006-2007 the MandrigoCMS Group
+
     ##########################################################
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
@@ -31,166 +29,128 @@
 //
 //To prevent direct script access
 //
-if(!defined('START_MANDRIGO')){
-    die('<html><head>
-            <title>Forbidden</title>
-        </head><body>
-            <h1>Forbidden</h1><hr width="300" align="left"/><p>You do not have permission to access this file directly.</p>
-        </html></body>');
+if(!defined("START_MANDRIGO")){
+    die($GLOBALS["MANDRIGO"]["CONFIG"]["DIE_STRING"]);
 }
 
-class f_mail_display{
+class mg_fmail{
 
     var $config;
-    var $db;
-    var $pparse_vars;
-    var $def_error;
+    var $tpl;
+    var $fcaptcha;
 
-    function f_mail_display(&$sql_db){
-        $this->db=$sql_db;
-        $attrib='src="'.$GLOBALS['SITE_DATA']['IMG_URL'].'dot.jpg" alt="*" border="0"';
-        $this->config['STAR']=ereg_replace('{ATTRIB}',$attrib,$GLOBALS['HTML']['IMG']);
-	}
-    function fm_load($i){
-      	if(!$sql_result=$this->db->db_fetcharray(TABLE_PREFIX.TABLE_EMAIL_DATA,"",array(array("page_id","=",$GLOBALS["PAGE_DATA"]["ID"],DB_AND),array("part_id","=",$i)))){
-            return false;
-        }
-        $this->config["SUBJ_PREFIX"]=$sql_result["subj_prefix"];
-        $this->config["DEFAULT_SUBJ"]=$sql_result["default_subj"];
-        $this->config["HTML_ON"]=$sql_result["html_on"];
-        $this->config["BBCODE_ON"]=$sql_result["bbcode_on"];
-        $this->config["EMAIL_MSG"]=$sql_result["email_msg"];
-        $this->config["E_LEVEL"]=$sql_result["error_level"];
-        $this->config["SEND_TYPE"]=$sql_result["send_type"];
-        $this->config["FORM_VALIDATE"]=$sql_result["form_validate"];
-        $this->config["ALERT_STYLE"]=$sql_result["alert_style"];
-        $this->config["DATE_FORMAT"]=$sql_result["date_format"];
-    }
-    function fm_display($id,$errors=array()){
-      	if($this->config['FORM_VALIDATE']==1){
-      	 	$validate=new captcha($this->db,$id);
-	      	if(!$ca_id=$validate->ca_genca()){
+    function mg_fmail($id){
+     	if(!$this->config=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_FMAIL_DATA,"",array(array("page_id","=",$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["ID"],DB_AND),array("part_id","=",$id)))){
+			return false;
+		}
+        $attrib='src="'.$GLOBALS['MANDRIGO']["SITE"]['IMG_URL']."/mg_fmail/".'dot.jpg" alt="*" border="0"';
+        $this->config['star']=mb_ereg_replace('\{ATTRIB\}',$attrib,$GLOBALS['MANDRIGO']['HTML']['IMG']);
+       	$this->config["nostar"]=$GLOBALS["MANDRIGO"]["HTML"]["BR"].$GLOBALS["MANDRIGO"]["HTML"]["BR"];
+		if($this->config['fmail_usecaptcha']==1){
+			if(!$this->fcaptcha=new captcha($id)){
 				return false;
 			}
-      	}
-      	
+		}
+        $this->tpl=new template();
+        $file=$GLOBALS['MANDRIGO']['CONFIG']['TEMPLATE_PATH'].$GLOBALS['MANDRIGO']['CURRENTPAGE']['DATAPATH'].$GLOBALS['MANDRIGO']['CURRENTPAGE']['NAME'].'_'.$i.'.'.TPL_EXT;
+		if(!$this->tpl->tpl_load($file,"overview")){
+			$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(,"display");
+			return false;
+		}
+	}
+    function fm_display($id,$status=array()){
+
         //gets the email address and name to mail to
         $to_name="";
         $to_email="";
         $r_email="";
         
-        if(!$sql_result=$this->db->db_fetcharray(TABLE_PREFIX.TABLE_EMAIL_LIST,"",array(array("email_id","=",$GLOBALS["HTTP_GET"]["MAIL_ADDR"])))){
-            if(!$sql_result=$this->db->db_fetcharray(TABLE_PREFIX.TABLE_EMAIL_LIST,"",array(array("user_email","=",$GLOBALS["HTTP_GET"]["MAIL_ADDR"])))){
-                $to_email=$GLOBALS["HTTP_GET"]["MAIL_ADDR"];
-                $to_name=$GLOBALS["HTTP_GET"]["MAIL_ADDR"];
-                $r_email=$GLOBALS["HTTP_GET"]["MAIL_ADDR"];
-            }
-            $to_email=$sql_result["email_id"];
-            if(!$sql_result["user_id"]){
-                $r_email=$sql_result["user_email"];
-                $to_name=$sql_result["user_fullname"];
-            }
-            else{
-                if(!$sql_result1=$this->db->db_fetcharray(TABLE_PREFIX.TABLE_USER_DATA,"",array(array("user_id","=",$sql_result["user_id"])))){
-                    return false;
-                }
-                $r_email=$sql_result1["user_email"];
-                $tmp=explode(";",$sql_result1["user_real_name"]);
-                $to_name=$tmp[0]." ";
-                if($tmp[1]){
-					$to_name.=$tmp[1]." ";
+        if(mb_eregi("^[0-9]+$",$GLOBALS["MANDRIGO"]["VARS"]["EMAIL_ADDRESS"])){
+			$list_data=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_FEMAIL_LIST,"",array(array("fmail_id","=",$GLOBALS["MANDRIGO"]["VARS"]["EMAIL_ADDRESS"])));
+			if($list_data["fmail_uid"]){
+			 	if($list_data["fmail_uid"]==$GLOBALS["MANDRIGO"]["CURRENTUSER"]["ID"]){
+					$to_name=$GLOBALS["MANDRIGO"]["CURRENTUSER"]["FNAME"]." ".$GLOBALS["MANDRIGO"]["CURRENTUSER"]["LNAME"];
+					$to_email=$GLOBALS["MANDRIGO"]["CURRENTUSER"]["EMAIL"];
+					if($list_data["fmail_returnaddr"]){
+						$r_email=$list_data["fmail_returnaddr"];
+					}
+					else{
+						$r_email=$GLOBALS["MANDRIGO"]["CURRENTUSER"]["EMAIL"];
+					}
 				}
-				$to_name.=$tmp[2];
-            }
-        }
-        else{
-            $to_email=$sql_result["email_id"];
-            if(!$sql_result["user_id"]){
-                $r_email=$sql_result["user_email"];
-                $to_name=$sql_result["user_fullname"];
-            }
-            else{
-                if(!$sql_result1=$this->db->db_fetcharray(TABLE_PREFIX.TABLE_USER_DATA,"",array(array("user_id","=",$sql_result["user_id"])))){
-                    return false;
-                }
-                $r_email=$sql_result1["user_email"];
-                $tmp=explode(";",$sql_result1["user_real_name"]);
-                $to_name=$tmp[0]." ";
-                if($tmp[1]){
-					$to_name.=$tmp[1]." ";
+				else{
+					$cuser_acct=new account($GLOBALS["MANDRIGO"]["VARS"]["EMAIL_ADDRESS"]);
+					$user_data=$cuser_acct->ac_userdata();
+					$to_name=$user_data["FNAME"]." ".$user_data["LNAME"];
+					$to_email=$user_data["EMAIL"];
+					if($list_data["fmail_returnaddr"]){
+						$r_email=$list_data["fmail_returnaddr"];
+					}
+					else{
+						$r_email=$user_data["EMAIL"];
+					}
 				}
-				$to_name.=$tmp[2];
-            }
-        }
-            $this->pparse_vars = array("MAIL_S_NAME",$to_name
-                                ,"MAIL_S_FORM_EMAIL",$to_email
+			}
+			else if($list_data["fmail_name"]){
+				$to_name=$list_data["fmail_name"];
+				$to_email=$list_data["fmail_addr"];
+				$r_email=$list_data["fmail_returnaddr"];
+			}
+		}
+		else if($GLOBALS["MANDRIGO"]["VARS"]["EMAIL_ADDRESS"]){
+			$to_name=$GLOBALS["MANDRIGO"]["VARS"]["EMAIL_ADDRESS"];
+			$to_email=$GLOBALS["MANDRIGO"]["VARS"]["EMAIL_ADDRESS"];
+			$r_email=$GLOBALS["MANDRIGO"]["VARS"]["EMAIL_ADDRESS"];
+		}
+
+        if(!$to_name||!$to_email){
+			return false;
+		}
+		if(!$r_email){
+			$r_email=$to_email;
+		}
+		
+		if($this->config['fmail_usecaptcha']==1){
+			$ca_id=$this->fcaptcha->ca_genca();
+		}
+		
+        $parse_vars=array("MAIL_S_NAME",$to_name
+                            	,"MAIL_S_FORM_EMAIL",$to_email
                                 ,"MAIL_S_DISP_EMAIL",$r_email
-								,"MAIL_CAID",(string)$ca_id
-								,"MAIL_IMG",$GLOBALS["SITE_DATA"]["IMG_URL"].TMP_IMG.$ca_id.".jpg");
-        if($errors["FAIL"]&&!$errors["MAIL"]){
-			if($errors["MAIL_STAR1"]){
-				$this->pparse_vars=$this->fm_mergearray(array("MAIL_STAR1",$this->config["STAR"]),$this->pparse_vars);  
+								,"MAIL_CAID",$ca_id
+								,"MAIL_IMG",$GLOBALS["MANDRIGO"]["CONFIG"]["IMG_PATH"].TMP_IMG.$ca_id.".jpg");
+								
+        $errored=false;
+		for($i=0;$i<;$i++){
+			if($status["MAIL"]["S$i"]===true){
+				$parse_vars=$this->fm_appendarray($parse_vars,array("MAIL_STAR$i",$this->config["star"]));
+				$errored=true;
 			}
 			else{
-			 	$this->pparse_vars=$this->fm_mergearray(array("MAIL_STAR1",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars);   
+				$parse_vars=$this->fm_appendarray($parse_vars,array("MAIL_STAR$i",$this->config["nostar"]));
 			}
-			if($errors["MAIL_STAR2"]){
-				$this->pparse_vars=$this->fm_mergearray(array("MAIL_STAR2",$this->config["STAR"]),$this->pparse_vars);  
-			}
-			else{
-				$this->pparse_vars=$this->fm_mergearray(array("MAIL_STAR2",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars);    
-			}
-			if($errors["MAIL_STAR3"]){
-			 	$this->pparse_vars=$this->fm_mergearray(array("MAIL_STAR3",$this->config["STAR"]),$this->pparse_vars); 
-			}
-			else{
-				$this->pparse_vars=$this->fm_mergearray(array("MAIL_STAR3",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars);    
-			}
-			if($errors["MAIL_STAR4"]){
-				$this->pparse_vars=$this->fm_mergearray(array("MAIL_STAR4",$this->config["STAR"]),$this->pparse_vars);
-			}
-			else{
-				$this->pparse_vars=$this->fm_mergearray(array("MAIL_STAR4",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars);    
-			}
-			if($errors["MAIL_STAR5"]){
-				$this->pparse_vars=$this->fm_mergearray(array("MAIL_STAR5",$this->config["STAR"]),$this->pparse_vars);
-			}
-			else{
-				$this->pparse_vars=$this->fm_mergearray(array("MAIL_STAR5",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars);    
-			}
-			if(!$errors["UNKNOWN"]){
-				$this->pparse_vars=$this->fm_mergearray(array("MAIL_TOP_ERROR",$GLOBALS["LANGUAGE"]["F_MAIL_ERROR_ALERT"].$GLOBALS["HTML"]["BR"]),$this->pparse_vars);	
-			}
-			else{
-				$this->pparse_vars=$this->fm_mergearray(array("MAIL_TOP_ERROR",$GLOBALS["LANGUAGE"]["F_MAIL_INTERNAL"].$GLOBALS["HTML"]["BR"]),$this->pparse_vars);
-			}
-			$vars=array("MAIL_U_NAME",$GLOBALS["HTTP_POST"]["M_USER_NAME"]
-                        ,"MAIL_U_EMAIL",$GLOBALS["HTTP_POST"]["M_USER_EMAIL"]
-                        ,"MAIL_SUBJECT",$GLOBALS["HTTP_POST"]["M_SUBJECT"]
-                        ,"MAIL_MESSAGE",$GLOBALS["HTTP_POST"]["M_MESSAGE"]);
-            $this->pparse_vars=$this->fm_mergearray($vars,$this->pparse_vars);
 		}
-		else if(!$errors["FAIL"]&&$errors["MAIL"]){
-			$this->pparse_vars=$this->fm_mergearray(array("MAIL_TOP_ERROR",$GLOBALS["LANGUAGE"]["F_MAIL_SENT"].$GLOBALS["HTML"]["BR"]),$this->pparse_vars);	
-			$this->pparse_vars=$this->fm_mergearray(array("MAIL_STAR1",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars); 
-			$this->pparse_vars=$this->fm_mergearray(array("MAIL_STAR2",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars); 
-			$this->pparse_vars=$this->fm_mergearray(array("MAIL_STAR3",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars); 
-			$this->pparse_vars=$this->fm_mergearray(array("MAIL_STAR4",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars); 	
-			$this->pparse_vars=$this->fm_mergearray(array("MAIL_STAR5",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars); 	
+		
+		if($errored){
+			$parse_vars=$this->fm_appendarray($parse_vars,array("TOP_MSG",$GLOBALS["MANDRIGO"]["LANGUAGE"]["MG_FMAIL_IERROR"]));
 		}
-		else{
-			$this->pparse_vars=$this->fm_mergearray(array("MAIL_STAR1",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars); 
-			$this->pparse_vars=$this->fm_mergearray(array("MAIL_STAR2",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars); 
-			$this->pparse_vars=$this->fm_mergearray(array("MAIL_STAR3",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars); 
-			$this->pparse_vars=$this->fm_mergearray(array("MAIL_STAR4",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars); 	
-			$this->pparse_vars=$this->fm_mergearray(array("MAIL_STAR5",$GLOBALS["HTML"]["SPACE"].$GLOBALS["HTML"]["SPACE"]),$this->pparse_vars); 	
+		
+		if($status["INTERNAL"]["MFAIL"]===true){
+			$parse_vars=$this->fm_appendarray($parse_vars,array("TOP_MSG",$GLOBALS["MANDRIGO"]["LANGUAGE"]["MG_FMAIL_IERROR"]));
+			$errored=true;
 		}
-        $tmp = new template();
-        $tmp->load($GLOBALS["MANDRIGO_CONFIG"]["TEMPLATE_PATH"].$GLOBALS["PAGE_DATA"]["DATAPATH"].$GLOBALS["PAGE_DATA"]["ID"]."_".$id."_email.".TPL_EXT);
-		return $tmp->return_template();
-    }
-    function fm_retvars(){
-        return $this->pparse_vars;
+		else if($status["SENT"]){
+			$parse_vars=$this->fm_appendarray($parse_vars,array("TOP_MSG",$GLOBALS["MANDRIGO"]["LANGUAGE"]["MG_FMAIL_SENT"]));			
+		}
+		
+		if($errored){
+			$parse_vars=$this->fm_appendarray($parse_vars,array("FMAIL_NAME",$GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_NAME"],
+																"FMAIL_ADDR",$GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_ADDR"],
+																"FMAIL_SUBJ",$GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_SUBJ"],
+																"FMAIL_MSG",$GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_MSG"]));
+		}
+		$this->tpl->tpl_parse($parse_vars,"overview",2,false);
+		return $this->tpl->tpl_return("overview");
     }
     function fm_mail($id){
         $errors=array();
@@ -291,18 +251,14 @@ class f_mail_display{
 		}
 		return $this->fm_display($id,array("FAIL"=>false,"MAIL"=>true));
     }
-    function fm_mergearray($a1,$a2){
-		$new_array=array();
-		$j=0;
-		for($i=0;$i<count($a1);$i++){
-			$new_array[$j]=$a1[$i];
-			$j++;
+    function fm_appendarray($a1,$a2){
+		$size1=count($a1);
+		$size2=count($a2);
+		$soq=$size1+$size2;
+		for($i=$size1;$i<$soq;$i++){
+			$a1[$i]=$a2[$i-($size1)];
 		}
-		for($i=0;$i<count($a2);$i++){
-			$new_array[$j]=$a2[$i];
-			$j++;
-		}
-		return $new_array;
+		return $a1;
 	}
 }
 ?>
