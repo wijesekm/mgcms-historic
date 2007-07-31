@@ -63,8 +63,8 @@ $pkg_table_install["gallery"]["struct"]=array(array("page_id","int","11","","0")
 											  );
 );
 										   
-$pkg_table_install["news"]["keys"]=array(array(DB_PRIMARY,"page_id"));
-$pkg_table_install["news"]["records"]=array();
+$pkg_table_install["gallery"]["keys"]=array(array(DB_PRIMARY,"page_id"));
+$pkg_table_install["gallery"]["records"]=array();
 
 //Do Not Edit Below This Line
 if($pkg["enabled"]){
