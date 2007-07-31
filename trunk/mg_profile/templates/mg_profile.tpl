@@ -27,7 +27,7 @@
 <!--MG_TEMPLATE_END_user-->
 
 <!--MG_TEMPLATE_START_group-->
-<img class="imgright" src="{PICTURE_PATH}" />
+<img class="imgright" style="border:0;background: #FFFFFF;" src="{PICTURE_PATH}" />
 <h3>{GROUP_NAME}</h3>
 <h4>General</h4>
 <p>
