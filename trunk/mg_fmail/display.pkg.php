@@ -41,6 +41,7 @@ class mg_fmail{
 
     function mg_fmail($id){
      	if(!$this->config=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_FMAIL_DATA,"",array(array("page_id","=",$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["ID"],DB_AND),array("part_id","=",$id)))){
+			$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(430,"sql");
 			return false;
 		}
         $attrib='src="'.$GLOBALS['MANDRIGO']["SITE"]['IMG_URL']."/mg_fmail/".'dot.jpg" alt="*" border="0"';
@@ -54,7 +55,7 @@ class mg_fmail{
         $this->tpl=new template();
         $file=$GLOBALS['MANDRIGO']['CONFIG']['TEMPLATE_PATH'].$GLOBALS['MANDRIGO']['CURRENTPAGE']['DATAPATH'].$GLOBALS['MANDRIGO']['CURRENTPAGE']['NAME'].'_'.$i.'.'.TPL_EXT;
 		if(!$this->tpl->tpl_load($file,"overview")){
-			$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(,"display");
+			$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(506,"display");
 			return false;
 		}
 	}
@@ -90,11 +91,7 @@ class mg_fmail{
 			$parse_vars=$this->fm_appendarray($parse_vars,array("FMAIL_TOP",$GLOBALS["MANDRIGO"]["LANGUAGE"]["MG_FMAIL_IERROR"]));
 		}
 		
-		if($status["INTERNAL"]["MFAIL"]===true){
-			$parse_vars=$this->fm_appendarray($parse_vars,array("FMAIL_TOP",$GLOBALS["MANDRIGO"]["LANGUAGE"]["MG_FMAIL_IERROR"]));
-			$errored=true;
-		}
-		else if($status["SENT"]===true){
+		if($status["SENT"]===true){
 			$parse_vars=$this->fm_appendarray($parse_vars,array("FMAIL_TOP",$GLOBALS["MANDRIGO"]["LANGUAGE"]["MG_FMAIL_SENT"]));			
 		}
 		
@@ -113,7 +110,6 @@ class mg_fmail{
 		$status["MAIL"]["S2"]=false;
 		$status["MAIL"]["S3"]=false;
 		$status["MAIL"]["S4"]=false;
-		$status["INTERNAL"]["MFAIL"]=false;
 		$status["SENT"]=false;
 		
         //Error Level: 0 - dont fail on anything
@@ -187,7 +183,8 @@ class mg_fmail{
 		$ev->ev_addbody($body->tpl_return("email"));
 
         if(!$ev->ev_send()){
-         	$status["INTERNAL"]["MFAIL"]=true;
+			$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(151,"display");
+			return false;
 		}
 		else{
 			$status["SENT"]=true;
