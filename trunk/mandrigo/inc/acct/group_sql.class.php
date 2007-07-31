@@ -158,7 +158,7 @@ class group extends _group{
 			if($uid[$i]&&$uid[$i+1]){
 				$q[$i]=array("ac_id","=",$uid[$i],DB_OR);
 			}
-			else if($gid[$i]){
+			else if($uid[$i]){
 				$q[$i]=array("ac_id","=",$uid[$i]);
 			}
 		}
@@ -166,7 +166,7 @@ class group extends _group{
 		$soq=count($users);
 		$retusers=array();
 		for($i=0;$i<$soq;$i++){
-			$retusers=array_merge($retusers,array($users[$i]["ac_id"]=>$users[$i]["ac_username"]));
+			$retusers[$users[$i]["ac_id"]]=$users[$i]["ac_username"];
 		}
 		return $retusers;
 	}
@@ -209,7 +209,7 @@ class group extends _group{
 			if($uid[$i]&&$uid[$i+1]){
 				$q[$i]=array("ac_id","=",$uid[$i],DB_OR);
 			}
-			else if($gid[$i]){
+			else if($uid[$i]){
 				$q[$i]=array("ac_id","=",$uid[$i]);
 			}
 		}
@@ -217,7 +217,7 @@ class group extends _group{
 		$soq=count($users);
 		$retusers=array();
 		for($i=0;$i<$soq;$i++){
-			$retusers=array_merge($retusers,array($users[$i]["ac_id"]=>$users[$i]["ac_username"]));
+			$retusers[$users[$i]["ac_id"]]=$users[$i]["ac_username"];
 		}
 		return $retusers;
 	}
