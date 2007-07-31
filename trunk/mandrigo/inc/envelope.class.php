@@ -57,12 +57,12 @@ class envelope extends phpmailer{
         if($sql_result['alt']){
 			$this->ev_setalt(true);
 		}
-		$conf=array("sendmail"=>$sql_result['sendmail'],
-				    "mailer"=>$sql_result['mailer'],
-				    "encoding"=>$sql_result['encoding'],
-				    "dctype"=>$sql_result['dctype'],
-				    "wrap"=>$sql_result['wrap'],
-				    "priority"=>$sql_result['priority']);
+		$conf=array("sendmail"=>$sql_result['ev_sendmailpath'],
+				    "mailer"=>$sql_result['ev_mailer'],
+				    "encoding"=>$sql_result['ev_encoding'],
+				    "dctype"=>$sql_result['ev_dctype'],
+				    "wrap"=>$sql_result['ev_wrap'],
+				    "priority"=>$sql_result['ev_priority']);
 
 	 	$this->phpmailer($conf);
 		$this->recipients["to"]=array();
