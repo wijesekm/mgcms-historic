@@ -53,14 +53,13 @@ class mg_fmail{
 			}
 		}
         $this->tpl=new template();
-        $file=$GLOBALS['MANDRIGO']['CONFIG']['TEMPLATE_PATH'].$GLOBALS['MANDRIGO']['CURRENTPAGE']['DATAPATH'].$GLOBALS['MANDRIGO']['CURRENTPAGE']['NAME'].'_'.$i.'.'.TPL_EXT;
+        $file=$GLOBALS['MANDRIGO']['CONFIG']['TEMPLATE_PATH'].$GLOBALS['MANDRIGO']['CURRENTPAGE']['DATAPATH'].$GLOBALS['MANDRIGO']['CURRENTPAGE']['NAME'].'_'.$id.'.'.TPL_EXT;
 		if(!$this->tpl->tpl_load($file,"overview")){
-			$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(506,"display");
+			$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(150,"display");
 			return false;
 		}
 	}
     function fm_display($status=array()){
-
         $sdata=$this->fm_getsenderemail();
         
 		if(!$sdata){
@@ -77,7 +76,7 @@ class mg_fmail{
 						 ,"FMAIL_CAIMG",$GLOBALS["MANDRIGO"]["CONFIG"]["IMG_PATH"].TMP_IMG.$ca_id.".jpg");
 								
         $errored=false;
-		for($i=0;$i<;$i++){
+		for($i=1;$i<6;$i++){
 			if($status["MAIL"]["S$i"]===true){
 				$parse_vars=$this->fm_appendarray($parse_vars,array("FMAIL_STAR$i",$this->config["star"]));
 				$errored=true;
@@ -110,6 +109,7 @@ class mg_fmail{
 		$status["MAIL"]["S2"]=false;
 		$status["MAIL"]["S3"]=false;
 		$status["MAIL"]["S4"]=false;
+		$status["MAIL"]["S5"]=false;
 		$status["SENT"]=false;
 		
         //Error Level: 0 - dont fail on anything
@@ -195,16 +195,18 @@ class mg_fmail{
      
         $to_name="";
         $to_email="";
-        
+		if(!$GLOBALS["MANDRIGO"]["VARS"]["EMAIL_ADDRESS"]||$GLOBALS["MANDRIGO"]["VARS"]["EMAIL_ADDRESS"]==BAD_DATA){
+			$GLOBALS["MANDRIGO"]["VARS"]["EMAIL_ADDRESS"]=1;
+		}
         if(mb_eregi("^[0-9]+$",$GLOBALS["MANDRIGO"]["VARS"]["EMAIL_ADDRESS"])){
 			$list_data=$GLOBALS["MANDRIGO"]["DB"]->db_fetcharray(TABLE_PREFIX.TABLE_FEMAIL_LIST,"",array(array("fmail_id","=",$GLOBALS["MANDRIGO"]["VARS"]["EMAIL_ADDRESS"])));
 			if($list_data["fmail_uid"]){
-			 	if($list_data["fmail_uid"]==$GLOBALS["MANDRIGO"]["CURRENTUSER"]["ID"]){
+			 	if((int)$list_data["fmail_uid"]==$GLOBALS["MANDRIGO"]["CURRENTUSER"]["ID"]){
 					$to_name=$GLOBALS["MANDRIGO"]["CURRENTUSER"]["FNAME"]." ".$GLOBALS["MANDRIGO"]["CURRENTUSER"]["LNAME"];
 					$to_email=$GLOBALS["MANDRIGO"]["CURRENTUSER"]["EMAIL"];
 				}
 				else{
-					$cuser_acct=new account($GLOBALS["MANDRIGO"]["VARS"]["EMAIL_ADDRESS"]);
+					$cuser_acct=new account($list_data["fmail_uid"]);
 					$user_data=$cuser_acct->ac_userdata();
 					$to_name=$user_data["FNAME"]." ".$user_data["LNAME"];
 					$to_email=$user_data["EMAIL"];
@@ -218,16 +220,12 @@ class mg_fmail{
 		else if($GLOBALS["MANDRIGO"]["VARS"]["EMAIL_ADDRESS"]){
 			$to_name=$GLOBALS["MANDRIGO"]["VARS"]["EMAIL_ADDRESS"];
 			$to_email=$GLOBALS["MANDRIGO"]["VARS"]["EMAIL_ADDRESS"];
-			$r_email=$GLOBALS["MANDRIGO"]["VARS"]["EMAIL_ADDRESS"];
 		}
 
         if(!$to_name||!$to_email){
 			return false;
 		}
-		if(!$r_email){
-			$r_email=$to_email;
-		}
-		return array($to_name,$to_email,$r_email);
+		return array($to_name,$to_email);
 	}
     function fm_appendarray($a1,$a2){
 		$size1=count($a1);
@@ -239,4 +237,3 @@ class mg_fmail{
 		return $a1;
 	}
 }
-?>

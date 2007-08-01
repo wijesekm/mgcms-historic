@@ -34,29 +34,26 @@ if(!defined("START_MANDRIGO")){
 }
 
 
-class f_mail_hook{
+class mg_fmail_hook{
 
-    var $pparse_vars;
-
-    function f_mail_display_hook(&$sql,$i){
-        $email = new f_mail_display($sql);
+    function mg_fmail_display_hook($i){
+     	
+     	include_once("display.pkg.php");
+     
+        $email = new mg_fmail($i);
         $string="";
-        $email->fm_load($i);
-        if($GLOBALS['HTTP_GET']['ACTION']=='D'){
-            $string=$email->fm_display($i);
+        if($GLOBALS['MANDRIGO']['VARS']['ACTION']=='P'){
+         	$string=$email->fm_mail($i);
         }
         else{
-            $string=$email->fm_mail($i);
+            $string=$email->fm_display();
         }
-        $this->pparse_vars=$email->fm_retvars();
         return $string;
     }
-    function f_mail_vars_hook(&$sql,$i){
-        return $this->pparse_vars;
+    function mg_fmail_vars_hook($i){
+        return array();
     }
-    function f_mail_admin_hook(&$sql,$i){
+    function mg_fmail_admin_hook(&$sql,$i){
         return "";
     }
 }
-
-?>
