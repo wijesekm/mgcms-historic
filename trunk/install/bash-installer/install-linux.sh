@@ -1,74 +1,144 @@
 #!/bin/sh
 
-TMPDIR=/tmp
-USER=root
-GROUP=apache
-echo "Enter the directory for the Mandrigo Core to be installed to (ex /var/www/localhost/htdocs/).";
-read COREDIR
-echo "Enter the directory for the Mandrigo Admin to be installed to (ex /var/www/localhost/htdocs/).";
-read ADMINDIR
-echo "Enter the directory where plugin files will be placed (ex /var/www/localhost/htdocs/inc/packages/).";
-read PACKAGEDIR
-echo "Enter the directory where log files will be placed (ex /var/www/localhost/logs/).";
-read LOGDIR
-echo "Enter the directory where template files will be placed (ex /var/www/localhost/templates/).";
-read TPLDIR
+USER="root"
+GROUP="apache"
+VER="0.7.0_dev"
 
-echo "Installing the display manager of Mandrigo CMS\n";
-echo "Checking to see if $COREDIR exists.  If not will build directory tree.\n"
-./mkinstalldirs.sh $COREDIR
-echo "Checking to see if $PACKAGEDIR exists. If not will build directory tree.\n"
-./mkinstalldirs.sh $PACKAGEDIR
-echo "Checking to see if $LOGDIR exists. If not will build directory tree.\n\"
-./mkinstalldirs.sh $LOGDIR
-echo "Checking to see if $TPLDIR exists. If not will build directory tree.\n"
-./mkinstalldirs.sh $TPLDIR
+#welcome page
+echo "-------------------------------------\n";
+echo "Welcome to the mandrigo CMS Installer\n";
+echo "Mandrigo CMS version $VER\n";
+echo "Copyright 2004-2007 Mandrigo CMS Group\n";
+echo "-------------------------------------\n\n";
 
-echo "Installing Mandrigo Core\n"
-#####Extract and copy files
-#tar -xzf mandrigo_core.tar.gz -C $TMPDIR
-tar -cjf mandrigo_core.tar.bz2 -C $TMPDIR
-cp -r $TMPDIR/mandrigo_core/* $COREDIR
+#license
+echo "-------------------------------------\n";
+echo "Licence:\n";
+echo "	
+    This program is free software; you can redistribute it and/or
+	modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation; either version 2
+	of the License, or (at your option) any later version.\n
 
-###secures files and directories
-echo "Securing Files and Directories\n";
-chown -R $USER:$GROUP $TPLDIR
-chown -R $USER:$GROUP $LOGDIR
-chown -R $USER:$GROUP $PACKAGEDIR
-chown -R $USER:$GROUP $COREDIR
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.\n\n";
+echo "Please enter in y if you read and understand this agreement or n if you do not\n";
 
-chmod -R 0755 $COREDIR
-chmod -R 0755 $PACKAGEDIR
-chmod -R 0775 $TPLDIR
-chmod -R 0775 $LOGDIR
+read LICENSE
 
-echo \<IfModule mod_access.c\> > $LOGDIR/.htaccess
-echo Deny From All >> $LOGDIR/.htaccess
-echo \</IfModule\> >> $LOGDIR/.htaccess
-echo \<IfModule mod_access.c\> > $TPLDIR/.htaccess
-echo Deny From All >> $TPLDIR/.htaccess
-echo \</IfModule\> >> $TPLDIR/.htaccess
-echo \<IfModule mod_access.c\> > $PACKAGEDIR/.htaccess
-echo Deny From All >> $PACKAGEDIR/.htaccess
-echo \</IfModule\> >> $PACKAGEDIR/.htaccess
-echo \<IfModule mod_access.c\> > $COREDIR/inc/.htaccess
-echo Deny From All >> $COREDIR/inc/.htaccess
-echo \</IfModule\> >> $COREDIR/inc/.htaccess
-echo \<IfModule mod_access.c\> > $COREDIR/config/.htaccess
-echo Deny From All >> $COREDIR/config/.htaccess
-echo \</IfModule\> >> $COREDIR/config/.htaccess
+if [ "$LICENSE" -ne "y" ]; then
+	echo "Installer halted";
+	exit 0;
+fi
+echo "-------------------------------------\n\n";
 
-echo "Cleaning up after install.\n\n"
-rm -r /tmp/mandrigo*
+#package selection
+echo "-------------------------------------\n";
+echo "Package Selection\n";
+echo "Please enter in y if you want to install each of the packages given or n if you do not\n";
+echo "Options:\n";
+echo "1 - core\n";
+read ICORE
+echo "2 - admin\n";
+read IADMIN
+echo "3 - login_manager\n";
+read ILOGIN
+echo "4 - packages\n";
+read IPACKAGES
 
-echo "Installing Mandrigo CMS Admin\n";
-#tar -xzf mandrigo_admin.tar.gz -C $TMPDIR
-tar -cjf mandrigo_admin.tar.bz2 -C $TMPDIR
-cp -r $TMPDIR/mandrigo_core/* $ADMINDIR
+echo "-------------------------------------\n\n";
 
-echo "Securing Files and Directoreis\n";
-chown -R $USER:$GROUP $ADMINDIR
-chmod -R 0755 $ADMINDIR
+echo "-------------------------------------\n";
+echo "Path Selection\n";
+echo "Web Directory Path (ie /var/www/htdocs/\n";
+read CWEBDIR
+if [ "$IADMIN" -eq "y" ]; then
+	echo "Admin Directory Path (ie /var/www/htdocs/admin/\n";
+	read AWEBDIR
+fi
+if [ "$ILOGIN" -eq "y" ]; then
+	echo "Login Manager Directory Path (ie /var/www/htdocs/login_manager/\n";
+	read LWEBDIR
+fi
+echo "External Directory Path (ie /var/www/)\n";
+read EXTERNALDIR
+echo "TMP Directory Path (ie /tmp/)\n";
+read TMPDIR
+echo "-------------------------------------\n\n";
 
-exit 0
+echo "-------------------------------------\n";
+echo "Install Section\n";
 
+./install_tools/mkinstalldirs.sh $TMPDIR/mandrigo/admin
+./install_tools/mkinstalldirs.sh $TMPDIR/mandrigo/login_manager
+./install_tools/mkinstalldirs.sh $TMPDIR/mandrigo/packages
+
+if [ "$TMPDIR" -ne "/tmp/" ]; then
+	chmod -R 0777 $TMPDIR
+fi
+
+echo "Installing Mandrigo core...";
+tar -xzf mandrigo-core.tar.gz -C $TMPDIR/mandrigo/
+./install_tools/mkinstalldirs.sh $CWEBDIR
+cp -r $TMPDIR/mandrigo/www/ $CWEBDIR
+./install_tools/mkinstalldirs.sh $EXTERNALDIR
+cp -r $TMPDIR/mandrigo/templates $EXTERNALDIR
+cp -r $TMPDIR/mandrigo/logs $EXTERNALDIR
+echo "done\n";
+
+echo "Securing Mandrigo core...";
+chown -R $USER:$GROUP $CWEBDIR
+chown -R $USER:$GROUP $EXTERNALDIR
+chmod -R 0755 $CWEBDIR
+chmod -R 0775 $CWEBDIR/config/
+chmod -R 0775 $CWEBDIR/images/
+chmod -R 0774 $EXTERNALDIR
+echo "done\n";
+
+if [ "$IADMIN" -eq "y" ]; then
+	echo "Installing Mandrigo admin...";
+	tar -xzf mandrigo-admin.tar.gz -C $TMPDIR/mandrigo/admin/
+	./install_tools/mkinstalldirs.sh $AWEBDIR
+	cp -r $TMPDIR/mandrigo/admin/ $AWEBDIR/
+	echo "done\n";
+	
+	echo "Securing Mandrigo admin...";
+	chown -R $USER:$GROUP $AWEBDIR
+	chmod -R 0755 $AWEBDIR
+	chmod -R 0775 $AWEBDIR/config/
+fi
+
+if [ "$ILOGIN" -eq "y" ]; then
+	echo "Installing Mandrigo login_manager...";
+	tar -xzf mandrigo-login_manager.tar.gz -C $TMPDIR/mandrigo/login_manager/
+	./install_tools/mkinstalldirs.sh $LWEBDIR
+	cp -r $TMPDIR/mandrigo/login_manager/ $LWEBDIR/
+	echo "done\n";
+	
+	echo "Securing Mandrigo login_manager...";
+	chown -R $USER:$GROUP $LWEBDIR
+	chmod -R 0755 $LWEBDIR
+	chmod -R 0775 $LWEBDIR/config/
+fi
+
+if [ "$IPACKAGES" -eq "y" ]; then
+	echo "Installing Mandrigo packages...";
+	tar -xzf mandrigo-login_manager.tar.gz -C $TMPDIR/mandrigo/packages/
+	cp -r $TMPDIR/mandrigo/packages/ $CWEBDIR/inc/packages/
+	echo "done\n";
+	
+	echo "Securing Mandrigo packages...";
+	chown -R $USER:$GROUP $CWEBDIR/inc/packages/
+	chmod -R 0775 $CWEBDIR/inc/packages/
+	echo "done\n";
+fi
+
+echo "Cleaning up after install...";
+rm -r $TMPDIR/mandrigo
+echo "done\n";
+echo "-------------------------------------\n\n";
+echo "Mandrigo CMS successfully Installed\n";
+echo "Please go to http://yoursitename/install/ to finish setting up mandrigo";
+exit 0;
