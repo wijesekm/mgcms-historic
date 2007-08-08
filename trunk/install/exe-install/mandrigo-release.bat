@@ -4,7 +4,7 @@ set destdir=C:\MandrigoReleases\
 set tortoisedir=C:\Program Files\TortoiseSVN\bin\
 cd %tortoisedir%
 
-rem TortoiseProc.exe /notempfile /command:checkout /path:"%sourcedir%" /url:"https://mandrigo.svn.sourceforge.net/svnroot/mandrigo/trunk" /closeonend
+TortoiseProc.exe /notempfile /command:checkout /path:"%sourcedir%" /url:"https://mandrigo.svn.sourceforge.net/svnroot/mandrigo/trunk" /closeonend
 
 mkdir %destdir%
 mkdir %destdir%\www
