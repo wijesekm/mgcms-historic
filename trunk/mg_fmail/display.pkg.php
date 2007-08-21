@@ -121,16 +121,22 @@ class mg_fmail{
 			case 4:
 				if(!$GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_MSG"]||!$GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_NAME"]||!$GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_ADDR"]||!$GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_SUBJ"]){
 					$status["MAIL"]["S4"]=true;
+					$status["MAIL"]["S3"]=true;
+					$status["MAIL"]["S2"]=true;
+					$status["MAIL"]["S1"]=true;
 				}				
 			break;
 			case 3:
 				if(!$GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_MSG"]||!$GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_NAME"]||!$GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_ADDR"]){
 					$status["MAIL"]["S3"]=true;
+					$status["MAIL"]["S2"]=true;
+					$status["MAIL"]["S1"]=true;
 				}					
 			break;
 			case 2:
 				if(!$GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_MSG"]||!$GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_NAME"]){
 					$status["MAIL"]["S2"]=true;
+					$status["MAIL"]["S1"]=true;
 				}		
 			break;
 			case 1:
