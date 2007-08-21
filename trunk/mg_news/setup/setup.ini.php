@@ -49,6 +49,13 @@ $pkg["errors"]=array("sql"=>array(array("400","Could not access the news overvie
 					 "display"=>array(array("120","The mg_news package could not load the template for the current page hook."),array("502","The mg_news package could not be loaded.")),
 					 "ldap"=>array());
 
+$http_vars=array(
+				array("mg_news_feed","fd","http_get","page","0"),
+				array("mg_news_comname","com_name","http_post","name",""),
+				array("mg_news_comemail","com_email","http_post","email",""),
+				array("mg_news_comvalue","com_comment","http_post","text","")
+				);
+
 $pkg["languages"]=array("en-US");
 
 $pkg_language_install["en-US"]=array(array("NEWS_NO_POSTS","There are currently no posts."),

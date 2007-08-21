@@ -40,8 +40,8 @@ class mg_news_hook{
 	function mg_news_display_hook($i){
 	 	@include_once("display.pkg.php");
 	 	$type="";
-	  	if($GLOBALS["MANDRIGO"]["VARS"]["FEED_TYPE"]){
-			$type=$GLOBALS["MANDRIGO"]["VARS"]["FEED_TYPE"];
+	  	if($GLOBALS["MANDRIGO"]["VARS"]["MG_NEWS_FEED"]){
+			$type=$GLOBALS["MANDRIGO"]["VARS"]["MG_NEWS_FEED"];
 		}
 		else if(eregi("p",$GLOBALS["MANDRIGO"]["VARS"]["ID"])){
 			$type=NEWS_SINGLE;	
