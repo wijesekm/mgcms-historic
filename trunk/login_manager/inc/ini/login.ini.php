@@ -138,32 +138,19 @@ else{
 $GLOBALS["MANDRIGO"]["SITE"]["SERVERTIME"]=time();
 
 //
-//Some User INIT
-//
-$GLOBALS["MANDRIGO"]["CURRENTUSER"]["IP"]=(!empty($HTTP_SERVER_VARS['REMOTE_ADDR']))?$HTTP_SERVER_VARS['REMOTE_ADDR']:((!empty($HTTP_ENV_VARS['REMOTE_ADDR']))?$HTTP_ENV_VARS['REMOTE_ADDR']:getenv('REMOTE_ADDR'));
-$GLOBALS["MANDRIGO"]["CURRENTUSER"]["UAGENT"]=(!empty($HTTP_SERVER_VARS['HTTP_USER_AGENT']))?$HTTP_SERVER_VARS['HTTP_USER_AGENT']:((!empty($HTTP_ENV_VARS['HTTP_USER_AGENT']))?$HTTP_ENV_VARS['HTTP_USER_AGENT']:getenv('HTTP_USER_AGENT'));
-if(!$GLOBALS["MANDRIGO"]["CURRENTUSER"]["IP"]){
-	$GLOBALS["MANDRIGO"]["CURRENTUSER"]["IP"]="000.000.000.000";
-}
-
-//
 //Now we will load the first set of packages/globals
 //
 
-$init1=array(array("ini{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}constants.ini.$php_ex",4),
-				  array("ini{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}clean_functions.ini.$php_ex",5),
-				  array("server_time.class.$php_ex",6),
-				  array("session.class.$php_ex",7),
-				  array("stats.class.$php_ex",8),
-				  array("mfilter.class.$php_ex",23),
-				  array("template.class.$php_ex",10));			  
-$init2=array(array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}site.globals.$php_ex",11),
-			 array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}lang.globals.$php_ex",20));
+$init1=array(array("ini{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}constants.ini.$php_ex",4,false),
+				  array("ini{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}clean_functions.ini.$php_ex",5,false),
+				  array("server_time.class.$php_ex",6,false),
+				  array("session.class.$php_ex",7,false),
+				  array("stats.class.$php_ex",8,false),
+				  array("mfilter.class.$php_ex",23,false),
+				  array("template.class.$php_ex",10,false),
+				  array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}site.globals.$php_ex",11,false),
+			 	  array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}lang.globals.$php_ex",20,false));						   	  
 package_init($init1);
-package_init($init2);
-
-$init3=array(array("acct{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}account_".$GLOBALS["MANDRIGO"]["SITE"]["ACCOUNT_TYPE"].".class.$php_ex",11));
-package_init($init3);
 
 //Now we will initialize some extra database packages if needed
 switch($GLOBALS["MANDRIGO"]["SITE"]["AUTH_TYPE"]){
@@ -217,17 +204,30 @@ switch($GLOBALS["MANDRIGO"]["SITE"]["AUTH_TYPE"]){
 	break;	
 };
 
-$init4=array(array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}server.globals.$php_ex",12),
-			 array("auth{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}{$GLOBALS["MANDRIGO"]["SITE"]["AUTH_TYPE"]}_auth.class.$php_ex",40),
-			 array("login.class.$php_ex",41));
-package_init($init4,false);
+$init2=array(array("acct{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}account_".$GLOBALS["MANDRIGO"]["SITE"]["ACCOUNT_TYPE"].".class.$php_ex",11,false),
+			 array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}server.globals.$php_ex",12,true),
+			 array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}user.globals.$php_ex",17,false),
+			 array("auth{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}{$GLOBALS["MANDRIGO"]["SITE"]["AUTH_TYPE"]}_auth.class.$php_ex",40,true),
+			 array("login.class.$php_ex",41,true));
+package_init($init2);
+
+//
+//Time to set the clock
+//
+$clock=new server_time($GLOBALS["MANDRIGO"]["CURRENTUSER"]["TZ"],$GLOBALS["MANDRIGO"]["CURRENTUSER"]["DST"]);
+$GLOBALS["MANDRIGO"]["SITE"]["GMT"]=$clock->st_returngmt();
+$GLOBALS["MANDRIGO"]["SITE"]["SERVERTIME"]=$clock->st_returnst();
+$GLOBALS["MANDRIGO"]["CURRENTUSER"]["TIME"]=$clock->st_returnct();
+$clock="";
 
 //
 //Gets rid of unneeded config vars
 //
 $sql_config="";
 $log_config="";
+$GLOBALS["TMPURL"]="";
 $adldap_config="";
+
 
 //
 //Seeds random number generator
@@ -238,16 +238,16 @@ mt_srand(doubleval(microtime()) * 1000003);
 //
 //Init Script
 //
-function package_init($pkg,$root=true){
+function package_init($pkg){
 	$pkg_size=count($pkg);
-	if($root){
-		$base=$GLOBALS["MANDRIGO"]["CONFIG"]["ROOT_PATH"];
-	}
-	else{
-		$base=$GLOBALS["MANDRIGO"]["CONFIG"]["LOGIN_ROOT_PATH"];
-	}
 	for($pkg_c=0;$pkg_c<$pkg_size;$pkg_c++){
 	 	if($pkg[$pkg_c][0]){
+	 	 	if(!$pkg[$pkg_c][2]){
+				$base=$GLOBALS["MANDRIGO"]["CONFIG"]["ROOT_PATH"];
+			}
+			else{
+				$base=$GLOBALS["MANDRIGO"]["CONFIG"]["LOGIN_ROOT_PATH"];
+			}
 			if($GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]){
 				include_once($base.$pkg[$pkg_c][0]);
 			}
