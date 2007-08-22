@@ -2,7 +2,7 @@
 /**********************************************************
     login_router.php
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 01/30/07
+	Date Last Edited: 08/22/07
 
 	Copyright (C) 2006-2007 the MandrigoCMS Group
 
@@ -36,8 +36,8 @@ $GLOBALS["MANDRIGO"]["CONFIG"]["LOGIN_ROOT_PATH"]=dirname(__FILE__)."/";
 //
 //Initial includes (php extension, config vars, language array, html array)
 //
-require($GLOBALS["MANDRIGO_CONFIG"]["LOGIN_ROOT_PATH"]."config/config.login.inc");
-//$GLOBALS["MANDRIGO"]["CONFIG"]["DEBUG_MODE"]=true;
+require($GLOBALS["MANDRIGO_CONFIG"]["LOGIN_ROOT_PATH"]."config/lconfig.inc");
+
 //
 //Error Logger Init
 //
@@ -50,7 +50,7 @@ else{
            $GLOBALS["MANDRIGO"]["ELOG"]["ZERO"].$GLOBALS["MANDRIGO"]["ELOG"]["HTMLEND"]);
     }
 }
-$GLOBALS["MANDRIGO"]["ERROR_LOGGER"] = & new error_logger($log_config["LOG_LEVEL_1"],$log_config["LOG_LEVEL_2"],$log_config["ARCHIVE"],$log_config["ERROR_LOGS"],$log_config["FATAL_TYPES"]);
+$GLOBALS["MANDRIGO"]["ERROR_LOGGER"] = new error_logger($log_config["LOG_LEVEL_1"],$log_config["LOG_LEVEL_2"],$log_config["ARCHIVE"],$log_config["ERROR_LOGS"],$log_config["FATAL_TYPES"]);
 
 //
 // Cleans varables, loads requires packages and starts required classes.
@@ -73,14 +73,7 @@ if($GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_getstatus()==2){
 	die($GLOBALS["MANDRIGO"]["ELOG"]["HTMLHEAD"].$GLOBALS["MANDRIGO"]["ELOG"]["TITLE"].$GLOBALS["MANDRIGO"]["ELOG"]["HTMLBODY"].
         $GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_generatereport().$GLOBALS["MANDRIGO"]["ELOG"]["HTMLEND"]);
 }
-$bypass=(string)$GLOBALS["MANDRIGO"]["VARS"]["BYPASS_CODE"]===(string)$GLOBALS["MANDRIGO"]["SITE"]["BYPASS_CODE"];
-if($GLOBALS["MANDRIGO"]["SITE"]["SITE_STATUS"]==1||($bypass&&$GLOBALS["MANDRIGO"]["SITE"]["BYPASS_CODE"])){
-    echo $login->li_display();
-}
-else{
-  	$tpl = new template();
-    $tpl->tpl_load($GLOBALS["MANDRIGO"]["CONFIG"]["TEMPLATE_PATH"].TPL_OFFSITE,"main");
-    $tpl->tpl_parse(false,"main");
-    echo $tpl->tpl_return("main");
-}
+
+echo $login->li_display();
+
 ?>

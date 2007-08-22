@@ -1,8 +1,8 @@
 <?php
 /**********************************************************
-    config.login.inc
+    lconfig.inc
 	Last Edited By: Kevin Wijesekera
-	Date Last Edited: 01/30/07
+	Date Last Edited: 08/22/07
 
 	Copyright (C) 2006-2007 the MandrigoCMS Group
 
@@ -26,23 +26,8 @@
 **********************************************************/
 
 //
-//DIE_STRING - this will be displayed if someone tries to access one of the mandrigo include files directly
+//This should be changed to the path of your main mandrigo config directory
 //
-$GLOBALS["MANDRIGO"]["CONFIG"]["DIE_STRING"]=
-"<html><head>
-	<title>Forbidden</title>
-</head><body>
-	<h1>Forbidden</h1><hr width=\"300\" align=\"left\"/>\n<p>You do not have permission to access this file directly.</p>
-</html></body>";
-
-//
-//To prevent direct script access
-//
-if(!defined("START_MANDRIGO")){
-    die($GLOBALS["MANDRIGO"]["CONFIG"]["DIE_STRING"]);
-}
-
-$GLOBALS["MANDRIGO"]["CONFIG"]["LOGIN_ROOT_PATH"]=ereg_replace("/config/config.login.inc","",__FILE__)."/inc/";
 $main_cfg_path=ereg_replace("/login_manager/config/config.login.inc","",__FILE__)."/config/";
 
 //
@@ -51,3 +36,5 @@ $main_cfg_path=ereg_replace("/login_manager/config/config.login.inc","",__FILE__
 require($main_cfg_path."extension.inc");
 require($main_cfg_path."config.ini.$php_ex");
 require($main_cfg_path."elog.globals.$php_ex");
+
+$main_cfg_path="";
