@@ -34,20 +34,31 @@ if(!defined("START_MANDRIGO")){
 
 $url = array();
 $vars= array();
-
+$index="";
+switch(CORE_NAME){
+	case 'mg_login':
+		$index=$GLOBALS["MANDRIGO"]["SITE"]["LOGIN_NAME"];
+	break;
+	case 'mg_admin':
+		$index=$GLOBALS["MANDRIGO"]["SITE"]["ADMIN_NAME"];
+	break;
+	default:
+		$index=$GLOBALS["MANDRIGO"]["SITE"]["INDEX_NAME"];
+	break;
+};
 //makes the URL array for type 1 urls only
 if($GLOBALS["MANDRIGO"]["SITE"]["URL_FORMAT"]==1){
  
  	//detects php_self.  I have seen servers regester this as index.php/vars or just /vars
  	//which is why the check is there.
-    if(!ereg($GLOBALS["MANDRIGO"]["SITE"]["INDEX_NAME"]."/",$_SERVER["PHP_SELF"])){
-		$php_self=$GLOBALS["MANDRIGO"]["SITE"]["INDEX_NAME"].$_SERVER["PHP_SELF"];
+    if(!ereg($index."/",$_SERVER["PHP_SELF"])){
+		$php_self=$index.$_SERVER["PHP_SELF"];
     }
 	else{
 		$php_self=$_SERVER["PHP_SELF"];
     }
     //exploes the array into its basic chunks
-    $raw_url = eregi_replace("^.*".$GLOBALS["MANDRIGO"]["SITE"]["INDEX_NAME"]."/p","p",$php_self);
+    $raw_url = eregi_replace("^.*".$index."/p","p",$php_self);
     $raw_url = explode("/",$raw_url);
     $array_url = array();
     //just in case we want to do /var=value/var2=value2/ we will explode all ='s too

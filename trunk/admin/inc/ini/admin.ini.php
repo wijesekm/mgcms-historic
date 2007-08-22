@@ -142,7 +142,7 @@ package_init(array(array("ini{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}constants.i
 			 array("adminpage.class.$php_ex",70,true),
 			 array("template.class.$php_ex",10,false)));
 package_init(array(array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}site.globals.$php_ex",11,false),
-			 array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}server.globals.$php_ex",12,true)));
+			 array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}server.globals.$php_ex",12,false)));
 
 //Now we will initialize some extra database packages if needed
 switch($GLOBALS["MANDRIGO"]["SITE"]["ACCOUNT_TYPE"]){

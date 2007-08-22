@@ -205,7 +205,7 @@ switch($GLOBALS["MANDRIGO"]["SITE"]["AUTH_TYPE"]){
 };
 
 $init2=array(array("acct{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}account_".$GLOBALS["MANDRIGO"]["SITE"]["ACCOUNT_TYPE"].".class.$php_ex",11,false),
-			 array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}server.globals.$php_ex",12,true),
+			 array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}server.globals.$php_ex",12,false),
 			 array("globals{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}user.globals.$php_ex",17,false),
 			 array("auth{$GLOBALS["MANDRIGO"]["CONFIG"]["PATH"]}{$GLOBALS["MANDRIGO"]["SITE"]["AUTH_TYPE"]}_auth.class.$php_ex",40,true),
 			 array("login.class.$php_ex",41,true));
