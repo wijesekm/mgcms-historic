@@ -131,13 +131,12 @@ class mg_profile{
 		}
 		return $str;
 	}
-	function pr_genemail($email="",$userid=0,$name=""){
-		$email_db=$GLOBALS["MANDRIGO"]["DB"]->db_fetchresult(TABLE_PREFIX.TABLE_FMAIL_LIST,"email_id",array(array("uid","=",$userid)));
-		if($email_db["email_id"]>1){
-			$attribs=$this->pr_genurl(array("p",$GLOBALS["MANDRIGO"]["SITE"]["FORM_MAIL_PAGE"],"email",$email_db["email_id"]));
-			return $this->pr_genlink($attribs,$name);
+	function pr_genemail($email="",$userid=0,$name=""){	
+		$mailid=$GLOBALS["MANDRIGO"]["DB"]->db_fetchresult(TABLE_PREFIX.TABLE_FEMAIL_LIST,"fmail_id",array(array("fmail_uid","=",$userid)));
+		if($mailid>1){
+			return $this->pr_genlink($this->pr_genurl(array("p",$GLOBALS["MANDRIGO"]["SITE"]["FORM_MAIL_PAGE"],"email",$mailid)),$name,false);
 		}
-		else if($email!=""){
+		else{
 		 	$email=explode("@",$email);
 		 	$url="document.location='mai'+'lto:".$email[0]."'+unescape('%40')+'".$email[1]."'; return false;";
 			$attribs='href="#" onclick="'.$url.'"';
