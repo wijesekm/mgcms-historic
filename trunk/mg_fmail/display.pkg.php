@@ -73,7 +73,7 @@ class mg_fmail{
         				 ,"FORM_ACTION",$this->fm_genlink(array("p",$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["NAME"],"a","p"))
                          ,"FMAIL_SEMAIL",$sdata[1]
 						 ,"FMAIL_CAID",$ca_id
-						 ,"FMAIL_CAIMG",$GLOBALS["MANDRIGO"]["CONFIG"]["IMG_PATH"].TMP_IMG.$ca_id.".jpg");
+						 ,"FMAIL_CAIMG",$GLOBALS["MANDRIGO"]["SITE"]["IMG_URL"].TMP_IMG.$ca_id.".jpg");
 								
         $errored=false;
 		for($i=1;$i<6;$i++){
