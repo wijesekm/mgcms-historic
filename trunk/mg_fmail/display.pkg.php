@@ -44,9 +44,9 @@ class mg_fmail{
 			$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(430,"sql");
 			return false;
 		}
-        $attrib='src="'.$GLOBALS['MANDRIGO']["SITE"]['IMG_URL']."/mg_fmail/".'dot.jpg" alt="*" border="0"';
+        $attrib='src="'.$GLOBALS['MANDRIGO']["SITE"]['IMG_URL']."/mg_fmail/".'dot.jpg" alt="*" style="border:0;background:0;"';
         $this->config['star']=mb_ereg_replace('\{ATTRIB\}',$attrib,$GLOBALS['MANDRIGO']['HTML']['IMG']);
-       	$this->config["nostar"]=$GLOBALS["MANDRIGO"]["HTML"]["BR"].$GLOBALS["MANDRIGO"]["HTML"]["BR"];
+       	$this->config["nostar"]="";
 		if($this->config['fmail_usecaptcha']==1){
 			if(!$this->fcaptcha=new captcha($id)){
 				return false;
@@ -60,10 +60,9 @@ class mg_fmail{
 		}
 	}
     function fm_display($status=array()){
-        $sdata=$this->fm_getsenderemail();
-        
+        $sdata=$this->fm_getrecipemail();
 		if(!$sdata){
-			return false;
+			return $GLOBALS["MANDRIGO"]["LANGUAGE"]["MG_FMAIL_NOEMAIL"];
 		}
 	
 		if($this->config['fmail_usecaptcha']==1){
@@ -71,6 +70,7 @@ class mg_fmail{
 		}
 		
         $parse_vars=array("FMAIL_SNAME",$sdata[0]
+        				 ,"FORM_ACTION",$this->fm_genlink(array("p",$GLOBALS["MANDRIGO"]["CURRENTPAGE"]["NAME"],"a","p"))
                          ,"FMAIL_SEMAIL",$sdata[1]
 						 ,"FMAIL_CAID",$ca_id
 						 ,"FMAIL_CAIMG",$GLOBALS["MANDRIGO"]["CONFIG"]["IMG_PATH"].TMP_IMG.$ca_id.".jpg");
@@ -87,7 +87,11 @@ class mg_fmail{
 		}
 		
 		if($errored){
-			$parse_vars=$this->fm_appendarray($parse_vars,array("FMAIL_TOP",$GLOBALS["MANDRIGO"]["LANGUAGE"]["MG_FMAIL_IERROR"]));
+			$parse_vars=$this->fm_appendarray($parse_vars,array("FMAIL_TOP",$GLOBALS["MANDRIGO"]["LANGUAGE"]["MG_FMAIL_IERROR"]
+															    ,"FMAIL_PNAME",$GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_NAME"]
+																,"FMAIL_PMAIL",$GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_ADDR"]
+																,"FMAIL_PSUBJ",$GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_SUBJ"]
+																,"FMAIL_PMSG",$GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_MSG"]));
 		}
 		
 		if($status["SENT"]===true){
@@ -119,29 +123,41 @@ class mg_fmail{
         //             4 - fail on no message, name, email, and subject
         switch($this->config["fmail_elevel"]){
 			case 4:
-				if(!$GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_MSG"]||!$GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_NAME"]||!$GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_ADDR"]||!$GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_SUBJ"]){
-					$status["MAIL"]["S4"]=true;
-					$status["MAIL"]["S3"]=true;
-					$status["MAIL"]["S2"]=true;
-					$status["MAIL"]["S1"]=true;
-				}				
+				if(!$GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_MSG"]||$GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_MSG"]==BAD_DATA){
+					$status["MAIL"]["S1"]=true;	
+				}
+				if(!$GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_NAME"]||$GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_NAME"]==BAD_DATA){
+					$status["MAIL"]["S2"]=true;	
+				}
+				if(!$GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_ADDR"]||$GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_ADDR"]==BAD_DATA){
+					$status["MAIL"]["S3"]=true;	
+				}
+				if(!$GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_SUBJ"]||$GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_SUBJ"]==BAD_DATA){
+					$status["MAIL"]["S4"]=true;	
+				}			
 			break;
 			case 3:
-				if(!$GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_MSG"]||!$GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_NAME"]||!$GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_ADDR"]){
-					$status["MAIL"]["S3"]=true;
-					$status["MAIL"]["S2"]=true;
-					$status["MAIL"]["S1"]=true;
-				}					
+				if(!$GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_MSG"]||$GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_MSG"]==BAD_DATA){
+					$status["MAIL"]["S1"]=true;	
+				}
+				if(!$GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_NAME"]||$GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_NAME"]==BAD_DATA){
+					$status["MAIL"]["S2"]=true;	
+				}
+				if(!$GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_ADDR"]||$GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_ADDR"]==BAD_DATA){
+					$status["MAIL"]["S3"]=true;	
+				}
 			break;
 			case 2:
-				if(!$GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_MSG"]||!$GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_NAME"]){
-					$status["MAIL"]["S2"]=true;
-					$status["MAIL"]["S1"]=true;
-				}		
+				if(!$GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_MSG"]||$GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_MSG"]==BAD_DATA){
+					$status["MAIL"]["S1"]=true;	
+				}
+				if(!$GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_NAME"]||$GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_NAME"]==BAD_DATA){
+					$status["MAIL"]["S2"]=true;	
+				}
 			break;
 			case 1:
-				if(!$GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_MSG"]){
-					$status["MAIL"]["S1"]=true;
+				if(!$GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_MSG"]||$GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_MSG"]==BAD_DATA){
+					$status["MAIL"]["S1"]=true;	
 				}
 			break;
 			case 0:
@@ -150,14 +166,27 @@ class mg_fmail{
 			break;
 		};
 		
+		if($GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_NAME"]==BAD_DATA){
+			$GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_NAME"]="";
+		}
+		if($GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_ADDR"]==BAD_DATA){
+			$GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_ADDR"]="";
+		}
+		if($GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_SUBJ"]==BAD_DATA){
+			$GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_SUBJ"]="";
+		}
+		if($GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_MSG"]==BAD_DATA){
+			$GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_MSG"]="";
+		}
+		
 		if($this->config['fmail_usecaptcha']==1){
 			if(!$this->fcaptcha->ca_checkca()){
 				$status["MAIL"]["S5"]=true;
 			}
 		}
 
-		$sdata=$this->fm_getsenderemail();
-
+		$sdata=$this->fm_getrecipemail();
+		
 		if(!$sdata){
 			return false;
 		}
@@ -168,7 +197,7 @@ class mg_fmail{
 
         $ev=new envelope($id);
         $subj=isset($GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_SUBJ"])?$this->config["fmail_subjprefix"]." ".$GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_SUBJ"]:$this->config["fmail_dsubject"];
-        $ev->ev_subject(strip_tags($subj));
+        $ev->ev_addsubject($subj);
 
 		$ev->ev_addrecipient((string)$sdata[1],(string)$sdata[0]);
 		$ev->ev_addsender($GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_ADDR"],$GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_NAME"]);
@@ -181,13 +210,13 @@ class mg_fmail{
 						   "SITE_URL",$GLOBALS["MANDRIGO"]["SITE"]["SITE_URL"],
 						   "TO",$sdata[0],
 						   "TO_EMAIL",$sdata[1],
-						   "FROM",$GLOBALS["MANDRIGO"]["VARS"]["MG_FMAILNAME"],
+						   "FROM",$GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_NAME"],
 						   "FROM_EMAIL",$GLOBALS["MANDRIGO"]["VARS"]["MG_FMAIL_ADDR"],
 						   "DATE",date($GLOBALS["MANDRIGO"]["SITE"]["DATE_FORMAT"],$GLOBALS["MANDRIGO"]["SITE"]["SERVERTIME"]),
 						   "TIME",date($GLOBALS["MANDRIGO"]["SITE"]["TIME_FORMAT"],$GLOBALS["MANDRIGO"]["SITE"]["SERVERTIME"]));
 		$body->tpl_parse($eparse_vars,"email",1,false);
 		$ev->ev_addbody($body->tpl_return("email"));
-
+		
         if(!$ev->ev_send()){
 			$GLOBALS["MANDRIGO"]["ERROR_LOGGER"]->el_adderror(151,"display");
 			return false;
@@ -197,10 +226,11 @@ class mg_fmail{
 		}
 		return $this->fm_display($status);
     }
-    function fm_getsenderemail(){
+    function fm_getrecipemail(){
      
         $to_name="";
         $to_email="";
+        
 		if(!$GLOBALS["MANDRIGO"]["VARS"]["EMAIL_ADDRESS"]||$GLOBALS["MANDRIGO"]["VARS"]["EMAIL_ADDRESS"]==BAD_DATA){
 			$GLOBALS["MANDRIGO"]["VARS"]["EMAIL_ADDRESS"]=1;
 		}
@@ -241,5 +271,33 @@ class mg_fmail{
 			$a1[$i]=$a2[$i-($size1)];
 		}
 		return $a1;
+	}
+    function fm_genlink($url_data){
+      	$link='';
+ 		if($GLOBALS['MANDRIGO']['SITE']['URL_FORMAT']==1){
+			$url=$GLOBALS['MANDRIGO']['SITE']['SITE_URL'].$GLOBALS['MANDRIGO']['SITE']['INDEX_NAME']."/";
+		}
+		else{
+		  	$url=$GLOBALS['MANDRIGO']['SITE']['SITE_URL'].$GLOBALS['MANDRIGO']['SITE']['INDEX_NAME']."?";
+		}  
+		$soq=count($url_data);
+		$i=0;
+		while($i<$soq){
+			if($GLOBALS['MANDRIGO']['SITE']['URL_FORMAT']==1){
+				$url.=$url_data[$i]."/".$url_data[$i+1];
+				$i+=2;
+				if($i<$soq){
+					$url.="/";
+				}
+			}
+			else{
+				$url.=$url_data[$i]."=".$url_data[$i+1];
+				$i+=2;
+				if($i<$soq){
+					$url.="&amp;";
+				}
+			}
+		}
+		return $url;
 	}
 }

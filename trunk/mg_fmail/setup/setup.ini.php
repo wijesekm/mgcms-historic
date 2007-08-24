@@ -55,7 +55,8 @@ $pkg["errors"]=array("sql"=>array(),
 $pkg["languages"]=array("en-US");
 
 $pkg_language_install["en-US"]=array(array("MG_FMAIL_IERROR","The message could not be sent.  Please fix the dotted fields below and try again."),
-									 array("MG_FMAIL_SENT","Message Sent!");
+									 array("MG_FMAIL_SENT","Message Sent!"),
+									 array("MG_FMAIL_NOEMAIL","No E-Mail Address or Invalid E-Mail.")
 									);
 
 $pkg["tables"]=array("fmail_data","fmail_list");

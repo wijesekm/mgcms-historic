@@ -38,11 +38,11 @@ class mg_fmail_hook{
 
     function mg_fmail_display_hook($i){
      	
-     	include_once("display.pkg.php");
+     	@include_once("display.pkg.php");
      
         $email = new mg_fmail($i);
         $string="";
-        if($GLOBALS['MANDRIGO']['VARS']['ACTION']=='P'){
+        if($GLOBALS['MANDRIGO']['VARS']['ACTION']=='p'){
          	$string=$email->fm_mail($i);
         }
         else{
