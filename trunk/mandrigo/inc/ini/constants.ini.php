@@ -52,6 +52,7 @@ define("TABLE_CACHE","cache");
 define("TABLE_CAPTCHA","captcha");
 define("TABLE_CAPTCHA_DATA","captchad");
 define("TABLE_ENVELOPE_DATA","envelopedata");
+define("TABLE_FEMAIL_LIST","fmail_list");
 
 //
 //Templates
