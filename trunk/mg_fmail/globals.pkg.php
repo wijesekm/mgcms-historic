@@ -34,4 +34,3 @@ if(!defined("START_MANDRIGO")){
 }
 
 define("TABLE_FMAIL_DATA","fmail_data");
-define("TABLE_FEMAIL_LIST","fmail_list");
