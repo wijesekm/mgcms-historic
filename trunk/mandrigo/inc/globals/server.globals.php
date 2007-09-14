@@ -51,11 +51,11 @@ if($GLOBALS["MANDRIGO"]["SITE"]["URL_FORMAT"]==1){
  
  	//detects php_self.  I have seen servers regester this as index.php/vars or just /vars
  	//which is why the check is there.
-    if(!ereg($index."/",$_SERVER["PHP_SELF"])){
-		$php_self=$index.$_SERVER["PHP_SELF"];
+    if(!ereg($index."/",$_SERVER["REQUEST_URI"])){
+		$php_self=$index.$_SERVER["REQUEST_URI"];
     }
 	else{
-		$php_self=$_SERVER["PHP_SELF"];
+		$php_self=$_SERVER["REQUEST_URI"];
     }
     //exploes the array into its basic chunks
     $raw_url = eregi_replace("^.*".$index."/p","p",$php_self);
