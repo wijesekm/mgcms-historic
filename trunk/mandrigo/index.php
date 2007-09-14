@@ -88,7 +88,7 @@ if($GLOBALS["MANDRIGO"]["SITE"]["SITE_STATUS"]==1||($bypass&&$GLOBALS["MANDRIGO"
 else{
   	$tpl = new template();
     $tpl->tpl_load($GLOBALS["MANDRIGO"]["CONFIG"]["TEMPLATE_PATH"].TPL_OFFSITE,"main");
-    $tpl->tpl_parse(false,"main");
+    $tpl->tpl_parse(false,"main",2,1);
     echo $tpl->tpl_return("main");
 }
 
