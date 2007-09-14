@@ -40,7 +40,7 @@ class _group{
 	var $g_data;
 	
 	function group($gid){
-		return $this->gp_setid($gid)
+		return $this->gp_setid($gid);
 	}
 
 	//#################################
@@ -196,7 +196,7 @@ class _group{
 	 	if(!$this->isgroup){
 			return false;
 		}
-		$ad_gp_data=$GLOBALS["MANDRIGO"]["AD"]->ad_groupinfo($this->name,array())
+		$ad_gp_data=$GLOBALS["MANDRIGO"]["AD"]->ad_groupinfo($this->name,array());
 	}	
 	
 	//
