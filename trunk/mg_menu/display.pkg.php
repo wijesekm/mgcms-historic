@@ -84,7 +84,7 @@ class mg_menu{
 				}
 				$tpl_new=new template();
 				$tpl_new->tpl_load($this->tpl->tpl_return('mitem'),'item',false);
-				$tpl_new->tpl_parse(array("ITEM_URL",$link,"ITEM",$name),'item',1,false);
+				$tpl_new->tpl_parse(array("ITEM_URL",$link,"ITEM",$name,"DESC",$subpage['pg_desc']),'item',1,false);
 				$mstring.=$tpl_new->tpl_return('item');			
 			}
 		}
