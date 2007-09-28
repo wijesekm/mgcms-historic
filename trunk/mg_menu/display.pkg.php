@@ -82,9 +82,13 @@ class mg_menu{
 					$link=$this->mm_genurl($subpage['pg_name']);
 					$name=$subpage['pg_fullname'];
 				}
+				$desc='';
+				if($this->config['show_desc']){
+					$desc=$subpage['pg_desc'];
+				}
 				$tpl_new=new template();
 				$tpl_new->tpl_load($this->tpl->tpl_return('mitem'),'item',false);
-				$tpl_new->tpl_parse(array("ITEM_URL",$link,"ITEM",$name,"DESC",$subpage['pg_desc']),'item',1,false);
+				$tpl_new->tpl_parse(array('ITEM_URL',$link,'ITEM',$name,'DESC',),'item',1,false);
 				$mstring.=$tpl_new->tpl_return('item');			
 			}
 		}
