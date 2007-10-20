@@ -83,12 +83,12 @@ class mg_menu{
 					$name=$subpage['pg_fullname'];
 				}
 				$desc='';
-				if($this->config['show_desc']){
+				if($this->config['show_desc']=="1"){
 					$desc=$subpage['pg_desc'];
 				}
 				$tpl_new=new template();
 				$tpl_new->tpl_load($this->tpl->tpl_return('mitem'),'item',false);
-				$tpl_new->tpl_parse(array('ITEM_URL',$link,'ITEM',$name,'DESC',),'item',1,false);
+				$tpl_new->tpl_parse(array('ITEM_URL',$link,'ITEM',$name,'DESC',$desc),'item',1,false);
 				$mstring.=$tpl_new->tpl_return('item');			
 			}
 		}
@@ -108,7 +108,7 @@ class mg_menu{
 	//
 	//Generates a navigation URL given the page and the page_name
 	//	
-	function mm_genurl($page,$page_name){
+	function mm_genurl($page){
 		if($GLOBALS['MANDRIGO']['SITE']['URL_FORMAT']==1){
 			return $GLOBALS['MANDRIGO']['SITE']['SITE_URL'].$GLOBALS['MANDRIGO']['SITE']['INDEX_NAME'].'/p/'.$page; 
 		}
