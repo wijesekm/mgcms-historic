@@ -1,0 +1,18 @@
+0.7.0
+1) Updated to work with mandrigo version 0.7.0
+2) Updated to use new account classes instead of just database so it will work with AD/LDAP
+
+0.6.0
+1) Updated to work with mandrigo version 0.6.0
+2) Added support for about second for groups
+3) Added support for title section for users
+4) Added support for group and user icons
+5) Better support of IM protocol link generation
+
+1.1
+1) Will now display e-mail addresses even if the form mail page isn't there
+
+1.0
+1) Initial revision
+2) Supports display of user and group profiles
+3) Supports template engine

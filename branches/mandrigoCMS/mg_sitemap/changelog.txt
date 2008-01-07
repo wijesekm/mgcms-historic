@@ -1,0 +1,13 @@
+0.7.0
+1) Updated to utilize new database functionality
+2) Updated to be compatible with mandrigo version 0.7.0
+3) Updated to utilize new templating system.  Will no longer need a database table.
+
+0.6.0
+1) Updated to be compatible with mandrigo version 0.6.0
+2) Fixed a bug where when if a subpage listed one of its parent pages as a subpage the script would go into an infinite loop.  Bug #1427603
+
+1.0
+1) Initial revision
+2) Supports display of site_map from the mg_page_data table
+3) Supports template engine

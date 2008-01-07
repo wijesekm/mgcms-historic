@@ -1,0 +1,35 @@
+<?php
+$language_init=array("lang_name"=>"en",
+						 "lang_type"=>"L",
+						 "lang_charset"=>"utf-8",
+						 "lang_encoding"=>"iso-8859-1",
+						 "lang_maintainer"=>"Kevin Wijesekera",
+						 "lang_email"=>"k_wijesekera@yahoo.com",
+						 "lang_web"=>"http://kevinwijesekera.net",
+						 "lang_ver"=>"0.0.0.7"
+						);
+
+
+$language_vals=array(array("LI_TITLE","Login","mg_login","0"),
+						 array("LI_BADCRED","Incorrect username or password!","mg_login","0"),
+						 array("LI_NOREG","You're Username and Password are correct but mandrigo couldnt not find a database record for you and Automatic Regestration is disabeled.  Please contact the webmaster of this site.","mg_login","0"),
+						 array("LI_INERROR","Internal Error","mg_login","0"),
+						 array("ADMIN_REMOVE","Remove Package? All Data Will Be Lost!","mg_admin",""),
+						 array("PK_PACKAGEENABELED","Package Enabeled","mg_packages","-2"),
+						 array("PK_PACKAGEDISABLED","Package Disabled","mg_packages","-2"),
+						 array("PK_REMOVED","Package Removed!","mg_admin","0"),
+						 array("DBREMOVEERROR","Could not remove tables! Installer will halt!","mg_packages","-2"),
+						 array("PK_DBERROR","Could not add tables required by package! Installer will halt!","mg_packages","-2"),
+						 array("PKG_LANGERROR","Could not update the language table! Installer will halt!","mg_packages","-2"),
+						 array("PK_ENABLE","Enable","mg_admin","0"),
+						 array("PK_LOGERROR","Could not update the log files! Installer will halt!","mg_packages","-2"),
+						 array("PK_DISABLE","Disable","mg_admin","0"),
+						 array("PK_NEEDS_UPDATING","Needs Updating","mg_admin","0"),
+						 array("PK_UNKNOWN","Unknown","mg_admin","0"),
+						 array("PK_UP_TO_DATE","Up-To-Date","mg_admin","0"),
+						 array("LANG_ADDERR","Could not add Language!","mg_packages","-3"),
+						 array("LANG_DELERR","Could not remove Language!","mg_packages","-3"),
+						 array("LANG_NOREMOVE","You are not allowed to remove the default language!","mg_packages","-3"),
+						 array("LANG_REMOVED","Language Removed!","mg_packages","-3"),
+						 array("LANG_ADDED","Language Added!","mg_packages","-3"),
+						 );

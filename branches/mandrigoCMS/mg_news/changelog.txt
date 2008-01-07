@@ -1,0 +1,11 @@
+0.6.0
+1) Updated to support mandrigo version 0.6.0
+2) Support for rss1.0,2.0 and atom feeds
+3) Full support for comments system
+4) Support for captcha image human recognition
+
+1.0
+1) Initial revision
+2) Supports displaying of news and comments but does not have the admin tool for comment/news adding
+3) Supports template engine
+4) Support for the profile package

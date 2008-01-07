@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<error_log>
+	<msg>
+		<id>1</id>
+		<value>&lt;h3 style="margin: 0px;"&gt;LDAP Errors&lt;/h3&gt;</value>
+	</msg>
+	<msg>
+		<id>2</id>
+		<value>
+			Could not connect to the database.
+		</value>
+	</msg>
+	<msg>
+		<id>3</id>
+		<value>
+			Given control user and password are invalid!
+		</value>
+	</msg>
+</error_log>

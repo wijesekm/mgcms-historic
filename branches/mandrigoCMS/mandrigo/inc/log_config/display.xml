@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+				<error_log>		
+				
+						<msg>
+							<id>1</id>
+							<value>
+								&lt;h3 style="margin: 0px;"&gt;Display Errors&lt;/h3&gt;
+							</value>
+						</msg>
+					
+						<msg>
+							<id>2</id>
+							<value>
+								Data for the current page does not exist in mandrigo CMS.  Please check the spelling of the page name or go backthe sites index and look for the correct page.
+							</value>
+						</msg>
+					
+						<msg>
+							<id>3</id>
+							<value>
+								The requested page exists but has no display settings set and therefore is blank.
+							</value>
+						</msg>
+					
+						<msg>
+							<id>4</id>
+							<value>
+								The requested page exists but had errors during the page generation process and therefore is blank.
+							</value>
+						</msg>
+						<msg>
+							<id>5</id>
+							<value>
+								The requested page is using illegal variables or functions in a template code block.  To see the page please remove these.
+							</value>
+						</msg>	
+						<msg>
+							<id>6</id>
+							<value>
+								The requested page is cached but the cache could not be read.  This is usually caused by permissions problems.
+							</value>
+						</msg>
+						<msg>
+							<id>7</id>
+							<value>
+								The requested page is cached but the cache could not be wrote to.  This is usually caused by permissions problems.
+							</value>
+						</msg>								
+						<msg>
+							<id>100</id>
+							<value>
+								The mg_pcontent package could not load the template for the current page hook.
+							</value>
+						</msg>
+		
+						<msg>
+							<id>110</id>
+							<value>
+								The mg_sitemap package could not load the template for the current page hook.
+							</value>
+						</msg>
+					
+						<msg>
+							<id>120</id>
+							<value>
+								The mg_news package could not load the template for the current page hook.
+							</value>
+						</msg>
+						<msg>
+							<id>1000</id>
+							<value>
+								The mga_pcontent package could not be loaded.
+							</value>
+						</msg>
+						<msg>
+							<id>1001</id>
+							<value>
+								The mga_packages package could not be loaded.
+						</msg>
+						<msg>
+							<id>1002</id>
+							<value>
+								The mga_language package could not be loaded.
+						</msg>
+						<msg>
+							<id>2000</id>
+							<value>
+								The mga_package package could not load the template for the current page hook.
+							</value>
+						</msg>					
+					<msg>
+							<id>2001</id>
+							<value>
+								The mga_language package could not load the template for the current page hook.
+							</value>
+						</msg>
+					</error_log>
