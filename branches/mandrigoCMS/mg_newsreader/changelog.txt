@@ -1,9 +1,0 @@
-0.7.0
-1) Renamed to mg_newsreader
-2) Updated to work with mandrigo v 0.7.0
-3) Updated to read RSS and ATOM feeds
-4) Updated for no-hassle mandrigo news feed reading
-
-0.6.0
-1) Initial revision
-2) Supports display of news feeds
