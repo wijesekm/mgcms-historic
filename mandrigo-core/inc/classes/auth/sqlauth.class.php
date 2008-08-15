@@ -29,23 +29,29 @@ if(!defined('STARTED')){
 class sqlauth extends auth{
 	
 	final public function auth_authenticate($username,$password,$encoding='md5'){
-		eval('$act=new '.$GLOBALS['MG']['SITE']['ACCOUNT_TYPE'].'();');
-		$user=$act->act_load($username);
+		if($username!=$GLOBALS['MG']['USER']['UID']){
+			trigger_error('(SQLAUTH): Script did not initialize GLOBALS array with new user data for account!',E_USER_WARNING);
+			return false;
+		}
+		if(!$GLOBALS['MG']['USER']['PASSWORD']){
+			trigger_error('(SQLAUTH): No user password set in database!',E_USER_NOTICE);
+			return false;
+		}
 		switch($encoding){
 			case 'smd5':
-				return $this->auth_smd5comp($password,$user['PASSWORD']);
+				return $this->auth_smd5comp($password,$GLOBALS['MG']['USER']['PASSWORD']);
 			break;
 			case 'sha':
-				return $this->auth_shacomp($password,$user['PASSWORD']);
+				return $this->auth_shacomp($password,$GLOBALS['MG']['USER']['PASSWORD']);
 			break;
 			case 'ssha':
-				return $this->auth_sshacomp($password,$user['PASSWORD']);
+				return $this->auth_sshacomp($password,$GLOBALS['MG']['USER']['PASSWORD']);
 			break;
 			case 'md5':
-				return $this->auth_md5comp($password,$user['PASSWORD']);
+				return $this->auth_md5comp($password,$GLOBALS['MG']['USER']['PASSWORD']);
 			break;
 			default:
-				return $this->auth_cryptcomp($password,$user['PASSWORD'],$encoding);
+				return $this->auth_cryptcomp($password,$GLOBALS['MG']['USER']['PASSWORD'],$encoding);
 			break;
 		};
 		return false;
