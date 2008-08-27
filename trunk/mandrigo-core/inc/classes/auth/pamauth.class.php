@@ -30,13 +30,12 @@ if(!defined('STARTED')){
 class pamauth extends auth{
 	
 	final public function auth_authenticate($username,$password,$encoding='md5'){
-
 		$desc = array(
                 0 => array('pipe','r'),
                 1 => array('pipe','w'),
                 2 => array('file',$GLOBALS['MG']['CFG']['PATH']['LOG'].'pam.log','a')
         );
-        if(!$proc = proc_open($GLOBALS['MG']['CFG']['PATH']['INC'].'/c/pam_auth -o -1',$desc, $pipes)){
+        if(!$proc = proc_open($GLOBALS['MG']['CFG']['PATH']['INC'].'c/pam_auth -o -1',$desc, $pipes)){
 			trigger_error('(PAMAUTH): Could not open new process!',E_USER_ERROR);
 			return false;
 		}
