@@ -29,7 +29,6 @@ if(!defined('STARTED')){
 
 
 function mg_checkACL($page,$acl){
-	echo $page.$acl;
 	if(is_array($GLOBALS['MG']['USER']['ACL'][$page])){
 		if(isset($GLOBALS['MG']['USER']['ACL'][$page][$acl])){
 			if((boolean)$GLOBALS['MG']['USER']['ACL'][$page][$acl]===true){
