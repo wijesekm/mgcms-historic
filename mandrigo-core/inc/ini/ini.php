@@ -44,7 +44,8 @@ $load=array(array('template','class','/classes/'),
 			array('session','class','/classes/auth/'),
 			array('time','class','/classes/'),
 			array('clean','ini','/ini/'),
-			array('page','class','/classes/'));
+			array('page','class','/classes/'),
+			array('funct','ini','/ini/'));
 mginit_loadPackage($load);
 
 
@@ -200,84 +201,4 @@ function mginit_loadCustomPackages($pkgs){
 			}
 		}
 	}
-}
-
-function mg_checkACL($page,$acl){
-	if(is_array($GLOBALS['MG']['USER']['ACL'][$page])){
-		if($GLOBALS['MG']['USER']['ACL'][$page][$acl]===true){
-			return true;
-		}		
-	}
-	else{
-		if($GLOBALS['MG']['USER']['ACL']['*'][$acl]===true){
-			return true;
-		}
-	}
-	return false;
-}
-
-function mg_mergeArrays($ar1,$ar2){
-	$keys=array_keys($ar2);
-	$soq=count($ar2);
-	for($i=0;$i<$soq;$i++){
-		$ar1[$keys[$i]]=$ar2[$keys[$i]];
-	}
-	return $ar1;
-}
-
-function mg_genUrl($urlParts,$base=false,$ssl=false){
-	if($GLOBALS['MG']['SITE']['URI_SSL']=='always'||($GLOBALS['MG']['SITE']['URI_SSL']=='allow'&&$ssl)){
-		$url='https://';
-	}
-	else{
-		$url='http://';
-	}
-	if(!$base){
-		$url.=$GLOBALS['MG']['SITE']['URI'];
-	}
-	else{
-		$url.=$base;
-	}
-	$url.='/';
-	
-	switch($GLOBALS['MG']['SITE']['URLTYPE']){
-		case 3:
-			$url.=implode('/',$urlParts);
-		break;
-		case 2:
-			$url.=$GLOBALS['MG']['SITE']['INDEX_NAME'].'/'.implode('/',$urlParts);
-		break;
-		case 1:
-			$url.='?';
-			$soq=count($urlParts);
-			for($i=0;$i<$soq;$i+=2){
-				$url.=$urlParts[$i].'='.$urlParts[$i+1];
-				if($urlParts+2<$soq){
-					$url.='$amp;';
-				}
-			}
-		break;
-	};
-	return $url;
-}
-
-function mg_formatTarget($url){
-	$url=ereg_replace('\/','[SLASH]',$url);
-	$url=ereg_replace('\?','[Q]',$url);
-	$url=ereg_replace('\&amp;','[AND]',$url);
-	$url=ereg_replace('\&','[AND]',$url);
-	return $url;
-}
-
-function mg_redirectToLogin(){
-	if(!$GLOBALS['MG']['SITE']['LOGIN_URL']){
-		return false;
-	}
-	if(isset($_SERVER['HTTPS'])&&$_SERVER['HTTPS']!='off'){
-		$url='https://'.$_SERVER['SERVER_NAME'].'/'.$_SERVER['REQUEST_URI'];
-	}
-	else{
-		$url='http://'.$_SERVER['SERVER_NAME'].'/'.$_SERVER['REQUEST_URI'];
-	}
-	return $GLOBALS['MG']['SITE']['LOGIN_URL'].mg_formatTarget($url);
 }
