@@ -54,12 +54,12 @@ class login_manager{
 					'DOM'=>$GLOBALS['MG']['SITE']['COOKIE_DOM'],
 				);
 				$ses->session_stop($cdta);
-				$this->lm_redirect();				
+				mg_redirectTarget($GLOBALS['MG']['GET']['TARGET']);				
 			break;
 			case 'login':
 			default:
 				if(!$GLOBALS['MG']['USER']['NOAUTH']){
-					$this->lm_redirect();
+					mg_redirectTarget($GLOBALS['MG']['GET']['TARGET']);
 				}
 				if($GLOBALS['MG']['POST']['LOGIN_NAME']&&$GLOBALS['MG']['POST']['LOGIN_PASSWORD']){
 					return $this->lm_doLogin();
@@ -137,18 +137,11 @@ class login_manager{
 					}
 					else{
 						$GLOBALS['MG']['SQL']->sql_dataCommands(DB_INSERT,array(TABLE_PREFIX.'auth_log'),array('auth_uid','auth_ip','auth_time'),array($GLOBALS['MG']['POST']['LOGIN_NAME'],$_SERVER['REMOTE_ADDR'],$GLOBALS['MG']['SITE']['TIME']));
-						$this->lm_redirect();
+						mg_redirectTarget($GLOBALS['MG']['GET']['TARGET']);
 					}
 				}			
 			}
 		}
 		return $this->lm_loginTemplate();
-	}
-
-	private function lm_redirect(){
-		$GLOBALS['MG']['GET']['TARGET']=ereg_replace('\[SLASH\]','/',$GLOBALS['MG']['GET']['TARGET']);
-		$GLOBALS['MG']['GET']['TARGET']=ereg_replace('\[Q\]','?',$GLOBALS['MG']['GET']['TARGET']);
-		$GLOBALS['MG']['GET']['TARGET']=ereg_replace('\[AND\]','&amp;',$GLOBALS['MG']['GET']['TARGET']);
-		header('Location: '.$GLOBALS['MG']['GET']['TARGET']);
 	}
 }
