@@ -245,14 +245,14 @@ class mysql extends sql{
 		}
 		$query.=$this->sql_formatTable($table).$this->sql_formatConds($params).' ';
 		if($orderby){
-			$query.$this->sql_formatOrderBy($orderby[0],$orderby[1]).' ';
+			$query.=$this->sql_formatOrderBy($orderby[0],$orderby[1]).' ';
 		}
 		if($this->groupBy['allow']){
 			$query.=$this->sql_formatGroupBy($this->groupBy['field']).' ';
 			$query.=$this->sql_formatHaving($having[0],$having[1],$having[2],$having[3]).' ';
 		}
 		if($limit){
-			$query.$this->sql_formatLimit($limit[0],$limit[1]).' ';
+			$query.=$this->sql_formatLimit($limit[0],$limit[1]).' ';
 		}
 		$query.=';';
 		if(!$result=$this->sql_query($query)){
@@ -534,8 +534,8 @@ class mysql extends sql{
 	}
 	
 	final protected function sql_formatLimit($start,$stop){
-		if($start){
-			return 'LIMIT '.$this->sql_escape($start).', '.$this->sql_escape($end);
+		if($start!==false){
+			return 'LIMIT '.$this->sql_escape($start).', '.$this->sql_escape($stop);
 		}
 		return '';
 	}
