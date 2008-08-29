@@ -57,4 +57,15 @@ class sqlauth extends auth{
 		return false;
 	}
 	
+	final public function auth_changePass($uid,$newPass,$encoding='md5'){
+		$encPass=$this->act_encryptpasswd($newPass,$encoding);
+		$params=array(array(false,false,'user_uid','=',$uid));
+		$dta=array(array('user_password',$encPass));
+		$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['SITE']['ACCOUNT_DB']);
+		if(!$c=$GLOBALS['MG']['SQL']->sql_dataCommands(DB_UPDATE,array($GLOBALS['MG']['SITE']['ACCOUNT_TBL']),$params,$dta)){
+			trigger_error('(SQLAUTH): Could not set new password!',E_USER_ERROR);
+		}
+		$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['CFG']['SQL']['DB']);
+		return $c;
+	}	
 }
