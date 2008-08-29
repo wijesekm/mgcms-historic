@@ -20,7 +20,13 @@ INSERT INTO `mg_lang` (`lang_callname`, `lang_value`, `lang_id`) VALUES
 ('LM_BAD_ACCOUNT', '<p class="error">Account requested does not exist!</p>', 1),
 ('LM_BAD_PASSWORD', '<p class="error">Bad Password!</p>', 1),
 ('LM_INT_ERROR', '<p class="error">Internal Error</p>', 1),
-('LM_BANNED', '<p class="error">You have been banned from this website by an administrator.</p>', 1);
+('LM_BANNED', '<p class="error">You have been banned from this website by an administrator.</p>', 1),
+('AM_ADD_BADUID', '<p class="error">User Add: The account UID you entered contains invalid characters or was blank.</p>', 1),
+('AM_ADD_BADTYPE', '<p class="error">Add User: The account type specified is not supported by this installation of mandrigo!</p>', 1),
+('AM_ADD_UIDTAKEN', '<p class="error">User Add: The UID specified is already registered to another user!</p>', 1),
+('AM_INT_ERROR', '<p class="error">Internal Error!</p>', 1),
+('AM_ADD_ADDED', '<p class="success">Account Added!</p>', 1),
+('AM_DEL_DELETED', '<p class="success">Account Deleted!</p>', 1);
 
 --
 -- Initial data for `mg_packages`
@@ -86,4 +92,8 @@ INSERT INTO `mg_vars` (`var_callname`, `var_getname`, `var_type`, `var_clean`, `
 ('REMEMBER_SESSION', 'remember_session', 'POST', 'boolean,0,0,1,0', '0', ''),
 ('QUERY', 'q', 'GET', ',1,0,1,0', '', ''),
 ('TARGET', 't', 'GET', ',1,0,1,0', 'http:[SLASH][SLASH]www.mydomain.net[SLASH]', ''),
-('UID', 'uid', 'GET', 'username,1,0,1,0', '', '');
+('UID', 'uid', 'GET', 'username,1,0,1,0', '', ''),
+('AM-ADD-UID', 'am-add-uid', 'POST', 'username,1,0,1,0', '', ''),
+('AM-ADD-NAME', 'am-add-username', 'POST', 'name,1,0,1,0', '', ''),
+('AM-ADD-EMAIL', 'am-add-email', 'POST', 'e-mail,1,0,1,0', '', ''),
+('AM-ADD-ACTYPE', 'am-add-actype', 'POST', 'letter,1,0,0,0', '', '');
