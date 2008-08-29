@@ -34,13 +34,13 @@ class account_mgr{
 	const TPL_NAME	= 'account_mgr.tpl';
 	
 	public function __construct(){
-		$this->vars=array('LM_MSG'=>'');
+		$this->vars=array();
 		eval('$this->mgr=new '.$GLOBALS['MG']['SITE']['ACCOUNT_TYPE'].'();');
 		$GLOBALS['MG']['GET']['QUERY']=(eregi("^[a-z0-9\\@\*$._-]+$",$GLOBALS['MG']['GET']['QUERY']))?$GLOBALS['MG']['GET']['QUERY']:'';
 	}
 	
 	public function am_titleHook(){
-		if($GLOBALS['MG']['GET']['UID']){
+		if($GLOBALS['MG']['GET']['UID']&&$GLOBALS['MG']['GET']['ACTION']!='delete'){
 			return $GLOBALS['MG']['PAGE']['NAME'].' ( '.$GLOBALS['MG']['GET']['UID'].' )- '.$GLOBALS['MG']['SITE']['NAME'];	
 		}
 		return $GLOBALS['MG']['PAGE']['NAME'].' - '.$GLOBALS['MG']['SITE']['NAME'];
@@ -54,13 +54,32 @@ class account_mgr{
 			if($GLOBALS['MG']['SITE']['AM_PROFILES_PRIVATE']=='1'&&$GLOBALS['MG']['GET']['UID']!=$GLOBALS['MG']['USER']['UID']&&!mg_checkACL($GLOBALS['MG']['PAGE']['PATH'],'admin')){
 				return 403;
 			}
-			return $this->am_profile();
+			switch($GLOBALS['MG']['GET']['ACTION']){
+				case 'delete':
+					if(!mg_checkACL($GLOBALS['MG']['PAGE']['PATH'],'admin')){
+						return 403;
+					}
+					return $this->am_delUser();
+				break;
+				default:
+					return $this->am_profile();
+				break;
+			}
+			
 		}
 		else{
 			if($GLOBALS['MG']['SITE']['AM_PROFILES_PRIVATE']=='1'&&!mg_checkACL($GLOBALS['MG']['PAGE']['PATH'],'admin')){
 				return 403;
 			}
-			return $this->am_genList();
+			if($GLOBALS['MG']['GET']['ACTION']=='add'){
+				if(!mg_checkACL($GLOBALS['MG']['PAGE']['PATH'],'admin')){
+					return 403;
+				}
+				return $this->am_addUser();
+			}
+			else{
+				return $this->am_genList();
+			}
 		}
 		return false;
 	}
@@ -69,15 +88,46 @@ class account_mgr{
 		return $this->vars;
 	}
 	
+	private function am_delUser(){
+		if(!$GLOBALS['MG']['GET']['UID']){
+			trigger_error('(ACCOUNT_MGR): No UID specified for delete!',E_USER_NOTICE);
+			return $this->am_genList($GLOBALS['MG']['LANG']['AM_INT_ERROR']);
+		}
+		if(strtolower($GLOBALS['MG']['GET']['UID'])==strtolower($GLOBALS['MG']['SITE']['DEFAULT_ACT'])){
+			trigger_error('(ACCOUNT_MGR): Cannot delete default account!',E_USER_NOTICE);
+			return $this->am_genList($GLOBALS['MG']['LANG']['AM_INT_ERROR']);
+		}
+		if(!$this->mgr->act_remove($GLOBALS['MG']['GET']['UID'])){
+			return $this->am_genList($GLOBALS['MG']['LANG']['AM_INT_ERROR']);
+		}
+		return $this->am_genList($GLOBALS['MG']['LANG']['AM_DEL_DELETED']);
+	}
+	
+	private function am_addUser(){
+		if(!$GLOBALS['MG']['POST']['AM-ADD-UID']){
+			return $this->am_genList($GLOBALS['MG']['LANG']['AM_ADD_BADUID']);
+		}
+		if(!in_array($GLOBALS['MG']['POST']['AM-ADD-ACTYPE'],$GLOBALS['MG']['CFG']['AUTH']['SUPPORTED'])){
+			return $this->am_genList($GLOBALS['MG']['LANG']['AM_ADD_BADTYPE']);	
+		}
+		if($this->mgr->act_isAccount($GLOBALS['MG']['POST']['AM-ADD-UID'])){
+			return $this->am_genList($GLOBALS['MG']['LANG']['AM_ADD_UIDTAKEN']);
+		}
+		if(!$this->mgr->act_add($GLOBALS['MG']['POST']['AM-ADD-UID'],$GLOBALS['MG']['POST']['AM-ADD-NAME'],$GLOBALS['MG']['POST']['AM-ADD-EMAIL'],$GLOBALS['MG']['POST']['AM-ADD-ACTYPE'])){
+			return $this->am_genList($GLOBALS['MG']['LANG']['AM_INT_ERROR']);
+		}
+		return $this->am_genList($GLOBALS['MG']['LANG']['AM_ADD_ADDED']);
+	}
+	
 	private function am_profile(){
 		
 	}
 	
-	private function am_genList($msg=''){
+	private function am_genList($msg='',$ob='ASC'){
 		$tpl=new template();
 		
 		$start=$GLOBALS['MG']['GET']['PAGE_NUMBER']*$GLOBALS['MG']['SITE']['AM_UPP'];
-		$users=$this->mgr->act_load(false,ereg_replace('\*','%',$GLOBALS['MG']['GET']['QUERY']),$start,$GLOBALS['MG']['SITE']['AM_UPP'],false,'ASC');
+		$users=$this->mgr->act_load(false,ereg_replace('\*','%',$GLOBALS['MG']['GET']['QUERY']),$start,$GLOBALS['MG']['SITE']['AM_UPP'],false,$ob);
 		$length=$this->mgr->act_getLastLength();
 
 		$actstr='';
@@ -95,9 +145,9 @@ class account_mgr{
 				$actstr.=$tpl->tpl_return('actitem');			
 			}
 		}
-		
+
 		$tpl->tpl_load($GLOBALS['MG']['CFG']['PATH']['TPL'].$GLOBALS['MG']['LANG']['NAME'].'/'.account_mgr::TPL_NAME,'actmgrmain');
-		$this->vars=mg_mergeArrays($this->vars,array('LM_MSG'=>$msg,'ACCOUNTS'=>$actstr,'NAVBAR'=>$this->am_navBar($length)));
+		$this->vars=mg_mergeArrays($this->vars,array('AM_MSG'=>$msg,'ACCOUNTS'=>$actstr,'NAVBAR'=>$this->am_navBar($length)));
 		return $tpl->tpl_return('actmgrmain');
 	}
 
