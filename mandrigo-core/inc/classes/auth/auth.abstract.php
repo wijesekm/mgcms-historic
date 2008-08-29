@@ -30,7 +30,7 @@ abstract class auth{
 	
 	abstract public function auth_authenticate($username,$password,$encoding='md5');
 	
-	abstract public function auth_changePass($newPass);
+	abstract public function auth_changePass($uid,$newPass,$encoding='md5');
 
     protected function act_randstring($size){
         $str = "";
