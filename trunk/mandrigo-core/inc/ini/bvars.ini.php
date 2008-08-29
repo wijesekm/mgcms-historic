@@ -21,11 +21,10 @@
  along with this program.  If not, see http://www.gnu.org/licenses/.
  ###################################
  */
- 
-/**
-* Format array('VAR NAME','LOAD NAME','LOAD CLEAN','TYPE','DEFAULT')
-* $vars=array(array('LIST ID','id',array('number',false,false,true,false),'GET','1'));
-*/
+
+if(!defined('STARTED')){
+	die();
+}
 
 mginit_loadVars();
 
