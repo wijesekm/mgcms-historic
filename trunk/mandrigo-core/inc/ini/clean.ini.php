@@ -88,6 +88,8 @@ function mginit_cleanVar($value,$clean){
 }
 
 function mginit_ALS($value){
-	$value.='/';
-	return ereg_replace('//','/',$value);
+	if(substr($value,strlen($value)-1,1)!='/'){
+		return $value.'/';
+	}
+	return $value;
 }
