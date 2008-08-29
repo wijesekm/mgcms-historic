@@ -30,84 +30,118 @@ if(!defined('STARTED')){
 class sqlact extends accounts{
 
 	private $user;
+	private $lastLength;
 
-	final public function act_load($uid){
+	public function __construct(){
 		$this->user=array();
+		$this->lastLength=0;
+	}
+
+	final public function act_load($uid=false,$search=false,$start=false,$length=false,$acl=true,$ob='ASC'){
+		
+		$parms=array();
+		$additParams=array();
+		if($uid){
+			$parms[]=array(false,false,'user_uid','=',$uid);
+		}
+		else if($search){
+			$parms[]=array(DB_LIKE,false,'user_uid',$search);
+		}
+		else{
+			$parms=false;
+		}
+		
+		if($start!==false){
+			$additParams['limit']=array($start,$length);
+		}
+		$additParams['orderby']=array(array('user_uid'),array($ob));
+		
 		$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['SITE']['ACCOUNT_DB']);
-		if(!$dta=$GLOBALS['MG']['SQL']->sql_fetchArray(array($GLOBALS['MG']['SITE']['ACCOUNT_TBL']),array(),array(array(false,false,'user_uid','=',$uid)))){
+		if(!$users=$GLOBALS['MG']['SQL']->sql_fetchArray(array($GLOBALS['MG']['SITE']['ACCOUNT_TBL']),array(),$parms,DB_ASSOC,DB_ALL_ROWS,$additParams)){
 			trigger_error('(SQLACT): Could not load user data',E_USER_ERROR);
 			return false;
 		}
-		$dta=$dta[0];
-		$keys=array_keys($dta);
-		$soq=count($dta);
-		for($i=0;$i<$soq;$i++){
-			$nkey=strtoupper(ereg_replace('user_','',$keys[$i]));
-			switch($nkey){
-				case 'BANNED':
-					$this->user=array_merge_recursive($this->user,array('BANNED'=>(boolean)$dta[$keys[$i]]));
-				break;
-				case 'NAME':
-				case 'FULLNAME':
-					$this->user=array_merge_recursive($this->user,array('NAME'=>explode(';',$dta[$keys[$i]])));
-				break;
-				default:
-					$this->user=array_merge_recursive($this->user,array($nkey=>$dta[$keys[$i]]));
-				break;
+		
+		$this->lastLength=$GLOBALS['MG']['SQL']->sql_numRows(array($GLOBALS['MG']['SITE']['ACCOUNT_TBL']),$parms);
+
+		for($i=0;$i<$users['count'];$i++){
+			$dta=$users[$i];
+			$keys=array_keys($dta);
+			$soq=count($dta);
+			for($j=0;$j<$soq;$j++){
+				$nkey=strtoupper(ereg_replace('user_','',$keys[$j]));
+				switch($nkey){
+					case 'BANNED':
+						$this->user[$dta['user_uid']]['BANNED']=(boolean)$dta[$keys[$j]];
+					break;
+					case 'NAME':
+					case 'FULLNAME':
+						$this->user[$dta['user_uid']]['NAME']=explode(';',$dta[$keys[$j]]);
+					break;
+					default:
+						$this->user[$dta['user_uid']][$nkey]=$dta[$keys[$j]];
+					break;
+				}
 			}
 		}
 		$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['CFG']['SQL']['DB']);
-		$this->act_getGroupMembership($uid);
-		$this->act_getACL();
-		
+		for($i=0;$i<$users['count'];$i++){
+			if($acl){
+				$this->act_getGroupMembership($users[$i]['user_uid']);
+				$this->act_getACL($users[$i]['user_uid']);				
+			}
+		}
 		return $this->user;
 	}
 	
+	final public function act_getLastLength(){
+		return $this->lastLength;
+	}
 	
 	final private function act_getGroupMembership($uid){
 		$groups=$GLOBALS['MG']['SQL']->sql_fetchArray(array(TABLE_PREFIX.'groups'),false,array(array(DB_LIKE,array(DB_OR),'group_members','%;'.$uid.';%'),array(false,false,'group_members','=','*')));
-		$this->user['GROUPS']['COUNT']=$groups['count'];
+		$this->user[$uid]['GROUPS']['COUNT']=$groups['count'];
 		for($i=0;$i<$groups['count'];$i++){
 			if($groups[$i]['group_members']=='*'&&$uid==$GLOBALS['MG']['SITE']['DEFAULT_ACT']){
-				$this->user['GROUPS']['COUNT']--;
+				$this->user[$uid]['GROUPS']['COUNT']--;
 			}
 			else{
-				$this->user['GROUPS'][]=$groups[$i]['group_gid'];	
+				$this->user[$uid]['GROUPS'][]=$groups[$i]['group_gid'];	
 			}	
 		}
-		$this->user['GROUPS'][]='*';
-		$this->user['GROUPS']['COUNT']++;
+		$this->user[$uid]['GROUPS'][]='*';
+		$this->user[$uid]['GROUPS']['COUNT']++;
 	}
 	
-	final private function act_getACL(){
-		$this->user['ACL']=array();
-		for($i=0;$i<$this->user['GROUPS']['COUNT'];$i++){
-			$acls=$GLOBALS['MG']['SQL']->sql_fetcharray(array(TABLE_PREFIX.'acl'),false,array(array(false,false,'acl_group','=',$this->user['GROUPS'][$i])));	
+	final private function act_getACL($uid){
+		$this->user[$uid]['ACL']=array();
+		for($i=0;$i<$this->user[$uid]['GROUPS']['COUNT'];$i++){
+			$acls=$GLOBALS['MG']['SQL']->sql_fetcharray(array(TABLE_PREFIX.'acl'),false,array(array(false,false,'acl_group','=',$this->user[$uid]['GROUPS'][$i])));	
 			for($k=0;$k<$acls['count'];$k++){
 				if($acls[$k]['acl_page']){
 					if(!is_array($this->user['ACL'][$acls[$k]['acl_page']])){
-						$this->user['ACL'][$acls[$k]['acl_page']]=array();
-						$this->user['ACL'][$acls[$k]['acl_page']]['read']=false;
-						$this->user['ACL'][$acls[$k]['acl_page']]['modify']=false;
-						$this->user['ACL'][$acls[$k]['acl_page']]['write']=false;
-						$this->user['ACL'][$acls[$k]['acl_page']]['admin']=false;
+						$this->user[$uid]['ACL'][$acls[$k]['acl_page']]=array();
+						$this->user[$uid]['ACL'][$acls[$k]['acl_page']]['read']=false;
+						$this->user[$uid]['ACL'][$acls[$k]['acl_page']]['modify']=false;
+						$this->user[$uid]['ACL'][$acls[$k]['acl_page']]['write']=false;
+						$this->user[$uid]['ACL'][$acls[$k]['acl_page']]['admin']=false;
 					}
 					
-					if($this->user['ACL'][$acls[$k]['acl_page']]['admin']==true||(boolean)$acls[$k]['acl_admin']==true){
-						$this->user['ACL'][$acls[$k]['acl_page']]['admin']=true;
-						$this->user['ACL'][$acls[$k]['acl_page']]['write']=true;
-						$this->user['ACL'][$acls[$k]['acl_page']]['modify']=true;
-						$this->user['ACL'][$acls[$k]['acl_page']]['read']=true;				
+					if($this->user[$uid]['ACL'][$acls[$k]['acl_page']]['admin']==true||(boolean)$acls[$k]['acl_admin']==true){
+						$this->user[$uid]['ACL'][$acls[$k]['acl_page']]['admin']=true;
+						$this->user[$uid]['ACL'][$acls[$k]['acl_page']]['write']=true;
+						$this->user[$uid]['ACL'][$acls[$k]['acl_page']]['modify']=true;
+						$this->user[$uid]['ACL'][$acls[$k]['acl_page']]['read']=true;				
 					}
 					else{
-						$this->user['ACL'][$acls[$k]['acl_page']]['read']=$this->act_aclItem($this->user['ACL'][$acls[$k]['acl_page']]['read'],$acls[$k]['acl_read']);
-						$this->user['ACL'][$acls[$k]['acl_page']]['modify']=$this->act_aclItem($this->user['ACL'][$acls[$k]['acl_page']]['modify'],$acls[$k]['acl_modify']);
-						$this->user['ACL'][$acls[$k]['acl_page']]['write']=$this->act_aclItem($this->user['ACL'][$acls[$k]['acl_page']]['write'],$acls[$k]['acl_write']);					
+						$this->user[$uid]['ACL'][$acls[$k]['acl_page']]['read']=$this->act_aclItem($this->user[$uid]['ACL'][$acls[$k]['acl_page']]['read'],$acls[$k]['acl_read']);
+						$this->user[$uid]['ACL'][$acls[$k]['acl_page']]['modify']=$this->act_aclItem($this->user[$uid]['ACL'][$acls[$k]['acl_page']]['modify'],$acls[$k]['acl_modify']);
+						$this->user[$uid]['ACL'][$acls[$k]['acl_page']]['write']=$this->act_aclItem($this->user[$uid]['ACL'][$acls[$k]['acl_page']]['write'],$acls[$k]['acl_write']);					
 					}
 				}
 			}
 		}
-		$this->user['ACL']['count']=count($this->user['ACL']);
+		$this->user[$uid]['ACL']['count']=count($this->user['ACL']);
 	}
 	final private function act_aclItem($old,$new){
 		

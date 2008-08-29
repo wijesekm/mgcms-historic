@@ -79,10 +79,12 @@ eval('$act=new '.$GLOBALS['MG']['SITE']['ACCOUNT_TYPE'].'();');
 
 if(!$ses->session_load($GLOBALS['MG']['COOKIE']['USER_NAME'],$GLOBALS['MG']['COOKIE']['USER_SESSION'])){
 	$GLOBALS['MG']['USER']=$act->act_load($GLOBALS['MG']['SITE']['DEFAULT_ACT']);
+	$GLOBALS['MG']['USER']=$GLOBALS['MG']['USER'][$GLOBALS['MG']['SITE']['DEFAULT_ACT']];
 	$GLOBALS['MG']['USER']['NOAUTH']=true;
 }
 else{
 	$GLOBALS['MG']['USER']=$act->act_load($GLOBALS['MG']['COOKIE']['USER_NAME']);
+	$GLOBALS['MG']['USER']=$GLOBALS['MG']['USER'][$GLOBALS['MG']['COOKIE']['USER_NAME']];
 	$GLOBALS['MG']['USER']['NOAUTH']=false;
 }
 
