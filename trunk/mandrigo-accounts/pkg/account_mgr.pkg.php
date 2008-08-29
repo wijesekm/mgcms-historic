@@ -29,11 +29,13 @@ if(!defined('STARTED')){
 class account_mgr{
 	
 	private $vars;
+	private $mgr;
 	
 	const TPL_NAME	= 'account_mgr.tpl';
 	
 	public function __construct(){
 		$this->vars=array('LM_MSG'=>'');
+		eval('$this->mgr=new '.$GLOBALS['MG']['SITE']['ACCOUNT_TYPE'].'();');
 		$GLOBALS['MG']['GET']['QUERY']=(eregi("^[a-z0-9\\@\*$._-]+$",$GLOBALS['MG']['GET']['QUERY']))?$GLOBALS['MG']['GET']['QUERY']:'';
 	}
 	
@@ -75,24 +77,20 @@ class account_mgr{
 		$tpl=new template();
 		
 		$start=$GLOBALS['MG']['GET']['PAGE_NUMBER']*$GLOBALS['MG']['SITE']['AM_UPP'];
-		$additParams=array();
-		$additParams['limit']=array($start,$GLOBALS['MG']['SITE']['AM_UPP']);
-		$additParams['orderby']=array(array('user_uid'),array('ASC'));
-		$parms=false;
-		if($GLOBALS['MG']['GET']['QUERY']){
-			$parms=array(array(DB_LIKE,false,'user_uid',ereg_replace('\*','%',$GLOBALS['MG']['GET']['QUERY'])));
-		}
-		$users=$GLOBALS['MG']['SQL']->sql_fetchArray(array(TABLE_PREFIX.'users'),false,$parms,DB_ASSOC,DB_ALL_ROWS,$additParams);
-		$length=$GLOBALS['MG']['SQL']->sql_numRows(array(TABLE_PREFIX.'users'),$parms);
+		$users=$this->mgr->act_load(false,ereg_replace('\*','%',$GLOBALS['MG']['GET']['QUERY']),$start,$GLOBALS['MG']['SITE']['AM_UPP'],false,'ASC');
+		$length=$this->mgr->act_getLastLength();
+
 		$actstr='';
-		for($i=0;$i<$users['count'];$i++){
-			if($users[$i]['user_uid']){
+		$keys=array_keys($users);
+		$soq=count($keys);
+		for($i=0;$i<$soq;$i++){
+			if($users[$keys[$i]]['UID']){
 				$tpl->tpl_load($GLOBALS['MG']['CFG']['PATH']['TPL'].$GLOBALS['MG']['LANG']['NAME'].'/'.account_mgr::TPL_NAME,'actitem');
-				$parse['UID']=$users[$i]['user_uid'];
-				$parse['E-MAIL']=$users[$i]['user_email'];
-				$parse['USER_NAME']=implode(' ',explode(';',$users[$i]['user_fullname']));
-				$parse['URL']=mg_genUrl(array('p',$GLOBALS['MG']['PAGE']['PATH'],'uid',$users[$i]['user_uid']));
-				$parse['DELETEURL']=mg_genUrl(array('p',$GLOBALS['MG']['PAGE']['PATH'],'uid',$users[$i]['user_uid'],'a','delete'));
+				$parse['UID']=$users[$keys[$i]]['UID'];
+				$parse['E-MAIL']=$users[$keys[$i]]['EMAIL'];
+				$parse['USER_NAME']=implode(' ',$users[$keys[$i]]['NAME']);
+				$parse['URL']=mg_genUrl(array('p',$GLOBALS['MG']['PAGE']['PATH'],'uid',$users[$keys[$i]]['UID']));
+				$parse['DELETEURL']=mg_genUrl(array('p',$GLOBALS['MG']['PAGE']['PATH'],'uid',$users[$keys[$i]]['UID'],'a','delete'));
 				$tpl->tpl_parse($parse,'actitem');
 				$actstr.=$tpl->tpl_return('actitem');			
 			}
