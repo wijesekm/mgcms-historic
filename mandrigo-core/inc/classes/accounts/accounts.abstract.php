@@ -32,5 +32,11 @@ abstract class accounts{
 	abstract public function act_load($uid=false,$search=false,$start=false,$length=false,$acl=true,$ob='ASC');
 
 	abstract public function act_getLastLength();
+	
+	abstract public function act_isAccount($uid);
+	
+	abstract public function act_add($uid,$name,$email,$type);
+
+	abstract public function act_remove($uid);
 
 }

@@ -31,6 +31,8 @@ class sqlact extends accounts{
 
 	private $user;
 	private $lastLength;
+	
+	const	GEN_PASSWORD_LENGTH = 8;
 
 	public function __construct(){
 		$this->user=array();
@@ -94,8 +96,64 @@ class sqlact extends accounts{
 		return $this->user;
 	}
 	
+	final public function act_isAccount($uid){
+		$c=false;
+		$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['SITE']['ACCOUNT_DB']);
+		if($GLOBALS['MG']['SQL']->sql_fetchResult(array($GLOBALS['MG']['SITE']['ACCOUNT_TBL']),array(array('user_uid')),array(array(false,false,'user_uid','=',$uid)))){
+			$c=true;
+		}
+		$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['CFG']['SQL']['DB']);
+		return $c;
+	}
+	
 	final public function act_getLastLength(){
 		return $this->lastLength;
+	}
+	
+	final public function act_remove($uid){
+		$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['SITE']['ACCOUNT_DB']);
+		if(!$uid){
+			return false;
+		}
+		$params=array(array(false,false,'user_uid','=',$uid));
+		if(!$GLOBALS['MG']['SQL']->sql_dataCommands(DB_REMOVE,array($GLOBALS['MG']['SITE']['ACCOUNT_TBL']),$params)){
+			$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['CFG']['SQL']['DB']);
+			return false;
+		}
+		$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['CFG']['SQL']['DB']);
+		return true;
+	}
+	
+	final public function act_add($uid,$name,$email,$type){
+		if(!$uid){
+			return false;
+		}
+		$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['SITE']['ACCOUNT_DB']);
+
+		$params=array('user_uid','user_fullname','user_email','user_auth','user_account_created','user_account_modified');
+		$data=array($uid,$name,$email,$type,$GLOBALS['MG']['SITE']['TIME'],$GLOBALS['MG']['SITE']['TIME']);
+		$runNewPass=false;
+		if($type=='sqlauth'){
+			$runNewPass=true;
+			$params[]='user_pass_expired';
+			$data[]='1';
+		}
+		
+		if($type==$GLOBALS['MG']['SITE']['DEFAULT_AUTH']){
+			$type=false;
+		}
+			
+		if(!$GLOBALS['MG']['SQL']->sql_dataCommands(DB_INSERT,array($GLOBALS['MG']['SITE']['ACCOUNT_TBL']),$params,$data)){
+			$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['CFG']['SQL']['DB']);
+			return false;
+		}
+		$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['CFG']['SQL']['DB']);
+		if($runNewPass){
+			mginit_loadPackage(array(array('auth','abstract','/classes/auth/'),array('sqlauth','class','/classes/auth/')));
+			$auth=new sqlauth();
+			$auth->auth_changePass($uid,substr(md5(rand().rand()), 0, sqlact::GEN_PASSWORD_LENGTH),$GLOBALS['MG']['SITE']['PASS_ENCODING']);
+		}
+		return true;
 	}
 	
 	final private function act_getGroupMembership($uid){
