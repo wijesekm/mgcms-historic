@@ -107,6 +107,7 @@ $cdta=array(
 if($GLOBALS['MG']['USER']['BANNED']){
 	$ses->session_stop($cdta);
 	$GLOBALS['MG']['USER']=$act->act_load($GLOBALS['MG']['SITE']['DEFAULT_ACT']);
+	$GLOBALS['MG']['USER']=$GLOBALS['MG']['USER'][$GLOBALS['MG']['SITE']['DEFAULT_ACT']];
 	$GLOBALS['MG']['USER']['NOAUTH']=true;
 }
 else{
