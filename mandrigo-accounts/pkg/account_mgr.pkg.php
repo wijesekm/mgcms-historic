@@ -183,7 +183,7 @@ class account_mgr{
 			$urlb=mg_genUrl(array_merge($base,array('pn',(string)$back)));
 			$back="yes";
 		}
-		if($next < $length){
+		if($next < $pages){
 			$urln=mg_genUrl(array_merge($base,array('pn',(string)$next)));
 			$next="yes";
 		}
