@@ -97,6 +97,20 @@ class page{
 		if(!$this->error){
 			$this->page_getVars();
 		}
+		/**
+		* Get Global Page Vars
+		*/
+		$gdd=$GLOBALS['MG']['SQL']->sql_fetchArray(array(TABLE_PREFIX.'pages'),false,array(array(false,false,'page_path','=','*')));
+		mginit_loadCustomPackages(explode(';',$gdd[0]['page_packages']));
+		$globalPageVars=explode(';',$gdd[0]['page_varhooks']);
+		$soq=count($globalPageVars);
+		for($i=0;$i<$soq;$i++){
+			$vv=$this->page_hookEval($globalPageVars[$i]);
+			if(is_array($vv)){
+				$this->vars=mg_mergeArrays($vv,$this->vars);
+			}
+		}
+		
 		$this->vars=mg_mergeArrays($this->vars,array('TITLE'=>$this->title,'CONTENT'=>$this->content));
 		$tpl->tpl_parse($this->vars,'main',2,true);
 		return $tpl->tpl_return('main');
