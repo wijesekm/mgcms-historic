@@ -37,6 +37,14 @@ class page{
 	const PAGE_TPL_NAME		= 'site.tpl';
 	
 	public function __construct(){
+		if(eregi($GLOBALS['MG']['SITE']['URL_DELIM'],$GLOBALS['MG']['PAGE']['PATH'])){
+			$base=explode($GLOBALS['MG']['SITE']['URL_DELIM'],$GLOBALS['MG']['PAGE']['PATH']);
+			$base=$base[0];
+		}
+		else{
+			$base=$GLOBALS['MG']['PAGE']['PATH'];
+		}
+		
 		$this->vars=array(
 			'URI'=>$GLOBALS['MG']['SITE']['URI'],
 			'URI_SSL'=>$GLOBALS['MG']['SITE']['URI_SSL'],
@@ -62,6 +70,7 @@ class page{
 			'USER_TIME'=>date($GLOBALS['MG']['SITE']['TIME_FORMAT'],$GLOBALS['MG']['USER']['TIME']),
 			'USER_DATE'=>date($GLOBALS['MG']['SITE']['DATE_FORMAT'],$GLOBALS['MG']['USER']['TIME']),
 			'PAGE_PATH'=>$GLOBALS['MG']['PAGE']['PATH'],
+			'PAGE_PATH_BASE'=>$base,
 			'PAGE_NAME'=>$GLOBALS['MG']['PAGE']['NAME'],
 			'PAGE_CREATOR'=>$GLOBALS['MG']['PAGE']['CREATEDBY'],
 			'PAGE_MODIFIER'=>$GLOBALS['MG']['PAGE']['MODIFIEDBY'],
