@@ -38,7 +38,7 @@ function mginit_cleanVar($value,$clean){
 		$value=trim($value);
 	}
 	if((boolean)$clean[4]){
-		$value=mginit_ALS($value);
+		$value=mginit_RLD($value);
 	}
 	
 	switch ($clean[0]){
@@ -87,9 +87,9 @@ function mginit_cleanVar($value,$clean){
 	}
 }
 
-function mginit_ALS($value){
-	if(substr($value,strlen($value)-1,1)!='/'){
-		return $value.'/';
+function mginit_RLD($value){
+	if(substr($value,strlen($value)-1,1)==$GLOBALS['MG']['SITE']['URL_DELIM']){
+		$value=substr($value,0,strlen($value)-1);
 	}
 	return $value;
 }
