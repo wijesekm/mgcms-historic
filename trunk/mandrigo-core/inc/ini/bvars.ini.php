@@ -35,7 +35,7 @@ function mginit_loadVars(){
 	if($GLOBALS['MG']['SITE']['URLTYPE']==3){
 		$url = mginit_genURLType3();
 	}
-	if($GLOBALS['MG']['SITE']['URLTYPE']==2){
+	else if($GLOBALS['MG']['SITE']['URLTYPE']==2){
 		$url=mginit_genURLType2();
 	}
 	else{
