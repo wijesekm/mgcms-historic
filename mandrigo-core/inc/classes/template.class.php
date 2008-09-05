@@ -253,16 +253,18 @@ class template{
 			return $section;
 		}
 		$section=explode(template::TPL_CODE_START,$section);
-		$soq=count($section);
-		for($i=0;$i<$soq;$i++){
-			if(eregi(template::TPL_CODE_END,$section[$i])){
-				$tmp=explode(template::TPL_CODE_END,$section[$i]);
+		$ssoc=count($section);
+		for($cco=0;$cco<$ssoc;$cco++){
+			if(eregi(template::TPL_CODE_END,$section[$cco])){
+				$section_split=explode(template::TPL_CODE_END,$section[$cco]);
 				$retvar='';
-				eval($tmp[0]);
+				eval($section_split[0]);
 				if(!$retvar){
 					trigger_error('(TEMPLATE): Compile Error in template!',E_USER_WARNING);
 				}
-				$section[$i]=$retvar.$tmp[1];
+				
+				$section[$cco]=$retvar.$section_split[1];
+				
 			}
 		}
 		return implode('',$section);
