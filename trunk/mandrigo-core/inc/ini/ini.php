@@ -42,7 +42,7 @@ $load=array(array('template','class','/classes/'),
 			array('sql','abstract','/classes/sql/'),
 			array($GLOBALS['MG']['CFG']['SQL']['METHOD'],'class','/classes/sql/'),
 			array('session','class','/classes/auth/'),
-			array('time','class','/classes/'),
+			array('mgtime','class','/classes/'),
 			array('clean','ini','/ini/'),
 			array('page','class','/classes/'),
 			array('funct','ini','/ini/'));
@@ -91,7 +91,7 @@ else{
 /**
 * Time Data
 */
-$t=new time($GLOBALS['MG']['SITE']['TZ'],$GLOBALS['MG']['USER']['TZ']);
+$t=new mgtime($GLOBALS['MG']['SITE']['TZ'],$GLOBALS['MG']['USER']['TZ']);
 $GLOBALS['MG']['SITE']['TIME']=$t->time_server();
 $GLOBALS['MG']['USER']['TIME']=$t->time_client();
 $t=false;

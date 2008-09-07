@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @file		time.class.php
+ * @file		mgtime.class.php
  * @author 		Kevin Wijesekera
  * @copyright 	2008
  * @edited		6-8-2008
@@ -26,7 +26,7 @@ if(!defined('STARTED')){
 	die();
 }
 
-class time{
+class mgtime{
 	
 	private $server;
 	private $client;
