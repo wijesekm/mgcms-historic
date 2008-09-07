@@ -51,7 +51,7 @@ class pamauth extends auth{
         return (trim($stat)=='OK')?true:false;
 	}
 	
-	final public function auth_changePass($newPass){
+	final public function auth_changePass($uid,$newPass,$encoding='md5'){
 		return false;
 	}	
 }

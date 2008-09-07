@@ -35,7 +35,7 @@ class adauth extends auth{
 		return false;
 	}
 	
-	final public function auth_changePass($newPass){
+	final public function auth_changePass($uid,$newPass,$encoding='md5'){
 		return false;
 	}
 
