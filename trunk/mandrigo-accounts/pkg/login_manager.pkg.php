@@ -100,7 +100,7 @@ class login_manager{
 			/**
 			* Time Data
 			*/
-			$t=new time($GLOBALS['MG']['SITE']['TZ'],$GLOBALS['MG']['USER']['TZ']);
+			$t=new mgtime($GLOBALS['MG']['SITE']['TZ'],$GLOBALS['MG']['USER']['TZ']);
 			$GLOBALS['MG']['SITE']['TIME']=$t->time_server();
 			$GLOBALS['MG']['USER']['TIME']=$t->time_client();
 			$t=false;
