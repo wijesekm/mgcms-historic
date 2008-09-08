@@ -4,7 +4,7 @@
  * @file		index.php
  * @author 		Kevin Wijesekera
  * @copyright 	2008
- * @edited		5-22-2008
+ * @edited		8-08-2008
 
  ###################################
  This program is free software: you can redistribute it and/or modify
@@ -33,10 +33,29 @@ $page=new page();
 
 $content=$page->page_generate();
 
-header('Content-Type: '.$GLOBALS['MG']['LANG']['CONTENT_TYPE'].'; charset='.$GLOBALS['MG']['LANG']['ENCODING']);
-
-//echo '<pre>';
-//print_r($GLOBALS['MG']);
+/**
+*
+*Header Information
+*
+*/
+if($GLOBALS['MG']['LANG']['CACHE_CONTROL']){
+	mginit_setHeader('Cache-Control',$GLOBALS['MG']['LANG']['CACHE_CONTROL']);
+}
+if($GLOBALS['MG']['LANG']['PRAGMA']){
+	mginit_setHeader('Pragma',$GLOBALS['MG']['LANG']['PRAGMA']);
+}
+if($GLOBALS['MG']['LANG']['ENCODING'] != 'none'){
+	header('Content-Type: '.$GLOBALS['MG']['LANG']['CONTENT_TYPE'].'; charset='.$GLOBALS['MG']['LANG']['ENCODING']);
+}
+else{
+	header('Content-Type: '.$GLOBALS['MG']['LANG']['CONTENT_TYPE']);
+}
+if($GLOBALS['MG']['LANG']['CONTENT_DISPOSITION']){
+	mginit_setHeader('Content-Disposition',$GLOBALS['MG']['LANG']['CONTENT_DISPOSITION']);
+}
+if($GLOBALS['MG']['LANG']['CONTENT_LENGTH']){
+	mginit_setHeader('Content-Length',$GLOBALS['MG']['LANG']['CONTENT_LENGTH']);
+}
 
 echo $content;
 

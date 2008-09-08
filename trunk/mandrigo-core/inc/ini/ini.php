@@ -4,7 +4,7 @@
  * @file		ini.php
  * @author 		Kevin Wijesekera
  * @copyright 	2008
- * @edited		6-8-2008
+ * @edited		8-08-2008
  
  ###################################
  This program is free software: you can redistribute it and/or modify
@@ -210,5 +210,14 @@ function mginit_loadCustomPackages($pkgs){
 				}
 			}
 		}
+	}
+}
+
+function mginit_setHeader($name,$value){
+	if($value=='none'){
+		header($name.': ');
+	}
+	else{
+		header($name.': '.$value);
 	}
 }
