@@ -27,7 +27,7 @@ define('STARTED',true);
 include(dirname(__FILE__).'/conf/ini.conf');
 include(dirname(__FILE__).'/conf/conf'.PHPEXT);
 
-include($GLOBALS['MG']['CFG']['PATH']['INC'].'/ini/ini.'.PHPEXT);
+include($GLOBALS['MG']['CFG']['PATH']['INC'].'/ini/ini'.PHPEXT);
 
 $page=new page();
 
