@@ -457,6 +457,10 @@ class mysql extends sql{
 			if(!empty($fields[$i][2])){
 				$this->groupBy['field']=$fields[$i][2];
 			}
+			
+			if($i+1<$fsize){
+				$str.=', ';
+			}
 		}
 		return $str.' '.$postfix;
 	}
