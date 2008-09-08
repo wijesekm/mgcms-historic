@@ -151,9 +151,10 @@ class sqlact extends accounts{
 		if($runNewPass){
 			mginit_loadPackage(array(array('auth','abstract','/classes/auth/'),array('sqlauth','class','/classes/auth/')));
 			$auth=new sqlauth();
-			$auth->auth_changePass($uid,substr(md5(rand().rand()), 0, sqlact::GEN_PASSWORD_LENGTH),$GLOBALS['MG']['SITE']['PASS_ENCODING']);
+			$newPass=substr(md5(rand().rand()), 0, sqlact::GEN_PASSWORD_LENGTH);
+			$auth->auth_changePass($uid,$newPass,$GLOBALS['MG']['SITE']['PASS_ENCODING']);
 		}
-		return true;
+		return $newPass;
 	}
 	
 	final private function act_getGroupMembership($uid){

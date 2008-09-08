@@ -84,6 +84,9 @@ class page{
 	}
 	
 	public function page_generate(){
+		
+		$GLOBALS['MG']['PAGE']['NOSITETPL']=false;
+		
 		$tpl=new template();
 		if(!$tpl->tpl_load($GLOBALS['MG']['CFG']['PATH']['TPL'].$GLOBALS['MG']['LANG']['NAME'].'/'.page::PAGE_TPL_NAME,'main')){
 			trigger_error('(PAGE): Could not load site template',E_USER_ERROR);
@@ -110,11 +113,14 @@ class page{
 				$this->vars=mg_mergeArrays($vv,$this->vars);
 			}
 		}
-		
-		$this->vars=mg_mergeArrays($this->vars,array('TITLE'=>$this->title,'CONTENT'=>$this->content));
-		$tpl->tpl_parse($this->vars,'main',2,true);
-		return $tpl->tpl_return('main');
-		
+		if(!$GLOBALS['MG']['PAGE']['NOSITETPL']){
+			$this->vars=mg_mergeArrays($this->vars,array('TITLE'=>$this->title,'CONTENT'=>$this->content));
+			$tpl->tpl_parse($this->vars,'main',2,true);
+			return $tpl->tpl_return('main');		
+		}
+		else{
+			return $this->content;
+		}
 	}
 	
 	private function page_getTitle(){

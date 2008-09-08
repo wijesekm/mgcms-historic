@@ -151,6 +151,10 @@ $GLOBALS['MG']['LANG']=mginit_loadLang($lang[0]['lang_id']);
 $GLOBALS['MG']['LANG']['ENCODING']=$lang[0]['lang_encoding'];
 $GLOBALS['MG']['LANG']['NAME']=$lang[0]['lang_name'];
 $GLOBALS['MG']['LANG']['CONTENT_TYPE']='text/html';
+$GLOBALS['MG']['LANG']['PRAGMA']='';
+$GLOBALS['MG']['LANG']['CACHE_CONTROL']='';
+$GLOBALS['MG']['LANG']['CONTENT_DISPOSITION']='';
+$GLOBALS['MG']['LANG']['CONTENT_LENGTH']='';
 $lang=false;
 
 $GLOBALS['MG']['PAGE']['TPL']=$GLOBALS['MG']['CFG']['PATH']['TPL'].$GLOBALS['MG']['LANG']['NAME'].'/pages/'.implode('/',explode($GLOBALS['MG']['SITE']['URL_DELIM'],$GLOBALS['MG']['PAGE']['PATH'])).'.tpl';
