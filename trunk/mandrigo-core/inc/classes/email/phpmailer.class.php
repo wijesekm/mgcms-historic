@@ -63,20 +63,22 @@ class phpmailer{
 	const	LE					= "\n";
 	
 	public function __construct($newcfg=false){
+		$uri=explode('/',$GLOBALS['MG']['SITE']['URI']);
+		$uri=$uri[0];
 		$this->cfg=array(
-			'charset'=>'iso-8859-1',
-			'encoding'=>'8bit',
-			'defaultfrom'=>'root@localhost',
-			'wordwrap'=>0,
-			'mailer'=>'mailfunct',
-			'mailfunct_path'=>'/usr/sbin/sendmail',
-			'hostname'=>'localhost.localdomain',
+			'charset'=>$GLOBALS['MG']['SITE']['EMAIL-CHARSET'],
+			'encoding'=>$GLOBALS['MG']['SITE']['EMAIL-ENCODING'],
+			'defaultfrom'=>$GLOBALS['MG']['SITE']['EMAIL-DEFAULT-FROM'],
+			'wordwrap'=>$GLOBALS['MG']['SITE']['EMAIL-WW'],
+			'mailer'=>$GLOBALS['MG']['SITE']['EMAIL-MAILER'],
+			'mailfunct_path'=>$GLOBALS['MG']['SITE']['EMAIL-MAILFUNCT-PATH'],
+			'hostname'=>$uri,
 			'smtp_host'=>'localhost',
 			'smtp_port'=>25,
 			'smtp_secure'=>'tls',
 			'smtp_username'=>'',
 			'smtp_password'=>'',
-			'seperate_to'=>false,
+			'seperate_to'=>(boolean)$GLOBALS['MG']['SITE']['EMAIL-SEP-TO']
 		);
 		$this->cfg=array_merge($this->cfg,$newcfg);
 	}
@@ -115,10 +117,10 @@ class phpmailer{
 		$this->subject = $subject;
 	}
 	
-	public function phpm_setBody($body,$html=false,$alt=false){
+	public function phpm_addBody($body,$html=false,$alt=false){
 		if($html){
 			$this->body=$this->phpm_msgHTML($body);
-			$this->$contenttype='text/html';
+			$this->contenttype='text/html';
 			if($alt){
 				$this->altbody=trim(strip_tags(preg_replace('/<(head|title|style|script)[^>]*>.*?<\/\\1>/s','',$this->body)));
 			}
@@ -128,7 +130,7 @@ class phpmailer{
 		}
 	}
 
-	public function phpm_addAddress($address,$name,$type='to'){
+	public function phpm_addAddress($name,$address,$type='to'){
 		switch($type){
 			case 'replyto':
 				$this->replyTo[][0]=trim($address);
@@ -162,7 +164,7 @@ class phpmailer{
 		$this->confirm=$addr;
 	}
 
-	public function AddCustomHeader($custom_header) {
+	public function phpm_addCustomHeader($custom_header) {
 		$this->customheaders[] = explode(':', $custom_header, 2);
 	}
 
@@ -297,8 +299,8 @@ class phpmailer{
 		}
 
 		// Add custom headers
-		$soq = count($this->customheaders);
-		for($index = 0; $index < $soq; $index++) {
+		$sohh = count($this->customheaders);
+		for($index = 0; $index < $sohh; $index++) {
 			$result .= $this->phpm_headerLine(trim($this->customheaders[$index][0]), $this->phpm_encodeHeader(trim($this->customheaders[$index][1])));
 		}
 		if (!$this->signkeyfile) {
@@ -319,7 +321,7 @@ class phpmailer{
 		switch($this->messagetype) {
 			case 'alt':
 				$result .= $this->phpm_getBoundry($this->boundary[1], '', 'text/plain', '');
-				$result .= $this->EncodeString($this->altbody, $this->cfg['encoding']);
+				$result .= $this->phpm_encodeString($this->altbody, $this->cfg['encoding']);
 				$result .= phpmailer::LE.phpmailer::LE;
 				$result .= $this->phpm_getBoundry($this->boundary[1], '', 'text/html', '');
 				$result .= $this->phpm_encodeString($this->body, $this->cfg['encoding']);
@@ -339,10 +341,10 @@ class phpmailer{
 				$result .= sprintf("--%s%s", $this->boundary[1], phpmailer::LE);
 				$result .= sprintf("Content-Type: %s;%s" . "\tboundary=\"%s\"%s", 'multipart/alternative', phpmailer::LE, $this->boundary[2], phpmailer::LE.phpmailer::LE);
 				$result .= $this->phpm_getBoundry($this->boundary[2], '', 'text/plain', '') . phpmailer::LE; // Create text body
-				$result .= $this->EncodeString($this->altbody, $this->cfg['encoding']);
+				$result .= $this->phpm_encodeString($this->altbody, $this->cfg['encoding']);
 				$result .= phpmailer::LE.phpmailer::LE;
 				$result .= $this->phpm_getBoundry($this->boundary[2], '', 'text/html', '') . phpmailer::LE; // Create the HTML body
-				$result .= $this->EncodeString($this->Body, $this->Encoding);
+				$result .= $this->phpm_encodeString($this->Body, $this->cfg['encoding']);
 				$result .= phpmailer::LE.phpmailer::LE;
 				$result .= $this->phpm_endBoundry($this->boundary[2]);
 				$result .= $this->phpm_attachAll();
@@ -404,9 +406,10 @@ class phpmailer{
 	
 	private function phpm_addrAppend($type, $addr) {
 		$addr_str = $type . ': ';
-		$addr_str .= $this->AddrFormat($addr[0]);
+		$addr_str .= $this->phpm_addressFormat($addr[0]);
 		if(count($addr) > 1) {
-			for($i = 1; $i < count($addr); $i++) {
+			$soaa=count($addr);
+			for($i = 1; $i < count($soaa); $i++) {
   				$addr_str .= ', ' . $this->phpm_addressFormat($addr[$i]);
 			}
 		}
@@ -416,17 +419,17 @@ class phpmailer{
 	
 	private function phpm_SetMessageType() {
 		if(count($this->attachment) < 1 && strlen($this->altbody) < 1) {
-			$this->$messagetype = 'plain';
+			$this->messagetype = 'plain';
 		} 
 		else {
 			if(count($this->attachment) > 0) {
-				$this->$messagetype = 'attachments';
+				$this->messagetype = 'attachments';
 			}
 			if(strlen($this->altbody) > 0 && count($this->attachment) < 1) {
-				$this->$messagetype = 'alt';
+				$this->messagetype = 'alt';
 			}
 			if(strlen($this->altbody) > 0 && count($this->attachment) > 0) {
-				$this->$messagetype = 'alt_attachments';
+				$this->messagetype = 'alt_attachments';
 			}
 		}
 	}
@@ -435,7 +438,7 @@ class phpmailer{
 		if($this->cfg['wordwrap'] < 1) {
 			return false;
 		}
-		switch($this->$messagetype) {
+		switch($this->messagetype) {
 			case 'alt':
 			case 'alt_attachments':
 				$this->altbody = $this->phpm_wrapText($this->altbody, $this->cfg['wordwrap']);
@@ -447,7 +450,7 @@ class phpmailer{
 	}
   	private function phpm_addressFormat($addr) {
     	if(empty($addr[1])) {
-      		$formatted = $this->SecureHeader($addr[0]);
+      		$formatted = $this->phpm_secureHeader($addr[0]);
     	} 
 		else {
       		$formatted = $this->phpm_encodeHeader($this->phpm_secureHeader($addr[1]), 'phrase') . " <" . $this->phpm_secureHeader($addr[0]) . ">";
@@ -474,7 +477,8 @@ class phpmailer{
 
 	public function phpm_inlineImageExists() {
 		$result = false;
-		for($i = 0; $i < count($this->attachment); $i++) {
+		$soa=count($this->attachment);
+		for($i = 0; $i < $soa; $i++) {
 			if($this->attachment[$i][6] == 'inline') {
 				$result = true;
 				break;
@@ -511,8 +515,8 @@ class phpmailer{
 		$mime = array();
 
 		/* Add all attachments */
-		$soq=count($this->attachments);
-		for($i = 0; $i < $soq; $i++) {
+		$soa=count($this->attachment);
+		for($i = 0; $i < $soa; $i++) {
 			/* Check for string attachment */
 			$bString = $this->attachment[$i][5];
 			if ($bString) {
@@ -581,8 +585,8 @@ class phpmailer{
 	}
 	private function phpm_mailSend($header, $body){
 		$toArr = array();
-		$soq=count($this->to);
-		for($i=0;$soq;$i++){
+		$sot=count($this->to);
+		for($i=0;$sot;$i++){
 			if($this->to[$i][0]){
 				$toArr[] = $this->phpm_addressFormat($this->to[$i]);
 			}
@@ -835,7 +839,7 @@ class phpmailer{
 		$line = explode(phpmailer::LE, $message);
 		$message = '';
 		$soq=count($line);
-		for ($i=0 ;$i < count($soq); $i++) {
+		for ($i=0 ;$i < $soq; $i++) {
 			$line_part = explode(' ', $line[$i]);
 			$buf = '';
 			$soq2=count($line_part);
