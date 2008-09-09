@@ -49,6 +49,7 @@ $GLOBALS['MG']['CFG']['SQL']['DB']='mandrigo';
 $GLOBALS['MG']['CFG']['SQL']['USERNAME']='mandrigo';
 $GLOBALS['MG']['CFG']['SQL']['PASSWORD']='';
 $GLOBALS['MG']['CFG']['SQL']['SSL']=false;
+$GLOBALS['MG']['CFG']['SQL']['PERSISTENT']=true;
 define('TABLE_PREFIX','mg_');
 
 /**
