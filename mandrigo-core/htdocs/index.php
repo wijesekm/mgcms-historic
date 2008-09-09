@@ -35,9 +35,20 @@ $content=$page->page_generate();
 
 /**
 *
+* Cleanup
+*
+*/
+$GLOBALS['MG']['SQL']->sql_close();
+
+/**
+*
 *Header Information
 *
 */
+if($GLOBALS['MG']['PAGE']['REDIRECT']){
+	header('Location: '.$GLOBALS['MG']['PAGE']['REDIRECT']);
+	die();
+}
 if($GLOBALS['MG']['LANG']['CACHE_CONTROL']){
 	mginit_setHeader('Cache-Control',$GLOBALS['MG']['LANG']['CACHE_CONTROL']);
 }
