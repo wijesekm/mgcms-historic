@@ -136,6 +136,7 @@ for($i=0;$i<$soq;$i++){
 }
 $tmp=false;
 $keys=false;
+$GLOBALS['MG']['PAGE']['REDIRECT']=false;
 
 /**
 * Load Language Data
