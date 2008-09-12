@@ -36,7 +36,7 @@ if(!defined('STARTED')){
 
 class phpmailer{
 	
-	private $cfg = array();
+	private $cfg;
 	private	$to = array();
 	private $cc = array();
 	private $bcc = array();
@@ -50,7 +50,7 @@ class phpmailer{
 	private $boundary = array();
 	private $priority = 3;
 	private $confirm = '';
-	private $customheaders = false;
+	private $customheaders = array();
 	private $signcertfile  = "";
 	private $signkeyfile   = "";
 	private $signkeypass   = "";
@@ -80,11 +80,13 @@ class phpmailer{
 			'smtp_password'=>'',
 			'seperate_to'=>(boolean)$GLOBALS['MG']['SITE']['EMAIL-SEP-TO']
 		);
-		$this->cfg=array_merge($this->cfg,$newcfg);
+		if($newcfg){
+			$this->cfg=array_merge($this->cfg,$newcfg);	
+		}
 	}
 
 	public function phpm_send(){
-		
+
 		if((count($this->to) + count($this->cc) + count($this->bcc)) < 1) {
 			trigger_error('(PHPMAILER): Cannot send message with no recipiants!',E_USER_WARNING);
 			return false;
@@ -93,7 +95,7 @@ class phpmailer{
 		$this->phpm_setMessageType();
 		$header=$this->phpm_createHeader();
 		$body=$this->phpm_createBody();
-		
+
 		if(!$body){
 			return false;
 		}
@@ -133,27 +135,23 @@ class phpmailer{
 	public function phpm_addAddress($name,$address,$type='to'){
 		switch($type){
 			case 'replyto':
-				$this->replyTo[][0]=trim($address);
-				$this->replyTo[][1]=trim($name);				
+				$this->replyTo[]=array(trim($address),trim($name));
 			break;
 			case 'bcc':
-				$this->bcc[][0]=trim($address);
-				$this->bcc[][1]=trim($name);					
+				$this->bcc[]=array(trim($address),trim($name));
 			break;
 			case 'cc':
-				$this->cc[][0]=trim($address);
-				$this->cc[][1]=trim($name);				
+				$this->cc[]=array(trim($address),trim($name));
 			break;
 			case 'to':
 			default:
-				$this->to[][0]=trim($address);
-				$this->to[][1]=trim($name);			
+				$this->to[]=array(trim($address),trim($name));
 			break;
 		}
 	}
 
 	public function phpm_addSender($name,$email){
-		$this->sender=array(array(trim($this->$email),trim($this->name)));
+		$this->sender=array(array(trim($email),trim($name)));
 	}
 
 	public function phpm_setPriority($p){
@@ -241,7 +239,6 @@ class phpmailer{
 	*/
 	private function phpm_createHeader() {
 		$result = '';
-
 		/* Set the boundaries */
 		$uniq_id = md5(uniqid(time()));
 		$this->boundary[1] = 'b1_' . $uniq_id;
@@ -252,7 +249,7 @@ class phpmailer{
       		$result .= $this->phpm_headerLine('Return-Path', trim($this->cfg['defaultfrom']));
 		} 
 		else {
-			$result .= $this->phpm_headerLine('Return-Path', trim($this->sender));
+			$result .= $this->phpm_headerLine('Return-Path', trim($this->sender[0][0]));
  		}
 
 		/* To be created automatically by mail() */
@@ -269,7 +266,7 @@ class phpmailer{
 		}
 
 		$result .= $this->phpm_addrAppend('From', $this->sender);
-
+		
  		/* sendmail and mail() extract Cc from the header before sending */
 		if((($this->cfg['mailer'] == 'mailfunct') || ($this->cfg['mailer'] == 'mail')) && (count($this->cc) > 0)) {
 			$result .= $this->phpm_addrAppend('Cc', $this->cc);
@@ -370,9 +367,9 @@ class phpmailer{
 
 		      $result= false;   
 			}
+			unlink($file);
+			unlink($signed);
     	}
-		unlink($file);
-		unlink($signed);
 		return $result;
 	}
 
@@ -398,7 +395,7 @@ class phpmailer{
 				$result .= $this->phpm_textLine("\tboundary=\"" . $this->boundary[1] . '"');
 			break;
 		}
-		if($this->Mailer != 'mail') {
+		if($this->cfg['mailer'] != 'mail') {
 			$result .= phpmailer::LE.phpmailer::LE;
 		}
 		return $result;
@@ -586,14 +583,12 @@ class phpmailer{
 	private function phpm_mailSend($header, $body){
 		$toArr = array();
 		$sot=count($this->to);
-		for($i=0;$sot;$i++){
+		for($i=0;$i<$sot;$i++){
 			if($this->to[$i][0]){
 				$toArr[] = $this->phpm_addressFormat($this->to[$i]);
 			}
 		}
-		
 		$params = sprintf("-oi -f %s", $this->sender[0][0]);
-		
 		if($this->sender != '' && strlen(ini_get('safe_mode')) < 1){
 			$old_from = ini_get('sendmail_from');
 			ini_set('sendmail_from',$this->sender[0][0]);
@@ -604,6 +599,7 @@ class phpmailer{
 			}
 		}
 		else{
+			
 			$rt = @mail(implode(', ',$toArr), $this->phpm_encodeHeader($this->phpm_secureHeader($this->subject)), $body, $header, $params);
 		}
 		if (isset($old_from)) {
