@@ -93,6 +93,7 @@ class login_manager{
 	private function lm_doLogin(){
 		eval('$act=new '.$GLOBALS['MG']['SITE']['ACCOUNT_TYPE'].'();');
 		$GLOBALS['MG']['USER']=$act->act_load($GLOBALS['MG']['POST']['LOGIN_NAME']);
+		$GLOBALS['MG']['USER']=$GLOBALS['MG']['USER'][$GLOBALS['MG']['POST']['LOGIN_NAME']];
 		if(!$GLOBALS['MG']['USER']['UID']){
 			$this->vars=mg_mergeArrays($this->vars,array('LM_MSG'=>$GLOBALS['MG']['LANG']['LM_BAD_ACCOUNT']));
 		}
