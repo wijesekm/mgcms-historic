@@ -88,13 +88,31 @@ class account_mgr{
 		return $this->vars;
 	}
 	
-	private function am_delUser(){
+	private function am_delUser($mail=true){
 		if(!$GLOBALS['MG']['GET']['UID']){
 			trigger_error('(ACCOUNT_MGR): No UID specified for delete!',E_USER_NOTICE);
 			return $this->am_genList($GLOBALS['MG']['LANG']['AM_INT_ERROR']);
 		}
 		if(strtolower($GLOBALS['MG']['GET']['UID'])==strtolower($GLOBALS['MG']['SITE']['DEFAULT_ACT'])){
 			trigger_error('(ACCOUNT_MGR): Cannot delete default account!',E_USER_NOTICE);
+			return $this->am_genList($GLOBALS['MG']['LANG']['AM_INT_ERROR']);
+		}
+		$udta=$this->mgr->act_load($GLOBALS['MG']['GET']['UID'],false,false,false,false);
+		$parse=array(
+			'NAME'=>implode(' ',$udta[$GLOBALS['MG']['GET']['UID']]['NAME']),
+			'USERNAME'=>$GLOBALS['MG']['GET']['UID'],
+			'E-MAIL'=>$udta[$GLOBALS['MG']['GET']['UID']]['EMAIL']
+		);
+		$tpl=new template();
+		$tpl->tpl_load($GLOBALS['MG']['CFG']['PATH']['TPL'].$GLOBALS['MG']['LANG']['NAME'].'/'.account_mgr::TPL_NAME,'removeactmail');
+		$tpl->tpl_parse($parse,'removeactmail');
+		$ppm=new phpmailer();
+		$ppm->phpm_addSubject($GLOBALS['MG']['LANG']['AM_EMAIL_SUBJECT']);
+		$ppm->phpm_addBody($tpl->tpl_return('removeactmail'),(boolean)$GLOBALS['MG']['SITE']['EMAIL-HTML'],(boolean)$GLOBALS['MG']['SITE']['EMAIL-ALT']);
+		$s=explode(';',$GLOBALS['MG']['SITE']['AM-MAIL-SENDER']);
+		$ppm->phpm_addSender($s[0],$s[1]);
+		$ppm->phpm_addAddress(implode(' ',$udta[$GLOBALS['MG']['GET']['UID']]['NAME']),$udta[$GLOBALS['MG']['GET']['UID']]['EMAIL']);		
+		if(!$ppm->phpm_send()){
 			return $this->am_genList($GLOBALS['MG']['LANG']['AM_INT_ERROR']);
 		}
 		if(!$this->mgr->act_remove($GLOBALS['MG']['GET']['UID'])){
@@ -113,7 +131,27 @@ class account_mgr{
 		if($this->mgr->act_isAccount($GLOBALS['MG']['POST']['AM-ADD-UID'])){
 			return $this->am_genList($GLOBALS['MG']['LANG']['AM_ADD_UIDTAKEN']);
 		}
-		if(!$this->mgr->act_add($GLOBALS['MG']['POST']['AM-ADD-UID'],$GLOBALS['MG']['POST']['AM-ADD-NAME'],$GLOBALS['MG']['POST']['AM-ADD-EMAIL'],$GLOBALS['MG']['POST']['AM-ADD-ACTYPE'])){
+		if(!$newPass=$this->mgr->act_add($GLOBALS['MG']['POST']['AM-ADD-UID'],implode(';',explode(' ',$GLOBALS['MG']['POST']['AM-ADD-NAME'])),$GLOBALS['MG']['POST']['AM-ADD-EMAIL'],$GLOBALS['MG']['POST']['AM-ADD-ACTYPE'])){
+			return $this->am_genList($GLOBALS['MG']['LANG']['AM_INT_ERROR']);
+		}
+		$tpl=new template();
+		$tpl->tpl_load($GLOBALS['MG']['CFG']['PATH']['TPL'].$GLOBALS['MG']['LANG']['NAME'].'/'.account_mgr::TPL_NAME,'newactemail');
+		$parse=array(
+			'USERNAME'=>$GLOBALS['MG']['POST']['AM-ADD-UID'],
+			'E-MAIL'=>$GLOBALS['MG']['POST']['AM-ADD-EMAIL'],
+			'NAME'=>$GLOBALS['MG']['POST']['AM-ADD-NAME'],
+			'PASSWORD'=>(string)$newPass
+		);
+		$tpl->tpl_parse($parse,'newactemail');
+		$ppm=new phpmailer();
+		$ppm->phpm_addSubject($GLOBALS['MG']['LANG']['AM_EMAIL_SUBJECT']);
+		$ppm->phpm_addBody($tpl->tpl_return('newactemail'),(boolean)$GLOBALS['MG']['SITE']['EMAIL-HTML'],(boolean)$GLOBALS['MG']['SITE']['EMAIL-ALT']);
+		$s=explode(';',$GLOBALS['MG']['SITE']['AM-MAIL-SENDER']);
+		$ppm->phpm_addSender($s[0],$s[1]);
+		$ppm->phpm_addAddress($GLOBALS['MG']['POST']['AM-ADD-NAME'],$GLOBALS['MG']['POST']['AM-ADD-EMAIL']);
+		if(!$ppm->phpm_send()){
+			$GLOBALS['MG']['GET']['UID']=$GLOBALS['MG']['POST']['AM-ADD-UID'];
+			$this->am_delUser(false);
 			return $this->am_genList($GLOBALS['MG']['LANG']['AM_INT_ERROR']);
 		}
 		return $this->am_genList($GLOBALS['MG']['LANG']['AM_ADD_ADDED']);
