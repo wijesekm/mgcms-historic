@@ -178,7 +178,7 @@ class sqlact extends accounts{
 			$acls=$GLOBALS['MG']['SQL']->sql_fetcharray(array(TABLE_PREFIX.'acl'),false,array(array(false,false,'acl_group','=',$this->user[$uid]['GROUPS'][$i])));	
 			for($k=0;$k<$acls['count'];$k++){
 				if($acls[$k]['acl_page']){
-					if(!is_array($this->user['ACL'][$acls[$k]['acl_page']])){
+					if(!isset($this->user[$uid]['ACL'][$acls[$k]['acl_page']])){
 						$this->user[$uid]['ACL'][$acls[$k]['acl_page']]=array();
 						$this->user[$uid]['ACL'][$acls[$k]['acl_page']]['read']=false;
 						$this->user[$uid]['ACL'][$acls[$k]['acl_page']]['modify']=false;
@@ -200,7 +200,7 @@ class sqlact extends accounts{
 				}
 			}
 		}
-		$this->user[$uid]['ACL']['count']=count($this->user['ACL']);
+		$this->user[$uid]['ACL']['count']=count($this->user[$uid]['ACL']);
 	}
 	final private function act_aclItem($old,$new){
 		
