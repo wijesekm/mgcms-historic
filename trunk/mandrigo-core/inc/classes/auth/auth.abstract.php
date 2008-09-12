@@ -53,53 +53,53 @@ abstract class auth{
                     return false;
                 }
                 $seed = $this->act_randstring(2);
-                return crypt($password,$seed);
+                return crypt($pwd,$seed);
             break;
 			case 'blowfish_crypt':
                 if(CRYPT_BLOWFISH!=1){
                     return false;
                 }
                 $seed = '$2$' . $this->act_randstring(13);
-                return crypt($password,$seed);
+                return crypt($pwd,$seed);
             break;
             case 'md5_crypt':
                 if(CRYPT_MD5!=1){
                     return false;
                 }
                 $seed = '$1$' . $this->act_randstring(9);
-                return crypt($password,$seed);
+                return crypt($pwd,$seed);
             break;
             case 'ext_crypt':
                 if(CRYPT_EXT_DES!=1){
                     return false;
                 }
                 $seed = $this->act_randstring(9);
-                return crypt($password,$seed);
+                return crypt($pwd,$seed);
             break;
             case 'smd5':
                 if(!function_exists('mhash')){
 				    return false;
                 }
                 $seed = $this->act_randstring(8);
-                $hash = mhash(MHASH_MD5, $password . $seed);
+                $hash = mhash(MHASH_MD5, $pwd . $seed);
                 return '{SMD5}' . base64_encode($hash . $seed);
             break;
             case 'sha':
                 if(!function_exists('mhash')){
                     return false;
                 }
-                return '{SHA}' . base64_encode(mhash(MHASH_SHA1,$password));
+                return '{SHA}' . base64_encode(mhash(MHASH_SHA1,$pwd));
             break;
             case 'ssha':
                 if(!function_exists('mhash')){
                     return false;
                 }
                 $seed = $this->act_randstring(8);
-                $hash = mhash(MHASH_SHA1, $password . $seed);
+                $hash = mhash(MHASH_SHA1, $pwd . $seed);
                 return '{SSHA}' . base64_encode($hash . $seed);
             break;
             case 'md5':
-                return md5($password);
+                return md5($pwd);
             break;
         }
         return false;		

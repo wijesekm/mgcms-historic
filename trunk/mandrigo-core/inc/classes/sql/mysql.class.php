@@ -233,10 +233,23 @@ class mysql extends sql{
 	}
 	
 	final public function sql_fetchArray($table,$fields,$params,$type=DB_ASSOC,$rows=DB_ALL_ROWS,$additParams=false){
-		$distinct=$additParams['distinct'];
-		$orderby=$additParams['orderby'];
-		$limit=$additParams['limit'];
-		$having=$additParams['having'];
+		$distinct=false;
+		$orderby=false;
+		$limit=false;
+		$having=false;
+		if(isset($additParams['distinct'])){
+			$distinct=$additParams['distinct'];	
+		}
+		if(isset($additParams['orderby'])){
+			$orderby=$additParams['orderby'];
+		}		
+		if(isset($additParams['limit'])){
+			$limit=$additParams['limit'];
+		}
+		if(isset($additParams['having'])){
+			$having=$additParams['having'];
+		}
+		
 		if($distinct){
 			$query=$this->sql_formatFields($fields,'SELECT DISTINCT').' ';
 		}
@@ -446,7 +459,7 @@ class mysql extends sql{
 		$fsize=count($fields);
 		$str=$prefix.' ';
 		for($i=0;$i<$fsize;$i++){
-			if($fields[$i][1]){
+			if(isset($fields[$i][1])){
 				$str.=$this->sql_escape($fields[$i][1]);
 				$str.='(`'.$this->sql_escape($fields[$i][0]).'`)';
 				$this->groupBy['allow']=true;
@@ -474,10 +487,12 @@ class mysql extends sql{
 		$ended=true;
 		$csize=count($conds);
 		for($i=0;$i<$csize;$i++){
-			if($last!=$conds[$i][1][1]){
-				$str.='( ';
-				$ended=false;
-				$last=$conds[$i][1][1];
+			if(isset($conds[$i][1][1])){
+				if($last!=$conds[$i][1][1]){
+					$str.='( ';
+					$ended=false;
+					$last=$conds[$i][1][1];
+				}				
 			}
 
 			switch($conds[$i][0]){
