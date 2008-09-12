@@ -132,7 +132,7 @@ class errorLogger{
 			touch($fname);
 		}
 		if(@filesize($fname)>$GLOBALS['MG']['CFG']['ERRORLOGGER']['SIZE']){
-			$new_name=ereg_replace('.log','-'.$dt.'.log',$fname);
+			$new_name=ereg_replace('\.log','-'.$dt.'.log',$fname);
 			if(!@copy($fname,$new_name)){
 				return false;
 			}
