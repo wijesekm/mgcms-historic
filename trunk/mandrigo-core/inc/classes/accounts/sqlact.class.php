@@ -35,11 +35,12 @@ class sqlact extends accounts{
 	const	GEN_PASSWORD_LENGTH = 8;
 
 	public function __construct(){
-		$this->user=array();
 		$this->lastLength=0;
 	}
 
 	final public function act_load($uid=false,$search=false,$start=false,$length=false,$acl=true,$ob='ASC'){
+		
+		$this->user=array();
 		
 		$parms=array();
 		$additParams=array();
@@ -148,6 +149,7 @@ class sqlact extends accounts{
 			return false;
 		}
 		$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['CFG']['SQL']['DB']);
+		$newPass=true;
 		if($runNewPass){
 			mginit_loadPackage(array(array('auth','abstract','/classes/auth/'),array('sqlauth','class','/classes/auth/')));
 			$auth=new sqlauth();
