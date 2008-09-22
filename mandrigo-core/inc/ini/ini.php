@@ -160,6 +160,9 @@ $lang=false;
 
 $GLOBALS['MG']['PAGE']['TPL']=$GLOBALS['MG']['CFG']['PATH']['TPL'].$GLOBALS['MG']['LANG']['NAME'].'/pages/'.implode('/',explode($GLOBALS['MG']['SITE']['URL_DELIM'],$GLOBALS['MG']['PAGE']['PATH'])).'.tpl';
 
+if(!include_once($GLOBALS['MG']['CFG']['PATH']['TPL'].$GLOBALS['MG']['LANG']['NAME'].'/timezones.ini'.PHPEXT)){
+	trigger_error('(WLINIT): Could not load timezone data.',E_USER_ERROR);
+}
 
 /**
 * Load Packages
