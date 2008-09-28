@@ -60,7 +60,7 @@ class sqlact extends accounts{
 		$additParams['orderby']=array(array('user_uid'),array($ob));
 		
 		$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['SITE']['ACCOUNT_DB']);
-		if(!$users=$GLOBALS['MG']['SQL']->sql_fetchArray(array($GLOBALS['MG']['SITE']['ACCOUNT_TBL']),array(),$parms,DB_ASSOC,DB_ALL_ROWS,$additParams)){
+		if(!$users=$GLOBALS['MG']['SQL']->sql_fetchArray(array($GLOBALS['MG']['SITE']['ACCOUNT_TBL']),false,$parms,DB_ASSOC,DB_ALL_ROWS,$additParams)){
 			trigger_error('(SQLACT): Could not load user data',E_USER_ERROR);
 			return false;
 		}
@@ -74,6 +74,16 @@ class sqlact extends accounts{
 			for($j=0;$j<$soq;$j++){
 				$nkey=strtoupper(ereg_replace('user_','',$keys[$j]));
 				switch($nkey){
+					case 'IM':
+						$tmp=explode(';',$dta[$keys[$j]]);
+						$sot=count($tmp);
+						for($k=0;$k<$sot;$k++){
+							$curim=explode(':',$tmp[$k]);
+							if(isset($curim[1])){
+								$this->user[$dta['user_uid']]['IM'][$curim[0]]=$curim[1];	
+							}
+						}
+					break;
 					case 'BANNED':
 						$this->user[$dta['user_uid']]['BANNED']=(boolean)$dta[$keys[$j]];
 					break;
