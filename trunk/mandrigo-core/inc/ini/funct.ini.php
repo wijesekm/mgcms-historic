@@ -29,7 +29,7 @@ if(!defined('STARTED')){
 
 
 function mg_checkACL($page,$acl){
-	if(is_array($GLOBALS['MG']['USER']['ACL'][$page])){
+	if(isset($GLOBALS['MG']['USER']['ACL'][$page])){
 		if(isset($GLOBALS['MG']['USER']['ACL'][$page][$acl])){
 			if((boolean)$GLOBALS['MG']['USER']['ACL'][$page][$acl]===true){
 				return true;
@@ -39,7 +39,7 @@ function mg_checkACL($page,$acl){
 			}
 		}
 	}
-	if(is_array($GLOBALS['MG']['USER']['ACL']['*'])){
+	if(isset($GLOBALS['MG']['USER']['ACL']['*'])){
 		if((boolean)$GLOBALS['MG']['USER']['ACL']['*'][$acl]===true){
 			return true;
 		}		

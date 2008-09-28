@@ -177,7 +177,12 @@ class page{
 			return false;
 		}
 		if(eregi('::',$hook)){
+			
 			$hook=explode('::',$hook);
+			
+			if(!isset($this->obj[$hook[0]])){
+				$this->obj[$hook[0]]=true;
+			}
 			if(!is_object($this->obj[$hook[0]])){
 				eval('$this->obj[\''.$hook[0].'\']=new '.$hook[0].'();');
 				if(!is_object($this->obj[$hook[0]])){

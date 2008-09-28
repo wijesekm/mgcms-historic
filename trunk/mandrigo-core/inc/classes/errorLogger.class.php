@@ -32,14 +32,11 @@ class errorLogger{
 	* Variables
 	*/
 	private $errorTypes;
-	private $errors;
 	private $userErrors;
 
 	/**
 	* Constants
 	*/
-	const TEMPLATE_NAME		= 'error_log.tpl';
-	const USER_ERRORS		= 'user-errors.log';
 	const PHP_ERRORS		= 'php-errors.log';
 	
 	/**
@@ -62,10 +59,8 @@ class errorLogger{
                 E_RECOVERABLE_ERROR  => 'Catchable Fatal Error'
                 );
         $this->userErrors = array(E_USER_ERROR, E_USER_WARNING, E_USER_NOTICE);
-        $this->errors=array();
 	}
 	public function __destruct(){
-		$this->errors=false;
 		$this->userErrors=false;
 		$this->errorTypes=false;
 	}
@@ -100,9 +95,8 @@ class errorLogger{
 		$err .= "\t<scriptlinenum>" . $linenum . "</scriptlinenum>\n";
 		$err .= "</errorentry>\n\n";
 		if(in_array($errno,$this->userErrors)){
-			$this->el_logRotate($GLOBALS['MG']['CFG']['PATH']['LOG'].errorLogger::USER_ERRORS);
-			$this->errors[]=array($dt, $errno, $errmsg, $filename, $linenum);
-			return @error_log($err, 3,$GLOBALS['MG']['CFG']['PATH']['LOG'].errorLogger::USER_ERRORS);		
+			$this->el_logRotate($GLOBALS['MG']['CFG']['PATH']['LOG'].$this->errorTypes[$errno].'.log');
+			return @error_log($err, 3,$GLOBALS['MG']['CFG']['PATH']['LOG'].$this->errorTypes[$errno].'.log');		
 		}
 		else{
 			$this->el_logRotate($GLOBALS['MG']['CFG']['PATH']['LOG'].errorLogger::PHP_ERRORS);
