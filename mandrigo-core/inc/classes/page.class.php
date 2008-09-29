@@ -87,7 +87,7 @@ class page{
 	public function page_generate(){
 		if($GLOBALS['MG']['PAGE']['ALLOWCACHE']=='1'){
 			$cache=new mgcache();
-			$content=$cache->mgc_readcache();
+			$content=$cache->mgc_readcache($this->page_getModified());
 			if($content!=false){
 				return $content;
 			}
@@ -138,6 +138,27 @@ class page{
 			
 			return $this->content;
 		}
+	}
+	
+	private function page_getModified(){
+		$GLOBALS['MG']['PAGE']['CACHEHOOKS']=explode(';',$GLOBALS['MG']['PAGE']['CACHEHOOKS']);
+		if(!$GLOBALS['MG']['PAGE']['CACHEHOOKS'][0]){
+			return $GLOBALS['MG']['PAGE']['MODIFIED'];
+		}
+		$soq=count($GLOBALS['MG']['PAGE']['CACHEHOOKS']);
+		$time=0;
+		for($i=0;$i<$soq;$i++){
+			if($GLOBALS['MG']['PAGE']['CACHEHOOKS'][$i]=='page'){
+				$tmp=$GLOBALS['MG']['PAGE']['MODIFIED'];
+			}
+			else if($GLOBALS['MG']['PAGE']['CACHEHOOKS'][$i]){
+				$tmp=$this->page_hookEval($GLOBALS['MG']['PAGE']['CACHEHOOKS'][$i]);
+			}
+			if($tmp > $time){
+				$time=$tmp;
+			}
+		}
+		return $time;
 	}
 	
 	private function page_getTitle(){
