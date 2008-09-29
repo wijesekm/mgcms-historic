@@ -46,20 +46,13 @@ class parser{
 		$keys=array_keys($lang);
 		$soq=count($keys);
 		for($i=0;$i<$soq;$i++){
-			if(ereg('{LANG:'.$keys[$i].'}',$text)){
-				$text=ereg_replace('{LANG:'.$keys[$i].'}',$lang[$keys[$i]],$text);
+			if(ereg('{ACRO:}',$keys[$i])&&eregi('{'.$keys[$i].'}',$text)){
+				$tmp=explode(':',$keys[$i]);
+				$text=eregi_replace('{ACRO:('.$tmp[1].')}',$GLOBALS['MG']['LANG']['ACRO'],$text);
+				$text=ereg_replace('{AP_ACROVALUE}',$lang[$keys[$i]],$text);
 			}
-		}
-		return $text;
-	}
-	
-	public function p_aparse($acronyms,$text){
-		$keys=array_keys($acronyms);
-		$soq=count($keys);
-		for($i=0;$i<$soq;$i++){
-			if(eregi('{ACRO:'.$keys[$i].'}',$text)){
-				$text=eregi_replace('{ACRO:('.$keys[$i].')}',$GLOBALS['MG']['LANG']['ACRO'],$text);
-				$text=ereg_replace('{AP_ACROVALUE}',$acronyms[$keys[$i]],$text);
+			else if(ereg('{LANG:'.$keys[$i].'}',$text)){
+				$text=ereg_replace('{LANG:'.$keys[$i].'}',$lang[$keys[$i]],$text);
 			}
 		}
 		return $text;
