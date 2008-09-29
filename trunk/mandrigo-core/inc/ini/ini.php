@@ -40,6 +40,7 @@ set_error_handler('mginit_errorHandler');
 */
 $load=array(array('template','class','/classes/'),
 			array('parser','class','/classes/parsers/'),
+			array('mgcache','class','/classes/'),
 			array('sql','abstract','/classes/sql/'),
 			array($GLOBALS['MG']['CFG']['SQL']['METHOD'],'class','/classes/sql/'),
 			array('session','class','/classes/auth/'),
