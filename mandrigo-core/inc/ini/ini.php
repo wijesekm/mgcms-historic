@@ -39,6 +39,7 @@ set_error_handler('mginit_errorHandler');
 * Load some initial packages
 */
 $load=array(array('template','class','/classes/'),
+			array('parser','class','/classes/parsers/'),
 			array('sql','abstract','/classes/sql/'),
 			array($GLOBALS['MG']['CFG']['SQL']['METHOD'],'class','/classes/sql/'),
 			array('session','class','/classes/auth/'),
