@@ -59,15 +59,15 @@ class parser{
 	}
 	
 	public function p_phpcompile($section){
-		if(!eregi(template::P_CODE_START,$section)||!eregi(template::P_CODE_END,$section)){
+		if(!eregi(parser::P_CODE_START,$section)||!eregi(parser::P_CODE_END,$section)){
 			trigger_error('Nothing to compile in template',E_USER_NOTICE);
 			return $section;
 		}
-		$section=explode(template::P_CODE_START,$section);
+		$section=explode(parser::P_CODE_START,$section);
 		$ssoc=count($section);
 		for($cco=0;$cco<$ssoc;$cco++){
-			if(eregi(template::P_CODE_END,$section[$cco])){
-				$section_split=explode(template::P_CODE_END,$section[$cco]);
+			if(eregi(parser::P_CODE_END,$section[$cco])){
+				$section_split=explode(parser::P_CODE_END,$section[$cco]);
 				$retvar='';
 				eval($section_split[0]);
 				if(!$retvar){
