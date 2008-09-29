@@ -85,6 +85,13 @@ class page{
 	}
 	
 	public function page_generate(){
+		if($GLOBALS['MG']['PAGE']['ALLOWCACHE']=='1'){
+			$cache=new mgcache();
+			$content=$cache->mgc_readcache();
+			if($content!=false){
+				return $content;
+			}
+		}
 		
 		$GLOBALS['MG']['PAGE']['NOSITETPL']=false;
 		
@@ -117,9 +124,18 @@ class page{
 		if(!$GLOBALS['MG']['PAGE']['NOSITETPL']){
 			$this->vars=mg_mergeArrays($this->vars,array('TITLE'=>$this->title,'CONTENT'=>$this->content));
 			$tpl->tpl_parse($this->vars,'main',2,true);
-			return $tpl->tpl_return('main');		
+			if($GLOBALS['MG']['PAGE']['ALLOWCACHE']=='1'){
+				
+				$cache->mgc_cache($tpl->tpl_return('main'));
+			}			
+			
+			return $tpl->tpl_return('main');
 		}
 		else{
+			if($GLOBALS['MG']['PAGE']['ALLOWCACHE']=='1'){
+				$cache->mgc_cache($this->content);
+			}
+			
 			return $this->content;
 		}
 	}
