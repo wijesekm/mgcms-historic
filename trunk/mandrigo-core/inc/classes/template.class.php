@@ -188,13 +188,12 @@ class template{
 			case 2:
 				$section=$this->parser->p_vparse($vars,$section);
 				$section=$this->parser->p_lparse($GLOBALS['MG']['LANG'],$section);
-				$section=$this->parser->p_lparse($GLOBALS['MG']['ACRONYM'],$section);
 				$section=$this->parser->p_phpcompile($section);
+				$section=$this->parser->p_vparse($vars,$section);
 			break;
 			case 1:
 				$section=$this->parser->p_vparse($vars,$section);
 				$section=$this->parser->p_lparse($GLOBALS['MG']['LANG'],$section);
-				$section=$this->parser->p_lparse($GLOBALS['MG']['ACRONYM'],$section);
 			break;
 			default:
 				
