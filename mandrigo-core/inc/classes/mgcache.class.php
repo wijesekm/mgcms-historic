@@ -33,7 +33,7 @@ class mgcache{
 	public function mgc_readcache(){
 		$cache='';
 		$new_path=$this->cache_base.implode('/',explode($GLOBALS['MG']['SITE']['URL_DELIM'],$GLOBALS['MG']['PAGE']['PATH']));
-		$new_path.='.'.$GLOBALS['MG']['USER']['UID'].'.cache';
+		$new_path.='.'.$GLOBALS['MG']['USER']['UID'].'.'.$this->mgc_varsIntoName().'cache';
 		if(is_file($new_path)){
 			
 			$ftime=filectime($new_path);
@@ -70,7 +70,7 @@ class mgcache{
 			return false;
 		}
 		$new_path=$this->cache_base.$new_path;
-		$new_path.=$page_name.'.'.$GLOBALS['MG']['USER']['UID'].'.cache';
+		$new_path.=$page_name.'.'.$GLOBALS['MG']['USER']['UID'].'.'.$this->mgc_varsIntoName().'cache';
 		if($f=fopen($new_path,'w')){
 			fwrite($f,$content);
 			fclose($f);
@@ -95,5 +95,20 @@ class mgcache{
 			}
 		}
 		return true;
+	}
+	
+	private function mgc_varsIntoName(){
+		$soq=count($GLOBALS['MG']['GET']);
+		$keys=array_keys($GLOBALS['MG']['GET']);
+		$str='';
+		for($i=0;$i<$soq;$i++){
+			if($keys[$i]!='PAGE'&&$GLOBALS['MG']['GET'][$keys[$i]]&&$GLOBALS['MG']['GET'][$keys[$i]]!='0'){
+				$str=$keys[$i].$GLOBALS['MG']['GET'][$keys[$i]];
+			}
+		}
+		if($str){
+			$str.='.';
+		}
+		return $str;
 	}
 }
