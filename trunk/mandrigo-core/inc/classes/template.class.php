@@ -35,8 +35,6 @@ class template{
 	const TPL_START 		= '<!--TPL_START_';
 	const TPL_END			= '<!--TPL_END_';
 	const TPL_E				= '-->';
-	const TPL_CODE_START 	= '<!--TPL_CODE_START-->';
-	const TPL_CODE_END		= '<!--TPL_CODE_END-->';
 	const TPL_ALL			= 'ALL';
 	
 	/**
@@ -47,6 +45,7 @@ class template{
 	private $filter;
 	private $keys;
 	private $size;
+	private $parser;
 	
 	/**
 	* Construct and Destruction functions
@@ -54,12 +53,14 @@ class template{
 	
 	public function __construct(){
 		$this->tpl=array();
+		$this->parser=new parser();
 	}
 	public function __destruct(){
 		$this->tpl=false;
 		$this->filter=false;
 		$this->keys=false;
 		$this->size=false;
+		$this->parser=false;
 	}
 	
 	/**
@@ -185,12 +186,15 @@ class template{
 	private function tpl_parseSection($vars,$section,$level,$rempty){
 		switch($level){
 			case 2:
-				$section=$this->tpl_vparse($vars,$section);
-				$section=$this->tpl_compile($vars,$section);
-				$section=$this->tpl_vparse($vars,$section);
+				$section=$this->parser->p_vparse($vars,$section);
+				$section=$this->parser->p_lparse($GLOBALS['MG']['LANG'],$section);
+				$section=$this->parser->p_lparse($GLOBALS['MG']['ACRONYM'],$section);
+				$section=$this->parser->p_phpcompile($section);
 			break;
 			case 1:
-				$section=$this->tpl_vparse($vars,$section);
+				$section=$this->parser->p_vparse($vars,$section);
+				$section=$this->parser->p_lparse($GLOBALS['MG']['LANG'],$section);
+				$section=$this->parser->p_lparse($GLOBALS['MG']['ACRONYM'],$section);
 			break;
 			default:
 				
@@ -206,67 +210,4 @@ class template{
 		
 	}
 
-	/**
-	* tpl_vparse($vars,$section)
-	*
-	* Parses the variables in a section
-	*
-	* INPUTS:
-	* $vars		-	Array of variable names and values (array of strings)
-	* $section	-	Text to parse (string)
-	*
-	* OUTPUTS:
-	* The section or false on fail
-	*/	
-	private function tpl_vparse($vars,$section){
-		$keys=array_keys($vars);
-		$sov=count($keys);
-        for($i=0;$i<$sov;$i++){
-        	if(eregi($keys[$i],$section)){
-	        	if(eregi('LANG::',$keys[$i])){
-	        		$title=ereg_replace('LANG::','',$keys[$i]);
-	        		$section=ereg_replace("\{".$keys[$i]."\}",$GLOBALS['MG']['LANG'][$title],$section);
-				}
-				else{
-					$section=ereg_replace("\{".$keys[$i]."\}",$vars[$keys[$i]],$section);
-				}				
-			}
-        }
-        return $section;
-	}
-
-	/**
-	* tpl_compile($vars,$section)
-	*
-	* Compiles embedded PHP code in a section
-	*
-	* INPUTS:
-	* $vars		-	Array of variable names and values (array of strings)
-	* $section	-	Text to parse (string)
-	*
-	* OUTPUTS:
-	* The section or false on fail
-	*/	
-	private function tpl_compile($vars,$section){
-		if(!eregi(template::TPL_CODE_START,$section)||!eregi(template::TPL_CODE_END,$section)){
-			trigger_error('Nothing to compile in template',E_USER_NOTICE);
-			return $section;
-		}
-		$section=explode(template::TPL_CODE_START,$section);
-		$ssoc=count($section);
-		for($cco=0;$cco<$ssoc;$cco++){
-			if(eregi(template::TPL_CODE_END,$section[$cco])){
-				$section_split=explode(template::TPL_CODE_END,$section[$cco]);
-				$retvar='';
-				eval($section_split[0]);
-				if(!$retvar){
-					trigger_error('(TEMPLATE): Compile Error in template!',E_USER_WARNING);
-				}
-				
-				$section[$cco]=$retvar.$section_split[1];
-				
-			}
-		}
-		return implode('',$section);
-	}
 }
