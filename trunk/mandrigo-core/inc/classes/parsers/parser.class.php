@@ -46,7 +46,7 @@ class parser{
 		$keys=array_keys($lang);
 		$soq=count($keys);
 		for($i=0;$i<$soq;$i++){
-			if(ereg('{ACRO:}',$keys[$i])&&eregi('{'.$keys[$i].'}',$text)){
+			if(ereg('ACRO:',$keys[$i])&&eregi('{'.$keys[$i].'}',$text)){
 				$tmp=explode(':',$keys[$i]);
 				$text=eregi_replace('{ACRO:('.$tmp[1].')}',$GLOBALS['MG']['LANG']['ACRO'],$text);
 				$text=ereg_replace('{AP_ACROVALUE}',$lang[$keys[$i]],$text);

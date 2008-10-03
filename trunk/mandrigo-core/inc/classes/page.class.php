@@ -146,12 +146,9 @@ class page{
 			return $GLOBALS['MG']['PAGE']['MODIFIED'];
 		}
 		$soq=count($GLOBALS['MG']['PAGE']['CACHEHOOKS']);
-		$time=0;
+		$time=$GLOBALS['MG']['PAGE']['MODIFIED'];
 		for($i=0;$i<$soq;$i++){
-			if($GLOBALS['MG']['PAGE']['CACHEHOOKS'][$i]=='page'){
-				$tmp=$GLOBALS['MG']['PAGE']['MODIFIED'];
-			}
-			else if($GLOBALS['MG']['PAGE']['CACHEHOOKS'][$i]){
+			if($GLOBALS['MG']['PAGE']['CACHEHOOKS'][$i]){
 				$tmp=$this->page_hookEval($GLOBALS['MG']['PAGE']['CACHEHOOKS'][$i]);
 			}
 			if($tmp > $time){

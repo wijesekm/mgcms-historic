@@ -38,7 +38,6 @@ class mgcache{
 			
 			$ftime=filectime($new_path);
 			$sitemod=$GLOBALS['MG']['SQL']->sql_fetchresult(array(TABLE_PREFIX.'pages'),array(array('page_modified')),array(array(false,false,'page_path','=','*')));
-
 			if($ftime < $pageTime || $ftime < $sitemod){
 				return false;
 			}
@@ -100,7 +99,7 @@ class mgcache{
 		$keys=array_keys($GLOBALS['MG']['GET']);
 		$str='';
 		for($i=0;$i<$soq;$i++){
-			if($keys[$i]!='PAGE'&&$GLOBALS['MG']['GET'][$keys[$i]]&&$GLOBALS['MG']['GET'][$keys[$i]]!='0'){
+			if(in_array($keys[$i],$GLOBALS['MG']['CACHE']['USEINCACHE'])&&$GLOBALS['MG']['GET'][$keys[$i]]&&$GLOBALS['MG']['GET'][$keys[$i]]!='0'){
 				$str=$keys[$i].$GLOBALS['MG']['GET'][$keys[$i]];
 			}
 		}

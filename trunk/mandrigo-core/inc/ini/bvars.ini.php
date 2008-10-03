@@ -26,6 +26,8 @@ if(!defined('STARTED')){
 	die();
 }
 
+$GLOBALS['MG']['CFG']['USEINCACHE']=array();
+
 mginit_loadVars();
 
 function mginit_loadVars(){
@@ -43,10 +45,14 @@ function mginit_loadVars(){
 	}
 
 	for($i=0;$i<$vars['count'];$i++){
-		
+
 		$name=$vars[$i]['var_callname'];
 		$uname=$vars[$i]['var_getname'];
 		
+		if($vars[$i]['var_useInCache']=='1'){
+			$GLOBALS['MG']['CACHE']['USEINCACHE'][]=$name;
+		}
+				
 		if($name){
 			$clean=explode(',',$vars[$i]['var_clean']);
 			switch($vars[$i]['var_type']){
