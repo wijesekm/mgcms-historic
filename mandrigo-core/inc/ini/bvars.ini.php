@@ -64,8 +64,9 @@ function mginit_loadVars(){
 	}
 }
 function mginit_genURLType3(){
-	$raw_url=$_GET['url'];
-    $raw_url = explode("/",$raw_url);
+	$raw_url=(isset($_GET['url']))?$_GET['url']:array();
+	$raw_url=ereg_replace('\/\/','/',$raw_url);
+    $raw_url = explode('/',$raw_url);
     $url=array();
     
 	$soq=count($raw_url);
@@ -85,6 +86,7 @@ function mginit_genURLType2(){
     }
 
     $raw_url = eregi_replace("^.*".$GLOBALS['MG']['SITE']['INDEX_NAME']."/p","p",$raw_url);
+    $raw_url=ereg_replace('\/\/','/',$raw_url);
     $raw_url = explode("/",$raw_url);
     $url=array();
     
