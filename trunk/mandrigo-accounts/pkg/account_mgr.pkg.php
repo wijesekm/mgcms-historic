@@ -31,8 +31,6 @@ class account_mgr{
 	private $vars;
 	private $mgr;
 	
-	const TPL_NAME	= 'account_mgr.tpl';
-	
 	public function __construct(){
 		$this->vars=array();
 		eval('$this->mgr=new '.$GLOBALS['MG']['SITE']['ACCOUNT_TYPE'].'();');
@@ -104,7 +102,7 @@ class account_mgr{
 			'E-MAIL'=>$udta[$GLOBALS['MG']['GET']['UID']]['EMAIL']
 		);
 		$tpl=new template();
-		$tpl->tpl_load($GLOBALS['MG']['CFG']['PATH']['TPL'].$GLOBALS['MG']['LANG']['NAME'].'/'.account_mgr::TPL_NAME,'removeactmail');
+		$tpl->tpl_load($GLOBALS['MG']['PAGE']['TPL'],'removeactmail');
 		$tpl->tpl_parse($parse,'removeactmail');
 		$ppm=new phpmailer();
 		$ppm->phpm_addSubject($GLOBALS['MG']['LANG']['AM_EMAIL_SUBJECT']);
@@ -135,7 +133,7 @@ class account_mgr{
 			return $this->am_genList($GLOBALS['MG']['LANG']['AM_INT_ERROR']);
 		}
 		$tpl=new template();
-		$tpl->tpl_load($GLOBALS['MG']['CFG']['PATH']['TPL'].$GLOBALS['MG']['LANG']['NAME'].'/'.account_mgr::TPL_NAME,'newactemail');
+		$tpl->tpl_load($GLOBALS['MG']['PAGE']['TPL'],'newactemail');
 		$parse=array(
 			'USERNAME'=>$GLOBALS['MG']['POST']['AM-ADD-UID'],
 			'E-MAIL'=>$GLOBALS['MG']['POST']['AM-ADD-EMAIL'],
@@ -157,8 +155,88 @@ class account_mgr{
 		return $this->am_genList($GLOBALS['MG']['LANG']['AM_ADD_ADDED']);
 	}
 	
-	private function am_profile(){
-		
+	private function am_profile($msg=''){
+		$udta=$this->mgr->act_load($GLOBALS['MG']['GET']['UID'],false,false,false,false);
+		$parse=$udta[$GLOBALS['MG']['GET']['UID']];
+		$parse['AM_MSG']=$msg;
+		$parse['NAME']=implode(' ',$parse['NAME']);
+		$parse['PASSWORD']=false;
+		$keys=array_keys($parse['IM']);
+		$soq=count($keys);
+		$newim='';
+		for($i=0;$i<$soq;$i++){
+			$newim.=$keys[$i].': '.$parse['IM'][$keys[$i]]."\n";
+		}
+		$parse['IM']=$newim;
+		$parse['AUTH_OVERRIDE']=$GLOBALS['MG']['SITE']['AUTH_OVERRIDE'];
+		$parse['LANG_OVERRIDE']=$GLOBALS['MG']['SITE']['LANG_ALLOW_OVERRIDE'];
+		$parse['LANG_OPTIONS']=$this->am_formatLangOpts($parse['LANG']);
+		$parse['TIME_ZONES']=$this->am_formatTimeZones($parse['TZ']);
+		$tpl=new template();
+		$tpl->tpl_load($GLOBALS['MG']['PAGE']['TPL'],'actmgruser');
+		$tpl->tpl_parse($parse,'actmgruser');
+		return $tpl->tpl_return('actmgruser');
+	}
+	
+	private function am_formatTimeZones($tz){
+		$soq=count($GLOBALS['MG']['TIMEZONES']);
+		$keys=array_keys($GLOBALS['MG']['TIMEZONES']);
+		$ret='';
+		$other='';
+		$found=false;
+		if($tz==""){
+			$ret.=ereg_replace('{VALUE}','',ereg_replace('{NAME}',$GLOBALS['MG']['LANG']['AM_SD'],$GLOBALS['MG']['LANG']['OPTION']));
+			$found=true;
+		}
+		else{
+			$other.=ereg_replace('{VALUE}','',ereg_replace('{NAME}',$GLOBALS['MG']['LANG']['AM_SD'],$GLOBALS['MG']['LANG']['OPTION']));
+		}
+		for($i=0;$i<$soq;$i++){
+			if($keys[$i]==$tz){
+				$ret.=ereg_replace('{VALUE}',$keys[$i],ereg_replace('{NAME}',$GLOBALS['MG']['TIMEZONES'][$keys[$i]],$GLOBALS['MG']['LANG']['OPTION']));
+				$ret.=$other;
+				$found=true;
+			}
+			else{
+				if(!$found){
+					$other.=ereg_replace('{VALUE}',$keys[$i],ereg_replace('{NAME}',$GLOBALS['MG']['TIMEZONES'][$keys[$i]],$GLOBALS['MG']['LANG']['OPTION']));
+				}
+				else{
+					$ret.=ereg_replace('{VALUE}',$keys[$i],ereg_replace('{NAME}',$GLOBALS['MG']['TIMEZONES'][$keys[$i]],$GLOBALS['MG']['LANG']['OPTION']));
+				}				
+			}
+		}
+		return $ret;		
+	}
+	
+	private function am_formatLangOpts($lang){
+		$all_langs=$GLOBALS['MG']['SQL']->sql_fetchArray(array(TABLE_PREFIX.'langsets'),array(array('lang_name')),false);
+		$ret='';
+		$other='';
+		$found=false;
+		if($lang==""){
+			$ret.=ereg_replace('{VALUE}','',ereg_replace('{NAME}',$GLOBALS['MG']['LANG']['AM_SD'],$GLOBALS['MG']['LANG']['OPTION']));
+			$found=true;
+		}
+		else{
+			$other.=ereg_replace('{VALUE}','',ereg_replace('{NAME}',$GLOBALS['MG']['LANG']['AM_SD'],$GLOBALS['MG']['LANG']['OPTION']));
+		}
+		for($i=0;$i<$all_langs['count'];$i++){
+			if($all_langs[$i]['lang_name']==$lang){
+				$ret.=ereg_replace('{VALUE}',$all_langs[$i]['lang_name'],ereg_replace('{NAME}',$all_langs[$i]['lang_name'],$GLOBALS['MG']['LANG']['OPTION']));
+				$ret.=$other;
+				$found=true;
+			}
+			else{
+				if(!$found){
+					$other.=ereg_replace('{VALUE}',$all_langs[$i]['lang_name'],ereg_replace('{NAME}',$all_langs[$i]['lang_name'],$GLOBALS['MG']['LANG']['OPTION']));
+				}
+				else{
+					$ret.=ereg_replace('{VALUE}',$all_langs[$i]['lang_name'],ereg_replace('{NAME}',$all_langs[$i]['lang_name'],$GLOBALS['MG']['LANG']['OPTION']));
+				}				
+			}
+		}
+		return $ret;
 	}
 	
 	private function am_genList($msg='',$ob='ASC'){
@@ -173,7 +251,7 @@ class account_mgr{
 		$soq=count($keys);
 		for($i=0;$i<$soq;$i++){
 			if($users[$keys[$i]]['UID']){
-				$tpl->tpl_load($GLOBALS['MG']['CFG']['PATH']['TPL'].$GLOBALS['MG']['LANG']['NAME'].'/'.account_mgr::TPL_NAME,'actitem');
+				$tpl->tpl_load($GLOBALS['MG']['PAGE']['TPL'],'actitem');
 				$parse['UID']=$users[$keys[$i]]['UID'];
 				$parse['E-MAIL']=$users[$keys[$i]]['EMAIL'];
 				$parse['USER_NAME']=implode(' ',$users[$keys[$i]]['NAME']);
@@ -184,7 +262,7 @@ class account_mgr{
 			}
 		}
 
-		$tpl->tpl_load($GLOBALS['MG']['CFG']['PATH']['TPL'].$GLOBALS['MG']['LANG']['NAME'].'/'.account_mgr::TPL_NAME,'actmgrmain');
+		$tpl->tpl_load($GLOBALS['MG']['PAGE']['TPL'],'actmgrmain');
 		$this->vars=mg_mergeArrays($this->vars,array('AM_MSG'=>$msg,'ACCOUNTS'=>$actstr,'NAVBAR'=>$this->am_navBar($length)));
 		return $tpl->tpl_return('actmgrmain');
 	}
@@ -208,7 +286,7 @@ class account_mgr{
 		$tpl=new template();
 		$pstr='';
 		for($i=0;$i<$pages;$i++){
-			$tpl->tpl_load($GLOBALS['MG']['CFG']['PATH']['TPL'].$GLOBALS['MG']['LANG']['NAME'].'/'.account_mgr::TPL_NAME,'pdelim');
+			$tpl->tpl_load($GLOBALS['MG']['PAGE']['TPL'],'pdelim');
 			$url=mg_genUrl(array_merge($base,array('pn',(string)$i)));
 			$tpl->tpl_parse(array('URL'=>$url,'PG'=>(string)($i+1),'INDEX'=>(string)$i,'LENGTH'=>(string)$pages),'pdelim');
 			$pstr.=$tpl->tpl_return('pdelim');
@@ -226,11 +304,11 @@ class account_mgr{
 			$next="yes";
 		}
 		
-		$tpl->tpl_load($GLOBALS['MG']['CFG']['PATH']['TPL'].$GLOBALS['MG']['LANG']['NAME'].'/'.account_mgr::TPL_NAME,'subnav');
+		$tpl->tpl_load($GLOBALS['MG']['PAGE']['TPL'],'subnav');
 		$tpl->tpl_parse(array('BACK'=>$back,'NEXT'=>$next,'BACK_URL'=>$urlb,'NEXT_URL'=>$urln),'subnav');
 		$nstr=$tpl->tpl_return('subnav');
 		
-		$tpl->tpl_load($GLOBALS['MG']['CFG']['PATH']['TPL'].$GLOBALS['MG']['LANG']['NAME'].'/'.account_mgr::TPL_NAME,'navbar');
+		$tpl->tpl_load($GLOBALS['MG']['PAGE']['TPL'],'navbar');
 		$tpl->tpl_parse(array('PAGES'=>$pstr,'SUBNAV'=>$nstr),'navbar');
 		return $tpl->tpl_return('navbar');
 	}
