@@ -29,9 +29,7 @@ if(!defined('STARTED')){
 class login_manager{	
 	
 	private $vars;
-	
-	const TPL_NAME		= 'login_manager.tpl';
-	
+
 	public function __construct(){
 		$this->vars=array('LM_MSG'=>'');
 	}
@@ -83,7 +81,7 @@ class login_manager{
 	
 	private function lm_loginTemplate(){
 		$tpl=new template();
-		if(!$tpl->tpl_load($GLOBALS['MG']['CFG']['PATH']['TPL'].$GLOBALS['MG']['LANG']['NAME'].'/'.login_manager::TPL_NAME,'loginscreen')){
+		if(!$tpl->tpl_load($GLOBALS['MG']['PAGE']['TPL'],'loginscreen')){
 			trigger_error('(LOGIN_MANAGER): Could not load site template',E_USER_ERROR);
 			return false;
 		}
