@@ -64,7 +64,7 @@ function mginit_loadVars(){
 	}
 }
 function mginit_genURLType3(){
-	$raw_url=(isset($_GET['url']))?$_GET['url']:array();
+	$raw_url=(isset($_GET['url']))?$_GET['url']:'';
 	$raw_url=ereg_replace('\/\/','/',$raw_url);
     $raw_url = explode('/',$raw_url);
     $url=array();
@@ -72,7 +72,12 @@ function mginit_genURLType3(){
 	$soq=count($raw_url);
     for($i=0;$i<$soq;$i=$i+2){
     	if($raw_url[$i]){
-        	$url = array_merge_recursive($url, array($raw_url[$i]=>$raw_url[$i+1]));		
+    		if($raw_url[$i+1]){
+				$url = array_merge_recursive($url, array($raw_url[$i]=>$raw_url[$i+1]));	
+			}
+			else{
+				$url = array_merge_recursive($url, array($raw_url[$i]=>''));
+			}		
 		}
     }
 	return $url;
@@ -93,7 +98,12 @@ function mginit_genURLType2(){
 	$soq=count($raw_url);
     for($i=0;$i<$soq;$i=$i+2){
     	if($raw_url[$i]){
-        	$url = array_merge_recursive($url, array($raw_url[$i]=>$raw_url[$i+1]));		
+    		if($raw_url[$i+1]){
+				$url = array_merge_recursive($url, array($raw_url[$i]=>$raw_url[$i+1]));	
+			}
+			else{
+				$url = array_merge_recursive($url, array($raw_url[$i]=>''));
+			}			
 		}
     }
 	return $url;
