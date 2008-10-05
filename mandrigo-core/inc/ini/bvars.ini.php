@@ -27,6 +27,7 @@ if(!defined('STARTED')){
 }
 
 $GLOBALS['MG']['CFG']['USEINCACHE']=array();
+$GLOBALS['MG']['CFG']['STOPCACHE']=false;
 
 mginit_loadVars();
 
@@ -58,15 +59,24 @@ function mginit_loadVars(){
 			switch($vars[$i]['var_type']){
 				case 'GET':
 					$GLOBALS['MG']['GET'][$name]=isset($url[$uname])?mginit_cleanVar($url[$uname],$clean):$vars[$i]['var_default'];
+					if($vars[$i]['var_stopCache']=='1'&&$GLOBALS['MG']['GET'][$name]&&$GLOBALS['MG']['GET'][$name]!=$vars[$i]['var_default']){
+						$GLOBALS['MG']['CACHE']['STOPCACHE']=true;
+					}	
 				break;
 				case 'POST':
 					$GLOBALS['MG']['POST'][$name]=isset($_POST[$uname])?mginit_cleanVar($_POST[$uname],$clean):$vars[$i]['var_default'];
+					if($vars[$i]['var_stopCache']=='1'&&$GLOBALS['MG']['POST'][$name]&&$GLOBALS['MG']['POST'][$name]!=$vars[$i]['var_default']){
+						$GLOBALS['MG']['CACHE']['STOPCACHE']=true;
+					}
 				break;
 				case 'COOKIE':
 					$GLOBALS['MG']['COOKIE'][$name]=isset($_COOKIE[$uname])?mginit_cleanVar($_COOKIE[$uname],$clean):$vars[$i]['var_default'];		
 				break;	
 			};
 		}
+		
+	
+		
 	}
 }
 function mginit_genURLType3(){
