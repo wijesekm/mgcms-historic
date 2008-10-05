@@ -85,7 +85,7 @@ class page{
 	}
 	
 	public function page_generate(){
-		if($GLOBALS['MG']['PAGE']['ALLOWCACHE']=='1'){
+		if($GLOBALS['MG']['PAGE']['ALLOWCACHE']=='1'&&!$GLOBALS['MG']['CACHE']['STOPCACHE']){
 			$cache=new mgcache();
 			$content=$cache->mgc_readcache($this->page_getModified());
 			if($content!=false){
@@ -132,7 +132,7 @@ class page{
 			return $tpl->tpl_return('main');
 		}
 		else{
-			if($GLOBALS['MG']['PAGE']['ALLOWCACHE']=='1'){
+			if($GLOBALS['MG']['PAGE']['ALLOWCACHE']=='1'&&!$GLOBALS['MG']['CACHE']['STOPCACHE']){
 				$cache->mgc_cache($this->content);
 			}
 			

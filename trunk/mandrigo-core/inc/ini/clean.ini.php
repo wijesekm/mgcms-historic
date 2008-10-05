@@ -75,6 +75,9 @@ function mginit_cleanVar($value,$clean){
 		case 'page_title':
 			return (eregi("^[[:space:]a-z0-9_-]+$",$value))?$value:'';
 		break;
+		case 'title':
+			return (eregi("^[[:space:]a-z0-9_-|:,\.]+$",$value))?$value:'';
+		break;
 		case 'target':
 			return (eregi("^[a-z\/0-9:|._-]+$",$value))?$value:'';
 		break;
