@@ -356,6 +356,12 @@ class mysql extends sql{
 				$query=$this->sql_formatTable($table,'INSERT INTO');
 				$query.='(`'.implode('`,`',$params).'`) VALUES (\''.implode('\',\'',$data).'\');';
 			break;
+			case DB_RESETAUTO:
+				if(!$data){
+					$data=1;
+				}
+				$query=$this->sql_formatTable($table,'ALTER TABLE').'AUTO_INCREMENT = '.$data;
+			break;
 			case DB_REMOVE:
 				$query=$this->sql_formatTable($table,'DELETE FROM');
 				$query.=' '.$this->sql_formatConds($params).';';
