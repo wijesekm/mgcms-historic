@@ -33,6 +33,7 @@ define("DB_BETWEEN","SQL_BETWEEN");
 define("DB_IN","SQL_IN");
 define("DB_ALL_ROWS","SQL_ALL_ROWS");
 define("DB_UPDATE","SQL_UPDATE");
+define("DB_RESETAUTO");
 define("DB_INSERT","SQL_INSERT");
 define("DB_REMOVE","SQL_REMOVE");
 define("DB_DROP","SQL_DROP");

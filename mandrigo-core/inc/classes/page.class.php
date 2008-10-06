@@ -85,7 +85,7 @@ class page{
 	}
 	
 	public function page_generate(){
-		if($GLOBALS['MG']['PAGE']['ALLOWCACHE']=='1'&&!$GLOBALS['MG']['CACHE']['STOPCACHE']){
+		if($GLOBALS['MG']['PAGE']['ALLOWCACHE']=='1'&&!$GLOBALS['MG']['CFG']['STOPCACHE']){
 			$cache=new mgcache();
 			$content=$cache->mgc_readcache($this->page_getModified());
 			if($content!=false){
@@ -124,15 +124,20 @@ class page{
 		if(!$GLOBALS['MG']['PAGE']['NOSITETPL']){
 			$this->vars=mg_mergeArrays($this->vars,array('TITLE'=>$this->title,'CONTENT'=>$this->content));
 			$tpl->tpl_parse($this->vars,'main',2,true);
-			if($GLOBALS['MG']['PAGE']['ALLOWCACHE']=='1'){
-				
+			if($GLOBALS['MG']['PAGE']['ALLOWCACHE']=='1'&&(!$GLOBALS['MG']['CFG']['STOPCACHE']||$GLOBALS['MG']['CFG']['ALLOWWRITECACHE'])){
+				if(!is_object($cache)){
+					$cache=new mgcache();
+				}				
 				$cache->mgc_cache($tpl->tpl_return('main'));
 			}			
 			
 			return $tpl->tpl_return('main');
 		}
 		else{
-			if($GLOBALS['MG']['PAGE']['ALLOWCACHE']=='1'&&!$GLOBALS['MG']['CACHE']['STOPCACHE']){
+			if($GLOBALS['MG']['PAGE']['ALLOWCACHE']=='1'&&(!$GLOBALS['MG']['CFG']['STOPCACHE']||$GLOBALS['MG']['CFG']['ALLOWWRITECACHE'])){
+				if(!is_object($cache)){
+					$cache=new mgcache();
+				}
 				$cache->mgc_cache($this->content);
 			}
 			
