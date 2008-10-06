@@ -46,6 +46,7 @@ class template{
 	private $keys;
 	private $size;
 	private $parser;
+	private $adminTpl;
 	
 	/**
 	* Construct and Destruction functions
@@ -61,6 +62,7 @@ class template{
 		$this->keys=false;
 		$this->size=false;
 		$this->parser=false;
+		$this->adminTpl=false;
 	}
 	
 	/**
@@ -105,7 +107,44 @@ class template{
 		$this->size=count($this->keys);
 		return true;
 	}
-
+	
+	private function tpl_checkWrite($filename,$s_name){
+		$str='';
+		if(!$f=fopen($filename,'r')){
+			trigger_error('(TEMPLATE): Cannot open template: '.$filename, E_USER_ERROR);
+			return false;
+		}
+		while(!feof($f)){
+			$str.=fgets($f);
+		}
+		fclose($f);
+		$this->adminTpl=$str;
+		if(!eregi(template::TPL_START.$s_name.template::TPL_E,$str)||!eregi(template::TPL_END.$s_name.template::TPL_E,$str)){
+			return false;
+		}
+		return true;
+	}
+	
+	public function tpl_write($content,$s_name,$filename){
+		$start=template::TPL_START.$s_name.template::TPL_E;
+		$end=template::TPL_END.$s_name.template::TPL_E;
+		$write='';
+		$content=$start."\n".$content."\n".$end;
+		if(!$this->tpl_checkWrite($filename,$s_name)){
+			$write=$this->adminTpl."\n\n".$content;
+		}
+		else{
+			$write=ereg_replace($start.'(.*)'.$end,$content,$this->adminTpl);
+		}
+		if(!$f=fopen($filename,'w')){
+			trigger_error('(TEMPLATE): Cannto open template for writing: '.$filename,E_USER_ERROR);
+			return false;
+		}
+		fwrite($f,$write);
+		fclose($f);
+		return true;
+	}
+	
 	/**
 	* tpl_return($s_name=template::TPL_ALL)
 	*
