@@ -51,11 +51,18 @@ $load=array(array('template','class','/classes/'),
 mginit_loadPackage($load);
 
 
-eval('$GLOBALS[\'MG\'][\'SQL\']=new '.$GLOBALS['MG']['CFG']['SQL']['METHOD'].'();');
+if(!eval('$GLOBALS[\'MG\'][\'SQL\']=new '.$GLOBALS['MG']['CFG']['SQL']['METHOD'].'();')){
+	trigger_error('(INI): Invalid SQL method or no method set!', E_USER_ERROR);
+	die();
+}
 
-$GLOBALS['MG']['SQL']->sql_connect($GLOBALS['MG']['CFG']['SQL']['HOST'],$GLOBALS['MG']['CFG']['SQL']['PORT_SOCKET']
+$t=$GLOBALS['MG']['SQL']->sql_connect($GLOBALS['MG']['CFG']['SQL']['HOST'],$GLOBALS['MG']['CFG']['SQL']['PORT_SOCKET']
 								  ,$GLOBALS['MG']['CFG']['SQL']['USERNAME'],$GLOBALS['MG']['CFG']['SQL']['PASSWORD']
 								  ,$GLOBALS['MG']['CFG']['SQL']['DB'],$GLOBALS['MG']['CFG']['SQL']['PERSISTENT'],$GLOBALS['MG']['CFG']['SQL']['SSL']);
+if(!$t){
+	trigger_error('(INI): Could not connect to SQL database!', E_USER_ERROR);
+	die();
+}
 
 /**
 * Load Site Data
@@ -77,7 +84,9 @@ mginit_loadPackage($load);
 * User Data
 */				
 $ses=new session(0);
-eval('$act=new '.$GLOBALS['MG']['SITE']['ACCOUNT_TYPE'].'();');
+if(!eval('$act=new '.$GLOBALS['MG']['SITE']['ACCOUNT_TYPE'].'();')){
+trigger_error('(INI): Invalid account type or not account type set!', E_USER_ERROR);
+}
 
 if(!$ses->session_load($GLOBALS['MG']['COOKIE']['USER_NAME'],$GLOBALS['MG']['COOKIE']['USER_SESSION'])){
 	$GLOBALS['MG']['USER']=$act->act_load($GLOBALS['MG']['SITE']['DEFAULT_ACT']);
