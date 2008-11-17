@@ -92,18 +92,7 @@ function mg_genUrl($urlParts,$base=false,$ssl=false){
 	return $url;
 }
 
-function mg_formatTarget($url){
-	$url=ereg_replace('\/','[SLASH]',$url);
-	$url=ereg_replace('\?','[Q]',$url);
-	$url=ereg_replace('\&amp;','[AND]',$url);
-	$url=ereg_replace('\&','[AND]',$url);
-	return $url;
-}
-
 function mg_redirectTarget($target){
-	$target=ereg_replace('\[SLASH\]','/',$target);
-	$target=ereg_replace('\[Q\]','?',$target);
-	$target=ereg_replace('\[AND\]','&amp;',$target);
 	header('Location: '.$target);
 	die();
 }
@@ -118,6 +107,6 @@ function mg_redirectToLogin(){
 	else{
 		$url='http://'.$_SERVER['SERVER_NAME'].'/'.$_SERVER['REQUEST_URI'];
 	}
-	header('Location: '.$GLOBALS['MG']['SITE']['LOGIN_URL'].mg_formatTarget($url));
+	header('Location: '.$GLOBALS['MG']['SITE']['LOGIN_URL'].base64_encode($url));
 	die();
 }

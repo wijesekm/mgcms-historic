@@ -40,6 +40,9 @@ function mginit_cleanVar($value,$clean){
 	if((boolean)$clean[4]){
 		$value=mginit_RLD($value);
 	}
+	if((boolean)$clean[5]){
+			$value=base64_decode($value);
+	}
 	
 	switch ($clean[0]){
 		case 'boolean':
