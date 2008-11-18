@@ -50,8 +50,8 @@ $load=array(array('template','class','/classes/'),
 			array('funct','ini','/ini/'));
 mginit_loadPackage($load);
 
-
-if(!eval('$GLOBALS[\'MG\'][\'SQL\']=new '.$GLOBALS['MG']['CFG']['SQL']['METHOD'].'();')){
+eval('$GLOBALS[\'MG\'][\'SQL\']=new '.$GLOBALS['MG']['CFG']['SQL']['METHOD'].'();');
+if(!$GLOBALS['MG']['SQL']){
 	trigger_error('(INI): Invalid SQL method or no method set!', E_USER_ERROR);
 	die();
 }
@@ -84,8 +84,10 @@ mginit_loadPackage($load);
 * User Data
 */				
 $ses=new session(0);
-if(!eval('$act=new '.$GLOBALS['MG']['SITE']['ACCOUNT_TYPE'].'();')){
-trigger_error('(INI): Invalid account type or not account type set!', E_USER_ERROR);
+eval('$act=new '.$GLOBALS['MG']['SITE']['ACCOUNT_TYPE'].'();');
+if(!$act){
+	trigger_error('(INI): Invalid account type or not account type set!', E_USER_ERROR);
+	die();
 }
 
 if(!$ses->session_load($GLOBALS['MG']['COOKIE']['USER_NAME'],$GLOBALS['MG']['COOKIE']['USER_SESSION'])){
