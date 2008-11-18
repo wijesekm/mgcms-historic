@@ -41,7 +41,6 @@ class mgcache{
 			if($ftime < $pageTime || $ftime < $sitemod){
 				return false;
 			}
-			
 			if($f=fopen($new_path,'r')){
 				while(!feof($f)){
 					$cache.=fgets($f);
