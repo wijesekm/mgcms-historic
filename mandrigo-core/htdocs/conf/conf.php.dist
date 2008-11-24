@@ -37,7 +37,7 @@ $GLOBALS['MG']['CFG']['PATH']['TPL']=$GLOBALS['MG']['CFG']['PATH']['ROOT'].'tpl/
 $GLOBALS['MG']['CFG']['PATH']['IMG']=$GLOBALS['MG']['CFG']['PATH']['ROOT'].'htdocs/img/';
 $GLOBALS['MG']['CFG']['PATH']['LOG']=$GLOBALS['MG']['CFG']['PATH']['ROOT'].'logs/';
 $GLOBALS['MG']['CFG']['PATH']['PKG']=$GLOBALS['MG']['CFG']['PATH']['ROOT'].'pkg/';
-
+$GLOBALS['MG']['CFG']['PATH']['TMP']='/tmp/mandrigo/';
 
 /**
 * SQL Configuration
