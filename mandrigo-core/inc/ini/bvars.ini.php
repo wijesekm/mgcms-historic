@@ -86,20 +86,23 @@ function mginit_loadVars(){
 				break;
 				case 'FILE':
 					$GLOBALS['MG']['FILE'][$name]=array();
+					$GLOBALS['MG']['FILE'][$name]['ERROR']='';
 					if($_FILES[$uname]['name']){
 						if($_FILES[$uname]['error'] !=  UPLOAD_ERR_OK){
 							trigger_error('(BVARS): File upload error: '.$fileUploadErrors($_FILES[$uname]['error']),E_USER_WARNING);
+							$GLOBALS['MG']['FILE'][$name]['ERROR']=$fileUploadErrors($_FILES[$uname]['error']);
 						}
 						else{
 						 	$GLOBALS['MG']['FILE'][$name]['HOST_FILENAME']=stripslashes($_FILES[$uname]['name']);
 							$GLOBALS['MG']['FILE'][$name]['EXT']=getExtension($GLOBALS['MG']['FILE'][$name]['HOST_FILENAME']);
 						 	if(!in_array($GLOBALS['MG']['FILE'][$name]['EXT'],$GLOBALS['MG']['SITE']['KNOWN_EXTENSIONS'])){
 								trigger_error('(BVARS): File upload unknown filetype',E_USER_WARNING);
-								$GLOBALS['MG']['FILE'][$name]=array();
+								$GLOBALS['MG']['FILE'][$name]['ERROR']='UNKNOWNTYPE';
 							}
 							else{
 								if($_FILES[$uname]['size'] > $clean[0]){
 									trigger_error('(BVARS): File too large',E_USER_WARNING);
+									$GLOBALS['MG']['FILE'][$name]['ERROR']='TOOLARGE';
 								}
 								else{
 									$GLOBALS['MG']['FILE'][$name]['SIZE']=$_FILES[$uname]['size'];
