@@ -154,7 +154,7 @@ $GLOBALS['MG']['PAGE']['REDIRECT']=false;
 /**
 * Load Language Data
 */
-if($GLOBALS['MG']['SITE']['LANG_ALLOW_OVERRIDE']=='true'&&$GLOBALS['MG']['USER']['LANG']){
+if($GLOBALS['MG']['SITE']['LANG_ALLOW_OVERRIDE']=='1'&&$GLOBALS['MG']['USER']['LANG']){
 	$lang=$GLOBALS['MG']['USER']['LANG'];
 }
 else{
