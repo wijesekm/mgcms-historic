@@ -28,11 +28,11 @@ if(!defined('STARTED')){
 
 class mgimg{
 	
-	var $mime;
-	var $ext;
-	var $img;
-	var $length;
-	var $width;
+	private $mime;
+	private $ext;
+	private $img;
+	private $height;
+	private $width;
 	
 	const IMG_MIME_GIF	=	'image/gif';
 	const IMG_MIME_PNG	=	'image/png';
@@ -40,6 +40,10 @@ class mgimg{
 	const IMG_EXT_GIF	=	'.gif';
 	const IMG_EXT_PNG	=	'.png';
 	const IMG_EXT_JPEG	=	'.jpg';
+	
+	public function img_getDetails(){
+		return array($this->width,$this->height,$this->mime,$this->ext);
+	}
 	
 	public function img_createImg($mime,$width,$height,$truecolor=true){
 		$this->mime=$mime;
@@ -73,7 +77,7 @@ class mgimg{
 		return true;
 	}
 	
-	public function img_loadImg($file,$new=false){
+	public function img_loadImg($file){
 		if(!$this->img_setType(exif_imagetype($file))){
 			return false;
 		}
@@ -127,7 +131,7 @@ class mgimg{
 	public function img_display($filename=false,$jpgquality=100,$pngcomp=9,$pngfilters=false){
 	 	$f=$GLOBALS['MG']['CFG']['PATH']['TMP'].'/'.md5(uniqid(rand(),true));
 		if($filename){
-			$f=$filename;
+			$f=$filename.$this->ext;
 		}
 		switch($this->mime){
 			case mgimg::IMG_MIME_GIF:
@@ -161,6 +165,10 @@ class mgimg{
 			return $content;
 		}
 		return true;
+	}
+	
+	public function img_close(){
+		imagedestroy($this->img);
 	}
 	
 	private function img_setHexColor($color){
