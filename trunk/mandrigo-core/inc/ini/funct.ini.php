@@ -110,3 +110,16 @@ function mg_redirectToLogin(){
 	header('Location: '.$GLOBALS['MG']['SITE']['LOGIN_URL'].base64_encode($url));
 	die();
 }
+
+function mg_mkdir($path,$sep='/',$rights = 0755) {
+    $dirs = explode($sep , $path);
+    $count = count($dirs);
+    $path = '.';
+    for ($i = 0; $i < $count; ++$i) {
+    	$path .= DIRECTORY_SEPARATOR . $dirs[$i];
+        if (!is_dir($path) && !mkdir($path, $rights)) {
+            return false;
+        }
+    }
+    return true;
+}
