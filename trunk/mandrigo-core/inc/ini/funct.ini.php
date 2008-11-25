@@ -111,7 +111,7 @@ function mg_redirectToLogin(){
 	die();
 }
 
-function mg_mkdir($path,$sep='/',$rights = 0755) {
+function mg_mkdir($path,$sep='/',$rights = 0775) {
     $dirs = explode($sep , $path);
     $count = count($dirs);
     $path = '.';

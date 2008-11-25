@@ -78,9 +78,6 @@ class mgimg{
 	}
 	
 	public function img_loadImg($file){
-		if(!$this->img_setType(exif_imagetype($file))){
-			return false;
-		}
 		list($this->width, $this->height, $this->mime) = getimagesize($file);
 		switch($this->mime){
 			case mgimg::IMG_MIME_GIF:
