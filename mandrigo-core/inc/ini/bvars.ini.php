@@ -94,7 +94,7 @@ function mginit_loadVars(){
 						}
 						else{
 						 	$GLOBALS['MG']['FILE'][$name]['HOST_FILENAME']=stripslashes($_FILES[$uname]['name']);
-							$GLOBALS['MG']['FILE'][$name]['EXT']=getExtension($GLOBALS['MG']['FILE'][$name]['HOST_FILENAME']);
+							$GLOBALS['MG']['FILE'][$name]['EXT']=pathinfo($GLOBALS['MG']['FILE'][$name]['HOST_FILENAME'],PATHINFO_EXTENSION);
 						 	if(!in_array($GLOBALS['MG']['FILE'][$name]['EXT'],$GLOBALS['MG']['SITE']['KNOWN_EXTENSIONS'])){
 								trigger_error('(BVARS): File upload unknown filetype',E_USER_WARNING);
 								$GLOBALS['MG']['FILE'][$name]['ERROR']='UNKNOWNTYPE';
