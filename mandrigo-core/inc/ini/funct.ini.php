@@ -116,7 +116,7 @@ function mg_mkdir($path,$sep='/',$rights = 0775) {
     $count = count($dirs);
     $path = '.';
     for ($i = 0; $i < $count; ++$i) {
-    	$path .= DIRECTORY_SEPARATOR . $dirs[$i];
+    	$path .= $sep . $dirs[$i];
         if (!is_dir($path) && !mkdir($path, $rights)) {
          	trigger_error('(MKDIR): Could not create directory: '.$path,E_USER_WARNING);
             return false;
