@@ -112,6 +112,7 @@ function mg_redirectToLogin(){
 }
 
 function mg_mkdir($path,$sep='/',$rights = 0775) {
+	$path=ereg_replace('\/\/','/',$path);
     $dirs = explode($sep , $path);
     $count = count($dirs);
     $path = '';
@@ -125,4 +126,20 @@ function mg_mkdir($path,$sep='/',$rights = 0775) {
 		}
     }
     return true;
+}
+function mg_rmdir($path,$sep='/'){
+	$items=scandir($path);
+	$soq=count($items);
+	for($i=0;$i<$soq;$i++){
+	 	if($items[$i]!='.'&&$items[$i]!='..'){
+		 	$tmp=$path.$sep.$items[$i];
+			if(is_file($tmp)){
+				unlink($tmp);
+			}
+			else if(is_dir($tmp)){
+				mg_rmdir($tmp,$sep);
+			}		
+		}
+	}
+	rmdir($path);
 }
