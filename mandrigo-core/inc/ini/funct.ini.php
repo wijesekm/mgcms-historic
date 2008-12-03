@@ -128,18 +128,26 @@ function mg_mkdir($path,$sep='/',$rights = 0775) {
     return true;
 }
 function mg_rmdir($path,$sep='/'){
+ 	if(!is_dir($path)){
+		return true;
+	}
 	$items=scandir($path);
 	$soq=count($items);
 	for($i=0;$i<$soq;$i++){
 	 	if($items[$i]!='.'&&$items[$i]!='..'){
 		 	$tmp=$path.$sep.$items[$i];
 			if(is_file($tmp)){
-				unlink($tmp);
+				if(!unlink($tmp)){
+					return false;
+				}
 			}
 			else if(is_dir($tmp)){
 				mg_rmdir($tmp,$sep);
 			}		
 		}
 	}
-	rmdir($path);
+	if(!rmdir($path)){
+		return false;
+	}
+	return true;
 }
