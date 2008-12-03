@@ -78,7 +78,10 @@ class mgimg{
 	}
 	
 	public function img_loadImg($file){
-		list($this->width, $this->height, $this->mime) = getimagesize($file);
+	 	$t = getimagesize($file);
+	 	$this->width=$t[0];
+	 	$this->height=$t[1];
+	 	$this->mime=$t['mime'];
 		switch($this->mime){
 			case mgimg::IMG_MIME_GIF:
 				$this->img=imagecreatefromgif($file);
