@@ -147,7 +147,7 @@ class mgimg{
 				}
 			break;
 			case mgimg::IMG_MIME_JPEG:
-				if(!imagejpg($this->img,$f,$quality)){
+				if(!imagejpeg($this->img,$f,$quality)){
 					trigger_error('(MGIMG): Could not save image!',E_USER_ERROR);
 					return false;
 				}
