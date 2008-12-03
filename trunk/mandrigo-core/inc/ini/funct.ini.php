@@ -114,13 +114,15 @@ function mg_redirectToLogin(){
 function mg_mkdir($path,$sep='/',$rights = 0775) {
     $dirs = explode($sep , $path);
     $count = count($dirs);
-    $path = '.';
-    for ($i = 0; $i < $count; ++$i) {
+    $path = '';
+    for ($i = 0; $i < $count; $i++) {
     	$path .= $sep . $dirs[$i];
-        if (!is_dir($path) && !mkdir($path, $rights)) {
-         	trigger_error('(MKDIR): Could not create directory: '.$path,E_USER_WARNING);
-            return false;
-        }
+    	if(!is_dir($path)){
+			if(!mkdir($path,$rights)){
+	        	trigger_error('(MKDIR): Could not create directory: '.$path,E_USER_WARNING);
+	            return false;				
+			}
+		}
     }
     return true;
 }
