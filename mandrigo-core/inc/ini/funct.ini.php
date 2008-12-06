@@ -112,7 +112,7 @@ function mg_redirectToLogin(){
 }
 
 function mg_mkdir($path,$sep='/',$rights = 0775) {
-	$path=ereg_replace('\/\/','/',$path);
+	$path=ereg_replace('//','/',$path);
     $dirs = explode($sep , $path);
     $count = count($dirs);
     $path = '';

@@ -46,6 +46,7 @@ class mgimg{
 	}
 	
 	public function img_createImg($mime,$width,$height,$truecolor=true){
+		$this->img=false;
 		$this->mime=$mime;
 		$this->width=$width;
 		$this->height=$height;
@@ -71,8 +72,8 @@ class mgimg{
 			$this->img=imagecreate($width,$height);			
 		}
 		if(!$this->img){
-			trigger_error('(MGIMG): Could not create new image. ',E_USER_ERROR);
-			return false;
+			//trigger_error('(MGIMG): Could not create new image. ',E_USER_ERROR);
+			//return false;
 		}
 		return true;
 	}
@@ -106,6 +107,33 @@ class mgimg{
 		}
 		return true;
 	}
+	public function img_resizeMax($maxWidth,$maxHeight){
+		$a=$this->width-$maxWidth;
+		$b=$this->height-$maxHeight;
+		if($a > 0 && $b > 0){
+			if($a > $b){
+				$newWidth=$maxWidth;
+				$newHeight=$newWidth/$this->width * $this->height;
+			}
+			else{
+				$newHeight=$maxHeight;
+				$newWidth=$newHeight/$this->height * $this->width;
+			}
+		}
+		else if ($a > 0){
+			$newWidth=$maxWidth;
+			$newHeight=$newWidth/$this->width * $this->height;
+		}
+		else if ($b > 0){
+			$newHeight=$maxHeight;
+			$newWidth=$newHeight/$this->height * $this->width;
+		}
+		else{
+			return false;
+		}
+		return $this->img_resize($newWidth,$newHeight);
+	}
+	
 	
 	public function img_resize($w,$h,$type='percent'){
 	 	$oldwidth=$this->width;
@@ -119,7 +147,7 @@ class mgimg{
 			$this->height=$h;
 		}
 		$orig=$this->img;
-		$this->img_createImg($this->mime,$this->width,$this->height,true);
+		$this->img_createImg($this->mime,$w,$h,true);
 		if(!imagecopyresampled($this->img,$orig,0,0,0,0,$this->width,$this->height,$oldwidth,$oldheight)){
 			imagedestroy($orig);
 			return false;
@@ -141,13 +169,13 @@ class mgimg{
 				}
 			break;
 			case mgimg::IMG_MIME_PNG:
-				if(!imagepng($this->img,$f,$quality,$pngfilters)){
+				if(!imagepng($this->img,$f,$pngcomp,$pngfilters)){
 					trigger_error('(MGIMG): Could not save image!',E_USER_ERROR);
 					return false;
 				}
 			break;
 			case mgimg::IMG_MIME_JPEG:
-				if(!imagejpeg($this->img,$f,$quality)){
+				if(!imagejpeg($this->img,$f,$jpgquality)){
 					trigger_error('(MGIMG): Could not save image!',E_USER_ERROR);
 					return false;
 				}
