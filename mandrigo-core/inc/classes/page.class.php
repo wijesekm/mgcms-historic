@@ -245,18 +245,21 @@ class page{
 	private function page_error($content){
 		switch($content){
 			case 404:
+				$GLOBALS['MG']['CFG']['STOPCACHE']=true;
 				$this->content=$GLOBALS['MG']['LANG']['E404_CONTENT'];
 				$this->title=$GLOBALS['MG']['LANG']['E404_TITLE'];
 				$this->error=true;
 				return false;
 			break;
 			case 403:
+				$GLOBALS['MG']['CFG']['STOPCACHE']=true;
 				$this->content=$GLOBALS['MG']['LANG']['E403_CONTENT'];
 				$this->title=$GLOBALS['MG']['LANG']['E403_TITLE'];
 				$this->error=true;
 				return false;			
 			break;
 			case 401:
+				$GLOBALS['MG']['CFG']['STOPCACHE']=true;
 				$this->content=$GLOBALS['MG']['LANG']['E401_CONTENT'];
 				$this->title=$GLOBALS['MG']['LANG']['E401_TITLE'];
 				$this->error=true;
