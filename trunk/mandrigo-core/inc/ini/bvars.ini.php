@@ -46,7 +46,12 @@ function mginit_loadVars(){
 	    UPLOAD_ERR_EXTENSION => 'File upload stopped by extension.',
 	);
 	
-	$GLOBALS['MG']['SITE']['KNOWN_EXTENSIONS']=explode(';',$GLOBALS['MG']['SITE']['KNOWN_EXTENSIONS']);
+	if(!empty($GLOBALS['MG']['SITE']['KNOWN_EXTENSIONS'])){
+		$GLOBALS['MG']['SITE']['KNOWN_EXTENSIONS']=explode(';',$GLOBALS['MG']['SITE']['KNOWN_EXTENSIONS']);	
+	}
+	else{
+		$GLOBALS['MG']['SITE']['KNOWN_EXTENSIONS']=array();
+	}
 	
 	$vars=$GLOBALS['MG']['SQL']->sql_fetcharray(array(TABLE_PREFIX.'vars'),false,false);
 	

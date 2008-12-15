@@ -71,7 +71,7 @@ function mginit_cleanVar($value,$clean){
 			return (eregi("^[0-9]+$",$value))?$value:'';
 		break;
 		case 'float':
-			return (preg_match('[-+]?\b[0-9]+(\.[0-9]+)?\b',$value))?$value:'';
+			return (eregi("^[0-9]+\.?[0-9]+$",$value))?$value:'';
 		break;
 		case 'groupname':
 			return (eregi("^[a-z0-9._-]+$",$value))?$value:'';
