@@ -33,16 +33,17 @@ function mginit_cleanVar($value,$clean){
 	}	
 	if(!(boolean)$clean[2]){
 		$value=strip_tags($value);
-	}		
+	}
+	if((boolean)$clean[5]){
+		$value=base64_decode($value);
+	}
 	if((boolean)$clean[3]){
 		$value=trim($value);
 	}
 	if((boolean)$clean[4]){
 		$value=mginit_RLD($value);
 	}
-	if((boolean)$clean[5]){
-			$value=base64_decode($value);
-	}
+
 	
 	switch ($clean[0]){
 		case 'boolean':
@@ -66,8 +67,11 @@ function mginit_cleanVar($value,$clean){
 		case 'letter':
 			return (eregi("^[a-z]+$",$value))?$value:'';
 		break;
-		case 'number':
+		case 'int':
 			return (eregi("^[0-9]+$",$value))?$value:'';
+		break;
+		case 'float':
+			return (eregi("^[0-9].[0-9]+$",$value))?$value:'';
 		break;
 		case 'groupname':
 			return (eregi("^[a-z0-9._-]+$",$value))?$value:'';
