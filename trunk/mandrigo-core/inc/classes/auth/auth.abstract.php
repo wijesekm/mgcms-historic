@@ -28,12 +28,6 @@ if(!defined('STARTED')){
 
 abstract class auth{
 	
-	protected $data;
-	
-	final public function __construct($dt){
-		$this->data=$dt;
-	}
-	
 	abstract public function auth_authenticate($username,$password,$encoding='md5');
 	
 	abstract public function auth_changePass($uid,$newPass,$encoding='md5');
