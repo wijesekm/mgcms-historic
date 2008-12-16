@@ -31,11 +31,11 @@ if(!defined('STARTED')){
 function mg_checkACL($page,$acl){
 	if(isset($GLOBALS['MG']['USER']['ACL'][$page])){
 		if(isset($GLOBALS['MG']['USER']['ACL'][$page][$acl])){
-			if((boolean)$GLOBALS['MG']['USER']['ACL'][$page][$acl]===true){
-				return true;
-			}
-			else if($GLOBALS['MG']['USER']['ACL'][$page][$acl]=='deny'){
+			if($GLOBALS['MG']['USER']['ACL'][$page][$acl]=='deny'){
 				return false;
+			}
+			else if((boolean)$GLOBALS['MG']['USER']['ACL'][$page][$acl]===true){
+				return true;
 			}
 		}
 	}
