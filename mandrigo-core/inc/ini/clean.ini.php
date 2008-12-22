@@ -64,6 +64,12 @@ function mginit_cleanVar($value,$clean){
 		case 'id':
 			return (eregi("^[0-9a-z]+$",$value))?$value:'';	
 		break;
+		case 'ip':
+			return (preg_match("/^([0-9]{1,3}[.]){1,3}[0-9]{1,3}$/",$value))?$value:'';
+		break;
+		case 'mac':
+			return (preg_match("/^([0-9a-fA-F]{2}[:-]){5}[0-9a-fA-F]{2}$/",$value))?$value:'';
+		break;
 		case 'letter':
 			return (eregi("^[a-z]+$",$value))?$value:'';
 		break;
