@@ -36,7 +36,7 @@ class mgcache{
 		$new_path.='.'.$GLOBALS['MG']['USER']['UID'].'.'.$this->mgc_varsIntoName().'cache';
 		if(is_file($new_path)){
 			
-			$ftime=filectime($new_path);
+			$ftime=filemtime($new_path);
 			$sitemod=$GLOBALS['MG']['SQL']->sql_fetchresult(array(TABLE_PREFIX.'pages'),array(array('page_modified')),array(array(false,false,'page_path','=','*')));
 			if($ftime < $pageTime || $ftime < $sitemod){
 				return false;
