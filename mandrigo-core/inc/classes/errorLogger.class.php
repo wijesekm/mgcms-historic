@@ -31,7 +31,7 @@ class errorLogger{
 	/**
 	* Variables
 	*/
-	private $errorTypes;
+	public $errorTypes;
 	private $userErrors;
 
 	/**
@@ -68,7 +68,7 @@ class errorLogger{
 	/**
 	* Public Functions
 	*/
-		
+
 	/**
 	* el_addError($errno, $errmsg, $filename, $linenum, $vars)
 	*
