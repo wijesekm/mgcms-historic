@@ -61,8 +61,8 @@ class errorLogger{
 	/**
 	* Public Functions
 	*/
-	public function el_parseErrorFile($error_type){
-		if(!$f=fopen($GLOBALS['MG']['CFG']['PATH']['LOG'].$this->errorTypes[$error_type].'.log')){
+	public function el_parseErrorFile($file){
+		if(!$f=fopen($file)){
 			trigger_error('(ERRORLOGGER): Could not open error log for parsing!',E_USER_ERROR);
 			return false;
 		}

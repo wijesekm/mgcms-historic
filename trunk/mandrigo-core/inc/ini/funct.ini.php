@@ -151,3 +151,46 @@ function mg_rmdir($path,$sep='/'){
 	}
 	return true;
 }
+function mg_navBar($length,$ppp,$base=false){
+	if(!$base){
+		$base=array('p',$GLOBALS['MG']['PAGE']['PATH']);	
+	}
+	
+	if($length==0){
+		return false;
+	}
+	$pages=ceil($length/$ppp);
+	if($pages <= 1){
+		return false;
+	}
+	$tpl=new template();
+	$pstr='';
+	for($i=0;$i<$pages;$i++){
+		$tpl->tpl_load($GLOBALS['MG']['PAGE']['TPL'],'mgnb_pdelim');
+		$url=mg_genUrl(array_merge($base,array('pn',(string)$i)));
+		$tpl->tpl_parse(array('URL'=>$url,'PG'=>(string)($i+1),'INDEX'=>(string)$i,'LENGTH'=>(string)$pages),'mgnb_pdelim');
+		$pstr.=$tpl->tpl_return('mgnb_pdelim');
+	}
+
+	$back = $GLOBALS['MG']['GET']['PAGE_NUMBER']-1;
+	$next = $GLOBALS['MG']['GET']['PAGE_NUMBER']+1;
+	
+	if($back >= 0){
+		$urlb=mg_genUrl(array_merge($base,array('pn',(string)$back)));
+		$back="true";
+	}
+	if($next < $pages){
+		$urln=mg_genUrl(array_merge($base,array('pn',(string)$next)));
+		$next="true";
+	}
+		
+	$tpl->tpl_load($GLOBALS['MG']['PAGE']['TPL'],'mgnv_subnav');
+	$tpl->tpl_parse(array('BACK'=>$back,'NEXT'=>$next,'BACK_URL'=>$urlb,'NEXT_URL'=>$urln),'mgnv_subnav');
+	$nstr=$tpl->tpl_return('mgnv_subnav');
+		
+	$tpl->tpl_load($GLOBALS['MG']['PAGE']['TPL'],'mgnv_navbar');
+	$tpl->tpl_parse(array('PAGES'=>$pstr,'SUBNAV'=>$nstr),'mgnv_navbar');
+	$ret=$tpl->tpl_return('mgnv_navbar');
+	$tpl=false;
+	return $ret;
+}
