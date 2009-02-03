@@ -32,12 +32,6 @@ class errorLogger{
 	* Variables
 	*/
 	public $errorTypes;
-	private $userErrors;
-
-	/**
-	* Constants
-	*/
-	const PHP_ERRORS		= 'php-errors.log';
 	
 	/**
 	* Construct and Destruction functions
@@ -46,19 +40,18 @@ class errorLogger{
 		$this->errorTypes = array (
                 E_ERROR              => 'Error',
                 E_WARNING            => 'Warning',
-                E_PARSE              => 'Parsing Error',
+                E_PARSE              => 'Parsing_Error',
                 E_NOTICE             => 'Notice',
-                E_CORE_ERROR         => 'Core Error',
-                E_CORE_WARNING       => 'Core Warning',
-                E_COMPILE_ERROR      => 'Compile Error',
-                E_COMPILE_WARNING    => 'Compile Warning',
-                E_USER_ERROR         => 'User Error',
-                E_USER_WARNING       => 'User Warning',
-                E_USER_NOTICE        => 'User Notice',
-                E_STRICT             => 'Runtime Notice',
-                E_RECOVERABLE_ERROR  => 'Catchable Fatal Error'
+                E_CORE_ERROR         => 'Core_Error',
+                E_CORE_WARNING       => 'Core_Warning',
+                E_COMPILE_ERROR      => 'Compile_Error',
+                E_COMPILE_WARNING    => 'Compile_Warning',
+                E_USER_ERROR         => 'User_Error',
+                E_USER_WARNING       => 'User_Warning',
+                E_USER_NOTICE        => 'User_Notice',
+                E_STRICT             => 'Runtime_Notice',
+                E_RECOVERABLE_ERROR  => 'Catchable_Fatal_Error'
                 );
-        $this->userErrors = array(E_USER_ERROR, E_USER_WARNING, E_USER_NOTICE);
 	}
 	public function __destruct(){
 		$this->userErrors=false;
@@ -68,7 +61,43 @@ class errorLogger{
 	/**
 	* Public Functions
 	*/
-
+	public function el_parseErrorFile($error_type){
+		if(!$f=fopen($GLOBALS['MG']['CFG']['PATH']['LOG'].$this->errorTypes[$error_type].'.log')){
+			trigger_error('(ERRORLOGGER): Could not open error log for parsing!',E_USER_ERROR);
+			return false;
+		}
+		$log='';
+		$line='';
+		$i=0;
+		while(!feof($f)){
+			$line=fgets($f);
+			if(eregi('<error>',$line)){
+				$log[$i]=array();
+			}
+			else if(eregi('<datetime>',$line)){
+				$log[$i]['date_time']=ereg_replace('<datetime>(.*)</datetime>','\\1',$line);
+			}
+			else if(eregi('<errornum>',$line)){
+				$log[$i]['error_number']=ereg_replace('<errornum>(.*)</errornum>','\\1',$line);
+			}
+			else if(eregi('<errortype>',$line)){
+				$log[$i]['error_type']=ereg_replace('<errortype>(.*)</errortype>','\\1',$line);
+			}
+			else if(eregi('<errormsg>',$line)){
+				$log[$i]['error_msg']=ereg_replace('<errormsg>(.*)</errormsg>','\\1',$line);
+			}
+			else if(eregi('<scriptname>',$line)){
+				$log[$i]['script_name']=ereg_replace('<scriptname>(.*)</scriptname>','\\1',$line);
+			}
+			else if(eregi('<scriptlinenum>',$line)){
+				$log[$i]['script_line_num']=ereg_replace('<scriptlinenum>(.*)</scriptlinenum>','\\1',$line);
+			}
+			else if(eregi('</error>',$line)){
+				$i++;
+			}
+		}
+		return $log;
+	}
 	/**
 	* el_addError($errno, $errmsg, $filename, $linenum, $vars)
 	*
@@ -86,22 +115,16 @@ class errorLogger{
 	*/	
 	public function el_addError($errno, $errmsg, $filename, $linenum, $vars){
 		$dt = @date("Y-m-d H:i:s (T)");
-	 	$err = "<errorentry>\n";
+	 	$err = "<error>\n";
 	    $err .= "\t<datetime>" . $dt . "</datetime>\n";
 	    $err .= "\t<errornum>" . $errno . "</errornum>\n";
 	    $err .= "\t<errortype>" . $this->errorTypes[$errno] . "</errortype>\n";
 		$err .= "\t<errormsg>" . $errmsg . "</errormsg>\n";
 		$err .= "\t<scriptname>" . $filename . "</scriptname>\n";
 		$err .= "\t<scriptlinenum>" . $linenum . "</scriptlinenum>\n";
-		$err .= "</errorentry>\n\n";
-		if(in_array($errno,$this->userErrors)){
-			$this->el_logRotate($GLOBALS['MG']['CFG']['PATH']['LOG'].$this->errorTypes[$errno].'.log');
-			return @error_log($err, 3,$GLOBALS['MG']['CFG']['PATH']['LOG'].$this->errorTypes[$errno].'.log');		
-		}
-		else{
-			$this->el_logRotate($GLOBALS['MG']['CFG']['PATH']['LOG'].errorLogger::PHP_ERRORS);
-			return @error_log($err, 3, $GLOBALS['MG']['CFG']['PATH']['LOG'].errorLogger::PHP_ERRORS);
-		}
+		$err .= "</error>\n";
+		$this->el_logRotate($GLOBALS['MG']['CFG']['PATH']['LOG'].$this->errorTypes[$errno].'.log');
+		return @error_log($err, 3,$GLOBALS['MG']['CFG']['PATH']['LOG'].$this->errorTypes[$errno].'.log');		
 	}
 	
 	/**
