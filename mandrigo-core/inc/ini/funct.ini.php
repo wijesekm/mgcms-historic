@@ -189,7 +189,7 @@ function mg_navBar($length,$ppp,$base=false){
 	$nstr=$tpl->tpl_return('mgnb_subnav');
 		
 	$tpl->tpl_load($GLOBALS['MG']['PAGE']['TPL'],'mgnb_navbar');
-	$tpl->tpl_parse(array('PAGES'=>$pstr,'SUBNAV'=>$nstr),'mgnb_navbar');
+	$tpl->tpl_parse(array('NAV_PAGES'=>$pstr,'NAV_SUB'=>$nstr),'mgnb_navbar');
 	$ret=$tpl->tpl_return('mgnb_navbar');
 	$tpl=false;
 	return $ret;
