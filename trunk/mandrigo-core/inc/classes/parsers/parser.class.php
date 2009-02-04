@@ -60,7 +60,6 @@ class parser{
 	
 	public function p_phpcompile($section){
 		if(!eregi(parser::P_CODE_START,$section)||!eregi(parser::P_CODE_END,$section)){
-			trigger_error('Nothing to compile in template',E_USER_NOTICE);
 			return $section;
 		}
 		$section=explode(parser::P_CODE_START,$section);
@@ -69,9 +68,8 @@ class parser{
 			if(eregi(parser::P_CODE_END,$section[$cco])){
 				$section_split=explode(parser::P_CODE_END,$section[$cco]);
 				$retvar='';
-				eval($section_split[0]);
-				if(!$retvar){
-					trigger_error('(TEMPLATE): Compile Error in template!',E_USER_WARNING);
+				if(!eval($section_split[0])){
+					trigger_error('(TEMPLATE): Compile Error in template or return value not specified!',E_USER_WARNING);
 				}
 				
 				$section[$cco]=$retvar.$section_split[1];
