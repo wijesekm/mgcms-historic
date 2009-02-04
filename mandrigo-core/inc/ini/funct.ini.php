@@ -185,7 +185,8 @@ function mg_navBar($length,$ppp,$base=false){
 
 	$back = $GLOBALS['MG']['GET']['PAGE_NUMBER']-1;
 	$next = $GLOBALS['MG']['GET']['PAGE_NUMBER']+1;
-	
+	$urlb=false;
+	$urln=false;
 	if($back >= 0){
 		$urlb=mg_genUrl(array_merge($base,array('pn',(string)$back)));
 		$back="true";
