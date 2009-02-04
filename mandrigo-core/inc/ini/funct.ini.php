@@ -93,6 +93,17 @@ function mg_genUrl($urlParts,$base=false,$ssl=false){
 }
 
 function mg_redirectTarget($target){
+	if(!$target){
+		trigger_error('(FUNCT): Invalid Redirect Target',E_USER_WARNING);
+		if(isset($_SERVER['HTTPS'])&&$_SERVER['HTTPS']!='off'){
+			header('Location: https://'.$_SERVER['SERVER_NAME']);
+			die();
+		}
+		else{
+			header('Location: http://'.$_SERVER['SERVER_NAME']);
+			die();
+		}
+	}
 	header('Location: '.$target);
 	die();
 }
