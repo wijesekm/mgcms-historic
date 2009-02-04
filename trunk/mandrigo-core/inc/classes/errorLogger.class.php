@@ -52,6 +52,11 @@ class errorLogger{
                 E_STRICT             => 'Runtime_Notice',
                 E_RECOVERABLE_ERROR  => 'Catchable_Fatal_Error'
                 );
+        foreach($this->errorTypes as $key => $value){
+			if(!is_file($GLOBALS['MG']['CFG']['PATH']['LOG'].$value.'.log')){
+				@touch($GLOBALS['MG']['CFG']['PATH']['LOG'].$value.'.log');
+			}
+		}
 	}
 	public function __destruct(){
 		$this->userErrors=false;
