@@ -184,13 +184,13 @@ function mg_navBar($length,$ppp,$base=false){
 		$next="true";
 	}
 		
-	$tpl->tpl_load($GLOBALS['MG']['PAGE']['TPL'],'mgnv_subnav');
-	$tpl->tpl_parse(array('BACK'=>$back,'NEXT'=>$next,'BACK_URL'=>$urlb,'NEXT_URL'=>$urln),'mgnv_subnav');
-	$nstr=$tpl->tpl_return('mgnv_subnav');
+	$tpl->tpl_load($GLOBALS['MG']['PAGE']['TPL'],'mgnb_subnav');
+	$tpl->tpl_parse(array('BACK'=>$back,'NEXT'=>$next,'BACK_URL'=>$urlb,'NEXT_URL'=>$urln),'mgnb_subnav');
+	$nstr=$tpl->tpl_return('mgnb_subnav');
 		
-	$tpl->tpl_load($GLOBALS['MG']['PAGE']['TPL'],'mgnv_navbar');
-	$tpl->tpl_parse(array('PAGES'=>$pstr,'SUBNAV'=>$nstr),'mgnv_navbar');
-	$ret=$tpl->tpl_return('mgnv_navbar');
+	$tpl->tpl_load($GLOBALS['MG']['PAGE']['TPL'],'mgnb_navbar');
+	$tpl->tpl_parse(array('PAGES'=>$pstr,'SUBNAV'=>$nstr),'mgnb_navbar');
+	$ret=$tpl->tpl_return('mgnb_navbar');
 	$tpl=false;
 	return $ret;
 }

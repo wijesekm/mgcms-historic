@@ -62,7 +62,7 @@ class errorLogger{
 	* Public Functions
 	*/
 	public function el_parseErrorFile($file){
-		if(!$f=fopen($file)){
+		if(!$f=fopen($file,'r')){
 			trigger_error('(ERRORLOGGER): Could not open error log for parsing!',E_USER_ERROR);
 			return false;
 		}
@@ -75,22 +75,22 @@ class errorLogger{
 				$log[$i]=array();
 			}
 			else if(eregi('<datetime>',$line)){
-				$log[$i]['date_time']=ereg_replace('<datetime>(.*)</datetime>','\\1',$line);
+				$log[$i]['date_time']=trim(ereg_replace('<datetime>(.*)</datetime>','\\1',$line));
 			}
 			else if(eregi('<errornum>',$line)){
-				$log[$i]['error_number']=ereg_replace('<errornum>(.*)</errornum>','\\1',$line);
+				$log[$i]['error_number']=trim(ereg_replace('<errornum>(.*)</errornum>','\\1',$line));
 			}
 			else if(eregi('<errortype>',$line)){
-				$log[$i]['error_type']=ereg_replace('<errortype>(.*)</errortype>','\\1',$line);
+				$log[$i]['error_type']=trim(ereg_replace('<errortype>(.*)</errortype>','\\1',$line));
 			}
 			else if(eregi('<errormsg>',$line)){
-				$log[$i]['error_msg']=ereg_replace('<errormsg>(.*)</errormsg>','\\1',$line);
+				$log[$i]['error_msg']=trim(ereg_replace('<errormsg>(.*)</errormsg>','\\1',$line));
 			}
 			else if(eregi('<scriptname>',$line)){
-				$log[$i]['script_name']=ereg_replace('<scriptname>(.*)</scriptname>','\\1',$line);
+				$log[$i]['script_name']=trim(ereg_replace('<scriptname>(.*)</scriptname>','\\1',$line));
 			}
 			else if(eregi('<scriptlinenum>',$line)){
-				$log[$i]['script_line_num']=ereg_replace('<scriptlinenum>(.*)</scriptlinenum>','\\1',$line);
+				$log[$i]['script_line_num']=trim(ereg_replace('<scriptlinenum>(.*)</scriptlinenum>','\\1',$line));
 			}
 			else if(eregi('</error>',$line)){
 				$i++;
