@@ -92,7 +92,7 @@ function mginit_loadVars(){
 				case 'FILE':
 					$GLOBALS['MG']['FILE'][$name]=array();
 					$GLOBALS['MG']['FILE'][$name]['ERROR']='';
-					if($_FILES[$uname]['name']){
+					if(!empty($_FILES[$uname]['name'])){
 						if($_FILES[$uname]['error'] !=  UPLOAD_ERR_OK){
 							trigger_error('(BVARS): File upload error: '.$fileUploadErrors($_FILES[$uname]['error']),E_USER_WARNING);
 							$GLOBALS['MG']['FILE'][$name]['ERROR']=$fileUploadErrors($_FILES[$uname]['error']);
