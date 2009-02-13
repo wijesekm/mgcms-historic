@@ -595,7 +595,10 @@ class mysql extends sql{
 	}
 	final protected function sql_formatTableLine($params){
 		$query='`'.$this->sql_escape($params[0]).'` ';
-		$query.=$this->sql_escape($params[1][0]).'('.$this->sql_escape($params[1][1]).') ';
+		$query.=$this->sql_escape($params[1][0]);
+		if($params[1][1]){
+			$query.='('.$this->sql_escape($params[1][1]).') ';
+		}
 		switch($params[2]){
 			case DB_NULL:
 				$query.=DB_NULL;
