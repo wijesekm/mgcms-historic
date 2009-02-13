@@ -4,7 +4,7 @@
  * @file		ini.php
  * @author 		Kevin Wijesekera
  * @copyright 	2008
- * @edited		8-08-2008
+ * @edited		2-13-2009
  
  ###################################
  This program is free software: you can redistribute it and/or modify
@@ -77,6 +77,7 @@ for($i=0;$i<$tmp['count'];$i++){
 */
 $load=array(array('bvars','ini','/ini/'),
 			array('accounts','abstract','/classes/accounts/'),
+			array('group','class','/classes/accounts/'),
 			array($GLOBALS['MG']['SITE']['ACCOUNT_TYPE'],'class','/classes/accounts/'));
 mginit_loadPackage($load);
 
