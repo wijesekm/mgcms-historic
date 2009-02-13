@@ -31,7 +31,7 @@ class group{
 	
 	public function group_getMembership($uid){
 		if($uid){
-			$groups=$GLOBALS['MG']['SQL']->sql_fetchArray(array(TABLE_PREFIX.'groups'),$attrs,array(array(DB_LIKE,array(DB_OR),'group_members','%;'.$uid.';%'),array(array(DB_LIKE,array(DB_OR),'group_members','%;*;%'))));
+			$groups=$GLOBALS['MG']['SQL']->sql_fetchArray(array(TABLE_PREFIX.'groups'),$attrs,array(array(DB_LIKE,array(DB_OR),'group_members','%;'.$uid.';%'),array(array(DB_LIKE,false,'group_members','%;*;%'))));
 			$userGroups=array();
 			$userGroups['COUNT']=$groups['count'];
 			for($i=0;$i<$groups['count'];$i++){
