@@ -77,7 +77,7 @@ for($i=0;$i<$tmp['count'];$i++){
 */
 $load=array(array('bvars','ini','/ini/'),
 			array('accounts','abstract','/classes/accounts/'),
-			array('group','class','/classes/accounts/'),
+			array('groups','class','/classes/accounts/'),
 			array($GLOBALS['MG']['SITE']['ACCOUNT_TYPE'],'class','/classes/accounts/'));
 mginit_loadPackage($load);
 
