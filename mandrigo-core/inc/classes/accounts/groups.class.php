@@ -34,7 +34,7 @@ class group{
 		$userGroups=array();
 		$userGroups['COUNT']=$groups['count'];
 		for($i=0;$i<$groups['count'];$i++){
-			if(eregi(';*;',$groups[$i]['group_members'])&&($uid==$GLOBALS['MG']['SITE']['DEFAULT_ACT']||eregi('-'.$uid,$groups[$i]['group_members']))){
+			if(eregi(';*;',$groups[$i]['group_members'])&&eregi('-'.$uid,$groups[$i]['group_members'])){
 				$userGroups['COUNT']--;
 			}
 			else{
@@ -45,7 +45,7 @@ class group{
 		$userGroups['COUNT']++;
 		return $userGroups;			
 	}
-	}
+	
 	public function group_getGroup($start=0,$length=10,$search=false,$loadOnly=false){
 		$addit['orderby']=array(array('group_name'),array('DESC'));
 		$addit['limit']=array($start,$length);
