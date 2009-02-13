@@ -30,22 +30,21 @@ if(!defined('STARTED')){
 class group{
 	
 	public function group_getMembership($uid){
-		if($uid){
-			$groups=$GLOBALS['MG']['SQL']->sql_fetchArray(array(TABLE_PREFIX.'groups'),$attrs,array(array(DB_LIKE,array(DB_OR),'group_members','%;'.$uid.';%'),array(array(DB_LIKE,false,'group_members','%;*;%'))));
-			$userGroups=array();
-			$userGroups['COUNT']=$groups['count'];
-			for($i=0;$i<$groups['count'];$i++){
-				if(eregi(';*;',$groups[$i]['group_members'])&&($uid==$GLOBALS['MG']['SITE']['DEFAULT_ACT']||eregi('-'.$uid,$groups[$i]['group_members']))){
-					$userGroups['COUNT']--;
-				}
-				else{
-					$userGroups[]=$groups[$i]['group_gid'];	
-				}	
+		$groups=$GLOBALS['MG']['SQL']->sql_fetchArray(array(TABLE_PREFIX.'groups'),false,array(array(DB_LIKE,array(DB_OR),'group_members','%;'.$uid.';%'),array(DB_LIKE,false,'group_members','%;*;%')));
+		$userGroups=array();
+		$userGroups['COUNT']=$groups['count'];
+		for($i=0;$i<$groups['count'];$i++){
+			if(eregi(';*;',$groups[$i]['group_members'])&&($uid==$GLOBALS['MG']['SITE']['DEFAULT_ACT']||eregi('-'.$uid,$groups[$i]['group_members']))){
+				$userGroups['COUNT']--;
 			}
-			$userGroups[]='*';
-			$userGroups['COUNT']++;
-			return $userGroups;			
+			else{
+				$userGroups[]=$groups[$i]['group_gid'];	
+			}	
 		}
+		$userGroups[]='*';
+		$userGroups['COUNT']++;
+		return $userGroups;			
+	}
 	}
 	public function group_getGroup($start=0,$length=10,$search=false,$loadOnly=false){
 		$addit['orderby']=array(array('group_name'),array('DESC'));
