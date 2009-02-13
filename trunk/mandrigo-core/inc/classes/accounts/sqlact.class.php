@@ -100,7 +100,8 @@ class sqlact extends accounts{
 		$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['CFG']['SQL']['DB']);
 		for($i=0;$i<$users['count'];$i++){
 			if($acl){
-				$this->act_getGroupMembership($users[$i]['user_uid']);
+				$gp = new group();
+				$this->user[$users[$i]['user_uid']]['GROUPS']=$gp->group_getMembership($users[$i]['user_uid']);
 				$this->act_getACL($users[$i]['user_uid']);				
 			}
 		}
@@ -169,21 +170,7 @@ class sqlact extends accounts{
 		return $newPass;
 	}
 	
-	final private function act_getGroupMembership($uid){
-		$groups=$GLOBALS['MG']['SQL']->sql_fetchArray(array(TABLE_PREFIX.'groups'),false,array(array(DB_LIKE,array(DB_OR),'group_members','%;'.$uid.';%'),array(false,false,'group_members','=','*')));
-		$this->user[$uid]['GROUPS']['COUNT']=$groups['count'];
-		for($i=0;$i<$groups['count'];$i++){
-			if($groups[$i]['group_members']=='*'&&$uid==$GLOBALS['MG']['SITE']['DEFAULT_ACT']){
-				$this->user[$uid]['GROUPS']['COUNT']--;
-			}
-			else{
-				$this->user[$uid]['GROUPS'][]=$groups[$i]['group_gid'];	
-			}	
-		}
-		$this->user[$uid]['GROUPS'][]='*';
-		$this->user[$uid]['GROUPS']['COUNT']++;
-	}
-	
+
 	final private function act_getACL($uid){
 		$this->user[$uid]['ACL']=array();
 		for($i=0;$i<$this->user[$uid]['GROUPS']['COUNT'];$i++){
