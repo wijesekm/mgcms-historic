@@ -50,6 +50,7 @@ class group{
 		$addit['orderby']=array(array('group_gid'),array('DESC'));
 		$addit['limit']=array($start,$length);
 		$conds=false;
+		$totalLength=0;
 		if($search){
 			$conds=array(array(DB_LIKE,false,'group_gid','%;'.$search.';%'));
 			$totalLength=$GLOBALS['MG']['SQL']->sql_numRows(array(TABLE_PREFIX.'groups'),$conds);
@@ -62,7 +63,7 @@ class group{
 		if(!$groups){
 			return false;
 		}
-		for($i=0;$i<$soq;$i++){
+		for($i=0;$i<$groups['count'];$i++){
 			$groups[$i]['group_members']=explode(';',$groups[$i]['group_members']);
 		}
 		return array($totalLength,$groups);
