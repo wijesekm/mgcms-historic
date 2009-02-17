@@ -4,7 +4,7 @@
  * @file		group.class.php
  * @author 		Kevin Wijesekera
  * @copyright 	2008
- * @edited		2-12-2009
+ * @edited		2-17-2009
  
  ###################################
  This program is free software: you can redistribute it and/or modify

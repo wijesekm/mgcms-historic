@@ -102,7 +102,8 @@ class sqlact extends accounts{
 			if($acl){
 				$gp = new group();
 				$this->user[$users[$i]['user_uid']]['GROUPS']=$gp->group_getMembership($users[$i]['user_uid']);
-				$this->act_getACL($users[$i]['user_uid']);				
+				$ac = new acl();
+				$this->user[$users[$i]['user_uid']]['ACL']=$ac->acl_load($users[$i]['user_uid'],$this->user[$users[$i]['user_uid']]['GROUPS']);				
 			}
 		}
 		return $this->user;
@@ -168,54 +169,5 @@ class sqlact extends accounts{
 			$auth->auth_changePass($uid,$newPass,$GLOBALS['MG']['SITE']['PASS_ENCODING']);
 		}
 		return $newPass;
-	}
-	
-
-	final private function act_getACL($uid){
-		$this->user[$uid]['ACL']=array();
-		for($i=0;$i<$this->user[$uid]['GROUPS']['COUNT'];$i++){
-			$acls=$GLOBALS['MG']['SQL']->sql_fetcharray(array(TABLE_PREFIX.'acl'),false,array(array(false,false,'acl_group','=',$this->user[$uid]['GROUPS'][$i])));	
-			for($k=0;$k<$acls['count'];$k++){
-				if($acls[$k]['acl_page']){
-					if(!isset($this->user[$uid]['ACL'][$acls[$k]['acl_page']])){
-						$this->user[$uid]['ACL'][$acls[$k]['acl_page']]=array();
-						$this->user[$uid]['ACL'][$acls[$k]['acl_page']]['read']=false;
-						$this->user[$uid]['ACL'][$acls[$k]['acl_page']]['modify']=false;
-						$this->user[$uid]['ACL'][$acls[$k]['acl_page']]['write']=false;
-						$this->user[$uid]['ACL'][$acls[$k]['acl_page']]['admin']=false;
-					}
-					
-					if($this->user[$uid]['ACL'][$acls[$k]['acl_page']]['admin']==true||(boolean)$acls[$k]['acl_admin']==true){
-						$this->user[$uid]['ACL'][$acls[$k]['acl_page']]['admin']=true;
-						$this->user[$uid]['ACL'][$acls[$k]['acl_page']]['write']=true;
-						$this->user[$uid]['ACL'][$acls[$k]['acl_page']]['modify']=true;
-						$this->user[$uid]['ACL'][$acls[$k]['acl_page']]['read']=true;				
-					}
-					else{
-						$this->user[$uid]['ACL'][$acls[$k]['acl_page']]['read']=$this->act_aclItem($this->user[$uid]['ACL'][$acls[$k]['acl_page']]['read'],$acls[$k]['acl_read']);
-						$this->user[$uid]['ACL'][$acls[$k]['acl_page']]['modify']=$this->act_aclItem($this->user[$uid]['ACL'][$acls[$k]['acl_page']]['modify'],$acls[$k]['acl_modify']);
-						$this->user[$uid]['ACL'][$acls[$k]['acl_page']]['write']=$this->act_aclItem($this->user[$uid]['ACL'][$acls[$k]['acl_page']]['write'],$acls[$k]['acl_write']);					
-					}
-				}
-			}
-		}
-		$this->user[$uid]['ACL']['count']=count($this->user[$uid]['ACL']);
-	}
-	final private function act_aclItem($old,$new){
-		
-		switch($new){
-			case '-':
-				return 'deny';
-			break;
-			case '+':
-				if($old!='deny'){
-					return true;
-				}
-				return $old;	
-			break;
-			default:
-				return $old;
-			break;
-		}
 	}
 }
