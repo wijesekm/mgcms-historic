@@ -52,18 +52,20 @@ class group{
 		$conds=false;
 		if($search){
 			$conds=array(array(DB_LIKE,false,'group_name','%;'.$search.';%'));
+			$totalLength=$GLOBALS['MG']['SQL']->sql_numRows(array(TABLE_PREFIX.'groups'),$conds);
 		}
 		if($loadOnly){
 			$conds=array(array(false,false,'group_name','=',$loadOnly));
+			$totalLength=1;
 		}
-		$groups=$GLOBALS['MG']['SQL']->sql_fetchArray(array(TABLE_PREFIX.'groups'),$attrs,$conds,DB_ASSOC,DB_ALL_ROWS,$addit);
+		$groups=$GLOBALS['MG']['SQL']->sql_fetchArray(array(TABLE_PREFIX.'groups'),false,$conds,DB_ASSOC,DB_ALL_ROWS,$addit);
 		if(!$groups){
 			return false;
 		}
 		for($i=0;$i<$soq;$i++){
 			$groups[$i]['group_members']=explode(';',$groups[$i]['group_members']);
 		}
-		return $groups;
+		return array($totalLength,$groups);
 	}
 	
 	public function group_add($gid,$members){
