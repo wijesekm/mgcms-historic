@@ -70,12 +70,40 @@ class acl{
 			trigger_error('(ACL): Could not remove group acl from database: '.$gid,E_USER_ERROR);
 			return false;
 		}
-		if(!$GLOBALS['MG']['SQL']->sql_dataCommands(DB_RESETAUTO,array(TABLE_PREFIX.'acl',false))){
+		if(!$GLOBALS['MG']['SQL']->sql_dataCommands(DB_RESETAUTO,array(TABLE_PREFIX.'acl'),false)){
 			trigger_error('(ACL): Could not reset auto increment',E_USER_NOTICE);
 		}
 		return true;
 	}
-		
+	
+	public function acl_delete($acl_id){
+		if(!$acl_id){
+			return false;
+		}
+		$conds=array(array(false,false,'acl_id','=',$acl_id));
+		if(!$GLOBALS['MG']['SQL']->sql_dataCommands(DB_REMOVE,array(TABLE_PREFIX.'acl'),$conds)){
+			trigger_error('(ACL): Could not remove acl item from database: '.$acl_id,E_USER_ERROR);
+			return false;
+		}
+		if(!$GLOBALS['MG']['SQL']->sql_dataCommands(DB_RESETAUTO,array(TABLE_PREFIX.'acl'),false)){
+			trigger_error('(ACL): Could not reset auto increment',E_USER_NOTICE);
+		}
+		return true;		
+	}
+
+	public function acl_add($gid,$page='*',$r='+',$m='',$w='',$a='0'){
+		if(!$gid||!$page){
+			return false;
+		}
+		$fields=array('acl_group','acl_page','acl_read','acl_modify','acl_write','acl_admin');
+		$data=array($gid,$page,$r,$m,$w,$a);
+		if(!$GLOBALS['MG']['SQL']->sql_dataCommands(DB_INSERT,array(TABLE_PREFIX.'acl'),$fields,$data)){
+			trigger_error('(ACL): Could not add acl to database for group: '.$gid,E_USER_ERROR);
+			return false;
+		}
+		return true;
+	}
+
 	private function acl_comp($old,$new){
 		switch($new){
 			case '-':
