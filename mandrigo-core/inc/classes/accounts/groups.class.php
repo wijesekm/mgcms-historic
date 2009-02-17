@@ -52,7 +52,7 @@ class group{
 		$conds=false;
 		$totalLength=0;
 		if($search){
-			$conds=array(array(DB_LIKE,false,'group_gid','%;'.$search.';%'));
+			$conds=array(array(DB_LIKE,false,'group_gid','%'.$search.'%'));
 			$totalLength=$GLOBALS['MG']['SQL']->sql_numRows(array(TABLE_PREFIX.'groups'),$conds);
 		}
 		else if($loadOnly){
