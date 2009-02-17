@@ -60,6 +60,21 @@ class acl{
 		$userACL['count']=count($userACL);
 		return $userACL;
 	}
+	
+	public function acl_deleteGroupAcl($gid){
+		if(!$gid){
+			return false;
+		}
+		$conds=array(array(false,false,'acl_group','=',$gid));
+		if(!$GLOBALS['MG']['SQL']->sql_dataCommands(DB_REMOVE,array(TABLE_PREFIX.'acl'),$conds)){
+			trigger_error('(ACL): Could not remove group acl from database: '.$gid,E_USER_ERROR);
+			return false;
+		}
+		if(!$GLOBALS['MG']['SQL']->sql_dataCommands(DB_RESETAUTO,array(TABLE_PREFIX.'acl',false))){
+			trigger_error('(ACL): Could not reset auto increment',E_USER_NOTICE);
+		}
+		return true;
+	}
 		
 	private function acl_comp($old,$new){
 		switch($new){
