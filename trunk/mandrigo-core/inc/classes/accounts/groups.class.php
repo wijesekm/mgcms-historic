@@ -47,15 +47,15 @@ class group{
 	}
 	
 	public function group_getGroup($start=0,$length=10,$search=false,$loadOnly=false){
-		$addit['orderby']=array(array('group_name'),array('DESC'));
+		$addit['orderby']=array(array('group_gid'),array('DESC'));
 		$addit['limit']=array($start,$length);
 		$conds=false;
 		if($search){
-			$conds=array(array(DB_LIKE,false,'group_name','%;'.$search.';%'));
+			$conds=array(array(DB_LIKE,false,'group_gid','%;'.$search.';%'));
 			$totalLength=$GLOBALS['MG']['SQL']->sql_numRows(array(TABLE_PREFIX.'groups'),$conds);
 		}
 		if($loadOnly){
-			$conds=array(array(false,false,'group_name','=',$loadOnly));
+			$conds=array(array(false,false,'group_gid','=',$loadOnly));
 			$totalLength=1;
 		}
 		$groups=$GLOBALS['MG']['SQL']->sql_fetchArray(array(TABLE_PREFIX.'groups'),false,$conds,DB_ASSOC,DB_ALL_ROWS,$addit);
