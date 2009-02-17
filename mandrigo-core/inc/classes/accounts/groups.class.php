@@ -80,7 +80,7 @@ class group{
 		$dta=array($gid,$members);
 		$fields=array('group_gid','group_members');
 		if(!$GLOBALS['MG']['SQL']->sql_dataCommands(DB_INSERT,array(TABLE_PREFIX.'groups'),$fields,$dta)){
-			trigger_error('(SQLACT): Could not add group to database: '.$gid,E_USER_ERROR);
+			trigger_error('(GROUPS): Could not add group to database: '.$gid,E_USER_ERROR);
 			return false;
 		}
 		return true;
@@ -91,14 +91,15 @@ class group{
 		}
 		$conds=array(array(false,false,'group_gid','=',$gid));
 		if(!$GLOBALS['MG']['SQL']->sql_dataCommands(DB_REMOVE,array(TABLE_PREFIX.'groups'),$conds)){
-			trigger_error('(SQLACT): Could not remove group from database: '.$gid,E_USER_ERROR);
+			trigger_error('(GROUPS): Could not remove group from database: '.$gid,E_USER_ERROR);
 			return false;
 		}
-		$conds=array(array(false,false,'acl_group','=',$gid));
-		if(!$GLOBALS['MG']['SQL']->sql_dataCommands(DB_REMOVE,array(TABLE_PREFIX.'acl'),$conds)){
-			trigger_error('(SQLACT): Could not remove group acl from database: '.$gid,E_USER_ERROR);
+		$ac= new acl();
+		if(!$ac->acl_deleteGroupAcl($gid)){
+			$ac=false;
 			return false;
 		}
+		$ac=false;
 		return true;
 	}
 	public function group_modify($gid,$newUsersList){
@@ -109,7 +110,7 @@ class group{
 		$conds=array(array(false,false,'group_gid','=',$gid));
 		$ud=array(array('group_members',$members));
 		if(!$GLOBALS['MG']['SQL']->sql_dataCommands(DB_UPDATE,array(TABLE_PREFIX.'groups'),$conds,$ud)){
-			trigger_error('(SQLACT): Could not update group in database: '.$gid,E_USER_ERROR);
+			trigger_error('(GROUPS): Could not update group in database: '.$gid,E_USER_ERROR);
 			return false;
 		}
 		return true;
