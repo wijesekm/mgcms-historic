@@ -55,9 +55,12 @@ class group{
 			$conds=array(array(DB_LIKE,false,'group_gid','%;'.$search.';%'));
 			$totalLength=$GLOBALS['MG']['SQL']->sql_numRows(array(TABLE_PREFIX.'groups'),$conds);
 		}
-		if($loadOnly){
+		else if($loadOnly){
 			$conds=array(array(false,false,'group_gid','=',$loadOnly));
 			$totalLength=1;
+		}
+		else{
+			$totalLength=$GLOBALS['MG']['SQL']->sql_numRows(array(TABLE_PREFIX.'groups'),false);
 		}
 		$groups=$GLOBALS['MG']['SQL']->sql_fetchArray(array(TABLE_PREFIX.'groups'),false,$conds,DB_ASSOC,DB_ALL_ROWS,$addit);
 		if(!$groups){
