@@ -51,8 +51,8 @@ class acl{
 					}
 					else{
 						$userACL[$acls[$k]['acl_page']]['read']=$this->acl_comp($userACL[$acls[$k]['acl_page']]['read'],$acls[$k]['acl_read']);
-						$userACL[$acls[$k]['acl_page']]['modify']=$this->act_aclItem($userACL[$acls[$k]['acl_page']]['modify'],$acls[$k]['acl_modify']);
-						$userACL[$acls[$k]['acl_page']]['write']=$this->act_aclItem($userACL[$acls[$k]['acl_page']]['write'],$acls[$k]['acl_write']);					
+						$userACL[$acls[$k]['acl_page']]['modify']=$this->acl_comp($userACL[$acls[$k]['acl_page']]['modify'],$acls[$k]['acl_modify']);
+						$userACL[$acls[$k]['acl_page']]['write']=$this->acl_comp($userACL[$acls[$k]['acl_page']]['write'],$acls[$k]['acl_write']);					
 					}
 				}
 			}
