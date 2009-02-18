@@ -47,30 +47,36 @@ class group{
 	}
 	
 	public function group_getGroup($start=0,$length=10,$search=false,$loadOnly=false){
-		$addit['orderby']=array(array('group_gid'),array('DESC'));
-		$addit['limit']=array($start,$length);
-		$conds=false;
-		$totalLength=0;
-		if($search){
-			$conds=array(array(DB_LIKE,false,'group_gid','%'.$search.'%'));
-			$totalLength=$GLOBALS['MG']['SQL']->sql_numRows(array(TABLE_PREFIX.'groups'),$conds);
-		}
-		else if($loadOnly){
+		if($loadOnly){
 			$conds=array(array(false,false,'group_gid','=',$loadOnly));
-			$totalLength=1;
+			$groups=$GLOBALS['MG']['SQL']->sql_fetchArray(array(TABLE_PREFIX.'groups'),false,$conds);
+			$groups=$groups[0];
+			$groups['group_members']=explode(';',$groups['group_members']);
+			$groups['group_members']['count']=count($groups['group_members']);
+			return array(1,$groups);	
 		}
 		else{
-			$totalLength=$GLOBALS['MG']['SQL']->sql_numRows(array(TABLE_PREFIX.'groups'),false);
+			$addit['orderby']=array(array('group_gid'),array('DESC'));
+			$addit['limit']=array($start,$length);
+			$conds=false;
+			$totalLength=0;
+			if($search){
+				$conds=array(array(DB_LIKE,false,'group_gid','%'.$search.'%'));
+				$totalLength=$GLOBALS['MG']['SQL']->sql_numRows(array(TABLE_PREFIX.'groups'),$conds);
+			}
+			else{
+				$totalLength=$GLOBALS['MG']['SQL']->sql_numRows(array(TABLE_PREFIX.'groups'),false);
+			}
+			$groups=$GLOBALS['MG']['SQL']->sql_fetchArray(array(TABLE_PREFIX.'groups'),false,$conds,DB_ASSOC,DB_ALL_ROWS,$addit);
+			if(!$groups){
+				return false;
+			}
+			for($i=0;$i<$groups['count'];$i++){
+				$groups[$i]['group_members']=explode(';',$groups[$i]['group_members']);
+				$groups[$i]['group_members']['count']=count($groups[$i]['group_members']);
+			}
+			return array($totalLength,$groups);		
 		}
-		$groups=$GLOBALS['MG']['SQL']->sql_fetchArray(array(TABLE_PREFIX.'groups'),false,$conds,DB_ASSOC,DB_ALL_ROWS,$addit);
-		if(!$groups){
-			return false;
-		}
-		for($i=0;$i<$groups['count'];$i++){
-			$groups[$i]['group_members']=explode(';',$groups[$i]['group_members']);
-			$groups[$i]['group_members']['count']=count($groups[$i]['group_members']);
-		}
-		return array($totalLength,$groups);
 	}
 	
 	public function group_add($gid,$members){
