@@ -68,6 +68,7 @@ class group{
 		}
 		for($i=0;$i<$groups['count'];$i++){
 			$groups[$i]['group_members']=explode(';',$groups[$i]['group_members']);
+			$groups[$i]['group_members']['count']=count($groups[$i]['group_members']);
 		}
 		return array($totalLength,$groups);
 	}
