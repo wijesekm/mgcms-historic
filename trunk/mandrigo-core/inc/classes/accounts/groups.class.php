@@ -136,9 +136,11 @@ class group{
 		return $this->group_modify($gid,implode(';',$udata));
 	}
 	
-	private function group_isUserValid($uid){
+	public function group_isUserValid($uid){
 		eval('$act=new '.$GLOBALS['MG']['SITE']['ACCOUNT_TYPE'].'();');
-		$act->act_isAccount($uid);
+		$r=$act->act_isAccount($uid);
+		$act=false;
+		return $r;
 	}
 	
 	private function group_modify($gid,$newUsersList){
