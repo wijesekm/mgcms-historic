@@ -112,37 +112,44 @@ class group{
 	
 	public function group_addUser($gid,$uid){
 		$udata=$this->group_getGroup(false,false,false,$uid);
-		$udata=explode(';',$udata[0]['group_members']);
+		$udata=$udata[1]['group_members'];
 		if(in_array(';'.$uid.';',$udata)){
 			trigger_error('(GROUPS): User '.$uid.' already in group '.$gid.'. Not adding.',E_USER_NOTICE);
 			return true;
 		}
-		$udata[count($udata)-1]=$uid;
-		$udata[]='';
+		$udata[$udata['count']-1]=$uid;
+		$udata['count']='';
 		return $this->group_modify($gid,implode(';',$udata));
 	}
 	
 	public function group_removeUser($gid,$uid){
-		$udata=$this->group_getGroup(false,false,false,$uid);
-		$udata=explode(';',$udata[0]['group_members']);
+		$udata=$this->group_getGroup(false,false,false,$gid);
+		$udata=$udata[1]['group_members'];
 		$key=array_search(';'.$uid.';',$udata);
 		if($key===false){
 			trigger_error('GROUPS: User '.$uid.' not in group '.$gid.'. Not removing.',E_USER_NOTICE);
 			return true;
 		}
 		$soq=count($udata);
-		for($i=$key;$i<$soq;$i++){
+		for($i=$key;$i<$soq-1;$i++){
 			if($udata[$i]==$uid){
 				$udata[$i]='';
 			}
 			else{
 				$udata[$i-1]=$udata[$i];
 			}
+			
 		}
 		return $this->group_modify($gid,implode(';',$udata));
 	}
 	
 	public function group_isUserValid($uid){
+		if($uid=='*'){
+			return true;
+		}
+		if(substr($uid,0,1)=='-'){
+			$uid=substr($uid,1);
+		}
 		eval('$act=new '.$GLOBALS['MG']['SITE']['ACCOUNT_TYPE'].'();');
 		$r=$act->act_isAccount($uid);
 		$act=false;
