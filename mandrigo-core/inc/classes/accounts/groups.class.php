@@ -120,6 +120,9 @@ class group{
 			trigger_error('(GROUPS): User '.$uid.' already in group '.$gid.'. Not adding.',E_USER_NOTICE);
 			return true;
 		}
+		if($udata['count']==1){
+			$udata=array('','','count'=>2);
+		}
 		$udata[$udata['count']-1]=$uid;
 		$udata['count']='';
 		return $this->group_modify($gid,$udata);
@@ -133,13 +136,11 @@ class group{
 			trigger_error('GROUPS: User '.$uid.' not in group '.$gid.'. Not removing.',E_USER_NOTICE);
 			return true;
 		}
-		if($udata['count']==1){
-			$udata[1]='';
-		}
+
 		$soq=count($udata);
 		$newarr=array_slice($udata,0,$key);
 		for($i=$key;$i<$soq;$i++){
-			if($udata[$i]==$uid&&!$udata[$i]){
+			if($udata[$i]==$uid||!$udata[$i]){
 
 			}
 			else{
@@ -168,7 +169,7 @@ class group{
 		if(!$gid){
 			return false;
 		}
-		$members=implode(';',$newUsersList);	
+		$newUsersList=implode(';',$newUsersList);	
 		$conds=array(array(false,false,'group_gid','=',$gid));
 		$ud=array(array('group_members',$newUsersList));
 		if(!$GLOBALS['MG']['SQL']->sql_dataCommands(DB_UPDATE,array(TABLE_PREFIX.'groups'),$conds,$ud)){
