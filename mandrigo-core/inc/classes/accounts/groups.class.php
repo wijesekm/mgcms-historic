@@ -122,7 +122,7 @@ class group{
 		}
 		$udata[$udata['count']-1]=$uid;
 		$udata['count']='';
-		return $this->group_modify($gid,implode(';',$udata));
+		return $this->group_modify($gid,$udata);
 	}
 	
 	public function group_removeUser($gid,$uid){
@@ -132,6 +132,9 @@ class group{
 		if($key===false){
 			trigger_error('GROUPS: User '.$uid.' not in group '.$gid.'. Not removing.',E_USER_NOTICE);
 			return true;
+		}
+		if($udata['count']==1){
+			$udata[1]='';
 		}
 		$soq=count($udata);
 		$newarr=array_slice($udata,0,$key);
@@ -145,7 +148,7 @@ class group{
 			
 		}
 		$newarr[]='';
-		return $this->group_modify($gid,implode(';',$newarr));
+		return $this->group_modify($gid,$newarr);
 	}
 	
 	public function group_isUserValid($uid){
@@ -165,9 +168,9 @@ class group{
 		if(!$gid){
 			return false;
 		}
-		$members=implode(';',$members);	
+		$members=implode(';',$newUsersList);	
 		$conds=array(array(false,false,'group_gid','=',$gid));
-		$ud=array(array('group_members',$members));
+		$ud=array(array('group_members',$newUsersList));
 		if(!$GLOBALS['MG']['SQL']->sql_dataCommands(DB_UPDATE,array(TABLE_PREFIX.'groups'),$conds,$ud)){
 			trigger_error('(GROUPS): Could not update group in database: '.$gid,E_USER_ERROR);
 			return false;
