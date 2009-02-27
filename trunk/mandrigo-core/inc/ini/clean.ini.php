@@ -69,6 +69,9 @@ function mginit_cleanVar($value,$clean){
 				case 'ereg':
 					return (ereg($GLOBALS['MG']['CLEAN'][$clean[0]][1],$value))?$value:false;
 				break;
+				case '!eregi':
+					return (!eregi($GLOBALS['MG']['CLEAN'][$clean[0]][1],$value))?$value:false;
+				break;
 				case 'eregi':
 				default:
 					return (eregi($GLOBALS['MG']['CLEAN'][$clean[0]][1],$value))?$value:false;
