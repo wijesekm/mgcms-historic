@@ -49,58 +49,34 @@ function mginit_cleanVar($value,$clean){
 		case 'boolean':
 			return ($value!="")?1:0;
 		break;
-		case 'file_path':
-			return (eregi("[<|>?%\*\:\|\"]",$value))?'':$value;
-		break;
-		case 'url':
-			return (preg_match("/^[a-zA-Z]+[:\/\/]+[A-Za-z0-9\-_]+\\.+[A-Za-z0-9\.\/%&=\?\-_]+$/i",$value))?$value:'';
-		break;
-		case 'file_name':
-			return (eregi("[<|>?%\*\:\|\"\/\\]",$value))?'':$value;
-		break;
-		case 'e-mail':
-			return (eregi("^[a-z\\+0-9._-]+@[a-z.0-9-]+\.[a-z.]{2,5}$",$value))?$value:'';
-		break;
-		case 'id':
-			return (eregi("^[0-9a-z]+$",$value))?$value:'';	
-		break;
-		case 'ip':
-			return (preg_match("/^([0-9]{1,3}[.]){1,3}[0-9]{1,3}$/",$value))?$value:'';
-		break;
-		case 'mac':
-			return (preg_match("/^([0-9a-fA-F]{2}[:-]){5}[0-9a-fA-F]{2}$/",$value))?$value:'';
-		break;
-		case 'letter':
-			return (eregi("^[a-z]+$",$value))?$value:'';
-		break;
 		case 'int':
-			return (eregi("^[0-9]+$",$value))?$value:'';
+			return (eregi("^[0-9]+$",$value))?$value:false;
 		break;
 		case 'float':
-			return (eregi("^[0-9]+\.?[0-9]+$",$value))?$value:'';
+			return (eregi("^[0-9]+\.?[0-9]+$",$value))?$value:false;
 		break;
-		case 'groupname':
-			return (eregi("^[a-z0-9._-]+$",$value))?$value:'';
+		case 'char':
+			return (eregi("^[a-z]{1}+$",$value))?$value:false;
 		break;
-		case 'username':
-			return (eregi("^[a-z0-9\\@._-]+$",$value))?$value:'';
-		break;
-		case 'page_title':
-			return (eregi("^[[:space:]a-z0-9_-]+$",$value))?$value:'';
-		break;
-		case 'title':
-			return (eregi("^[[:space:]a-z0-9_-|:,\.]+$",$value))?$value:'';
-		break;
-		case 'target':
-			return (eregi("^[a-z\/0-9:|._-]+$",$value))?$value:'';
-		break;
-		case 'name':
-			return (eregi("^[[:space:]a-z.,]+$",$value))?$value:'';
-		break;
-		default:
+		case 'string':
 			return $value;
 		break;
-	}
+		default:
+			switch($GLOBALS['MG']['CLEAN'][$clean[0]][0]){
+				case 'preg_match':
+					return (preg_match($GLOBALS['MG']['CLEAN'][$clean[0]][1],$value))?$value:false;
+				break;
+				case 'ereg':
+					return (ereg($GLOBALS['MG']['CLEAN'][$clean[0]][1],$value))?$value:false;
+				break;
+				case 'eregi':
+				default:
+					return (eregi($GLOBALS['MG']['CLEAN'][$clean[0]][1],$value))?$value:false;
+				break;
+			}
+		break;
+	};
+	return false;
 }
 
 function mginit_RLD($value){
