@@ -29,6 +29,7 @@ if(!defined('STARTED')){
 $GLOBALS['MG']['CLEAN']=array(
 	'file_path'=>array('!eregi',"[<|>?%\*\:\|\"]"),
 	'url'=>array('preg_match',"/^[a-zA-Z]+[:\/\/]+[A-Za-z0-9\-_]+\\.+[A-Za-z0-9\.\/%&=\?\-_]+$/i"),
+	'uri'=>array('preg_match',"/^[A-Za-z0-9\-_]+\\.+[A-Za-z0-9\.\/%&=\?\-_]+$/i"),
 	'file_name'=>array('!eregi',"[<|>?%\*\:\|\"\/\\]"),
 	'e-mail'=>array('eregi',"^[a-z\\+0-9._-]+@[a-z.0-9-]+\.[a-z.]{2,5}$"),
 	'id'=>array('eregi',"^[0-9a-z]+$"),
