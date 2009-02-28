@@ -3,8 +3,8 @@
 /**
  * @file		bvars.ini.php
  * @author 		Kevin Wijesekera
- * @copyright 	2008
- * @edited		6-4-2008
+ * @copyright 	2009
+ * @edited		2-28-2009
  
  ###################################
  This program is free software: you can redistribute it and/or modify
@@ -32,8 +32,6 @@ $GLOBALS['MG']['CFG']['ALLOWWRITECACHE']=false;
 
 mginit_loadVars();
 
-//print_r($GLOBALS['MG']['GET']);
-
 function mginit_loadVars(){
 
 	$fileUploadErrors = array(
@@ -53,7 +51,9 @@ function mginit_loadVars(){
 		$GLOBALS['MG']['SITE']['KNOWN_EXTENSIONS']=array();
 	}
 	
-	$vars=$GLOBALS['MG']['SQL']->sql_fetcharray(array(TABLE_PREFIX.'vars'),false,false);
+	$addit=array();
+	$addit['orderby']=array(array('var_id'),array('DESC'));
+	$vars=$GLOBALS['MG']['SQL']->sql_fetcharray(array(TABLE_PREFIX.'vars'),false,false,DB_ASSOC,DB_ALL_ROWS,$addit);
 	
 	if($GLOBALS['MG']['SITE']['URLTYPE']==3){
 		$url = mginit_genURLType3();
@@ -66,64 +66,79 @@ function mginit_loadVars(){
 	}
 
 	for($i=0;$i<$vars['count'];$i++){
-
-		$name=$vars[$i]['var_callname'];
-		$uname=$vars[$i]['var_getname'];
-
-		if($vars[$i]['var_useInCache']=='1'){
-			$GLOBALS['MG']['CACHE']['USEINCACHE'][]=$name;
-		}
 		
-		if($name){
-			$clean=explode(',',$vars[$i]['var_clean']);
-			switch($vars[$i]['var_type']){
-				case 'GET':
-					$GLOBALS['MG']['GET'][$name]=isset($url[$uname])?mginit_cleanVar($url[$uname],$clean):$vars[$i]['var_default'];
-					if($vars[$i]['var_stopCache']=='1'&&$GLOBALS['MG']['GET'][$name]&&$GLOBALS['MG']['GET'][$name]!=$vars[$i]['var_default']){
-						$GLOBALS['MG']['CFG']['STOPCACHE']=true;
-					}
-				break;
-				case 'POST':
-					$GLOBALS['MG']['POST'][$name]=isset($_POST[$uname])?mginit_cleanVar($_POST[$uname],$clean):$vars[$i]['var_default'];
-					if($vars[$i]['var_stopCache']=='1'&&$GLOBALS['MG']['POST'][$name]&&$GLOBALS['MG']['POST'][$name]!=$vars[$i]['var_default']){
-						$GLOBALS['MG']['CFG']['STOPCACHE']=true;
-					}
-				break;
-				case 'FILE':
-					$GLOBALS['MG']['FILE'][$name]=array();
-					$GLOBALS['MG']['FILE'][$name]['ERROR']='';
-					if(!empty($_FILES[$uname]['name'])){
-						if($_FILES[$uname]['error'] !=  UPLOAD_ERR_OK){
-							trigger_error('(BVARS): File upload error: '.$fileUploadErrors($_FILES[$uname]['error']),E_USER_WARNING);
-							$GLOBALS['MG']['FILE'][$name]['ERROR']=$fileUploadErrors($_FILES[$uname]['error']);
+		if(mginit_loadVarOnlyOnePage($vars[$i]['var_loadOnPageOnly'])){
+			$name=$vars[$i]['var_callname'];
+			$uname=$vars[$i]['var_getname'];
+	
+			if($vars[$i]['var_useInCache']=='1'){
+				$GLOBALS['MG']['CACHE']['USEINCACHE'][]=$name;
+			}
+			
+			if($name){
+				$clean=explode(',',$vars[$i]['var_clean']);
+				switch($vars[$i]['var_type']){
+					case 'GET':
+						$GLOBALS['MG']['GET'][$name]=isset($url[$uname])?mginit_cleanVar($url[$uname],$clean):$vars[$i]['var_default'];
+						if($vars[$i]['var_stopCache']=='1'&&$GLOBALS['MG']['GET'][$name]&&$GLOBALS['MG']['GET'][$name]!=$vars[$i]['var_default']){
+							$GLOBALS['MG']['CFG']['STOPCACHE']=true;
 						}
-						else{
-						 	$GLOBALS['MG']['FILE'][$name]['HOST_FILENAME']=stripslashes($_FILES[$uname]['name']);
-							$GLOBALS['MG']['FILE'][$name]['EXT']=pathinfo($GLOBALS['MG']['FILE'][$name]['HOST_FILENAME'],PATHINFO_EXTENSION);
-						 	if(!in_array($GLOBALS['MG']['FILE'][$name]['EXT'],$GLOBALS['MG']['SITE']['KNOWN_EXTENSIONS'])){
-								trigger_error('(BVARS): File upload unknown filetype',E_USER_WARNING);
-								$GLOBALS['MG']['FILE'][$name]['ERROR']='UNKNOWNTYPE';
+					break;
+					case 'POST':
+						$GLOBALS['MG']['POST'][$name]=isset($_POST[$uname])?mginit_cleanVar($_POST[$uname],$clean):$vars[$i]['var_default'];
+						if($vars[$i]['var_stopCache']=='1'&&$GLOBALS['MG']['POST'][$name]&&$GLOBALS['MG']['POST'][$name]!=$vars[$i]['var_default']){
+							$GLOBALS['MG']['CFG']['STOPCACHE']=true;
+						}
+					break;
+					case 'FILE':
+						$GLOBALS['MG']['FILE'][$name]=array();
+						$GLOBALS['MG']['FILE'][$name]['ERROR']='';
+						if(!empty($_FILES[$uname]['name'])){
+							if($_FILES[$uname]['error'] !=  UPLOAD_ERR_OK){
+								trigger_error('(BVARS): File upload error: '.$fileUploadErrors($_FILES[$uname]['error']),E_USER_WARNING);
+								$GLOBALS['MG']['FILE'][$name]['ERROR']=$fileUploadErrors($_FILES[$uname]['error']);
 							}
 							else{
-								if($_FILES[$uname]['size'] > $clean[0]){
-									trigger_error('(BVARS): File too large',E_USER_WARNING);
-									$GLOBALS['MG']['FILE'][$name]['ERROR']='TOOLARGE';
+							 	$GLOBALS['MG']['FILE'][$name]['HOST_FILENAME']=stripslashes($_FILES[$uname]['name']);
+								$GLOBALS['MG']['FILE'][$name]['EXT']=pathinfo($GLOBALS['MG']['FILE'][$name]['HOST_FILENAME'],PATHINFO_EXTENSION);
+							 	if(!in_array($GLOBALS['MG']['FILE'][$name]['EXT'],$GLOBALS['MG']['SITE']['KNOWN_EXTENSIONS'])){
+									trigger_error('(BVARS): File upload unknown filetype',E_USER_WARNING);
+									$GLOBALS['MG']['FILE'][$name]['ERROR']='UNKNOWNTYPE';
 								}
 								else{
-									$GLOBALS['MG']['FILE'][$name]['SIZE']=$_FILES[$uname]['size'];
-									$GLOBALS['MG']['FILE'][$name]['SERVER_FILENAME']=$_FILES[$uname]['tmp_name'];	
+									if($_FILES[$uname]['size'] > $clean[0]){
+										trigger_error('(BVARS): File too large',E_USER_WARNING);
+										$GLOBALS['MG']['FILE'][$name]['ERROR']='TOOLARGE';
+									}
+									else{
+										$GLOBALS['MG']['FILE'][$name]['SIZE']=$_FILES[$uname]['size'];
+										$GLOBALS['MG']['FILE'][$name]['SERVER_FILENAME']=$_FILES[$uname]['tmp_name'];	
+									}
 								}
 							}
 						}
-					}
-				break;
-				case 'COOKIE':
-					$GLOBALS['MG']['COOKIE'][$name]=isset($_COOKIE[$uname])?mginit_cleanVar($_COOKIE[$uname],$clean):$vars[$i]['var_default'];		
-				break;
-			};
+					break;
+					case 'COOKIE':
+						$GLOBALS['MG']['COOKIE'][$name]=isset($_COOKIE[$uname])?mginit_cleanVar($_COOKIE[$uname],$clean):$vars[$i]['var_default'];		
+					break;
+				};
+			}			
 		}
 	}
 }
+
+function mginit_loadVarOnlyOnePage($loadOnly){
+	if(isset($GLOBALS['MG']['GET']['PAGE'])&&$loadOnly){
+		if($GLOBALS['MG']['GET']['PAGE']==$loadOnly){
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
+	return true;
+}
+
 function mginit_genURLType3(){
 	$raw_url=(isset($_GET['url']))?$_GET['url']:'';
 	$raw_url=ereg_replace('\/\/','/',$raw_url);
