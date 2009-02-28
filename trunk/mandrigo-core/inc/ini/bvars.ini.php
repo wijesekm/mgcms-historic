@@ -52,7 +52,7 @@ function mginit_loadVars(){
 	}
 	
 	$addit=array();
-	$addit['orderby']=array(array('var_id'),array('DESC'));
+	$addit['orderby']=array(array('var_id'),array('ASC'));
 	$vars=$GLOBALS['MG']['SQL']->sql_fetcharray(array(TABLE_PREFIX.'vars'),false,false,DB_ASSOC,DB_ALL_ROWS,$addit);
 	
 	if($GLOBALS['MG']['SITE']['URLTYPE']==3){
