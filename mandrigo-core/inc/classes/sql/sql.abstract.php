@@ -57,6 +57,8 @@ abstract class sql{
 	abstract public function sql_checkConnection();
 	
 	abstract public function sql_info();
+	
+	abstract public function sql_listTables();
 
 	abstract public function sql_switchDB($new_database);
 	
