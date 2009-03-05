@@ -197,7 +197,9 @@ class mysql extends sql{
 	final public function sql_listTables(){
 		$r=$this->sql_query('SHOW TABLES;');
 		$tables=array();
-		while($tables[]=mysql_fetch_row($r));
+		while($row=mysql_fetch_row($r)){
+			$tables[]=$row[0];
+		}
 		$this->sql_freeResult($r);
 		return $tables;
 	}
