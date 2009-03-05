@@ -3,8 +3,8 @@
 /**
  * @file		mysql.class.php
  * @author 		Kevin Wijesekera
- * @copyright 	2008
- * @edited		5-30-2008
+ * @copyright 	2009
+ * @edited		2-04-2008
  
  ###################################
  This program is free software: you can redistribute it and/or modify
@@ -185,6 +185,22 @@ class mysql extends sql{
 		$dta['status']=mysql_stat($this->db);
 		return $dta;
 	}
+	
+	/**
+	* public function sql_listTables()
+	*
+	* Gets all the tables in the current database
+	*
+	* OUTPUTS:
+	* Array of table names (string)
+	*/		
+	final public function sql_listTables(){
+		$r=$this->sql_query('SHOW TABLES;');
+		$tables=array();
+		while($tables[]=mysql_fetch_row($r));
+		$this->sql_freeResult($r);
+		return $tables;
+	}
 
 	/**
 	* public function sql_switchDB($new_database)
@@ -192,6 +208,7 @@ class mysql extends sql{
 	* Connects to a different database
 	*
 	* INPUTS:
+	* $new_database - name of new database (string)
 	*
 	* OUTPUTS:
 	* true if sucessful, false if not
