@@ -42,5 +42,6 @@ $GLOBALS['MG']['CLEAN']=array(
 	'username'=>array('eregi',"^[a-z0-9\\@._-]+$"),
 	'page_title'=>array('eregi',"^[[:space:]a-z0-9_-]+$"),
 	'title'=>array('eregi',"^[[:space:]a-z0-9_-|:,\.]+$"),
-	'name'=>array('eregi',"^[[:space:]a-z.,]+$")	
+	'name'=>array('eregi',"^[[:space:]a-z.,]+$"),
+	'lang-code'=>array('eregi',"^[a-z]{1,3}-[a-z]{1,3}$")
 );
