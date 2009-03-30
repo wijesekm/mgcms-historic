@@ -43,6 +43,9 @@ function mginit_cleanVar($value,$clean){
 	if((boolean)$clean[4]){
 		$value=mginit_RLD($value);
 	}
+	if((boolean)$clean[6]){
+		$value=stripslashes($value);
+	}
 
 	
 	switch ($clean[0]){
