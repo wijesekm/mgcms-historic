@@ -56,7 +56,7 @@ function mginit_cleanVar($value,$clean){
 			return (eregi("^[0-9]+\.?[0-9]+$",$value))?$value:false;
 		break;
 		case 'char':
-			return (eregi("^[a-z]{1}+$",$value))?$value:false;
+			return (eregi("^[a-z0-9\-\\/\\.()*&^%$#@!:;<>`~+=,]{1}$",$value))?$value:false;
 		break;
 		case 'string':
 			return $value;
