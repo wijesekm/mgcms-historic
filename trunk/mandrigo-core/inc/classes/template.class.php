@@ -225,8 +225,9 @@ class template{
 	private function tpl_parseSection($vars,$section,$level,$rempty){
 		switch($level){
 			case 2:
-				$section=$this->parser->p_vparse($vars,$section);
+				$section=$this->parser->p_vparse($vars,$section);	
 				$section=$this->parser->p_lparse($GLOBALS['MG']['LANG'],$section);
+				$section=$this->parser->p_vparse($vars,$section);
 				$section=$this->parser->p_phpcompile($section);
 				$section=$this->parser->p_vparse($vars,$section);
 				$section=$this->parser->p_lparse($GLOBALS['MG']['LANG'],$section);
