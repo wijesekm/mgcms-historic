@@ -150,6 +150,26 @@ class mysql extends sql{
 		}
 		return true;
 	}
+	
+	/**
+	* public function sql_setDebug()
+	*
+	* Sets debug mode
+	*
+	* INPUTS:
+	*
+	* OUTPUTS:
+	* true
+	*/	
+	final public function sql_setDebug(){
+		if($this->print==true){
+			$this->print=false;
+		}
+		else{
+			$this->print=true;
+		}
+		return true;
+	}
 
 	/**
 	* public function sql_info()
