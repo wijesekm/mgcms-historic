@@ -120,10 +120,10 @@ class mgimg{
 	public function img_drawRectangleBorder($x1,$x2,$y1,$y2,$borderColor,$borderWidth=1){
 		$color=$this->img_setHexColor($borderColor);
 		for($i=0;$i<$borderWidth;$i++){
-			$xstart=$x1+($borderWidth-1);
-			$xend=$x2-($borderWidth-1);
-			$ystart=$y1+($borderWidth-1);
-			$yend=$y2-($borderWidth-1);
+			$xstart=$x1+$i;
+			$xend=$x2-$i;
+			$ystart=$y1+$i;
+			$yend=$y2-$i;
 			if(!imagerectangle($this->img,$xstart,$ystart,$xend,$yend,$color)){
 				trigger_error('(MGIMG): Could not draw rectangle (imagerectangle)',E_USER_ERROR);
 				return false;
