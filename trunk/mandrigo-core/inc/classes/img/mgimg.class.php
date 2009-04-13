@@ -45,7 +45,7 @@ class mgimg{
 		return array($this->width,$this->height,$this->mime,$this->ext);
 	}
 	
-	public function img_createImg($mime,$width,$height,$truecolor=true){
+	public function img_create($mime,$width,$height,$truecolor=true){
 		$this->img=false;
 		$this->mime=$mime;
 		$this->width=$width;
@@ -78,7 +78,7 @@ class mgimg{
 		return true;
 	}
 	
-	public function img_loadImg($file){
+	public function img_load($file){
 	 	$t = getimagesize($file);
 	 	$this->width=$t[0];
 	 	$this->height=$t[1];
@@ -107,6 +107,39 @@ class mgimg{
 		}
 		return true;
 	}
+	
+	public function img_setBackground($fillColor,$borderColor=false,$borderWidth=1){
+		if(!$borderColor){
+			$borderColor=$fillColor;
+		}
+		if(!$this->img_drawRectangle(0,$this->width,0,$this->height,$borderColor,$borderThickness,$fillColor)){
+			return false;
+		}
+	}
+	
+	public function img_drawRectangleBorder($x1,$x2,$y1,$y2,$borderColor){
+		if(!imagerectangle($this->img,$x1,$y1,$x2,$y2,$this->img_setHexColor($borderColor))){
+			trigger_error('(MGIMG): Could not draw rectangle (imagerectangle)',E_USER_ERROR);
+			return false;
+		}
+		return true;
+	}
+	
+	public function img_drawRectangle($x1,$x2,$y1,$y2,$borderColor,$borderThickness,$fillColor){
+		$x1_inner=$x1+$borderThickness;
+		$y1_inner=$y1+$borderThickness;
+		$x2_inner=$x2-$borderThickness;
+		$y2_inner=$y2-$borderThickness;
+		if(!imagefilledrectangle($this->img,$x1_inner,$y1_inner,$x2_inner,$y2_inner,$this->img_setHexColor($fillColor))){
+			trigger_error('(MGIMG): Could not draw filled rectangle (imagefilledrectangle)',E_USER_ERROR);
+			return false;
+		}
+		if(!$this->img_drawRectangle($x1,$x2,$y1,$y2,$borderColor)){
+			return false;
+		}
+		return true;
+	}
+	
 	public function img_resizeMax($maxWidth,$maxHeight){
 		$a=$this->width-$maxWidth;
 		$b=$this->height-$maxHeight;
