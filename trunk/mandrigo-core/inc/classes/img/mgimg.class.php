@@ -117,7 +117,7 @@ class mgimg{
 		}
 	}
 	
-	public function img_drawRectangleBorder($x1,$x2,$y1,$y2,$borderColor,$borderWidth=1){
+	public function img_drawRectangleBorder($x1,$x2,$y1,$y2,$borderColor,$borderWidth){
 		$color=$this->img_setHexColor($borderColor);
 		for($i=0;$i<$borderWidth;$i++){
 			$xstart=$x1+$i;
@@ -145,6 +145,19 @@ class mgimg{
 			return false;
 		}
 		return true;
+	}
+	
+	public function img_drawArcBorder($cx,$cy,$width,$height,$startAng,$endAng,$borderColor,$borderWidth){
+		$color=$this->img_setHexColor($borderColor);
+		for($i=0;$i<$borderWidth;$i++){
+			$nwidth=$width-$i;
+			$nheight=$height-$i;
+			if(!imagearc($this->img,$cx,$cy,$nwidth,$nheight,$startAng,$endAng,$color)){
+				trigger_error('(MGIMG): Could not draw rectangle (imagerectangle)',E_USER_ERROR);
+				return false;
+			}
+		}
+		return true;		
 	}
 	
 	public function img_resizeMax($maxWidth,$maxHeight){
