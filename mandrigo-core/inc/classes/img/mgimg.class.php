@@ -33,6 +33,7 @@ class mgimg{
 	private $img;
 	private $height;
 	private $width;
+	private $tc;
 	
 	const IMG_MIME_GIF	=	'image/gif';
 	const IMG_MIME_PNG	=	'image/png';
@@ -56,6 +57,7 @@ class mgimg{
 			break;
 			case mgimg::IMG_MIME_PNG:
 				$this->ext=mgimg::IMG_EXT_PNG;
+				$this->tc=true;
 			break;
 			case mgimg::IMG_MIME_JPEG:;
 				$this->ext=mgimg::IMG_EXT_JPEG;
@@ -118,7 +120,8 @@ class mgimg{
 	}
 	
 	public function img_drawRectangleBorder($x1,$x2,$y1,$y2,$borderColor,$borderWidth){
-		$color=$this->img_setHexColor($borderColor);
+		list($c,$a)=$borderColor;
+		$color=$this->img_setHexColor($c,$a);
 		for($i=0;$i<$borderWidth;$i++){
 			$xstart=$x1+$i;
 			$xend=$x2-$i;
@@ -137,7 +140,8 @@ class mgimg{
 		$y1_inner=$y1+$borderThickness;
 		$x2_inner=$x2-$borderThickness;
 		$y2_inner=$y2-$borderThickness;
-		if(!imagefilledrectangle($this->img,$x1_inner,$y1_inner,$x2_inner,$y2_inner,$this->img_setHexColor($fillColor))){
+		list($c,$a)=$fillColor;
+		if(!imagefilledrectangle($this->img,$x1_inner,$y1_inner,$x2_inner,$y2_inner,$this->img_setHexColor($c,$a))){
 			trigger_error('(MGIMG): Could not draw filled rectangle (imagefilledrectangle)',E_USER_ERROR);
 			return false;
 		}
@@ -148,7 +152,8 @@ class mgimg{
 	}
 	
 	public function img_drawArcBorder($cx,$cy,$width,$height,$startAng,$endAng,$borderColor,$borderWidth){
-		$color=$this->img_setHexColor($borderColor);
+		list($c,$a);
+		$color=$this->img_setHexColor($c,$a);
 		for($i=0;$i<$borderWidth;$i++){
 			$nwidth=$width-$i;
 			$nheight=$height-$i;
@@ -157,7 +162,24 @@ class mgimg{
 				return false;
 			}
 		}
-		return true;		
+		return true;
+	}
+	
+	public function img_drawString($string,$x,$y,$color,$font,$up=false){
+		list($c,$a)=$color;
+		if($up){
+			if(!imagestringup($this->img,$font,$x,$y,$string,$this->img_setHexColor($c,$a))){
+				trigger_error('(MGIMG): Could not draw string',E_USER_ERROR);
+				return false;
+			}
+		}
+		else{
+			if(!imagestring($this->img,$font,$x,$y,$string,$this->img_setHexColor($c,$a))){
+				trigger_error('(MGIMG): Could not draw string',E_USER_ERROR);
+				return false;
+			}			
+		}
+		return true;
 	}
 	
 	public function img_resizeMax($maxWidth,$maxHeight){
@@ -252,11 +274,14 @@ class mgimg{
 		imagedestroy($this->img);
 	}
 	
-	private function img_setHexColor($color){
+	private function img_setHexColor($color,$alpha=0){
 		list($r,$g,$b)=array(hexdec(substr($color,0,2)),hexdec(substr($color,2,2)),hexdec(substr($color,4,2)));
-		return $this->img_setRGBColor($r,$g,$b);
+		return $this->img_setRGBColor($r,$g,$b,$alpha);
 	}
-	private function img_setRGBColor($r,$g,$b){
+	private function img_setRGBColor($r,$g,$b,$a){
+		if($this->tc&&$a>0){
+			return imagecolorallocatealpha($this->img,$r,$g,$b,$a);
+		}
 		return imagecolorallocate($this->img,$r,$g,$b);	
 	}
 
