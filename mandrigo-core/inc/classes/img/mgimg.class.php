@@ -222,7 +222,7 @@ class mgimg{
 			$this->height=$h;
 		}
 		$orig=$this->img;
-		$this->img_createImg($this->mime,$w,$h,true);
+		$this->img_create($this->mime,$w,$h,true);
 		if(!imagecopyresampled($this->img,$orig,0,0,0,0,$this->width,$this->height,$oldwidth,$oldheight)){
 			imagedestroy($orig);
 			return false;
