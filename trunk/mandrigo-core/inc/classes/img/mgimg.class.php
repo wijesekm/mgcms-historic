@@ -152,7 +152,7 @@ class mgimg{
 	}
 	
 	public function img_drawArcBorder($cx,$cy,$width,$height,$startAng,$endAng,$borderColor,$borderWidth){
-		list($c,$a);
+		list($c,$a)=$borderColor;
 		$color=$this->img_setHexColor($c,$a);
 		for($i=0;$i<$borderWidth;$i++){
 			$nwidth=$width-$i;
@@ -265,6 +265,7 @@ class mgimg{
 			fclose($r);
 			unlink($f);
 			$GLOBALS['MG']['LANG']['CONTENT_TYPE']=$this->mime;
+			$GLOBALS['MG']['PAGE']['NOSITETPL']=true;
 			return $content;
 		}
 		return true;
