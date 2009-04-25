@@ -1,5 +1,31 @@
 <?php
 
+/**
+ * @file                mgXML.class.php
+ * @author              Kevin Wijesekera
+ * @copyright   		2009
+ * @edited              4-25-2009
+ 
+ ###################################
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+ 
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ 
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see http://www.gnu.org/licenses/.
+ ###################################
+ */
+
+if(!defined('STARTED')){
+	die();
+}
+
 class mgXML {
 
     // XML parser variables
@@ -8,13 +34,11 @@ class mgXML {
     private $cfg;
     
     public function __construct($pkg){
-		//$c=array(array(false,array(DB_AND,1),'pkg_name','=',$pkg),array(false,array(DB_OR,2),'page_path','=',$GLOBALS['MG']['PAGE']['PATH']),array(false,array(false,2),'page_path','=','*'));
-		//$dta=$GLOBALS['MG']['SQL']->sql_fetchArray(array(TABLE_PREFIX.'packageconf'),false,$c);
-		//for($i=0;$i<$dta['count'];$i++){
-		//	$this->cfg[(string)$dta[$i]['var_name']]=(string)$dta[$i]['var_value'];
-		//}
-		$this->cfg['xml_encoding']='ISO-8859-1';
-		$this->cfg['xml_version']='1.0';
+		$c=array(array(false,array(DB_AND,1),'pkg_name','=',$pkg),array(false,array(DB_OR,2),'page_path','=',$GLOBALS['MG']['PAGE']['PATH']),array(false,array(false,2),'page_path','=','*'));
+		$dta=$GLOBALS['MG']['SQL']->sql_fetchArray(array(TABLE_PREFIX.'packageconf'),false,$c);
+		for($i=0;$i<$dta['count'];$i++){
+			$this->cfg[(string)$dta[$i]['var_name']]=(string)$dta[$i]['var_value'];
+		}		
 	}
 	
 	public function mxml_getCurrent(){
@@ -25,6 +49,8 @@ class mgXML {
 		$string.='<?xml version="'.$this->cfg['xml_version'].'" encoding="'.$this->cfg['xml_encoding'].'"?>'."\n";
 		$string.=$this->mxml_writeRecursive($this->data[0],0);
 		if(!$file){
+			$GLOBALS['MG']['LANG']['CONTENT_TYPE']=$this->cfg['xml_contenttype'];
+			$GLOBALS['MG']['PAGE']['NOSITETPL']=true;
 			return $string;
 		}
 		else{
@@ -34,20 +60,23 @@ class mgXML {
 			@fwrite($fp);
 			fclose($fp);
 		}
-		return $string;
+		return true;
 	}
 	
 	public function mxml_addTag($tag,$attrs,$data,$parent_indexes){
 		$base='$this->data';
-		foreach($parent_indexes as $i){
-			$base.="[$i]";
+		if($parent_indexes){
+			foreach($parent_indexes as $i){
+				$base.="[$i]";
+			}
 		}
 		eval("\$c=count($base);");
 		eval("\$d=($base"."['data'])?true:false;");
+		eval("\$u=($base"."['tag'])?true:false;");
 		if($d){
 			$c-=3;
 		}
-		else{
+		else if($u){
 			$c-=2;
 		}
 		$base.="[$c]";
@@ -122,7 +151,7 @@ class mgXML {
 		for($i=0;$i<$level;$i++){
 			$t.="\t";
 		}
-		$string.=$t.'<'.$array['tag'].' '.$this->mxml_formatAttribs($array['attrs']).'>';
+		$string.=$t.'<'.$array['tag'].$this->mxml_formatAttribs($array['attrs']).'>';
 		$sub=2;
 		if($array['data']){
 			$string.=$array['data'];
@@ -141,10 +170,10 @@ class mgXML {
 	}
 	
 	private function mxml_formatAttribs($attribs){
-		$string='';
-		if(count($attribs)==0){
+		if(!$attribs){
 			return false;
 		}
+		$string=' ';
 		foreach($attribs as $key => $value){
 			$string.=$key.'="'.$value.'"';
 		}
