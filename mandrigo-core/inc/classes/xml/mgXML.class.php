@@ -31,14 +31,14 @@ class mgXML {
     // XML parser variables
     private $parser;
     private $data  = array();
-    private $cfg;
+    private $cfg =  array();
     
     public function __construct($pkg){
 		$c=array(array(false,array(DB_AND,1),'pkg_name','=',$pkg),array(false,array(DB_OR,2),'page_path','=',$GLOBALS['MG']['PAGE']['PATH']),array(false,array(false,2),'page_path','=','*'));
 		$dta=$GLOBALS['MG']['SQL']->sql_fetchArray(array(TABLE_PREFIX.'packageconf'),false,$c);
 		for($i=0;$i<$dta['count'];$i++){
 			$this->cfg[(string)$dta[$i]['var_name']]=(string)$dta[$i]['var_value'];
-		}		
+		}
 	}
 	
 	public function mxml_getCurrent(){
@@ -46,18 +46,21 @@ class mgXML {
 	}
 	
 	public function mxml_write($file=false){
-		$string.='<?xml version="'.$this->cfg['xml_version'].'" encoding="'.$this->cfg['xml_encoding'].'"?>'."\n";
-		$string.=$this->mxml_writeRecursive($this->data[0],0);
+		$output='<?xml version="'.$this->cfg['xml_version'].'" encoding="'.$this->cfg['xml_encoding'].'"?>'."\n";
+		$soq=count($this->data);
+		for($i=0;$i<$soq;$i++){
+			$output.=$this->mxml_writeRecursive($this->data[$i],0);	
+		}
 		if(!$file){
 			$GLOBALS['MG']['LANG']['CONTENT_TYPE']=$this->cfg['xml_contenttype'];
 			$GLOBALS['MG']['PAGE']['NOSITETPL']=true;
-			return $string;
+			return $output;
 		}
 		else{
 			if(!$fp=fopen($file,'w')){
 				trigger_error('(MGXML): Could not open file or url for writing: '.$file,E_USER_ERROR);
 			}
-			@fwrite($fp);
+			@fwrite($fp,$output);
 			fclose($fp);
 		}
 		return true;
@@ -87,6 +90,10 @@ class mgXML {
 			eval($base."['data']=\$data;");
 		}
 		return true;
+	}
+	
+	public function mxml_reset(){
+		$this->data=array();
 	}
 	
     public function mxml_load($input,$file=true){
@@ -151,15 +158,20 @@ class mgXML {
 		for($i=0;$i<$level;$i++){
 			$t.="\t";
 		}
-		$string.=$t.'<'.$array['tag'].$this->mxml_formatAttribs($array['attrs']).'>';
+		$string.=$t.'<'.$array['tag'].$this->mxml_formatAttribs($array['attrs']);
 		$sub=2;
 		if($array['data']){
-			$string.=$array['data'];
 			$sub=3;
+			$t='';
 		}
 		$size=count($array)-$sub;
-		if($size == 0){
-			$t='';
+		
+		if($size == 0&&!$array['data']){
+			return $string.="/>\n";
+		}
+		$string.='>';
+		if($array['data']){
+			$string.=$array['data'];
 		}
 		for($i=0;$i<$size;$i++){
 			$string.="\n";
@@ -175,7 +187,7 @@ class mgXML {
 		}
 		$string=' ';
 		foreach($attribs as $key => $value){
-			$string.=$key.'="'.$value.'"';
+			$string.=$key.'="'.$value.'" ';
 		}
 		return $string;
 	}
