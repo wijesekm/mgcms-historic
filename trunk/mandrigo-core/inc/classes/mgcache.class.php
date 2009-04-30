@@ -30,17 +30,13 @@ class mgcache{
 		$this->cache_base=$GLOBALS['MG']['CFG']['PATH']['TPL'].$GLOBALS['MG']['LANG']['NAME'].'/cache/';
 	}
 	
-	public function mgc_readcache($pageTime,$tplTime){
+	public function mgc_readcache($site_tpl_up){
 		$cache='';
 		$new_path=$this->cache_base.implode('/',explode($GLOBALS['MG']['SITE']['URL_DELIM'],$GLOBALS['MG']['PAGE']['PATH']));
 		$new_path.='.'.$GLOBALS['MG']['USER']['UID'].'.'.$this->mgc_varsIntoName().'cache';
 		if(is_file($new_path)){
 			$ftime=filemtime($new_path);
-			$sitemod=$GLOBALS['MG']['SQL']->sql_fetchresult(array(TABLE_PREFIX.'pages'),array(array('page_modified')),array(array(false,false,'page_path','=','*')));
-			if($tplTime > $sitemod){
-				$sitemod=$tplTime;
-			}
-			if($ftime < $pageTime || $ftime < $sitemod){
+			if($ftime < $GLOBALS['MG']['PAGE']['MODIFIED'] || $ftime < $site_tpl_up){
 				return false;
 			}
 			if($f=fopen($new_path,'r')){
