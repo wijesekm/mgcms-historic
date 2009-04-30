@@ -86,8 +86,9 @@ class page{
 	
 	public function page_generate(){
 		if($GLOBALS['MG']['PAGE']['ALLOWCACHE']=='1'&&!$GLOBALS['MG']['CFG']['STOPCACHE']){
+			$this->page_getModified();
 			$cache=new mgcache();
-			$content=$cache->mgc_readcache($this->page_getModified(),filemtime($GLOBALS['MG']['CFG']['PATH']['TPL'].$GLOBALS['MG']['LANG']['NAME'].'/'.page::PAGE_TPL_NAME));
+			$content=$cache->mgc_readcache(filemtime($GLOBALS['MG']['CFG']['PATH']['TPL'].$GLOBALS['MG']['LANG']['NAME'].'/'.page::PAGE_TPL_NAME));
 			if($content!=false){
 				return $content;
 			}
@@ -124,7 +125,7 @@ class page{
 		if(!$GLOBALS['MG']['PAGE']['NOSITETPL']){
 			$this->vars=mg_mergeArrays($this->vars,array('TITLE'=>$this->title,'CONTENT'=>$this->content));
 			$tpl->tpl_parse($this->vars,'main',2,true);
-			if($GLOBALS['MG']['PAGE']['ALLOWCACHE']=='1'&&(!$GLOBALS['MG']['CFG']['STOPCACHE']||$GLOBALS['MG']['CFG']['ALLOWWRITECACHE'])){
+			if($GLOBALS['MG']['PAGE']['ALLOWCACHE']=='1'&&!$GLOBALS['MG']['CFG']['STOPCACHE']){
 				if(!is_object($cache)){
 					$cache=new mgcache();
 				}				
@@ -134,7 +135,7 @@ class page{
 			return $tpl->tpl_return('main');
 		}
 		else{
-			if($GLOBALS['MG']['PAGE']['ALLOWCACHE']=='1'&&(!$GLOBALS['MG']['CFG']['STOPCACHE']||$GLOBALS['MG']['CFG']['ALLOWWRITECACHE'])){
+			if($GLOBALS['MG']['PAGE']['ALLOWCACHE']=='1'&&!$GLOBALS['MG']['CFG']['STOPCACHE']){
 				if(!is_object($cache)){
 					$cache=new mgcache();
 				}
@@ -147,20 +148,10 @@ class page{
 	
 	private function page_getModified(){
 		$GLOBALS['MG']['PAGE']['CACHEHOOKS']=explode(';',$GLOBALS['MG']['PAGE']['CACHEHOOKS']);
-		if(!$GLOBALS['MG']['PAGE']['CACHEHOOKS'][0]){
-			return $GLOBALS['MG']['PAGE']['MODIFIED'];
-		}
 		$soq=count($GLOBALS['MG']['PAGE']['CACHEHOOKS']);
-		$time=$GLOBALS['MG']['PAGE']['MODIFIED'];
 		for($i=0;$i<$soq;$i++){
-			if($GLOBALS['MG']['PAGE']['CACHEHOOKS'][$i]){
-				$tmp=$this->page_hookEval($GLOBALS['MG']['PAGE']['CACHEHOOKS'][$i]);
-			}
-			if($tmp > $time){
-				$time=$tmp;
-			}
+			$tmp=$this->page_hookEval($GLOBALS['MG']['PAGE']['CACHEHOOKS'][$i]);
 		}
-		return $time;
 	}
 	
 	private function page_getTitle(){
