@@ -64,7 +64,7 @@ class rss extends mgXML{
 				parent::mxml_addTag('link',false,$page_url,array(0,0));
 				parent::mxml_addTag('description',false,$desc,array(0,0));
 				parent::mxml_addTag('language',false,$GLOBALS['MG']['LANG']['NAME'],array(0,0));
-				parent::mxml_addTag('lastBuildDate',false,date('D, d M Y H:i:s T',$ts_ud),array(0,0));
+				parent::mxml_addTag('lastBuildDate',false,$this->rss_convertDate($ts_ud),array(0,0));
 				$this->count=5;
 				if($other['img']){
 					parent::mxml_addTag('image',false,false,array(0,0));
@@ -88,11 +88,25 @@ class rss extends mgXML{
 				parent::mxml_addTag('link',false,$page_url,array(0,0));
 				parent::mxml_addTag('description',false,$desc,array(0,0));
 				parent::mxml_addTag('dc:language',false,$GLOBALS['MG']['LANG']['NAME'],array(0,0));
-				parent::mxml_addtag('dc:date',false,date('c',$ts_ud),array(0,0));
+				parent::mxml_addtag('dc:date',false,$this->rss_convertDate($ts_ud),array(0,0));
 				parent::mxml_addtag('items',false,false,array(0,0));
 				parent::mxml_addtag('rdf:Seq',false,false,array(0,0,5));
 				$this->rss_addOther($other,array(0,0));
 			break;			
+		}
+	}
+	
+	public function rss_convertDate($timestamp,$t=false){
+		if(!$t){
+			$t=$this->type;
+		}
+		switch($t){
+			case '2.0':
+				return date('D, d M Y H:i:s T',$timestamp);
+			break;
+			case '1.0':
+				return date('c',$timestamp);
+			break;
 		}
 	}
 	
@@ -103,7 +117,7 @@ class rss extends mgXML{
 				parent::mxml_addTag('title',false,$title,array(0,0,$this->count));
 				parent::mxml_addTag('link',false,$link,array(0,0,$this->count));
 				parent::mxml_addTag('guid',false,$link,array(0,0,$this->count));
-				parent::mxml_addTag('pubDate',false,date('D, d M Y H:i:s T',$ts_ud),array(0,0,$this->count));
+				parent::mxml_addTag('pubDate',false,$this->rss_convertDate($ts_ud),array(0,0,$this->count));
 				parent::mxml_addTag('description',fales,$summary,array(0,0,$this->count));
 				$this->rss_addOther($other,array(0,0,$this->count));
 				$this->count++;				
@@ -115,7 +129,7 @@ class rss extends mgXML{
 				parent::mxml_addTag('title',false,$title,array(0,$this->count));
 				parent::mxml_addTag('link',false,$link,array(0,$this->count));
 				parent::mxml_addTag('description',false,$summary,array(0,$this->count));
-				parent::mxml_addTag('dc:date',false,date('c',$ts_ud),array(0,$this->count));
+				parent::mxml_addTag('dc:date',false,$this->rss_convertDate($ts_ud),array(0,$this->count));
 				$this->rss_addOther($other,array(0,$this->count));
 				$this->count++;
 			break;			
@@ -125,13 +139,13 @@ class rss extends mgXML{
 	private function rss_addOther($other,$parents){
 		if(is_array($other)){
 			foreach($other as $key=>$val){
-				if(is_array($value)){
+				if(is_array($val)){
 					parent::mxml_addTag($key,$val[0],$val[1],$parents);
 				}
-				else if($value){
+				else if($val){
 					parent::mxml_addTag($key,false,$val,$parents);
 				}
-				if($this->type='2.0'){
+				if($this->type=='2.0'){
 					$this->count++;
 				}
 			}

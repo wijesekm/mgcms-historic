@@ -67,6 +67,9 @@ class mgXML {
 	}
 	
 	public function mxml_addTag($tag,$attrs,$data,$parent_indexes){
+		if(!$tag){
+			return false;
+		}
 		$base='$this->data';
 		if($parent_indexes){
 			foreach($parent_indexes as $i){

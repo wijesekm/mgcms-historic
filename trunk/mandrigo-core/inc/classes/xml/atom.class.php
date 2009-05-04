@@ -48,12 +48,12 @@ class atom extends mgXML{
 		parent::mxml_addTag('link',array('href'=>$feed_url,'rel'=>'self'),false,array(0));
 		parent::mxml_addTag('link',array('href'=>$page_url),false,array(0));
 		parent::mxml_addTag('id',false,$page_url,array(0));
-		parent::mxml_addTag('updated',false,date('c',$ts_ud),array(0));
+		parent::mxml_addTag('updated',false,$this->atom_convertDate($ts_ud),array(0));
 		$this->count=5;
 		if(is_array($author)){
-			foreach($author as $value){
-				parent::mxml_addTag($value[0],false,false,array(0));
-				foreach($value[1] as $key=>$val){
+			foreach($author as $key=>$value){
+				parent::mxml_addTag($key,false,false,array(0));
+				foreach($value as $key=>$val){
 					if(is_array($val)){
 						parent::mxml_addTag($key,$val[0],$val[1],array(0,$this->count));
 					}
@@ -70,9 +70,10 @@ class atom extends mgXML{
 	
 	public function atom_addPost($title,$link,$ts_ud,$summary,$other=false){
 		parent::mxml_addTag('entry',false,false,array(0));
+		parent::mxml_addTag('title',false,$title,array(0,$this->count));
 		parent::mxml_addTag('id',false,$link,array(0,$this->count));
 		parent::mxml_addTag('link',array('href'=>$link),false,array(0,$this->count));
-		parent::mxml_addTag('updated',false,date('c',$ts_ud),array(0,$this->count));
+		parent::mxml_addTag('updated',false,$this->atom_convertDate($ts_ud),array(0,$this->count));
 		if($summary){
 			parent::mxml_addTag('summary',false,$summary,array(0,$this->count));
 		}
@@ -80,13 +81,17 @@ class atom extends mgXML{
 		$this->count++;
 	}
 	
+	public function atom_convertDate($timestamp){
+		return date('c',$timestamp);
+	}
+		
 	private function atom_addOther($other,$parents){
 		if(is_array($other)){
 			foreach($other as $key=>$val){
-				if(is_array($value)){
+				if(is_array($val)){
 					parent::mxml_addTag($key,$val[0],$val[1],$parents);
 				}
-				else if($value){
+				else if($val){
 					parent::mxml_addTag($key,false,$val,$parents);
 				}
 				$this->count++;
