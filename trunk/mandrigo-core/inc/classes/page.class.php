@@ -85,7 +85,7 @@ class page{
 	}
 	
 	public function page_generate(){
-		if($GLOBALS['MG']['PAGE']['ALLOWCACHE']=='1'&&!$GLOBALS['MG']['CFG']['STOPCACHE']){
+		if($GLOBALS['MG']['PAGE']['ALLOWCACHE']=='1'&&!$GLOBALS['MG']['CFG']['STOPCACHE']&&!$GLOBALS['MG']['GET']['FLUSHCACHE']){
 			$this->page_getModified();
 			$cache=new mgcache();
 			$content=$cache->mgc_readcache(filemtime($GLOBALS['MG']['CFG']['PATH']['TPL'].$GLOBALS['MG']['LANG']['NAME'].'/'.page::PAGE_TPL_NAME));
