@@ -93,7 +93,6 @@ class page{
 				return $content;
 			}
 		}
-		
 		$GLOBALS['MG']['PAGE']['NOSITETPL']=false;
 		
 		$tpl=new template();
