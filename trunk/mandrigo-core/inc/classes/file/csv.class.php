@@ -34,7 +34,7 @@ class csv{
 		$this->csv_array[]=$values;
 	}
 	
-	function csv_export($file=false,$delimiter=',',$enclosure='"'){
+	function csv_export($display=true,$file=false,$delimiter=',',$enclosure='"'){
 		$delimiter_esc = preg_quote($delimiter, '/');
     	$enclosure_esc = preg_quote($enclosure, '/'); 
 		$csv='';
@@ -53,6 +53,10 @@ class csv{
 			fclose($f);
 			return true;
 		}
+		if($display){
+			$GLOBALS['MG']['LANG']['CONTENT_TYPE']='text/csv';
+			$GLOBALS['MG']['PAGE']['NOSITETPL']=true;
+		}
 		return $csv;
-	}	
+	}
 }

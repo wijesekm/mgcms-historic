@@ -45,15 +45,17 @@ class mgXML {
 		print_r($this->data);
 	}
 	
-	public function mxml_write($file=false){
+	public function mxml_write($display=true,$file=false){
 		$output='<?xml version="'.$this->cfg['xml_version'].'" encoding="'.$this->cfg['xml_encoding'].'"?>'."\n";
 		$soq=count($this->data);
 		for($i=0;$i<$soq;$i++){
 			$output.=$this->mxml_writeRecursive($this->data[$i],0);	
 		}
 		if(!$file){
-			$GLOBALS['MG']['LANG']['CONTENT_TYPE']=$this->cfg['xml_contenttype'];
-			$GLOBALS['MG']['PAGE']['NOSITETPL']=true;
+			if($display){
+				$GLOBALS['MG']['LANG']['CONTENT_TYPE']=$this->cfg['xml_contenttype'];
+				$GLOBALS['MG']['PAGE']['NOSITETPL']=true;				
+			}
 			return $output;
 		}
 		else{
