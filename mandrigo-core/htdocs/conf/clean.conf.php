@@ -45,5 +45,6 @@ $GLOBALS['MG']['CLEAN']=array(
 	'name'=>array('eregi',"^[[:space:]a-z.,]+$"),
 	'lang-code'=>array('eregi',"^[a-z]{1,3}-[a-z]{1,3}$"),
 	'url-delim'=>array('eregi',"^[-_+\.,|]{1}$"),
-	'date-mm/dd/yyyy'=>array('eregi',"^[0-9]{1,2}/[0-9]{1,2}/[0-9]{4}$")
+	'date-mm/dd/yyyy'=>array('eregi',"^[0-9]{1,2}/[0-9]{1,2}/[0-9]{4}$"),
+	'phone'=>array('eregi',"^[-0-9\.[:space:](|)]+$")
 );
