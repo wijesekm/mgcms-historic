@@ -32,7 +32,7 @@ $GLOBALS['MG']['CLEAN']=array(
 	'uri'=>array('preg_match',"/^[A-Za-z0-9\-_]+\\.+[A-Za-z0-9\.\/%&=\?\-_]+$/i"),
 	'file_name'=>array('!eregi',"[<|>?%\*\:\|\"\/\\]"),
 	'e-mail'=>array('eregi',"^[a-z\\+0-9._-]+@[a-z.0-9-]+\.[a-z.]{2,5}$"),
-	'id'=>array('eregi',"^[0-9a-z]+$"),
+	'id'=>array('eregi',"^[0-9a-z.-_]+$"),
 	'ip'=>array('preg_match',"/^([0-9]{1,3}[.]){1,3}[0-9]{1,3}$/"),
 	'prefix'=>array('eregi',"^[a-z0-9]{1,15}_$"),
 	'mac'=>array('preg_match',"/^([0-9a-fA-F]{2}[:-]){5}[0-9a-fA-F]{2}$/"),
