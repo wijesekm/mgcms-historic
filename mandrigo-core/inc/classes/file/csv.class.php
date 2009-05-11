@@ -39,8 +39,11 @@ class csv{
     	$enclosure_esc = preg_quote($enclosure, '/'); 
 		$csv='';
 		foreach($this->csv_array as $subArray){
-			if(preg_match("/(?:${delimiter_esc}|${enclosure_esc}|\s)/", $subArray)){
-				$subArray=$enclosure . str_replace($enclosure, $enclosure . $enclosure, $subArray) . $enclosure;
+			$soq=count($subArray);
+			for($i=0;$i<$soq;$i++){
+				if(preg_match("/(?:${delimiter_esc}|${enclosure_esc}|\s)/", $subArray[$i])){
+					$subArray[$i]=$enclosure . str_replace($enclosure, $enclosure . $enclosure, $subArray[$i]) . $enclosure;
+				}				
 			}
 			$csv.=implode($delimiter,$subArray)."\n";
 		}
