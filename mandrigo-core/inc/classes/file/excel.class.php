@@ -63,7 +63,7 @@ class excel{
 				return false;
 			}
 			while(!feof($f)){
-				$output=fgets($f);
+				$output.=fgets($f);
 			}
 			fclose($f);
 			$GLOBALS['MG']['LANG']['CONTENT_TYPE']='application/x-msexcel';
