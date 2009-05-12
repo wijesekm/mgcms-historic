@@ -36,7 +36,7 @@ class mgcache{
 		$new_path.='.'.$GLOBALS['MG']['USER']['UID'].'.'.$this->mgc_varsIntoName().'cache';
 		if(is_file($new_path)){
 			$ftime=filemtime($new_path);
-			if((int)$ftime < (int)$GLOBALS['MG']['PAGE']['MODIFIED'] && (int)$ftime < (int)$site_tpl_up){
+			if((int)$ftime < (int)$GLOBALS['MG']['PAGE']['MODIFIED'] || (int)$ftime < (int)$site_tpl_up){
 				return false;
 			}
 			if($f=fopen($new_path,'r')){
