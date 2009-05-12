@@ -51,7 +51,7 @@ class excel{
 			$file=$GLOBALS['MG']['CFG']['PATH']['TMP'].'/'.md5(uniqid(rand(),true)).excel::XLS_EXTENSION;
 		}
 		if(!$f=fopen('xlsfile://'.$file,'wb')){
-			trigger_error('(EXCEL): Could not open file for writing: '.$file);
+			trigger_error('(EXCEL): Could not open file for writing: '.$file,E_USER_ERROR);
 			return false;
 		}
 		fwrite($f, serialize($this->document));
@@ -59,7 +59,7 @@ class excel{
 		if($output){
 			$output='';
 			if(!$f=fopen($file,'r')){
-				trigger_error('(EXCEL): Could not open file for reading: '.$file);
+				trigger_error('(EXCEL): Could not open file for reading: '.$file,E_USER_ERROR);
 				return false;
 			}
 			while(!feof($f)){
