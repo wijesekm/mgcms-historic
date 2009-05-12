@@ -58,6 +58,9 @@ class csv{
 		}
 		if($display){
 			$GLOBALS['MG']['LANG']['CONTENT_TYPE']='text/csv';
+			$GLOBALS['MG']['LANG']['PRAGMA']='no-cache';
+			$GLOBALS['MG']['LANG']['CACHE_CONTROL']='no-cache, must-revalidate';
+			$GLOBALS['MG']['LANG']['CONTENT_DISPOSITION']='attachment; filename="output.csv" )';
 			$GLOBALS['MG']['PAGE']['NOSITETPL']=true;
 		}
 		return $csv;
