@@ -38,7 +38,7 @@ class excel{
 	}
 	
 	function excel_addData($column,$row,$data){
-		if(!is_array($this->document[$row])){
+		if(empty($this->document[$row])){
 			$this->document[$row]=array();
 		}
 		$this->document[$row][$column]=$data;
@@ -136,8 +136,7 @@ class xlsStream
      * @param   (string)    $opened_path    stream opened path
      */
     function stream_open($path, $mode, $options, &$opened_path){
-        $url = parse_url($path);
-        $this->xlsfilename = '/' . $url['host'] . $url['path'];
+        $this->xlsfilename = ereg_replace('xlsfile://','',$path);
         $this->position = 0;
         $this->mode = $mode;
 
@@ -198,6 +197,7 @@ class xlsStream
     function _xls_stream_write($data){
         if (is_array($data) && !empty($data)){
             $row = 0;
+            $size=0;
             foreach (array_values($data) as $_data){
                 if (is_array($_data) && !empty($_data)){
                     if ($row == 0){
