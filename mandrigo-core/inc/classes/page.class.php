@@ -77,8 +77,25 @@ class page{
 			'PAGE_MODIFIER'=>$GLOBALS['MG']['PAGE']['MODIFIEDBY'],
 			'PAGE_CREATED_DATE'=>date($GLOBALS['MG']['SITE']['DATE_FORMAT'],$GLOBALS['MG']['PAGE']['CREATED']),
 			'PAGE_MODIFIED_DATE'=>date($GLOBALS['MG']['SITE']['DATE_FORMAT'],$GLOBALS['MG']['PAGE']['MODIFIED']),
-			'PAGE_ROOT'=>$GLOBALS['MG']['PAGE']['ROOT']
+			'PAGE_ROOT'=>$GLOBALS['MG']['PAGE']['ROOT'],
+			'ACL_ADMIN'=>'false',
+			'ACL_MODIFY'=>'false',
+			'ACL_WRITE'=>'false',
+			'ACL_READ'=>'false'
 		);
+
+		if(mg_checkACL($GLOBALS['MG']['PAGE']['PATH'],'admin')){
+			$this->vars['ACL_ADMIN']='true';
+		}
+		if(mg_checkACL($GLOBALS['MG']['PAGE']['PATH'],'modify')){
+			$this->vars['ACL_MODIFY']='true';
+		}
+		if(mg_checkACL($GLOBALS['MG']['PAGE']['PATH'],'write')){
+			$this->vars['ACL_WRITE']='true';
+		}
+		if(mg_checkACL($GLOBALS['MG']['PAGE']['PATH'],'read')){
+			$this->vars['ACL_READ']='true';
+		}
 		$this->title='';
 		$this->content='';
 		$this->error=false;
