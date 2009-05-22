@@ -79,9 +79,9 @@ class parser{
 		return implode('',$section);
 	}
 	
-	public function p_runCustomParsers($text){
+	public function p_runCustomParsers($text,$hooks){
 		$content=$text;
-		$hook= ereg_replace('(.*)parser](.*)','\\2',$GLOBALS['MG']['SITE']['CUSTOMHOOKS']);
+		$hook= ereg_replace('(.*)parser](.*)','\\2',$hooks);
 		$hook=explode('==>',$hook);
 		$hook=explode(';',$hook[0]);
 		foreach($hook as $value){
