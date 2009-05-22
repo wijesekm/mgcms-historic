@@ -40,11 +40,14 @@ class plinks{
 			$parse=array();
 			$parse['ATTR']='';
 			foreach($this->new_links[$i] as $key=>$value){
+				if($key!='link_name'&&$key){
+					$parse['ATTR'].=$key.';'.$value.';';
+				}
 				$parse[strtoupper($key)]=$value;
-				$parse['ATTR'].=$key.';'.$value.';';
+				
 			}
-			$tpl->tpl_load($GLOBALS['MG']['CFG']['PATH']['TPL'].$GLOBALS['MG']['LANG']['NAME'].'plinks.tpl','plinks_repl');
-			$tpl->tpl_parse($parse,'plinks_repl');
+			$tpl->tpl_load($GLOBALS['MG']['CFG']['PATH']['TPL'].$GLOBALS['MG']['LANG']['NAME'].'/plinks.tpl','plinks_repl');
+			$tpl->tpl_parse($parse,'plinks_repl',2,true);
 			$repl[$i]=$tpl->tpl_return('plinks_repl');
 		}
 		$this->new_links=$repl;
@@ -95,7 +98,7 @@ class plinks{
 	
 	private function plinks_replaceAllLinks($content){
 		$soq=count($this->new_links);
-		for($i=0;$i,$soq;$i++){
+		for($i=0;$i<$soq;$i++){
 			$this->links_to_repl[$i]=preg_quote($this->links_to_repl[$i]);
 			$content= ereg_replace($this->links_to_repl[$i],$this->new_links[$i],$content);			
 		}
