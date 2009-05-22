@@ -30,6 +30,16 @@ class plinks{
 	
 	var $links_to_repl;
 	var $new_links;
+	var $cfg;
+	
+	public function __construct(){
+		$this->vars=array('LM_MSG'=>'');
+		$c=array(array(false,array(DB_AND),'pkg_name','=','plinks'),array(false,false,'page_path','=','*'));
+		$dta=$GLOBALS['MG']['SQL']->sql_fetchArray(array(TABLE_PREFIX.'packageconf'),false,$c);
+		for($i=0;$i<$dta['count'];$i++){
+			$this->cfg[(string)$dta[$i]['var_name']]=(string)$dta[$i]['var_value'];
+		}
+	}
 	
 	public function plinks_addElemToExternal($content){
 		$this->plinks_getAllLinks($content);
@@ -37,18 +47,35 @@ class plinks{
 		$soq=count($this->new_links);
 		$repl=array();
 		for($i=0;$i<$soq;$i++){
-			$parse=array();
-			$parse['ATTR']='';
-			foreach($this->new_links[$i] as $key=>$value){
-				if($key!='link_name'&&$key){
-					$parse['ATTR'].=$key.';'.$value.';';
+			$url=parse_url($this->new_links[$i]['href']);
+			$url2=$this->cfg['domain'];
+			$is_match=true;
+			if($url['host']){
+				$url['host']=explode('.',$url['host']);
+				$url2=explode('.',$url2);
+				$ucount=count($url['host']);
+				$start=$ucount-count($url2);
+				$k=0;
+				for($j=$start;$j<$ucount;$j++){
+					if($url['host'][$j]!=$url2[$k]){
+						$is_match=false;
+					}
+					$k++;
 				}
-				$parse[strtoupper($key)]=$value;
-				
 			}
-			$tpl->tpl_load($GLOBALS['MG']['CFG']['PATH']['TPL'].$GLOBALS['MG']['LANG']['NAME'].'/plinks.tpl','plinks_repl');
-			$tpl->tpl_parse($parse,'plinks_repl',2,true);
-			$repl[$i]=$tpl->tpl_return('plinks_repl');
+			if($url['host']&&!$is_match){
+				$parse=array();
+				$parse['ATTR']='';
+				foreach($this->new_links[$i] as $key=>$value){
+					if($key!='link_name'&&$key){
+						$parse['ATTR'].=$key.';'.$value.';';
+					}
+					$parse[strtoupper($key)]=$value;
+				}
+				$tpl->tpl_load($GLOBALS['MG']['CFG']['PATH']['TPL'].$GLOBALS['MG']['LANG']['NAME'].'/plinks.tpl','plinks_repl');
+				$tpl->tpl_parse($parse,'plinks_repl',2,true);
+				$repl[$i]=$tpl->tpl_return('plinks_repl');				
+			}
 		}
 		$this->new_links=$repl;
 		return $this->plinks_replaceAllLinks($content);
@@ -57,22 +84,21 @@ class plinks{
 	private function plinks_getAllLinks($content){
 		$this->links_array=array();
 		preg_match_all ('!<a(.*?)</a>!is', $content, $links);
-		$links=preg_replace('/>/',' ',$links[1]);
 		$this->links_to_repl=$links[0];
+		$links=$links[1];
 		$soq=count($links);
 		for($i=0;$i<$soq;$i++){
-			$link=split(' ',$links[$i]);
+			$link=split('>',$links[$i]);
 			$this->new_links[$i]=array();
-			foreach($link as $value){
-				if($value){
-					if(!eregi('=',$value)){
-						$this->new_links[$i]['link_name'].=$value.' ';
-					}
-					else{
-						$tmp=split('=',$value);
-						$this->new_links[$i][trim($tmp[0])]=trim(ereg_replace('["\']','',$tmp[1]));
-					}
-				}
+			$this->new_links[$i]['link_name']=trim(implode('>',array_slice($link,1)));
+			$link=split('"',$link[0]);
+			$soq2=count($link);
+			for($j=0;$j<$soq2;$j++){
+				if($link[$j]){
+						$key=ereg_replace('=','',$link[$j]);
+						$j++;
+						$this->new_links[$i][trim($key)]=trim($link[$j]);
+				}					
 			}
 		}
 	}
@@ -98,9 +124,12 @@ class plinks{
 	
 	private function plinks_replaceAllLinks($content){
 		$soq=count($this->new_links);
+		$keys=array_keys($this->new_links);
 		for($i=0;$i<$soq;$i++){
-			$this->links_to_repl[$i]=preg_quote($this->links_to_repl[$i]);
-			$content= ereg_replace($this->links_to_repl[$i],$this->new_links[$i],$content);			
+			if($this->new_links[$keys[$i]]){
+				$this->links_to_repl[$keys[$i]]=preg_quote($this->links_to_repl[$keys[$i]]);
+				$content= ereg_replace($this->links_to_repl[$keys[$i]],$this->new_links[$keys[$i]],$content);					
+			}
 		}
 		return $content;
 	}

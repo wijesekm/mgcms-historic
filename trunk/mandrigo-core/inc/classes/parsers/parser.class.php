@@ -80,17 +80,17 @@ class parser{
 	}
 	
 	public function p_runCustomParsers($text,$hooks){
-		$content=$text;
 		$hook= ereg_replace('(.*)parser](.*)','\\2',$hooks);
 		$hook=explode('==>',$hook);
 		$hook=explode(';',$hook[0]);
 		foreach($hook as $value){
-			$content=$this->p_hookEval($value,$content);
-			if(!$content){
+			$test=$this->p_hookEval($value,$text);
+			if(!$test){
 				return $text;
-			}			
+			}
+			$text=$test;		
 		}
-		return $content;
+		return $text;
 	}
 	
 	private function p_hookEval($hook,$text){
