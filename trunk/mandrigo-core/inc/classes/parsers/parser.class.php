@@ -78,4 +78,43 @@ class parser{
 		}
 		return implode('',$section);
 	}
+	
+	public function p_runCustomParsers($text){
+		$content=$text;
+		$hook= ereg_replace('(.*)parser](.*)','\\2',$GLOBALS['MG']['SITE']['CUSTOMHOOKS']);
+		$hook=explode('==>',$hook);
+		$hook=explode(';',$hook[0]);
+		foreach($hook as $value){
+			$content=$this->p_hookEval($value,$content);
+			if(!$content){
+				return $text;
+			}			
+		}
+		return $content;
+	}
+	
+	private function p_hookEval($hook,$text){
+		if(!$hook){
+			return false;
+		}
+		if(eregi('::',$hook)){
+			$hook=explode('::',$hook);
+			mginit_loadCustomPackages(array($hook[0]));
+			eval('$obj=new '.$hook[0].'();');
+			if(!is_object($obj)){
+				trigger_error('(PARSER): Could not create class: '.$hook[0],E_USER_WARNING);
+			}			
+			eval('$ret=$obj->'.$hook[1].'($text);');
+			if(!$ret){
+				trigger_error('(PARSER): Could not evaluate hook: '.$hook[1],E_USER_WARNING);
+			}
+		}
+		else{
+			eval('$ret='.$hook.'($text);');
+			if(!$ret){
+				trigger_error('(PARSER): Could not evaluate hook: '.$hook,E_USER_WARNING);
+			}
+		}
+		return $ret;
+	}
 }
