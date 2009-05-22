@@ -216,7 +216,7 @@ class template{
 	* INPUTS:
 	* $vars		-	Array of variable names and values (array of strings)
 	* $section	-	Text to parse (string)
-	* $level	-	Level of parsing: 0 - Do Nothing, 1 - Parse Vars only, 2 - Compile and Parse Vars (int)
+	* $level	-	Level of parsing: 0 - Do Nothing, 1 - Parse Vars only, 2 - 1 + compile, 3 - 2 + custom parsers
 	* $rempty	-	Remove variables with no value? (bool)
 	*
 	* OUTPUTS:
@@ -224,6 +224,15 @@ class template{
 	*/	
 	private function tpl_parseSection($vars,$section,$level,$rempty){
 		switch($level){
+			case 3:
+				$section=$this->parser->p_vparse($vars,$section);	
+				$section=$this->parser->p_lparse($GLOBALS['MG']['LANG'],$section);
+				$section=$this->parser->p_vparse($vars,$section);
+				$section=$this->parser->p_phpcompile($section);
+				$section=$this->parser->p_vparse($vars,$section);
+				$section=$this->parser->p_lparse($GLOBALS['MG']['LANG'],$section);
+				$section=$this->parser->p_runCustomParsers($section);			
+			break;
 			case 2:
 				$section=$this->parser->p_vparse($vars,$section);	
 				$section=$this->parser->p_lparse($GLOBALS['MG']['LANG'],$section);
@@ -231,7 +240,6 @@ class template{
 				$section=$this->parser->p_phpcompile($section);
 				$section=$this->parser->p_vparse($vars,$section);
 				$section=$this->parser->p_lparse($GLOBALS['MG']['LANG'],$section);
-				$section=$this->parser->p_runCustomParsers($section);
 			break;
 			case 1:	
 				$section=$this->parser->p_vparse($vars,$section);
