@@ -140,7 +140,7 @@ class page{
 		}
 		if(!$GLOBALS['MG']['PAGE']['NOSITETPL']){
 			$this->vars=mg_mergeArrays($this->vars,array('TITLE'=>$this->title,'CONTENT'=>$this->content));
-			$tpl->tpl_parse($this->vars,'main',2,true);
+			$tpl->tpl_parse($this->vars,'main',3,true);
 			if($GLOBALS['MG']['PAGE']['ALLOWCACHE']=='1'&&!$GLOBALS['MG']['CFG']['STOPCACHE']){
 				if(!is_object($cache)){
 					$cache=new mgcache();
