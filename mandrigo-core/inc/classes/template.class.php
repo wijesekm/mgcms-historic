@@ -184,7 +184,6 @@ class template{
 	* true on success, false on fail
 	*/	
 	public function tpl_parse($vars=array(),$s_name=template::TPL_ALL,$level=2,$rempty=false){
-
 		if($s_name==template::TPL_ALL){
 			for($i=0;$i<$this->size;$i++){
 				$t=$this->tpl_parseSection($vars,$this->tpl[$this->keys[$i]][0],$level,$rempty);
@@ -196,6 +195,26 @@ class template{
 		}
 		else{
 			$t=$this->tpl_parseSection($vars,$this->tpl[(string)$s_name][0],$level,$rempty);
+			if(!$t){
+				return false;
+			}
+			$this->tpl[(string)$s_name][0]=$t;
+		}
+		return true;
+	}
+	
+	public function tpl_parseCustom($hooks,$s_name=template::TPL_ALL){
+		if($s_name==template::TPL_ALL){
+			for($i=0;$i<$this->size;$i++){
+				$t=$this->parser->p_runCustomParsers($section,$hooks);
+				if(!$t){
+					return false;
+				}
+				$this->tpl[$this->keys[$i]][0]=$t;
+			}
+		}
+		else{
+			$t=$this->parser->p_runCustomParsers($section,$hooks);
 			if(!$t){
 				return false;
 			}
@@ -216,7 +235,7 @@ class template{
 	* INPUTS:
 	* $vars		-	Array of variable names and values (array of strings)
 	* $section	-	Text to parse (string)
-	* $level	-	Level of parsing: 0 - Do Nothing, 1 - Parse Vars only, 2 - 1 + compile, 3 - 2 + custom parsers
+	* $level	-	Level of parsing: 0 - Do Nothing, 1 - Parse Vars only, 2 - 1 + compile
 	* $rempty	-	Remove variables with no value? (bool)
 	*
 	* OUTPUTS:
@@ -224,15 +243,6 @@ class template{
 	*/	
 	private function tpl_parseSection($vars,$section,$level,$rempty){
 		switch($level){
-			case 3:
-				$section=$this->parser->p_vparse($vars,$section);	
-				$section=$this->parser->p_lparse($GLOBALS['MG']['LANG'],$section);
-				$section=$this->parser->p_vparse($vars,$section);
-				$section=$this->parser->p_phpcompile($section);
-				$section=$this->parser->p_vparse($vars,$section);
-				$section=$this->parser->p_lparse($GLOBALS['MG']['LANG'],$section);
-				$section=$this->parser->p_runCustomParsers($section);			
-			break;
 			case 2:
 				$section=$this->parser->p_vparse($vars,$section);	
 				$section=$this->parser->p_lparse($GLOBALS['MG']['LANG'],$section);
