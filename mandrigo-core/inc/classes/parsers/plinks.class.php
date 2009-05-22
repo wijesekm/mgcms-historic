@@ -33,7 +33,7 @@ class plinks{
 	
 	public function plinks_addElemToExternal($content){
 		$this->plinks_getAllLinks($content);
-
+		$tpl=new template();
 		$soq=count($this->new_links);
 		$repl=array();
 		for($i=0;$i<$soq;$i++){
