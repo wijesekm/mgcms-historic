@@ -206,7 +206,7 @@ class template{
 	public function tpl_parseCustom($hooks,$s_name=template::TPL_ALL){
 		if($s_name==template::TPL_ALL){
 			for($i=0;$i<$this->size;$i++){
-				$t=$this->parser->p_runCustomParsers($section,$hooks);
+				$t=$this->parser->p_runCustomParsers($this->tpl[$this->keys[$i]][0],$hooks);
 				if(!$t){
 					return false;
 				}
@@ -214,7 +214,7 @@ class template{
 			}
 		}
 		else{
-			$t=$this->parser->p_runCustomParsers($section,$hooks);
+			$t=$this->parser->p_runCustomParsers($this->tpl[(string)$s_name][0],$hooks);
 			if(!$t){
 				return false;
 			}
