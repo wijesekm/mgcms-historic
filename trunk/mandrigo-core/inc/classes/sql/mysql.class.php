@@ -40,6 +40,12 @@ class mysql extends sql{
 	const MYSQL_DEFAULT_PORT		= '3306';
 	const MYSQL_DEFAULT_SOCKET		= '/tmp/mysql.sock';
 	
+  /**
+   * mysql::__construct()
+   *
+   * @param bool $debug
+   * @return
+   */
 	final public function __construct($debug=false){
 		$this->print=$debug;
 	}
@@ -47,24 +53,19 @@ class mysql extends sql{
 	/**
 	* General Public Functions
 	*/
-	
-	/**
-	* public function sql_connect($host,$port_socket,$user,$password,$database,$persistent=true,$ssl=false)
-	*
-	* Connects to a mysql server
-	*
-	* INPUTS:
-	* $host			-	Server hostname (string)
-	* $port_socket	-	Port or socket of server (string)
-	* $user			-	Database user (string)
-	* $password		-	Database users password (string)
-	* $database		-	Database to connect to initially (string)
-	* $persistent	-	Connect using a persistent connection (bool)
-	* $ssl			-	Use SSL.  Note SSL not supported by mysql class. (false or array of strings)
-	*
-	* OUTPUTS:
-	* true if connection successful, false if not.
-	*/		
+		
+  /**
+   * mysql::sql_connect()
+   *
+   * @param mixed $host
+   * @param mixed $port_socket
+   * @param mixed $user
+   * @param mixed $password
+   * @param mixed $database
+   * @param bool $persistent
+   * @param bool $ssl
+   * @return
+   */
 	final public function sql_connect($host,$port_socket,$user,$password,$database,$persistent=true,$ssl=false){
 		if(!$user||!$password||!$database){
 			trigger_error('(MYSQL): Not enough connect parameters given!',E_USER_ERROR);
@@ -109,16 +110,11 @@ class mysql extends sql{
 		return true;
 	}
 	
-	/**
-	* public function sql_close()
-	*
-	* Closes connection to mysql server
-	*
-	* INPUTS:
-	*
-	* OUTPUTS:
-	* true if successful, false if not.
-	*/		
+  /**
+   * mysql::sql_close()
+   *
+   * @return
+   */
 	final public function sql_close(){
 		if(!$this->db){
 			return false;
@@ -130,16 +126,11 @@ class mysql extends sql{
 		return true;
 	}
 
-	/**
-	* public function sql_checkConnection()
-	*
-	* Pings the server to check if connection is still ok
-	*
-	* INPUTS:
-	*
-	* OUTPUTS:
-	* true if successful, false if not.
-	*/
+  /**
+   * mysql::sql_checkConnection()
+   *
+   * @return
+   */
 	final public function sql_checkConnection(){
 		if(!$this->db){
 			return false;
@@ -150,17 +141,12 @@ class mysql extends sql{
 		}
 		return true;
 	}
-	
-	/**
-	* public function sql_setDebug()
-	*
-	* Sets debug mode
-	*
-	* INPUTS:
-	*
-	* OUTPUTS:
-	* true
-	*/	
+
+  /**
+   * mysql::sql_setDebug()
+   *
+   * @return
+   */
 	final public function sql_setDebug(){
 		if($this->print==true){
 			$this->print=false;
@@ -171,16 +157,12 @@ class mysql extends sql{
 		return true;
 	}
 
-	/**
-	* public function sql_info()
-	*
-	* Gets information about connection
-	*
-	* INPUTS:
-	*
-	* OUTPUTS:
-	* Array of data
-	*/	
+
+  /**
+   * mysql::sql_info()
+   *
+   * @return
+   */
 	final public function sql_info(){
 		
 		/**
@@ -214,6 +196,11 @@ class mysql extends sql{
 	* OUTPUTS:
 	* Array of table names (string)
 	*/		
+  /**
+   * mysql::sql_listTables()
+   *
+   * @return
+   */
 	final public function sql_listTables(){
 		$r=$this->sql_query('SHOW TABLES;');
 		$tables=array();
@@ -235,6 +222,12 @@ class mysql extends sql{
 	* OUTPUTS:
 	* true if sucessful, false if not
 	*/		
+  /**
+   * mysql::sql_switchDB()
+   *
+   * @param mixed $new_database
+   * @return
+   */
 	final public function sql_switchDB($new_database){
 		if(!$this->db){
 			return false;
@@ -250,6 +243,15 @@ class mysql extends sql{
 	* Database Public Functions
 	*/
 	
+  /**
+   * mysql::sql_fetchResult()
+   *
+   * @param mixed $table
+   * @param mixed $fields
+   * @param mixed $params
+   * @param integer $row
+   * @return
+   */
 	final public function sql_fetchResult($table,$fields,$params,$row=0){
 		
 		/**
@@ -271,6 +273,17 @@ class mysql extends sql{
 		return $value;
 	}
 	
+  /**
+   * mysql::sql_fetchArray()
+   *
+   * @param mixed $table
+   * @param mixed $fields
+   * @param mixed $params
+   * @param mixed $type
+   * @param mixed $rows
+   * @param bool $additParams
+   * @return
+   */
 	final public function sql_fetchArray($table,$fields,$params,$type=DB_ASSOC,$rows=DB_ALL_ROWS,$additParams=false){
 		$distinct=false;
 		$orderby=false;
@@ -332,6 +345,15 @@ class mysql extends sql{
 		return $tmp;
 	}
 	
+  /**
+   * mysql::sql_numRows()
+   *
+   * @param mixed $table
+   * @param mixed $params
+   * @param bool $result
+   * @param bool $distinct
+   * @return
+   */
 	final public function sql_numRows($table,$params,$result=false,$distinct=true){
 		if(!$result){
 			if($distinct){
@@ -351,6 +373,15 @@ class mysql extends sql{
 		return $num;
 	}
 	
+  /**
+   * mysql::sql_numFields()
+   *
+   * @param mixed $table
+   * @param mixed $params
+   * @param bool $result
+   * @param bool $distinct
+   * @return
+   */
 	final public function sql_numFields($table,$params,$result=false,$distinct=true){
 		if(!$result){
 			if($distinct){
@@ -370,6 +401,15 @@ class mysql extends sql{
 		return $result;
 	}
 	
+  /**
+   * mysql::sql_dataCommands()
+   *
+   * @param mixed $type
+   * @param mixed $table
+   * @param mixed $params
+   * @param bool $data
+   * @return
+   */
 	final public function sql_dataCommands($type,$table,$params,$data=false){
 		if(!is_array($table)){
 			$tmp=$table;
@@ -393,7 +433,20 @@ class mysql extends sql{
 			break;
 			case DB_INSERT:
 				$query=$this->sql_formatTable($table,'INSERT INTO');
-				$query.='(`'.implode('`,`',$params).'`) VALUES (\''.implode('\',\'',$data).'\');';
+				$query.='(`'.implode('`,`',$params).'`) VALUES';
+				if(is_array($data[0])){
+					$soq=count($data);
+					for($i=0;$i<$soq;$i++){
+						$query.=' (\''.implode('\',\'',$data[$i]).'\')';
+						if($i+1<$soq){
+							$query.=',';
+						}
+					}
+					$query.=';';
+				}
+				else{
+					$query.=' (\''.implode('\',\'',$data).'\');';
+				}
 			break;
 			case DB_RESETAUTO:
 				if(!$data){
@@ -416,6 +469,16 @@ class mysql extends sql{
 		return false;
 	}
 	
+  /**
+   * mysql::sql_tableCommands()
+   *
+   * @param mixed $type
+   * @param mixed $alterType
+   * @param mixed $table
+   * @param mixed $params
+   * @param bool $data
+   * @return
+   */
 	final public function sql_tableCommands($type,$alterType,$table,$params,$data=false){
 		switch($type){
 			case DB_DROP:
@@ -451,6 +514,13 @@ class mysql extends sql{
 		};
 	}
 	
+  /**
+   * mysql::sql_dbCommands()
+   *
+   * @param mixed $type
+   * @param mixed $db
+   * @return
+   */
 	final public function sql_dbCommands($type,$db){
 		switch($type){
 			case DB_DROP:
@@ -470,6 +540,12 @@ class mysql extends sql{
 	* Protected Functions
 	*/		
 	
+  /**
+   * mysql::sql_query()
+   *
+   * @param mixed $qstring
+   * @return
+   */
 	final protected function sql_query($qstring){
 		if($this->print){
 			echo $qstring.'<br/>';
@@ -481,6 +557,12 @@ class mysql extends sql{
 		return $result;
 	}
 	
+  /**
+   * mysql::sql_freeResult()
+   *
+   * @param mixed $result
+   * @return
+   */
 	final protected function sql_freeResult($result){
 		if(!mysql_free_result($result)){
 			trigger_error('(MYSQL): Could not free result! '.mysql_error(),E_USER_WARNING);
@@ -492,11 +574,27 @@ class mysql extends sql{
 	/**
 	* Protected Format Functions
 	*/	
+  /**
+   * mysql::sql_formatTable()
+   *
+   * @param mixed $table
+   * @param string $prefix
+   * @param string $postfix
+   * @return
+   */
 	final protected function sql_formatTable($table,$prefix='FROM',$postfix=''){
 		$table=$this->sql_escape($table,true);
 		return $prefix.' `'.implode('`,',$table).'` '.$postfix;
 	}
 	
+  /**
+   * mysql::sql_formatFields()
+   *
+   * @param mixed $fields
+   * @param string $prefix
+   * @param string $postfix
+   * @return
+   */
 	final protected function sql_formatFields($fields,$prefix='SELECT',$postfix=''){
 		if(!$fields){
 			return $prefix.' * '.$postfix;
@@ -523,6 +621,12 @@ class mysql extends sql{
 		return $str.' '.$postfix;
 	}
 	
+  /**
+   * mysql::sql_formatConds()
+   *
+   * @param mixed $conds
+   * @return
+   */
 	final protected function sql_formatConds($conds){
 		$str='WHERE ';
 		if(!$conds){
@@ -579,6 +683,13 @@ class mysql extends sql{
 		return $str;
 	}
 	
+  /**
+   * mysql::sql_formatOrderBy()
+   *
+   * @param mixed $fields
+   * @param mixed $dirs
+   * @return
+   */
 	final protected function sql_formatOrderBy($fields,$dirs){
 		$soq=count($fields);
 		if(!$soq){
@@ -597,6 +708,13 @@ class mysql extends sql{
 		return $str;
 	}
 	
+  /**
+   * mysql::sql_formatLimit()
+   *
+   * @param mixed $start
+   * @param mixed $stop
+   * @return
+   */
 	final protected function sql_formatLimit($start,$stop){
 		if($start!==false){
 			return 'LIMIT '.$this->sql_escape($start).', '.$this->sql_escape($stop);
@@ -604,6 +722,12 @@ class mysql extends sql{
 		return '';
 	}
 	
+  /**
+   * mysql::sql_formatGroupBy()
+   *
+   * @param mixed $field
+   * @return
+   */
 	final protected function sql_formatGroupBy($field){
 		if($field){
 			return 'GROUP BY `'.$this->sql_escape($field).'`';	
@@ -612,6 +736,15 @@ class mysql extends sql{
 		
 	}
 	
+  /**
+   * mysql::sql_formatHaving()
+   *
+   * @param mixed $funct
+   * @param mixed $field
+   * @param mixed $opr
+   * @param mixed $value
+   * @return
+   */
 	final protected function sql_formatHaving($funct,$field,$opr,$value){
 		if($field){
 			return 'HAVING '.$this->sql_escape($funct).'(`'.$this->sql_escape($field).'`) '.$this->sql_escape($opr).' '.$this->sql_escape($value);	
@@ -619,6 +752,12 @@ class mysql extends sql{
 		return '';
 	}
 	
+  /**
+   * mysql::sql_formatKey()
+   *
+   * @param mixed $data
+   * @return
+   */
 	final protected function sql_formatKey($data){
 		switch($data[0]){
 			case DB_PKEY:
@@ -632,6 +771,12 @@ class mysql extends sql{
 			break;
 		};
 	}
+  /**
+   * mysql::sql_formatTableLine()
+   *
+   * @param mixed $params
+   * @return
+   */
 	final protected function sql_formatTableLine($params){
 		$query='`'.$this->sql_escape($params[0]).'` ';
 		$query.=$this->sql_escape($params[1][0]);
@@ -652,6 +797,13 @@ class mysql extends sql{
 		return $query;
 	}
 	
+  /**
+   * mysql::sql_escape()
+   *
+   * @param mixed $data
+   * @param bool $isArray
+   * @return
+   */
 	final protected function sql_escape($data,$isArray=false){
 		if($isArray){
 			$soq=count($data);
