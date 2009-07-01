@@ -254,6 +254,7 @@ class page{
 	private function page_error($content){
 		switch($content){
 			case 404:
+				$this->vars['NO']='no';
 				$GLOBALS['MG']['CFG']['STOPCACHE']=true;
 				$this->content=$GLOBALS['MG']['LANG']['E404_CONTENT'];
 				$this->title=$GLOBALS['MG']['LANG']['E404_TITLE'];
@@ -261,6 +262,7 @@ class page{
 				return false;
 			break;
 			case 403:
+				$this->vars['NO']='no';
 				$GLOBALS['MG']['CFG']['STOPCACHE']=true;
 				$this->content=$GLOBALS['MG']['LANG']['E403_CONTENT'];
 				$this->title=$GLOBALS['MG']['LANG']['E403_TITLE'];
@@ -268,6 +270,7 @@ class page{
 				return false;			
 			break;
 			case 401:
+				$this->vars['NO']='no';
 				$GLOBALS['MG']['CFG']['STOPCACHE']=true;
 				$this->content=$GLOBALS['MG']['LANG']['E401_CONTENT'];
 				$this->title=$GLOBALS['MG']['LANG']['E401_TITLE'];
@@ -275,6 +278,7 @@ class page{
 				return false;			
 			break;
 			default:
+				$this->vars['NO']='';
 				return $content;
 			break;
 		};
