@@ -253,6 +253,14 @@ class page{
 	
 	private function page_error($content){
 		switch($content){
+			case 500:
+				$this->vars['NO']='no';
+				$GLOBALS['MG']['CFG']['STOPCACHE']=true;
+				$this->content=$GLOBALS['MG']['LANG']['E500_CONTENT'];
+				$this->title=$GLOBALS['MG']['LANG']['E500_TITLE'];
+				$this->error=true;
+				return false;			
+			break;
 			case 404:
 				$this->vars['NO']='no';
 				$GLOBALS['MG']['CFG']['STOPCACHE']=true;
