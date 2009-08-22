@@ -79,15 +79,49 @@ function mginit_loadVars(){
 				$clean=explode(',',$vars[$i]['var_clean']);
 				switch($vars[$i]['var_type']){
 					case 'GET':
-						$GLOBALS['MG']['GET'][$name]=isset($url[$uname])?mginit_cleanVar($url[$uname],$clean):$vars[$i]['var_default'];
-						if($vars[$i]['var_stopCache']=='1'&&$GLOBALS['MG']['GET'][$name]&&$GLOBALS['MG']['GET'][$name]!=$vars[$i]['var_default']){
-							$GLOBALS['MG']['CFG']['STOPCACHE']=true;
+						if(substr($uname,-1)=='*'){
+							$uname=substr($uname,0,-1);
+							$end=false;
+							$k=1;
+							while(!$end){
+								$GLOBALS['MG']['GET'][$name.$k]=isset($url[$uname.$k])?mginit_cleanVar($url[$uname.$k],$clean):$vars[$i]['var_default'];
+								if($vars[$i]['var_stopCache']=='1'&&$GLOBALS['MG']['GET'][$name.$k]&&$GLOBALS['MG']['GET'][$name.$k]!=$vars[$i]['var_default']){
+									$GLOBALS['MG']['CFG']['STOPCACHE']=true;
+								}
+								$k++;
+								if(!isset($url[$uname.$k])){
+									$end=true;
+								}
+							}
+						}
+						else{			
+							$GLOBALS['MG']['GET'][$name]=isset($url[$uname])?mginit_cleanVar($url[$uname],$clean):$vars[$i]['var_default'];
+							if($vars[$i]['var_stopCache']=='1'&&$GLOBALS['MG']['GET'][$name]&&$GLOBALS['MG']['GET'][$name]!=$vars[$i]['var_default']){
+								$GLOBALS['MG']['CFG']['STOPCACHE']=true;
+							}
 						}
 					break;
 					case 'POST':
-						$GLOBALS['MG']['POST'][$name]=isset($_POST[$uname])?mginit_cleanVar($_POST[$uname],$clean):$vars[$i]['var_default'];
-						if($vars[$i]['var_stopCache']=='1'&&$GLOBALS['MG']['POST'][$name]&&$GLOBALS['MG']['POST'][$name]!=$vars[$i]['var_default']){
-							$GLOBALS['MG']['CFG']['STOPCACHE']=true;
+						if(substr($uname,-1)=='*'){
+							$uname=substr($uname,0,-1);
+							$end=false;
+							$k=1;
+							while(!$end){
+								$GLOBALS['MG']['POST'][$name.$k]=isset($_POST[$uname.$k])?mginit_cleanVar($_POST[$uname.$k],$clean):$vars[$i]['var_default'];
+								if($vars[$i]['var_stopCache']=='1'&&$GLOBALS['MG']['POST'][$name.$k]&&$GLOBALS['MG']['POST'][$name.$k]!=$vars[$i]['var_default']){
+									$GLOBALS['MG']['CFG']['STOPCACHE']=true;
+								}
+								$k++;
+								if(!isset($_POST[$uname.$k])){
+									$end=true;
+								}
+							}
+						}
+						else{
+							$GLOBALS['MG']['POST'][$name]=isset($_POST[$uname])?mginit_cleanVar($_POST[$uname],$clean):$vars[$i]['var_default'];
+							if($vars[$i]['var_stopCache']=='1'&&$GLOBALS['MG']['POST'][$name]&&$GLOBALS['MG']['POST'][$name]!=$vars[$i]['var_default']){
+								$GLOBALS['MG']['CFG']['STOPCACHE']=true;
+							}
 						}
 					break;
 					case 'FILE':
