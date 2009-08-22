@@ -62,6 +62,7 @@ class page{
 			'SERVER_TIME'=>date($GLOBALS['MG']['SITE']['TIME_FORMAT'],$GLOBALS['MG']['SITE']['TIME']),
 			'SERVER_DATE'=>date($GLOBALS['MG']['SITE']['DATE_FORMAT'],$GLOBALS['MG']['SITE']['TIME']),
 			'USER_UID'=>$GLOBALS['MG']['USER']['UID'],
+			'USER_SESSION'=>$GLOBALS['MG']['COOKIE']['USER_SESSION'],
 			'USER_NAME'=>implode(' ',$GLOBALS['MG']['USER']['NAME']),
 			'USER_EMAIL'=>$GLOBALS['MG']['USER']['EMAIL'],
 			'USER_BANNED'=>$GLOBALS['MG']['USER']['BANNED'],
