@@ -36,11 +36,9 @@ class template{
 	const TPL_END			= '<!--TPL_END_';
 	const TPL_E				= '-->';
 	const TPL_ALL			= 'ALL';
-	
 	/**
 	* Variables
-	*/
-	
+	*/	
 	private $tpl;
 	private $filter;
 	private $keys;
@@ -55,6 +53,7 @@ class template{
 	public function __construct(){
 		$this->tpl=array();
 		$this->parser=new parser();
+		
 	}
 	public function __destruct(){
 		$this->tpl=false;
