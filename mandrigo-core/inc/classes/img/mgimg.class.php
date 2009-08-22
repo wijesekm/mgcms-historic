@@ -34,6 +34,7 @@ class mgimg{
 	private $height;
 	private $width;
 	private $tc;
+	private $font;
 	
 	const IMG_MIME_GIF	=	'image/gif';
 	const IMG_MIME_PNG	=	'image/png';
@@ -80,32 +81,64 @@ class mgimg{
 		return true;
 	}
 	
-	public function img_load($file){
-	 	$t = getimagesize($file);
-	 	$this->width=$t[0];
-	 	$this->height=$t[1];
-	 	$this->mime=$t['mime'];
-		switch($this->mime){
-			case mgimg::IMG_MIME_GIF:
-				$this->img=imagecreatefromgif($file);
-				$this->ext=mgimg::IMG_EXT_GIF;
-			break;
-			case mgimg::IMG_MIME_PNG:
-				$this->img=imagecreatefrompng($file);
-				$this->ext=mgimg::IMG_EXT_PNG;
-			break;
-			case mgimg::IMG_MIME_JPEG:
-				$this->img=imagecreatefromjpeg($file);
-				$this->ext=mgimg::IMG_EXT_JPEG;
-			break;
-			default:
-				trigger_error('(MGIMG): Unsupported image type: '.$file.' - '.$this->mime,E_USER_ERROR);
+	public function img_load($file,$return=false){
+		if($return){
+		 	$t = getimagesize($file);
+		 	$ret=array();
+		 	$ret[1]=$t[0];
+		 	$ret[2]=$t[1];
+		 	$ret[3]=$t['mime'];
+			switch($ret[3]){
+				case mgimg::IMG_MIME_GIF:
+					$ret[0]=imagecreatefromgif($file);
+					$ret[5]=mgimg::IMG_EXT_GIF;
+				break;
+				case mgimg::IMG_MIME_PNG:
+					$ret[0]=imagecreatefrompng($file);
+					$ret[5]=mgimg::IMG_EXT_PNG;
+				break;
+				case mgimg::IMG_MIME_JPEG:
+					$ret[0]=imagecreatefromjpeg($file);
+					$ret[5]=mgimg::IMG_EXT_JPEG;
+				break;
+				default:
+					trigger_error('(MGIMG): Unsupported image type: '.$file.' - '.$ret[3],E_USER_ERROR);
+					return false;
+				break;
+			};
+			if(!$ret[0]){
+				trigger_error('(MGIMG): Could not create image from file: '.$file,E_USER_ERROR);
 				return false;
-			break;
-		};
-		if(!$this->img){
-			trigger_error('(MGIMG): Could not create image from file: '.$file,E_USER_ERROR);
-			return false;
+			}
+			return $ret;			
+		}
+		else{
+		 	$t = getimagesize($file);
+		 	$this->width=$t[0];
+		 	$this->height=$t[1];
+		 	$this->mime=$t['mime'];
+			switch($this->mime){
+				case mgimg::IMG_MIME_GIF:
+					$this->img=imagecreatefromgif($file);
+					$this->ext=mgimg::IMG_EXT_GIF;
+				break;
+				case mgimg::IMG_MIME_PNG:
+					$this->img=imagecreatefrompng($file);
+					$this->ext=mgimg::IMG_EXT_PNG;
+				break;
+				case mgimg::IMG_MIME_JPEG:
+					$this->img=imagecreatefromjpeg($file);
+					$this->ext=mgimg::IMG_EXT_JPEG;
+				break;
+				default:
+					trigger_error('(MGIMG): Unsupported image type: '.$file.' - '.$this->mime,E_USER_ERROR);
+					return false;
+				break;
+			};
+			if(!$this->img){
+				trigger_error('(MGIMG): Could not create image from file: '.$file,E_USER_ERROR);
+				return false;
+			}			
 		}
 		return true;
 	}
@@ -151,6 +184,28 @@ class mgimg{
 		return true;
 	}
 	
+	public function img_drawImageTransparent($img_path,$sx,$sy,$sw,$sh,$dx,$dy){
+		list($insert,$x,$y,$mime,$ext)=$this->img_load($img_path,true);
+		if($mime!=mgimg::IMG_MIME_PNG){
+			trigger_error('(MGIMG): Cannot draw transparent image with GIFs or JPGs',E_USER_ERROR);
+			return false;
+		}
+		if($this->mime==mgimg::IMG_MIME_GIF){
+			$temp=$this->img;
+			$this->img_create($this->mime,$this->width,$this->height,true);
+			imagecopy($this->img,$temp,0,0,0,0,$this->width,$this->height);
+			imagedestroy($temp);
+		}
+	    imageAlphaBlending($insert, false);
+	    imageSaveAlpha($insert, true);
+		if(!imagecopy($this->img,$insert,$dx,$dy,$sx,$sy,$sw,$sh)){
+			trigger_error('(MGIMG): Could not merge images for drawImage',E_USER_ERROR);
+			return false;
+		}
+		imagedestroy($insert);
+		return true;
+	}
+	
 	public function img_drawArcBorder($cx,$cy,$width,$height,$startAng,$endAng,$borderColor,$borderWidth){
 		list($c,$a)=$borderColor;
 		$color=$this->img_setHexColor($c,$a);
@@ -165,20 +220,36 @@ class mgimg{
 		return true;
 	}
 	
-	public function img_drawString($string,$x,$y,$color,$font,$up=false){
+	public function img_drawString($string,$x,$y,$color,$up=false){
 		list($c,$a)=$color;
 		if($up){
-			if(!imagestringup($this->img,$font,$x,$y,$string,$this->img_setHexColor($c,$a))){
+			if(!imagestringup($this->img,$this->font,$x,$y,$string,$this->img_setHexColor($c,$a))){
 				trigger_error('(MGIMG): Could not draw string',E_USER_ERROR);
 				return false;
 			}
 		}
 		else{
-			if(!imagestring($this->img,$font,$x,$y,$string,$this->img_setHexColor($c,$a))){
+			if(!imagestring($this->img,$this->font,$x,$y,$string,$this->img_setHexColor($c,$a))){
 				trigger_error('(MGIMG): Could not draw string',E_USER_ERROR);
 				return false;
 			}			
 		}
+		return true;
+	}
+	
+	public function img_loadFont($font){
+		if(($font > 0 && $font < 6)){
+			$this->font=$font;
+		}
+		else{
+			if(!$f=imageloadfont($font_file)){
+				trigger_error('(MGIMG): Could not load font file.  Will set default font to standard font.',E_USER_WARNING);
+				$this->font=$font;
+			}
+			else{
+				$this->font=$f;
+			}		
+		}	
 		return true;
 	}
 	
