@@ -207,8 +207,10 @@ function mg_navBar($length,$ppp,$base=false){
 	return $ret;
 }
 
-function mg_updateSiteTime($timestamp){
-	if(!$GLOBALS['MG']['SQL']->sql_dataCommands(DB_UPDATE,array(TABLE_PREFIX.'pages'),array(array(false,false,'page_path','=',$GLOBALS['MG']['PAGE']['PATH'])),array(array('page_modified',$timestamp)))){
+function mg_updateSiteTime($page,$timestamp,$user){
+	$conds=array(array(false,false,'page_path','=',$page));
+	$up=array(array('page_modified',$timestamp),array('page_modifiedby',$user));
+	if(!$GLOBALS['MG']['SQL']->sql_dataCommands(DB_UPDATE,array(TABLE_PREFIX.'pages'),$conds,$up)){
 		trigger_error('(MGFUNCT): Could not updated page timestamp.',E_USER_WARNING);
 		return false;
 	}
