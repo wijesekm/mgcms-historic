@@ -4,7 +4,7 @@
  * @file		page.class.php
  * @author 		Kevin Wijesekera
  * @copyright 	2008
- * @edited		8-4-2008
+ * @edited		8-24-2009
  
  ###################################
  This program is free software: you can redistribute it and/or modify
@@ -112,7 +112,7 @@ class page{
 			}
 		}
 		$GLOBALS['MG']['PAGE']['NOSITETPL']=false;
-		
+		$GLOBALS['MG']['CFG']['STOPCUSTOMPARSERS']=false;
 		$tpl=new template();
 		if(!$tpl->tpl_load($GLOBALS['MG']['CFG']['PATH']['TPL'].$GLOBALS['MG']['LANG']['NAME'].'/'.page::PAGE_TPL_NAME,'main')){
 			trigger_error('(PAGE): Could not load site template',E_USER_ERROR);
