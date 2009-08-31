@@ -93,6 +93,33 @@ class parser{
 		return $text;
 	}
 	
+	public function p_changeVarsToStore($string){
+		$string=preg_replace("/\[TPL_CODE_S\]/","<!--TPL_CODE_START-->",$string);
+		$string=preg_replace("/\[TPL_CODE_E\]/","<!--TPL_CODE_END-->",$string);
+		preg_match_all("/\[VAR:+([a-z0-9:-_])+\]/i",$string,$array);
+		$search=$array[0];
+		$replace=preg_replace(array('/\[VAR:/','/\]/'),array('{','}'),$array[0]);
+		$search=preg_replace(array('/\[/','/\]/'),array('',''),$array[0]);
+		$soq=count($search);
+		for($i=0;$i<$soq;$i++){
+			$search[$i]='/\['.$search[$i].'\]/';
+		}
+		return preg_replace($search,$replace,$string);
+	}
+	
+	public function p_changeVarsToDisplay($string){
+		$string=preg_replace("/<!--TPL_CODE_START-->/","[TPL_CODE_S]",$string);
+		$string=preg_replace("/<!--TPL_CODE_END-->/","[TPL_CODE_E]",$string);
+		preg_match_all("/{+([a-z0-9:-_])+}/i",$string,$array);
+		$search=$array[0];
+		$replace=preg_replace(array('/{/','/}/'),array('[VAR:',']'),$array[0]);
+		$soq=count($search);
+		for($i=0;$i<$soq;$i++){
+			$search[$i]='/'.$search[$i].'/';
+		}
+		return preg_replace($search,$replace,$string);	
+	}
+	
 	private function p_hookEval($hook,$text){
 		if(!$hook){
 			return false;

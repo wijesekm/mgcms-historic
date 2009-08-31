@@ -4,7 +4,7 @@
  * @file                parser.class.php
  * @author              Kevin Wijesekera
  * @copyright   		2008
- * @edited              9-29-2008
+ * @edited              8-24-2009
  
  ###################################
  This program is free software: you can redistribute it and/or modify
@@ -50,7 +50,7 @@ class plinks{
 			$url=parse_url($this->new_links[$i]['href']);
 			$url2=$this->cfg['domain'];
 			$is_match=true;
-			if($url['host']){
+			if(isset($url['host'])){
 				$url['host']=explode('.',$url['host']);
 				$url2=explode('.',$url2);
 				$ucount=count($url['host']);
@@ -63,7 +63,7 @@ class plinks{
 					$k++;
 				}
 			}
-			if($url['host']&&!$is_match){
+			if(isset($url['host'])&&!$is_match){
 				$parse=array();
 				$parse['ATTR']='';
 				foreach($this->new_links[$i] as $key=>$value){
