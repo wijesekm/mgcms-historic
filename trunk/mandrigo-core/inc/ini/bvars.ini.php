@@ -4,7 +4,7 @@
  * @file		bvars.ini.php
  * @author 		Kevin Wijesekera
  * @copyright 	2009
- * @edited		2-28-2009
+ * @edited		8-24-2009
  
  ###################################
  This program is free software: you can redistribute it and/or modify
@@ -182,7 +182,7 @@ function mginit_genURLType3(){
 	$soq=count($raw_url);
     for($i=0;$i<$soq;$i=$i+2){
     	if($raw_url[$i]){
-    		if($raw_url[$i+1]){
+    		if(isset($raw_url[$i+1])){
 				$url = array_merge_recursive($url, array($raw_url[$i]=>$raw_url[$i+1]));	
 			}
 			else{

@@ -4,7 +4,7 @@
  * @file                funct.ini.php
  * @author              Kevin Wijesekera
  * @copyright   		2008
- * @edited              8-27-2008
+ * @edited              8-24-2009
  
  ###################################
  This program is free software: you can redistribute it and/or modify
@@ -56,7 +56,18 @@ function mg_mergeArrays($ar1,$ar2){
 	return $ar1;
 }
 
-function mg_genUrl($urlParts,$base=false,$ssl=false){
+function mg_genUrl($urlParts,$base=false){
+	if(isset($_SERVER['HTTPS'])){
+		if($_SERVER['HTTPS']=='off'){
+			$ssl=false;
+		}
+		else{
+			$ssl=true;
+		}
+	}
+	else{
+		$ssl=false;
+	}
 	if($GLOBALS['MG']['SITE']['URI_SSL']=='always'||($GLOBALS['MG']['SITE']['URI_SSL']=='allow'&&$ssl)){
 		$url='https://';
 	}
