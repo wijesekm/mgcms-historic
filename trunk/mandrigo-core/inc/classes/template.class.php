@@ -96,12 +96,24 @@ class template{
 		else{
 			$str=$input;
 		}
-		if(!eregi(template::TPL_START.$s_name.template::TPL_E,$str)||!eregi(template::TPL_END.$s_name.template::TPL_E,$str)){
-			trigger_error('(TEMPLATE): Could not find section '.$s_name.' in template: '.$input, E_USER_ERROR);
-			return false;
+		if(is_array($s_name)){
+			foreach($s_name as $tmp){
+				if(!eregi(template::TPL_START.$tmp.template::TPL_E,$str)||!eregi(template::TPL_END.$tmp.template::TPL_E,$str)){
+					trigger_error('(TEMPLATE): Could not find section '.$tmp.' in template: '.$input, E_USER_ERROR);
+					return false;
+				}
+				$tmp_str=explode(template::TPL_START.$tmp.template::TPL_E,$str);
+				$this->tpl[(string)$tmp]=explode(template::TPL_END.$tmp.template::TPL_E,$tmp_str[1]);		
+			}
 		}
-		$str=explode(template::TPL_START.$s_name.template::TPL_E,$str);
-		$this->tpl[(string)$s_name]=explode(template::TPL_END.$s_name.template::TPL_E,$str[1]);
+		else{
+			if(!eregi(template::TPL_START.$s_name.template::TPL_E,$str)||!eregi(template::TPL_END.$s_name.template::TPL_E,$str)){
+				trigger_error('(TEMPLATE): Could not find section '.$s_name.' in template: '.$input, E_USER_ERROR);
+				return false;
+			}
+			$str=explode(template::TPL_START.$s_name.template::TPL_E,$str);
+			$this->tpl[(string)$s_name]=explode(template::TPL_END.$s_name.template::TPL_E,$str[1]);	
+		}
 		$this->keys=array_keys($this->tpl);
 		$this->size=count($this->keys);
 		return true;
