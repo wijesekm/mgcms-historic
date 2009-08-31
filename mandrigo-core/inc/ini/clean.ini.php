@@ -4,7 +4,7 @@
  * @file		clean.ini.php
  * @author 		Kevin Wijesekera
  * @copyright 	2008
- * @edited		6-4-2008
+ * @edited		8-24-2009
  
  ###################################
  This program is free software: you can redistribute it and/or modify
@@ -28,6 +28,14 @@ if(!defined('STARTED')){
 
 function mginit_cleanVar($value,$clean){
 	
+	//
+	//In earlier versions not all 7 slots were used so lets pad the clean array with false so it is not undefined
+	//
+	$soq=count($clean);
+	if($soq < 7){
+		$clean=array_pad($clean,7,false);
+	}
+
 	if((boolean)$clean[1]){
 		$value=urldecode($value);
 	}	
