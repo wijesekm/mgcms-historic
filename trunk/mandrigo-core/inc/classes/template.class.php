@@ -175,6 +175,13 @@ class template{
 			}
 			return $str;
 		}
+		else if(is_array($s_name)){
+			$ret='';
+			foreach($s_name as $val){
+				$ret.=$this->tpl[(string)$val][0];
+			}
+			return $ret;
+		}
 		else{
 			return $this->tpl[(string)$s_name][0];
 		}
@@ -204,6 +211,15 @@ class template{
 				$this->tpl[$this->keys[$i]][0]=$t;
 			}
 		}
+		else if(is_array($s_name)){
+			foreach($s_name as $val){
+				$t=$this->tpl_parseSection($vars,$this->tpl[(string)$val][0],$level,$rempty);
+				if(!$t){
+					return false;
+				}
+				$this->tpl[(string)$val][0]=$t;	
+			}
+		}
 		else{
 			$t=$this->tpl_parseSection($vars,$this->tpl[(string)$s_name][0],$level,$rempty);
 			if(!$t){
@@ -222,6 +238,15 @@ class template{
 					return false;
 				}
 				$this->tpl[$this->keys[$i]][0]=$t;
+			}
+		}
+		else if(is_array($s_name)){
+			foreach($s_name as $val){
+				$t=$this->parser->p_runCustomParsers($this->tpl[(string)$val][0],$hooks);
+				if(!$t){
+					return false;
+				}
+				$this->tpl[(string)$val][0]=$t;
 			}
 		}
 		else{

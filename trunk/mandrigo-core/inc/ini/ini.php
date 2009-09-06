@@ -92,9 +92,11 @@ if(!$act){
 	die();
 }
 
-if($GLOBALS['MG']['POST']['USER_SESSION']&&$GLOBALS['MG']['POST']['USER_NAME']){
-	$GLOBALS['MG']['COOKIE']['USER_NAME']=$GLOBALS['MG']['POST']['USER_NAME'];
-	$GLOBALS['MG']['COOKIE']['USER_SESSION']=$GLOBALS['MG']['POST']['USER_SESSION'];
+if(isset($GLOBALS['MG']['POST']['USER_SESSION'])&&isset($GLOBALS['MG']['POST']['USER_NAME'])){
+	if($GLOBALS['MG']['POST']['USER_SESSION']&&$GLOBALS['MG']['POST']['USER_NAME']){
+		$GLOBALS['MG']['COOKIE']['USER_NAME']=$GLOBALS['MG']['POST']['USER_NAME'];
+		$GLOBALS['MG']['COOKIE']['USER_SESSION']=$GLOBALS['MG']['POST']['USER_SESSION'];		
+	}
 }
 
 if(!$ses->session_load($GLOBALS['MG']['COOKIE']['USER_NAME'],$GLOBALS['MG']['COOKIE']['USER_SESSION'])){
@@ -125,6 +127,7 @@ $cdta=array(
 	'DOM'=>$GLOBALS['MG']['SITE']['COOKIE_DOM'],
 );
 if($GLOBALS['MG']['USER']['BANNED']){
+	echo 'banned';
 	$ses->session_stop($cdta);
 	$GLOBALS['MG']['USER']=$act->act_load($GLOBALS['MG']['SITE']['DEFAULT_ACT']);
 	$GLOBALS['MG']['USER']=$GLOBALS['MG']['USER'][$GLOBALS['MG']['SITE']['DEFAULT_ACT']];
