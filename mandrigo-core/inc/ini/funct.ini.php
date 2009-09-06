@@ -149,6 +149,22 @@ function mg_mkdir($path,$sep='/',$rights = 0775) {
     }
     return true;
 }
+
+function mg_checkPackageMod($package){
+	$dir=$GLOBALS['MG']['CFG']['PATH']['PKG'].'/'.$package.'/';
+	$f=scandir($dir);
+	$last_mod_time=0;
+	foreach($f as $file){	
+		if(substr($file,0,1)!='.'&&$file!='manifest.php'){
+			$t=filemtime($dir.$file);
+			if($t > $last_mod_time){
+				$last_mod_time=$t;
+			}
+		}
+	}
+	return $last_mod_time;
+}
+
 function mg_rmdir($path,$sep='/'){
  	if(!is_dir($path)){
 		return true;
@@ -175,9 +191,8 @@ function mg_rmdir($path,$sep='/'){
 }
 function mg_navBar($length,$ppp,$base=false){
 	if(!$base){
-		$base=array('p',$GLOBALS['MG']['PAGE']['PATH']);	
+		$base=array('p',$GLOBALS['MG']['GET']['PAGE']);
 	}
-	
 	if($length==0){
 		return false;
 	}

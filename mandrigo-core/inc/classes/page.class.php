@@ -28,8 +28,6 @@ if(!defined('STARTED')){
 
 class page{
 	
-	private $vars;
-	private $title;
 	private $content;
 	private $error;
 	private $obj;
@@ -45,7 +43,7 @@ class page{
 			$base=$GLOBALS['MG']['PAGE']['PATH'];
 		}
 		
-		$this->vars=array(
+		$GLOBALS['MG']['PAGE']['VARS']=array(
 			'URI'=>$GLOBALS['MG']['SITE']['URI'],
 			'URI_SSL'=>$GLOBALS['MG']['SITE']['URI_SSL'],
 			'SERVER_NAME'=>$_SERVER['SERVER_NAME'],
@@ -79,33 +77,24 @@ class page{
 			'PAGE_CREATED_DATE'=>date($GLOBALS['MG']['SITE']['DATE_FORMAT'],$GLOBALS['MG']['PAGE']['CREATED']),
 			'PAGE_MODIFIED_DATE'=>date($GLOBALS['MG']['SITE']['DATE_FORMAT'],$GLOBALS['MG']['PAGE']['MODIFIED']),
 			'PAGE_ROOT'=>$GLOBALS['MG']['PAGE']['ROOT'],
-			'ACL_ADMIN'=>'0',
-			'ACL_MODIFY'=>'0',
-			'ACL_WRITE'=>'0',
-			'ACL_READ'=>'0'
+			'ACL_ADMIN'=>(mg_checkACL($GLOBALS['MG']['PAGE']['PATH'],'admin'))?'1':'0',
+			'ACL_MODIFY'=>(mg_checkACL($GLOBALS['MG']['PAGE']['PATH'],'modify'))?'1':'0',
+			'ACL_WRITE'=>(mg_checkACL($GLOBALS['MG']['PAGE']['PATH'],'modify'))?'1':'0',
+			'ACL_READ'=>(mg_checkACL($GLOBALS['MG']['PAGE']['PATH'],'read'))?'1':'0'
 		);
 
-		if(mg_checkACL($GLOBALS['MG']['PAGE']['PATH'],'admin')){
-			$this->vars['ACL_ADMIN']='1';
-		}
-		if(mg_checkACL($GLOBALS['MG']['PAGE']['PATH'],'modify')){
-			$this->vars['ACL_MODIFY']='1';
-		}
-		if(mg_checkACL($GLOBALS['MG']['PAGE']['PATH'],'write')){
-			$this->vars['ACL_WRITE']='1';
-		}
-		if(mg_checkACL($GLOBALS['MG']['PAGE']['PATH'],'read')){
-			$this->vars['ACL_READ']='1';
-		}
-		$this->title='';
 		$this->content='';
 		$this->error=false;
 	}
 	
 	public function page_generate(){
+		
+		/**
+		 * Load cache if it is enabled and the package says its ok to use it
+		 */
 		if($GLOBALS['MG']['PAGE']['ALLOWCACHE']=='1'&&!$GLOBALS['MG']['CFG']['STOPCACHE']&&!$GLOBALS['MG']['GET']['FLUSHCACHE']){
 			$this->page_getModified();
-			$cache=new mgcache();
+			$cache=new mgcache();  
 			$content=$cache->mgc_readcache(filemtime($GLOBALS['MG']['CFG']['PATH']['TPL'].$GLOBALS['MG']['LANG']['NAME'].'/'.page::PAGE_TPL_NAME));
 			if($content!=false){
 				return $content;
@@ -118,37 +107,36 @@ class page{
 			trigger_error('(PAGE): Could not load site template',E_USER_ERROR);
 			return false;
 		}
-		
-		$this->page_getTitle();
-		if(!$this->error){
-			$this->page_getContent();
-		}
-		if(!$this->error){
-			$this->page_getVars();
-		}
+
+		$this->page_getContent();
 		/**
 		* Get Global Page Vars
 		*/
 		$gdd=$GLOBALS['MG']['SQL']->sql_fetchArray(array(TABLE_PREFIX.'pages'),false,array(array(false,false,'page_path','=','*')));
 		mginit_loadCustomPackages(explode(';',$gdd[0]['page_packages']));
-		$globalPageVars=explode(';',$gdd[0]['page_varhooks']);
+		$globalPageVars=explode(';',$gdd[0]['page_contenthooks']);
 		$soq=count($globalPageVars);
 		for($i=0;$i<$soq;$i++){
-			$vv=$this->page_hookEval($globalPageVars[$i]);
-			if(is_array($vv)){
-				$this->vars=mg_mergeArrays($vv,$this->vars);
-			}
+			$t=$this->page_hookEval($globalPageVars[$i]);
+			if(!$this->page_error($t)){
+				break 1;
+			}	
 		}
+		/**
+		 * Set Page
+		 */ 
 		if(!$GLOBALS['MG']['PAGE']['NOSITETPL']){
-			$this->vars=mg_mergeArrays($this->vars,array('TITLE'=>$this->title,'CONTENT'=>$this->content));
-			$tpl->tpl_parse($this->vars,'main',2,true);
+			
+			$GLOBALS['MG']['PAGE']['VARS']['CONTENT']=$this->content;
+			$tpl->tpl_parse($GLOBALS['MG']['PAGE']['VARS'],'main',2,false);
 			if(!$GLOBALS['MG']['CFG']['STOPCUSTOMPARSERS']){
 				$tpl->tpl_parseCustom($gdd[0]['page_customHooks'],'main');
 			}
+			$tpl->tpl_parse($GLOBALS['MG']['PAGE']['VARS'],'main',2,true);
 			if($GLOBALS['MG']['PAGE']['ALLOWCACHE']=='1'&&!$GLOBALS['MG']['CFG']['STOPCACHE']){
 				if(!is_object($cache)){
 					$cache=new mgcache();
-				}				
+				}
 				$cache->mgc_cache($tpl->tpl_return('main'));
 			}	
 			return $tpl->tpl_return('main');
@@ -160,31 +148,15 @@ class page{
 				}
 				$cache->mgc_cache($this->content);
 			}
-			
 			return $this->content;
 		}
 	}
-	
+
 	private function page_getModified(){
 		$GLOBALS['MG']['PAGE']['CACHEHOOKS']=explode(';',$GLOBALS['MG']['PAGE']['CACHEHOOKS']);
 		$soq=count($GLOBALS['MG']['PAGE']['CACHEHOOKS']);
 		for($i=0;$i<$soq;$i++){
 			$tmp=$this->page_hookEval($GLOBALS['MG']['PAGE']['CACHEHOOKS'][$i]);
-		}
-	}
-	
-	private function page_getTitle(){
-		if(!$GLOBALS['MG']['PAGE']['TITLEHOOK']){
-			$this->page_error('404');
-			trigger_error('(PAGE): No title hook.',E_USER_WARNING);
-			return false;
-		}
-		$tmp=$this->page_error($this->page_hookEval($GLOBALS['MG']['PAGE']['TITLEHOOK']));
-		if($tmp){
-			$this->title=$tmp;
-		}
-		else{
-			trigger_error('(PAGE): No title or error during hook evaluation.',E_USER_NOTICE);
 		}
 	}
 	
@@ -208,19 +180,7 @@ class page{
 			}
 		}
 	}
-	
-	private function page_getVars(){
-		$soq=count($GLOBALS['MG']['PAGE']['VARHOOKS']);
-		for($i=0;$i<$soq;$i++){
-			if($GLOBALS['MG']['PAGE']['VARHOOKS'][$i]){
-				$tmp=$this->page_hookEval($GLOBALS['MG']['PAGE']['VARHOOKS'][$i]);
-				if(is_array($tmp)){
-					$this->vars=mg_mergearrays($this->vars,$tmp);
-				}
-			}
-		}
-	}
-	
+
 	private function page_hookEval($hook){
 		if(!$hook){
 			return false;
@@ -253,41 +213,41 @@ class page{
 	}
 	
 	private function page_error($content){
-		switch($content){
+		switch((int)$content){
 			case 500:
-				$this->vars['NO']='no';
+				$GLOBALS['MG']['PAGE']['VARS']['NO']='no';
 				$GLOBALS['MG']['CFG']['STOPCACHE']=true;
 				$this->content=$GLOBALS['MG']['LANG']['E500_CONTENT'];
-				$this->title=$GLOBALS['MG']['LANG']['E500_TITLE'];
+				$GLOBALS['MG']['PAGE']['VARS']['NO']['TITLE']=$GLOBALS['MG']['LANG']['E500_TITLE'];
 				$this->error=true;
 				return false;			
 			break;
 			case 404:
-				$this->vars['NO']='no';
+				$GLOBALS['MG']['PAGE']['VARS']['NO']='no';
 				$GLOBALS['MG']['CFG']['STOPCACHE']=true;
 				$this->content=$GLOBALS['MG']['LANG']['E404_CONTENT'];
-				$this->title=$GLOBALS['MG']['LANG']['E404_TITLE'];
+				$GLOBALS['MG']['PAGE']['VARS']['NO']['TITLE']=$GLOBALS['MG']['LANG']['E404_TITLE'];
 				$this->error=true;
 				return false;
 			break;
 			case 403:
-				$this->vars['NO']='no';
+				$GLOBALS['MG']['PAGE']['VARS']['NO']='no';
 				$GLOBALS['MG']['CFG']['STOPCACHE']=true;
 				$this->content=$GLOBALS['MG']['LANG']['E403_CONTENT'];
-				$this->title=$GLOBALS['MG']['LANG']['E403_TITLE'];
+				$GLOBALS['MG']['PAGE']['VARS']['NO']['TITLE']=$GLOBALS['MG']['LANG']['E403_TITLE'];
 				$this->error=true;
 				return false;			
 			break;
 			case 401:
-				$this->vars['NO']='no';
+				$GLOBALS['MG']['PAGE']['VARS']['NO']='no';
 				$GLOBALS['MG']['CFG']['STOPCACHE']=true;
 				$this->content=$GLOBALS['MG']['LANG']['E401_CONTENT'];
-				$this->title=$GLOBALS['MG']['LANG']['E401_TITLE'];
+				$GLOBALS['MG']['PAGE']['VARS']['NO']['TITLE']=$GLOBALS['MG']['LANG']['E401_TITLE'];
 				$this->error=true;
 				return false;			
 			break;
 			default:
-				$this->vars['NO']='';
+				$GLOBALS['MG']['PAGE']['VARS']['NO']='';
 				return $content;
 			break;
 		};

@@ -33,7 +33,7 @@ class plinks{
 	var $cfg;
 	
 	public function __construct(){
-		$this->vars=array('LM_MSG'=>'');
+		$GLOBALS['MG']['PAGE']['VARS']['PLINK_REPLACE']='';
 		$c=array(array(false,array(DB_AND),'pkg_name','=','plinks'),array(false,false,'page_path','=','*'));
 		$dta=$GLOBALS['MG']['SQL']->sql_fetchArray(array(TABLE_PREFIX.'packageconf'),false,$c);
 		for($i=0;$i<$dta['count'];$i++){
@@ -72,9 +72,10 @@ class plinks{
 					}
 					$parse[strtoupper($key)]=$value;
 				}
-				$tpl->tpl_load($GLOBALS['MG']['CFG']['PATH']['TPL'].$GLOBALS['MG']['LANG']['NAME'].'/plinks.tpl','plinks_repl');
-				$tpl->tpl_parse($parse,'plinks_repl',2,true);
-				$repl[$i]=$tpl->tpl_return('plinks_repl');				
+				$tpl->tpl_load($GLOBALS['MG']['CFG']['PATH']['TPL'].$GLOBALS['MG']['LANG']['NAME'].'/plinks.tpl',array('plinks_repl','plinks_storeinvar'));
+				$tpl->tpl_parse($parse,template::TPL_ALL,2,true);
+				$repl[$i]=$tpl->tpl_return('plinks_repl');
+				$GLOBALS['MG']['PAGE']['VARS']['PLINK_REPLACE'].=$tpl->tpl_return('plinks_storeinvar');			
 			}
 		}
 		$this->new_links=$repl;

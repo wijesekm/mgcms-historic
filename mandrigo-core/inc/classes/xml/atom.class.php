@@ -68,10 +68,17 @@ class atom extends mgXML{
 		return true;
 	}
 	
-	public function atom_addPost($title,$link,$ts_ud,$summary,$other=false){
+	public function atom_addPost($title,$link,$ts_ud,$summary,$author,$other=false){
 		parent::mxml_addTag('entry',false,false,array(0));
 		parent::mxml_addTag('title',false,$title,array(0,$this->count));
 		parent::mxml_addTag('id',false,$link,array(0,$this->count));
+		parent::mxml_addTag('author',false,false,array(0,$this->count));
+		$i=0;
+		foreach($author as $tag=>$value){		
+			parent::mxml_addTag($tag,false,$value,array(0,$this->count,2));
+
+			$i++;
+		}
 		parent::mxml_addTag('link',array('href'=>$link),false,array(0,$this->count));
 		parent::mxml_addTag('updated',false,$this->atom_convertDate($ts_ud),array(0,$this->count));
 		if($summary){
