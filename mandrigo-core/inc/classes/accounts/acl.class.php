@@ -30,37 +30,41 @@ if(!defined('STARTED')){
 class acl{
 		
 	public function acl_load($uid,$groups){
-		$userACL=array();
+		$userACL=array();	
+		$conds=array();
 		for($i=0;$i<$groups['COUNT'];$i++){
-			$acls=$GLOBALS['MG']['SQL']->sql_fetcharray(array(TABLE_PREFIX.'acl'),false,array(array(false,false,'acl_group','=',$groups[$i])));	
-			for($k=0;$k<$acls['count'];$k++){
-				if($acls[$k]['acl_page']){
-					if(!isset($userACL[$acls[$k]['acl_page']])){
-						$userACL[$acls[$k]['acl_page']]=array();
-						$userACL[$acls[$k]['acl_page']]['read']=false;
-						$userACL[$acls[$k]['acl_page']]['modify']=false;
-						$userACL[$acls[$k]['acl_page']]['write']=false;
-						$userACL[$acls[$k]['acl_page']]['admin']=false;
-					}
-					
-					if($userACL[$acls[$k]['acl_page']]['admin']==true||(boolean)$acls[$k]['acl_admin']==true){
-						$userACL[$acls[$k]['acl_page']]['admin']=true;
-						$userACL[$acls[$k]['acl_page']]['write']=true;
-						$userACL[$acls[$k]['acl_page']]['modify']=true;
-						$userACL[$acls[$k]['acl_page']]['read']=true;				
-					}
-					else{
-						$userACL[$acls[$k]['acl_page']]['read']=$this->acl_comp($userACL[$acls[$k]['acl_page']]['read'],$acls[$k]['acl_read']);
-						$userACL[$acls[$k]['acl_page']]['modify']=$this->acl_comp($userACL[$acls[$k]['acl_page']]['modify'],$acls[$k]['acl_modify']);
-						$userACL[$acls[$k]['acl_page']]['write']=$this->acl_comp($userACL[$acls[$k]['acl_page']]['write'],$acls[$k]['acl_write']);					
-					}
+			$conds[$i]=array(false,false,'acl_group','=',$groups[$i]);
+			if($i+1<$groups['COUNT']){
+				$conds[$i][1]=array(DB_OR);
+			}
+		}
+		$acls=$GLOBALS['MG']['SQL']->sql_fetcharray(array(TABLE_PREFIX.'acl'),false,$conds);
+		foreach($acls as $acl){
+			if($acl['acl_page']){
+				if(!isset($userACL[$acl['acl_page']])){
+					$userACL[$acl['acl_page']]=array();
+					$userACL[$acl['acl_page']]['read']=false;
+					$userACL[$acl['acl_page']]['modify']=false;
+					$userACL[$acl['acl_page']]['write']=false;
+					$userACL[$acl['acl_page']]['admin']=false;
+				}				
+				if($userACL[$acl['acl_page']]['admin']==true||(boolean)$acl['acl_admin']==true){
+					$userACL[$acl['acl_page']]['admin']=true;
+					$userACL[$acl['acl_page']]['write']=true;
+					$userACL[$acl['acl_page']]['modify']=true;
+					$userACL[$acl['acl_page']]['read']=true;				
+				}
+				else{
+					$userACL[$acl['acl_page']]['read']=$this->acl_comp($userACL[$acl['acl_page']]['read'],$acl['acl_read']);
+					$userACL[$acl['acl_page']]['modify']=$this->acl_comp($userACL[$acl['acl_page']]['modify'],$acl['acl_modify']);
+					$userACL[$acl['acl_page']]['write']=$this->acl_comp($userACL[$acl['acl_page']]['write'],$acl['acl_write']);					
 				}
 			}
 		}
 		$userACL['count']=count($userACL);
 		return $userACL;
 	}
-	
+
 	public function acl_deleteGroupAcl($gid){
 		if(!$gid){
 			return false;

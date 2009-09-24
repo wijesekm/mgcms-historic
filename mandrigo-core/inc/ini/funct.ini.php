@@ -26,25 +26,57 @@ if(!defined('STARTED')){
 	die();
 }
 
+function mg_checkACL($page,$acl='read'){
+	if(!$page){
+		$page=$GLOBALS['MG']['PAGE']['PATH'];
 
-
-function mg_checkACL($page,$acl){
-	if(isset($GLOBALS['MG']['USER']['ACL'][$page])){
-		if(isset($GLOBALS['MG']['USER']['ACL'][$page][$acl])){
-			if($GLOBALS['MG']['USER']['ACL'][$page][$acl]==='deny'){
-				return false;
+	}
+	$ret=false;
+	$deny=false;
+	$adm=false;
+	foreach($GLOBALS['MG']['USER']['ACL'] as $key=>$val){
+		if($key==='*'){
+			if((boolean)$val[$acl]===true){
+				$ret=true;
 			}
-			else if((boolean)$GLOBALS['MG']['USER']['ACL'][$page][$acl]===true){
-				return true;
+			if((boolean)$val['admin']===true){
+				$adm=true;
+			}
+		}
+		else if($key===$page){
+			if((string)$val[$acl]==='deny'){
+				$deny=true;
+			}
+			if((boolean)$val[$acl]===true){
+				$ret=true;
+			}
+			if((boolean)$val['admin']===true){
+				$adm=true;
+			}
+		}
+		else if(preg_match('/\*/',$key)){
+			$search='/^'.substr($key,0,-1).'/';
+			if(preg_match($search,$page)){
+				if((string)$val[$acl]==='deny'){
+					$deny=true;
+				}
+				if((boolean)$val[$acl]===true){
+					$ret=true;
+				}
+				if((boolean)$val['admin']===true){
+					$adm=true;
+				}
+
 			}
 		}
 	}
-	if(isset($GLOBALS['MG']['USER']['ACL']['*'])){
-		if((boolean)$GLOBALS['MG']['USER']['ACL']['*'][$acl]===true){
-			return true;
-		}		
+	if($adm===true){
+		return true;
 	}
-	return false;
+	else if($deny===true){
+		return false;
+	}
+	return $ret;
 }
 
 function mg_mergeArrays($ar1,$ar2){
