@@ -59,6 +59,7 @@ class page{
 			'LANGUAGE'=>$GLOBALS['MG']['LANG']['NAME'],
 			'SERVER_TIME'=>date($GLOBALS['MG']['SITE']['TIME_FORMAT'],$GLOBALS['MG']['SITE']['TIME']),
 			'SERVER_DATE'=>date($GLOBALS['MG']['SITE']['DATE_FORMAT'],$GLOBALS['MG']['SITE']['TIME']),
+			'COPYRIGHT_YEAR'=>date('o',$GLOBALS['MG']['SITE']['TIME']),
 			'USER_UID'=>$GLOBALS['MG']['USER']['UID'],
 			'USER_SESSION'=>$GLOBALS['MG']['COOKIE']['USER_SESSION'],
 			'USER_NAME'=>implode(' ',$GLOBALS['MG']['USER']['NAME']),
@@ -88,12 +89,19 @@ class page{
 	}
 	
 	public function page_generate(){
-		
+		$cache=false;
+		$gdd=$GLOBALS['MG']['SQL']->sql_fetchArray(array(TABLE_PREFIX.'pages'),false,array(array(false,false,'page_path','=','*')));
+		mginit_loadCustomPackages(explode(';',$gdd[0]['page_packages']));		
 		/**
 		 * Load cache if it is enabled and the package says its ok to use it
 		 */
 		if($GLOBALS['MG']['PAGE']['ALLOWCACHE']=='1'&&!$GLOBALS['MG']['CFG']['STOPCACHE']&&!$GLOBALS['MG']['GET']['FLUSHCACHE']){
 			$this->page_getModified();
+			$globalCacheHooks=explode(';',$gdd[0]['page_cachehooks']);
+			$soq=count($globalCacheHooks);
+			for($i=0;$i<$soq;$i++){
+				$this->page_hookEval($globalCacheHooks[$i]);
+			}
 			$cache=new mgcache();  
 			$content=$cache->mgc_readcache(filemtime($GLOBALS['MG']['CFG']['PATH']['TPL'].$GLOBALS['MG']['LANG']['NAME'].'/'.page::PAGE_TPL_NAME));
 			if($content!=false){
@@ -109,19 +117,20 @@ class page{
 		}
 
 		$this->page_getContent();
+		
 		/**
-		* Get Global Page Vars
+		* Get Global Page Vars/Cache Info
 		*/
-		$gdd=$GLOBALS['MG']['SQL']->sql_fetchArray(array(TABLE_PREFIX.'pages'),false,array(array(false,false,'page_path','=','*')));
-		mginit_loadCustomPackages(explode(';',$gdd[0]['page_packages']));
+
 		$globalPageVars=explode(';',$gdd[0]['page_contenthooks']);
 		$soq=count($globalPageVars);
 		for($i=0;$i<$soq;$i++){
 			$t=$this->page_hookEval($globalPageVars[$i]);
 			if(!$this->page_error($t)){
 				break 1;
-			}	
+			}
 		}
+
 		/**
 		 * Set Page
 		 */ 
