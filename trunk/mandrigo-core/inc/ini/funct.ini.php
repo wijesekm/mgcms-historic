@@ -88,19 +88,28 @@ function mg_mergeArrays($ar1,$ar2){
 	return $ar1;
 }
 
-function mg_genUrl($urlParts,$base=false){
-	if(isset($_SERVER['HTTPS'])){
-		if($_SERVER['HTTPS']=='off'){
-			$ssl=false;
+function mg_genUrl($urlParts,$base=false,$ssl='auto'){
+	if($ssl=='auto'){
+		if(isset($_SERVER['HTTPS'])){
+			if($_SERVER['HTTPS']=='off'){
+				$ssl=false;
+			}
+			else{
+				$ssl=true;
+			}
 		}
 		else{
-			$ssl=true;
-		}
+			$ssl=false;
+		}		
 	}
-	else{
+	else if($ssl=='false'){
 		$ssl=false;
 	}
-	if($GLOBALS['MG']['SITE']['URI_SSL']=='always'||($GLOBALS['MG']['SITE']['URI_SSL']=='allow'&&$ssl)){
+	else if($ssl == 'true'){
+		$ssl=true;
+	}
+
+	if($ssl){
 		$url='https://';
 	}
 	else{
@@ -165,7 +174,7 @@ function mg_redirectToLogin(){
 	die();
 }
 
-function mg_mkdir($path,$sep='/',$rights = 0775) {
+function mg_mkdir($path,$sep='/',$rights = 0775 ) {
 	$path=ereg_replace('//','/',$path);
     $dirs = explode($sep , $path);
     $count = count($dirs);
@@ -184,7 +193,13 @@ function mg_mkdir($path,$sep='/',$rights = 0775) {
 
 function mg_checkPackageMod($package){
 	$dir=$GLOBALS['MG']['CFG']['PATH']['PKG'].'/'.$package.'/';
+	if(!is_dir($dir)){
+		return false;
+	}
 	$f=scandir($dir);
+	if(!$f){
+		return false;
+	}
 	$last_mod_time=0;
 	foreach($f as $file){	
 		if(substr($file,0,1)!='.'&&$file!='manifest.php'){
@@ -254,12 +269,8 @@ function mg_navBar($length,$ppp,$base=false){
 		$next="true";
 	}
 		
-	$tpl->tpl_load($GLOBALS['MG']['PAGE']['TPL'],'mgnb_subnav');
-	$tpl->tpl_parse(array('BACK'=>$back,'NEXT'=>$next,'BACK_URL'=>$urlb,'NEXT_URL'=>$urln),'mgnb_subnav');
-	$nstr=$tpl->tpl_return('mgnb_subnav');
-		
 	$tpl->tpl_load($GLOBALS['MG']['PAGE']['TPL'],'mgnb_navbar');
-	$tpl->tpl_parse(array('NAV_PAGES'=>$pstr,'NAV_SUB'=>$nstr),'mgnb_navbar');
+	$tpl->tpl_parse(array('NAV_PAGES'=>$pstr,'BACK'=>$back,'NEXT'=>$next,'BACK_URL'=>$urlb,'NEXT_URL'=>$urln),'mgnb_navbar');
 	$ret=$tpl->tpl_return('mgnb_navbar');
 	$tpl=false;
 	return $ret;
