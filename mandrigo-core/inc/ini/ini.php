@@ -50,6 +50,18 @@ $load=array(array('template','class','/classes/'),
 			array('funct','ini','/ini/'));
 mginit_loadPackage($load);
 
+/**
+ * Path Creation
+ */
+if($GLOBALS['MG']['CFG']['PATH']['TMP']){
+	if(!is_dir($GLOBALS['MG']['CFG']['PATH']['TMP'])){
+		mkdir($GLOBALS['MG']['CFG']['PATH']['TMP'],0777,true);
+	}
+}
+/**
+ * Sql Database Init
+ */
+
 eval('$GLOBALS[\'MG\'][\'SQL\']=new '.$GLOBALS['MG']['CFG']['SQL']['METHOD'].'();');
 if(!$GLOBALS['MG']['SQL']){
 	trigger_error('(INI): Invalid SQL method or no method set!', E_USER_ERROR);
