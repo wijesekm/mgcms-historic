@@ -233,7 +233,7 @@ class mysql extends sql{
 			return false;
 		}
 		if(!mysql_select_db($new_database,$this->db)){
-			trigger_error('(MYSQL): Could not connect to database! '.mysql_error(),E_USER_ERROR);
+			trigger_error('(MYSQL): Could not connect to database! '.$new_database,E_USER_ERROR);
 			return false;			
 		}
 		return true;
@@ -265,7 +265,14 @@ class mysql extends sql{
 		if(!$this->db){
 			return false;
 		}
-		if(!$result=$this->sql_query($this->sql_formatFields($fields).' '.$this->sql_formatTable($table).' '.$this->sql_formatConds($params).';')){
+		$q='';
+		if($fields['funct']){
+			$q=$this->sql_formatFunctions($fields);
+		}
+		else{
+			$q=$this->sql_formatFields($fields);
+		}
+		if(!$result=$this->sql_query($q.' '.$this->sql_formatTable($table).' '.$this->sql_formatConds($params).';')){
 			return false;
 		}
 		$value=mysql_result($result,$row);
@@ -619,6 +626,31 @@ class mysql extends sql{
 			}
 		}
 		return $str.' '.$postfix;
+	}
+	
+  /**
+   * mysql::sql_formatFunctions()
+   *
+   * @param mixed $fields
+   * @param string $prefix
+   * @param string $postfix
+   * @return
+   */
+	final protected function sql_formatFunctions($fields,$prefix='SELECT',$postfix=''){
+		if(!$fields){
+			return $prefix.' * '.$postfix;
+		}
+		$str=$prefix;
+		switch($fields['funct']){
+			case 'SUM':
+				$str.=' SUM(`'.$this->sql_escape($fields[0][0]).'`)';
+				if($fields[0][1]){
+					$str.=' AS \''.$fields[0][1].'\'';
+				}
+			break;
+		}
+		$str.=$postfix;
+		return $str;
 	}
 	
   /**

@@ -32,7 +32,7 @@ class sqlact extends accounts{
 	private $user;
 	private $lastLength;
 	
-	const	GEN_PASSWORD_LENGTH = 8;
+	const	GEN_PASSWORD_LENGTH = 12;
 
 	public function __construct(){
 		$this->lastLength=0;
@@ -137,19 +137,44 @@ class sqlact extends accounts{
 		return true;
 	}
 	
-	final public function act_add($uid,$name,$email,$type){
+	final public function act_update($uid,$name,$email,$website,$about,$rview,$auth,$setauth,$lang,$setlang,$banned,$tz){
+		if(!$uid||!$name[0]||!$email){
+			return false;
+		}
+		$params=array(array(false,false,'user_uid','=',$uid));
+		$up=array(array('user_fullname',implode(';',$name)));
+		$up[]=array('user_email',$email);
+		$up[]=array('user_website',$website);
+		$up[]=array('user_about',$about);
+		$up[]=array('user_restrictView',implode(';',$rview).';');
+		if($setauth){
+			$up[]=array('user_auth',$auth);
+		}
+		if($setlang){
+			$up[]=array('user_lang',$lang);
+		}
+		$up[]=array('user_banned',$banned);
+		$up[]=array('user_tz',$tz);
+		$up[]=array('user_account_modified',$GLOBALS['MG']['SITE']['TIME']);
+		$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['SITE']['ACCOUNT_DB']);
+		$r=$GLOBALS['MG']['SQL']->sql_dataCommands(DB_UPDATE,array($GLOBALS['MG']['SITE']['ACCOUNT_TBL']),$params,$up);
+		$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['CFG']['SQL']['DB']);
+		return $r;
+	}
+	
+	final public function act_add($uid,$name,$email,$type,$encoding='md5'){
 		if(!$uid){
 			return false;
 		}
 		$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['SITE']['ACCOUNT_DB']);
 
 		$params=array('user_uid','user_fullname','user_email','user_auth','user_account_created','user_account_modified');
-		$data=array($uid,$name,$email,$type,$GLOBALS['MG']['SITE']['TIME'],$GLOBALS['MG']['SITE']['TIME']);
+		$data=array($uid,implode(';',$name),$email,$type,$GLOBALS['MG']['SITE']['TIME'],$GLOBALS['MG']['SITE']['TIME']);
 		$runNewPass=false;
 		if($type=='sqlauth'){
 			$runNewPass=true;
 			$params[]='user_pass_expired';
-			$data[]='1';
+			$data[]=$GLOBALS['MG']['SITE']['TIME'];
 		}
 		
 		if($type==$GLOBALS['MG']['SITE']['DEFAULT_AUTH']){
@@ -166,7 +191,10 @@ class sqlact extends accounts{
 			mginit_loadPackage(array(array('auth','abstract','/classes/auth/'),array('sqlauth','class','/classes/auth/')));
 			$auth=new sqlauth();
 			$newPass=substr(md5(rand().rand()), 0, sqlact::GEN_PASSWORD_LENGTH);
-			$auth->auth_changePass($uid,$newPass,$GLOBALS['MG']['SITE']['PASS_ENCODING']);
+			echo $newPass;
+			if(!$auth->auth_changePass($uid,$newPass,$encoding)){
+				return false;
+			}
 		}
 		return $newPass;
 	}

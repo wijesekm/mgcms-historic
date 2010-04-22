@@ -84,8 +84,8 @@ function mginit_loadVars(){
 							$end=false;
 							$k=0;
 							while(!$end){
-								$GLOBALS['MG']['GET'][$name.$k]=isset($url[$uname.$k])?mginit_cleanVar($url[$uname.$k],$clean):$vars[$i]['var_default'];
-								if($vars[$i]['var_stopCache']=='1'&&$GLOBALS['MG']['GET'][$name.$k]&&$GLOBALS['MG']['GET'][$name.$k]!=$vars[$i]['var_default']){
+								$GLOBALS['MG']['GET'][$name][$k]=isset($url[$uname.$k])?mginit_cleanVar($url[$uname.$k],$clean):$vars[$i]['var_default'];
+								if($vars[$i]['var_stopCache']=='1'&&$GLOBALS['MG']['GET'][$name][$k]&&$GLOBALS['MG']['GET'][$name][$k]!=$vars[$i]['var_default']){
 									$GLOBALS['MG']['CFG']['STOPCACHE']=true;
 								}
 								$k++;
@@ -107,8 +107,8 @@ function mginit_loadVars(){
 							$end=false;
 							$k=0;
 							while(!$end){
-								$GLOBALS['MG']['POST'][$name.$k]=isset($_POST[$uname.$k])?mginit_cleanVar($_POST[$uname.$k],$clean):$vars[$i]['var_default'];
-								if($vars[$i]['var_stopCache']=='1'&&$GLOBALS['MG']['POST'][$name.$k]&&$GLOBALS['MG']['POST'][$name.$k]!=$vars[$i]['var_default']){
+								$GLOBALS['MG']['POST'][$name][$k]=isset($_POST[$uname.$k])?mginit_cleanVar($_POST[$uname.$k],$clean):$vars[$i]['var_default'];
+								if($vars[$i]['var_stopCache']=='1'&&$GLOBALS['MG']['POST'][$name][$k]&&$GLOBALS['MG']['POST'][$name][$k]!=$vars[$i]['var_default']){
 									$GLOBALS['MG']['CFG']['STOPCACHE']=true;
 								}
 								$k++;

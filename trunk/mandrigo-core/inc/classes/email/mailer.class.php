@@ -1,10 +1,10 @@
 <?php
 
 /**
- * @file                phpmailer.class.php
+ * @file                mailer.class.php
  * @author              Kevin Wijesekera
  * @copyright   		2008
- * @edited              9-7-2008
+ * @edited              2-23-2010
  
  * Based of the PHPMailer library
  * ------------------------------
