@@ -42,7 +42,7 @@ class page{
 		else{
 			$base=$GLOBALS['MG']['PAGE']['PATH'];
 		}
-		
+		$GLOBALS['MG']['PAGE']['VARS']['NO']='';
 		$GLOBALS['MG']['PAGE']['VARS']=array(
 			'URI'=>$GLOBALS['MG']['SITE']['URI'],
 			'URI_SSL'=>$GLOBALS['MG']['SITE']['URI_SSL'],
@@ -227,7 +227,7 @@ class page{
 				$GLOBALS['MG']['PAGE']['VARS']['NO']='no';
 				$GLOBALS['MG']['CFG']['STOPCACHE']=true;
 				$this->content=$GLOBALS['MG']['LANG']['E500_CONTENT'];
-				$GLOBALS['MG']['PAGE']['VARS']['NO']['TITLE']=$GLOBALS['MG']['LANG']['E500_TITLE'];
+				$GLOBALS['MG']['PAGE']['VARS']['TITLE']=$GLOBALS['MG']['LANG']['E500_TITLE'];
 				$this->error=true;
 				return false;			
 			break;
@@ -235,7 +235,7 @@ class page{
 				$GLOBALS['MG']['PAGE']['VARS']['NO']='no';
 				$GLOBALS['MG']['CFG']['STOPCACHE']=true;
 				$this->content=$GLOBALS['MG']['LANG']['E404_CONTENT'];
-				$GLOBALS['MG']['PAGE']['VARS']['NO']['TITLE']=$GLOBALS['MG']['LANG']['E404_TITLE'];
+				$GLOBALS['MG']['PAGE']['VARS']['TITLE']=$GLOBALS['MG']['LANG']['E404_TITLE'];
 				$this->error=true;
 				return false;
 			break;
@@ -243,7 +243,7 @@ class page{
 				$GLOBALS['MG']['PAGE']['VARS']['NO']='no';
 				$GLOBALS['MG']['CFG']['STOPCACHE']=true;
 				$this->content=$GLOBALS['MG']['LANG']['E403_CONTENT'];
-				$GLOBALS['MG']['PAGE']['VARS']['NO']['TITLE']=$GLOBALS['MG']['LANG']['E403_TITLE'];
+				$GLOBALS['MG']['PAGE']['VARS']['TITLE']=$GLOBALS['MG']['LANG']['E403_TITLE'];
 				$this->error=true;
 				return false;			
 			break;
@@ -251,12 +251,11 @@ class page{
 				$GLOBALS['MG']['PAGE']['VARS']['NO']='no';
 				$GLOBALS['MG']['CFG']['STOPCACHE']=true;
 				$this->content=$GLOBALS['MG']['LANG']['E401_CONTENT'];
-				$GLOBALS['MG']['PAGE']['VARS']['NO']['TITLE']=$GLOBALS['MG']['LANG']['E401_TITLE'];
+				$GLOBALS['MG']['PAGE']['VARS']['TITLE']=$GLOBALS['MG']['LANG']['E401_TITLE'];
 				$this->error=true;
 				return false;			
 			break;
 			default:
-				$GLOBALS['MG']['PAGE']['VARS']['NO']='';
 				return $content;
 			break;
 		};

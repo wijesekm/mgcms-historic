@@ -29,9 +29,17 @@ if(!defined('STARTED')){
 class csv{
 	
 	private $csv_array=array();
+	private $i;
 	
-	function csv_addLine($values){
-		$this->csv_array[]=$values;
+	function __construct(){
+		$this->i=0;
+	}
+	
+	function csv_addData($data){
+		$this->csv_array[$this->i][]=$data;
+	}
+	function csv_newLine(){
+		$this->i++;
 	}
 	
 	function csv_export($display=true,$file=false,$delimiter=',',$enclosure='"'){
@@ -64,5 +72,19 @@ class csv{
 			$GLOBALS['MG']['PAGE']['NOSITETPL']=true;
 		}
 		return $csv;
+	}
+	
+	function csv_read($file,$delimiter=',',$encolsure='"'){
+		if(!$f=fopen($file,'r')){
+			trigger_error('(CSV): Could not open csv file for writing: '.$file,E_USER_ERROR);
+			return false;			
+		}
+		$this->csv_array=array();
+		while(!feof($f)){
+			$line=fgetcsv($f,1000,$delimiter,$encolsure);
+			$this->csv_array[]=$line;
+		}
+		fclose($f);
+		return $this->csv_array;
 	}
 }

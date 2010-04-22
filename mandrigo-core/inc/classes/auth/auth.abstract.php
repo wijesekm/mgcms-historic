@@ -31,6 +31,8 @@ abstract class auth{
 	abstract public function auth_authenticate($username,$password,$encoding='md5');
 	
 	abstract public function auth_changePass($uid,$newPass,$encoding='md5');
+	
+	abstract public function auth_supported();
 
     protected function act_randstring($size){
         $str = "";

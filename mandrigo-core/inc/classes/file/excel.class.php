@@ -66,6 +66,7 @@ class excel{
 				$output.=fgets($f);
 			}
 			fclose($f);
+			unlink($file);
 			$GLOBALS['MG']['LANG']['CONTENT_TYPE']='application/x-msexcel';
 			$GLOBALS['MG']['LANG']['PRAGMA']='no-cache';
 			$GLOBALS['MG']['LANG']['CACHE_CONTROL']='no-cache, must-revalidate';
@@ -246,7 +247,7 @@ class xlsStream
         $this->position += strlen($str);
         return strlen($str);
     }
-
+	
     /**
      * called by an fclose() on the stream
      */
