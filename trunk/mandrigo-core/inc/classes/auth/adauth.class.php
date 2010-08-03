@@ -28,12 +28,39 @@ if(!defined('STARTED')){
 
 class adauth extends auth{
 	
-	final public function auth_authenticate($username,$password,$encoding='md5'){
-		if($GLOBALS['MG']['LDAP']->ad_authenticate($username,$password)===true){
-			return true;
+	private $ad;
+	
+	public function __construct(){
+		$domains=explode(';',$GLOBALS['MG']['SITE']['AD_DOMAINS']);
+		if(!is_array($GLOBALS['MG']['SITE']['AD_BASE_DN'])){
+			$GLOBALS['MG']['SITE']['AD_BASE_DN']=explode(';',$GLOBALS['MG']['SITE']['AD_BASE_DN']);	
 		}
-		return false;
+		if(!is_array($GLOBALS['MG']['SITE']['AD_DOMAIN_CONTROLLERS'])){
+			$GLOBALS['MG']['SITE']['AD_DOMAIN_CONTROLLERS']=explode(';',$GLOBALS['MG']['SITE']['AD_DOMAIN_CONTROLLERS']);
+		}
+		
+		$index=array_search($GLOBALS['MG']['POST']['AD_DOMAIN'],$domains);
+		if($index===false){
+			trigger_error('(ADAUTH): Bad Domain Selected',E_USER_ERROR);
+			return false;
+		}
+		$options=array('base_dn'=>$GLOBALS['MG']['SITE']['AD_BASE_DN'][$index],'account_suffix'=>'@'.$domains[$index],'domain_controllers'=>array($GLOBALS['MG']['SITE']['AD_DOMAIN_CONTROLLERS'][$index]));
+		try {
+			$this->ad=new adLDAP($options);
+		}
+		catch (adLDAPException $e) {
+			trigger_error('(ADAUTH): Could not start adLDAP class: '.$e,E_USER_ERROR);
+			return false;
+		}
 	}
+	
+	final public function auth_authenticate($username,$password,$encoding='md5'){
+		return $this->ad->authenticate($username,$password);
+	}
+	
+	final public function auth_supported(){
+		return array('change_pass'=>false);
+	}	
 	
 	final public function auth_changePass($uid,$newPass,$encoding='md5'){
 		return false;

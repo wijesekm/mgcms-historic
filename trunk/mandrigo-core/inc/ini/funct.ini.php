@@ -135,8 +135,8 @@ function mg_genUrl($urlParts,$base=false,$ssl='auto'){
 			$soq=count($urlParts);
 			for($i=0;$i<$soq;$i+=2){
 				$url.=$urlParts[$i].'='.$urlParts[$i+1];
-				if($urlParts+2<$soq){
-					$url.='$amp;';
+				if($i+2<$soq){
+					$url.='&';
 				}
 			}
 		break;

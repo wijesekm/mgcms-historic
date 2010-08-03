@@ -46,6 +46,16 @@ class group{
 		return $userGroups;			
 	}
 	
+	public function group_isValid($group){
+		$conds=array(array(false,false,'group_gid','=',$group));
+		$groups=$GLOBALS['MG']['SQL']->sql_fetchArray(array(TABLE_PREFIX.'groups'),false,$conds);
+		$groups=$groups[0];
+		if(strtolower($groups['group_gid'])==strtolower($group)){
+			return true;
+		}
+		return false;
+	}
+	
 	public function group_getGroup($start=0,$length=10,$search=false,$loadOnly=false){
 		if($loadOnly){
 			$conds=array(array(false,false,'group_gid','=',$loadOnly));
