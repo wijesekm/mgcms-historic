@@ -26,6 +26,8 @@ if(!defined('STARTED')){
 	die();
 }
 
+date_default_timezone_set('America/New_York');//this is to prevent errors and will be reset later
+
 /**
 * Start Error Logger
 */

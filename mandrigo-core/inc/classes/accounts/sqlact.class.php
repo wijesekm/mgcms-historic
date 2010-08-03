@@ -137,8 +137,8 @@ class sqlact extends accounts{
 		return true;
 	}
 	
-	final public function act_update($uid,$name,$email,$website,$about,$rview,$auth,$setauth,$lang,$setlang,$banned,$tz){
-		if(!$uid||!$name[0]||!$email){
+	final public function act_update($uid,$name,$email,$website,$about,$rview,$auth,$setauth,$lang,$setlang,$banned,$tz,$other=false){
+		if(!$uid){
 			return false;
 		}
 		$params=array(array(false,false,'user_uid','=',$uid));
@@ -156,6 +156,12 @@ class sqlact extends accounts{
 		$up[]=array('user_banned',$banned);
 		$up[]=array('user_tz',$tz);
 		$up[]=array('user_account_modified',$GLOBALS['MG']['SITE']['TIME']);
+		if($other!=false){
+			foreach($other as $key=>$val){
+				$up[]=array($key,$val);
+			}			
+		}
+		print_r($up);
 		$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['SITE']['ACCOUNT_DB']);
 		$r=$GLOBALS['MG']['SQL']->sql_dataCommands(DB_UPDATE,array($GLOBALS['MG']['SITE']['ACCOUNT_TBL']),$params,$up);
 		$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['CFG']['SQL']['DB']);
@@ -191,7 +197,6 @@ class sqlact extends accounts{
 			mginit_loadPackage(array(array('auth','abstract','/classes/auth/'),array('sqlauth','class','/classes/auth/')));
 			$auth=new sqlauth();
 			$newPass=substr(md5(rand().rand()), 0, sqlact::GEN_PASSWORD_LENGTH);
-			echo $newPass;
 			if(!$auth->auth_changePass($uid,$newPass,$encoding)){
 				return false;
 			}
