@@ -29,7 +29,7 @@ if(!defined('STARTED')){
 
 class excel{
 	
-	private $document;
+	public $document;
 	const XLS_EXTENSION		= '.xls';
 	
 	function __construct(){
@@ -41,7 +41,7 @@ class excel{
 		if(empty($this->document[$row])){
 			$this->document[$row]=array();
 		}
-		$this->document[$row][$column]=$data;
+		$this->document[$row][$column]=(string)$data;
 	}
 	
 	function excel_write($file=false){

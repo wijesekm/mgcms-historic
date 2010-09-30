@@ -333,7 +333,6 @@ class adLDAP {
             if (array_key_exists("use_tls",$options)){ $this->_use_tls=$options["use_tls"]; }
             if (array_key_exists("recursive_groups",$options)){ $this->_recursive_groups=$options["recursive_groups"]; }
         }
-        
         if ($this->ldap_supported() === false) {
             throw new adLDAPException('No LDAP support for PHP.  See: http://www.php.net/ldap');
         }

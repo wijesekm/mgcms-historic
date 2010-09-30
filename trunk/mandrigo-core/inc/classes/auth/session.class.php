@@ -68,7 +68,7 @@ class session{
 			return false;
 		}
 		$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['SITE']['ACCOUNT_DB']);
-		$dta=$GLOBALS['MG']['SQL']->sql_fetchArray(array($GLOBALS['MG']['SITE']['ACCOUNTS_SESSION_TBL']),false,array(array(false,false,'ses_uid','=',$uid)));
+		$dta=$GLOBALS['MG']['SQL']->sql_fetchArray(array($GLOBALS['MG']['SITE']['ACCOUNTS_SESSION_TBL']),false,array(array(false,false,'ses_uid','=',$_SERVER['REMOTE_ADDR'].$uid)));
 		$this->sid=$dta[0]['ses_sid'];
 		$this->length=$dta[0]['ses_length'];
 		$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['CFG']['SQL']['DB']);
@@ -103,9 +103,9 @@ class session{
 	
 	private function session_updateDB($stop=false,$length=0){
 		$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['SITE']['ACCOUNT_DB']);
-		$GLOBALS['MG']['SQL']->sql_dataCOmmands(DB_REMOVE,array($GLOBALS['MG']['SITE']['ACCOUNTS_SESSION_TBL']),array(array(false,false,'ses_uid','=',$this->uid)));
+		$GLOBALS['MG']['SQL']->sql_dataCOmmands(DB_REMOVE,array($GLOBALS['MG']['SITE']['ACCOUNTS_SESSION_TBL']),array(array(false,false,'ses_uid','=',$_SERVER['REMOTE_ADDR'].$this->uid)));
 		if(!$stop){
-			if(!$GLOBALS['MG']['SQL']->sql_dataCommands(DB_INSERT,array($GLOBALS['MG']['SITE']['ACCOUNTS_SESSION_TBL']),array('ses_uid','ses_sid','ses_starttime','ses_length'),array($this->uid,$this->sid,$this->t,$length))){
+			if(!$GLOBALS['MG']['SQL']->sql_dataCommands(DB_INSERT,array($GLOBALS['MG']['SITE']['ACCOUNTS_SESSION_TBL']),array('ses_uid','ses_sid','ses_starttime','ses_length'),array($_SERVER['REMOTE_ADDR'].$this->uid,$this->sid,$this->t,$length))){
 				$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['CFG']['SQL']['DB']);
 				trigger_error('(SESSION): Could not update database','E_USER_ERROR');
 				return false;

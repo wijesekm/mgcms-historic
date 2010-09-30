@@ -33,7 +33,7 @@ define("DB_BOTH",MYSQL_BOTH);
 class mysql extends sql{
 	
 	protected $print;
-	
+	private $cur_db=false;
 	/**
 	* Constants
 	*/	
@@ -232,10 +232,14 @@ class mysql extends sql{
 		if(!$this->db){
 			return false;
 		}
+		if($this->cur_db==$new_database){
+			return true;
+		}
 		if(!mysql_select_db($new_database,$this->db)){
 			trigger_error('(MYSQL): Could not connect to database! '.$new_database,E_USER_ERROR);
-			return false;			
+			return false;
 		}
+		$this->cur_db=$new_database;
 		return true;
 	}
 	
@@ -350,6 +354,30 @@ class mysql extends sql{
 		}
 		$this->sql_freeResult($result);
 		return $tmp;
+	}
+	
+	public function sql_arrayPre($query,$type=DB_ASSOC){
+		if(!$result=$this->sql_query($query)){
+			return false;
+		}
+		$rows=$this->sql_numRows(false,false,$result);
+		$tmp=array();
+		if(!$rows){
+			$tmp['count']=1;
+			$tmp[]=mysql_fetch_array($result,$type);
+		}
+		else{
+			$tmp['count']=$rows;
+			for($i=0;$i<$rows;$i++){
+				$tmp[]=mysql_fetch_array($result,$type);
+				if($i+1<$rows){
+					mysql_data_seek($result,$i+1);					
+				}
+
+			}
+		}
+		$this->sql_freeResult($result);
+		return $tmp;		
 	}
 	
   /**
@@ -519,6 +547,7 @@ class mysql extends sql{
 			
 			break;			
 		};
+		$this->sql_query($query);
 	}
 	
   /**

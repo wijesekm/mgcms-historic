@@ -35,16 +35,16 @@ function mginit_cleanVar($value,$clean){
 	if($soq < 7){
 		$clean=array_pad($clean,7,false);
 	}
-
+	if((boolean)$clean[5]){
+		$value=base64_decode($value);
+	}
 	if((boolean)$clean[1]){
 		$value=urldecode($value);
 	}	
 	if(!(boolean)$clean[2]){
 		$value=strip_tags($value);
 	}
-	if((boolean)$clean[5]){
-		$value=base64_decode($value);
-	}
+
 	if((boolean)$clean[3]){
 		$value=trim($value);
 	}
@@ -55,7 +55,6 @@ function mginit_cleanVar($value,$clean){
 		$value=stripslashes($value);
 	}
 
-	
 	switch ($clean[0]){
 		case 'boolean':
 			return ($value!="")?1:0;

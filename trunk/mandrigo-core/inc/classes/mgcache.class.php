@@ -97,7 +97,7 @@ class mgcache{
 		$str='';
 		for($i=0;$i<$soq;$i++){
 			if(in_array($keys[$i],$GLOBALS['MG']['CACHE']['USEINCACHE'])&&$GLOBALS['MG']['GET'][$keys[$i]]&&$GLOBALS['MG']['GET'][$keys[$i]]!='0'){
-				$str=$keys[$i].$GLOBALS['MG']['GET'][$keys[$i]];
+				$str.=$keys[$i].$GLOBALS['MG']['GET'][$keys[$i]];
 			}
 		}
 		if($str){

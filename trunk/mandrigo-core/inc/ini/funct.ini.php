@@ -148,11 +148,13 @@ function mg_redirectTarget($target){
 	if(!$target){
 		trigger_error('(FUNCT): Invalid Redirect Target',E_USER_WARNING);
 		if(isset($_SERVER['HTTPS'])&&$_SERVER['HTTPS']!='off'){
-			header('Location: https://'.$_SERVER['SERVER_NAME']);
+			$port=($_SERVER['SERVER_PORT']!='443')?':'.$_SERVER['SERVER_PORT']:'';
+			header('Location: https://'.$_SERVER['SERVER_NAME'].$port);
 			die();
 		}
 		else{
-			header('Location: http://'.$_SERVER['SERVER_NAME']);
+			$port=($_SERVER['SERVER_PORT']!='80')?':'.$_SERVER['SERVER_PORT']:'';
+			header('Location: http://'.$_SERVER['SERVER_NAME'].$port);
 			die();
 		}
 	}
@@ -165,13 +167,22 @@ function mg_redirectToLogin(){
 		return false;
 	}
 	if(isset($_SERVER['HTTPS'])&&$_SERVER['HTTPS']!='off'){
-		$url='https://'.$_SERVER['SERVER_NAME'].'/'.$_SERVER['REQUEST_URI'];
+		$url='https://'.$_SERVER['SERVER_NAME'];
+		if($_SERVER['SERVER_PORT']!='443'){
+			$url.=':'.$_SERVER['SERVER_PORT'];
+		}
 	}
 	else{
-		$url='http://'.$_SERVER['SERVER_NAME'].'/'.$_SERVER['REQUEST_URI'];
+		$url='http://'.$_SERVER['SERVER_NAME'];
+		if($_SERVER['SERVER_PORT']!='80'){
+			$url.=':'.$_SERVER['SERVER_PORT'];
+		}
 	}
-	header('Location: '.$GLOBALS['MG']['SITE']['LOGIN_URL'].base64_encode($url));
-	die();
+
+	if($_SERVER['REQUEST_URI']){
+		$url.='/'.$_SERVER['REQUEST_URI'];
+	}
+	mg_redirectTarget($GLOBALS['MG']['SITE']['LOGIN_URL'].base64_encode($url));
 }
 
 function mg_mkdir($path,$sep='/',$rights = 0775 ) {
