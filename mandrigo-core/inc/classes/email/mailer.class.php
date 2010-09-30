@@ -34,66 +34,86 @@ if(!defined('STARTED')){
 	die();
 }
 
-class phpmailer{
+class mailer{
 	
 	private $mail;
 	private $mcfg;
 
 	public function __construct($cfg=false){
 		$this->mail = new phpmailer();
-		$this->$mcfg=$cfg;
+		$this->mcfg=$cfg;
 		$keys=array_keys($cfg);
+		foreach($cfg as $keys=>$value){
 		switch($keys){
 			case 'priority':
-				$this->mail->Priority=(int)$cfg['priority'];
+				$this->mail->Priority=(int)$value;
 			break;
 			case 'charset':
-				$this->mail->CharSet=$cfg['charset'];
+				$this->mail->CharSet=$value;
 			break;
 			case 'contenttype ':
-				$this->mail->ContentType =$cfg['contenttype'];
+				$this->mail->ContentType =$value;
 			break;
 			case 'encoding':
-				$this->mail->Encoding=$cfg['encoding'];
-			break;
-			case 'charset':
-				$this->mail->CharSet=$cfg['charset'];
+				$this->mail->Encoding=$value;
 			break;
 			case 'mailer':
-				$this->mail->Mailer=$cfg['mailer'];
+				$this->mail->Mailer=$value;
 			break;
 			case 'sendmailpath':
-				$this->mail->Sendmail=$cfg['sendmailpath'];
+				$this->mail->Sendmail=$value;
 			break;
 			case 'host':
 			default:
-				if(!$cfg['host']){
+				if(!$value){
 					$cfg['host']=explode('/',$GLOBALS['MG']['SITE']['URI']);
 					$cfg['host']=$cfg['host'][0];
 				}
-				$this->mail->Hostname=$cfg['host'];
+				$this->mail->Hostname=$value;
 			break;
 		 	case 'smpthost':
-		 		$this->mail->Host=$cfg['smtphost'];
+		 		$this->mail->Host=$value;
 		 	break;
 		 	case 'smptport':
-		 		$this->mail->Port=$cfg['smtpport'];
+		 		$this->mail->Port=$value;
 		 	break;
 		 	case 'smpthelo':
-		 		$this->mail->Helo=$cfg['smtphelo'];
+		 		$this->mail->Helo=$value;
 		 	break;
 		 	case 'smptsecure':
-		 		$this->mail->SMTPSecure=$cfg['smtpsecure'];
+		 		$this->mail->SMTPSecure=$value;
 		 	break;
 		 	case 'smptauth':
 		 		$this->mail->SMTPAuth=true;
-		 		$this->mail->Username=$cfg['smtpauth'][0];
-		 		$this->mail->Password=$cfg['smtpauth'][1];
+		 		$this->mail->Username=$value[0];
+		 		$this->mail->Password=$value[1];
 		 	break;
 			case 'singleto':
-				$this->mail->SingleTo=$cfg['singleto'];
+				$this->mail->SingleTo=$value;
 			break;	
+		};			
 		}
+
+	}
+	
+	public function phpm_reset(){
+		$this->mail->From=false;
+		$this->mail->FromName=false;
+		$this->mail->Sender=false;
+		$this->mail->ConfirmReadingTo=false;
+		$this->mail->Subject=false;
+		$this->mail->AltBody=false;
+		$this->mail->Body=false;
+		$this->mail->to=array();
+		$this->mail->bcc=array();
+  		$this->mail->boundary = array();
+ 		$this->mail->language = array();
+ 		$this->mail->to = array();
+  		$this->mail->cc = array();
+  		$this->mail->bcc = array();
+ 		$this->mail->ReplyTo = array();
+  		$this->mail->attachment = array();
+  		$this->mail->CustomHeader = array();
 	}
 	
 	public function phpm_setFrom($name,$email,$confirmMsg=false){
@@ -103,15 +123,15 @@ class phpmailer{
 		if(!$name){
 			$name=$email;
 		}
-		$this->From=$email;
-		$this->FromName=$name;
-		$this->Sender=$email;
-		$this->ConfirmReadingTo=$confirmMsg;
+		$this->mail->From=$email;
+		$this->mail->FromName=$name;
+		$this->mail->Sender=$email;
+		$this->mail->ConfirmReadingTo=$confirmMsg;
 		return true;
 	}
 	
 	public function phpm_setSubject($subject){
-		$this->Mailer->Subject=strip_tags($subject);
+		$this->mail->Subject=strip_tags($subject);
 		return true;
 	}
 	
@@ -119,9 +139,9 @@ class phpmailer{
 		if(!$body){
 			return false;
 		}
-		$this->Mailer->Body=$body;
-		if($this->$mcfg['multipart']){
-			$this->Mailer->AltBody=strip_tags($body);
+		$this->mail->Body=$body;
+		if($this->mcfg['multipart']){
+			$this->mail->AltBody=strip_tags($body);
 		}
 		return true;
 	}
@@ -162,7 +182,12 @@ class phpmailer{
 		}
 	}
 	
-	public function phpm_send(){
-		return $this->mail->Send();
+	public function phpm_send($dryRun=false){
+		if(!$dryRun){
+			return $this->mail->Send();
+		}
+		else{
+			print_r($this->mail);
+		}
 	}
 }

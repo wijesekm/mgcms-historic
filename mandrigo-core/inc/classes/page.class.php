@@ -95,17 +95,19 @@ class page{
 		/**
 		 * Load cache if it is enabled and the package says its ok to use it
 		 */
-		if($GLOBALS['MG']['PAGE']['ALLOWCACHE']=='1'&&!$GLOBALS['MG']['CFG']['STOPCACHE']&&!$GLOBALS['MG']['GET']['FLUSHCACHE']){
+		if($GLOBALS['MG']['PAGE']['ALLOWCACHE']=='1'&&!$GLOBALS['MG']['GET']['FLUSHCACHE']){
 			$this->page_getModified();
 			$globalCacheHooks=explode(';',$gdd[0]['page_cachehooks']);
 			$soq=count($globalCacheHooks);
 			for($i=0;$i<$soq;$i++){
 				$this->page_hookEval($globalCacheHooks[$i]);
 			}
-			$cache=new mgcache();  
-			$content=$cache->mgc_readcache(filemtime($GLOBALS['MG']['CFG']['PATH']['TPL'].$GLOBALS['MG']['LANG']['NAME'].'/'.page::PAGE_TPL_NAME));
-			if($content!=false){
-				return $content;
+			if(!$GLOBALS['MG']['CFG']['STOPCACHE']){
+				$cache=new mgcache();  
+				$content=$cache->mgc_readcache(filemtime($GLOBALS['MG']['CFG']['PATH']['TPL'].$GLOBALS['MG']['LANG']['NAME'].'/'.page::PAGE_TPL_NAME));
+				if($content!=false){
+					return $content;
+				}				
 			}
 		}
 		$GLOBALS['MG']['PAGE']['NOSITETPL']=false;

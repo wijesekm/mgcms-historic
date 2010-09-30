@@ -45,6 +45,19 @@ class adauth extends auth{
 			return false;
 		}
 		$options=array('base_dn'=>$GLOBALS['MG']['SITE']['AD_BASE_DN'][$index],'account_suffix'=>'@'.$domains[$index],'domain_controllers'=>array($GLOBALS['MG']['SITE']['AD_DOMAIN_CONTROLLERS'][$index]));
+		
+		switch($GLOBALS['MG']['SITE']['AD_TLS_SSL']){
+			case 'tls':
+				$options['use_tls']=true;
+			break;
+			case 'ssl':
+				$options['use_ssl']=true;
+			break;
+			default:
+			
+			break;
+		}
+		
 		try {
 			$this->ad=new adLDAP($options);
 		}
