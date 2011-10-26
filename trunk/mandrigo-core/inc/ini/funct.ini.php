@@ -26,11 +26,18 @@ if(!defined('STARTED')){
 	die();
 }
 
+/**
+* mg_checkACL($page,$acl='read')
+*
+* Checks ACL for current user.  Returns true if access is granted and false if it is not
+*
+*/
 function mg_checkACL($page,$acl='read'){
 	if(!$page){
 		$page=$GLOBALS['MG']['PAGE']['PATH'];
 
 	}
+    //print_r($GLOBALS['MG']['USER']);
 	$ret=false;
 	$deny=false;
 	$adm=false;
@@ -186,7 +193,6 @@ function mg_redirectToLogin(){
 }
 
 function mg_mkdir($path,$sep='/',$rights = 0775 ) {
-	$path=ereg_replace('//','/',$path);
     $dirs = explode($sep , $path);
     $count = count($dirs);
     $path = '';
@@ -238,8 +244,10 @@ function mg_rmdir($path,$sep='/'){
 				}
 			}
 			else if(is_dir($tmp)){
-				mg_rmdir($tmp,$sep);
-			}		
+				if(!mg_rmdir($tmp,$sep)){
+				    return false;   
+				}
+			}
 		}
 	}
 	if(!rmdir($path)){
@@ -247,7 +255,35 @@ function mg_rmdir($path,$sep='/'){
 	}
 	return true;
 }
-function mg_navBar($length,$ppp,$base=false){
+
+function mg_copy($src, $dest, $override = true,$rights = 0775){
+    if(!is_dir($dest)){
+        if(!mkdir($dest,$rights)){
+            return false;
+        }
+    }
+    $files = scandir($src);
+    foreach($files as $file){
+        if($file != '.' && $file !='..'){
+            if(is_dir($src.'/'.$file)){
+                if(!mg_copy($src.'/'.$file,$dest.'/'.$file,$override,$rights)){
+                    return false;
+                }
+            }
+            else if(file_exists($src.'/'.$file)){
+                if(file_exists($dest.'/'.$file) && $override){
+                    unlink($dest.'/'.$file);
+                }
+                if(!copy($src.'/'.$file,$dest.'/'.$file)){
+                    return false;
+                }
+            }
+        }
+    }
+    return true;
+}
+
+function mg_navBar($length,$ppp,$base=false,$sortedQty=false){
 	if(!$base){
 		$base=array('p',$GLOBALS['MG']['GET']['PAGE']);
 	}
@@ -260,11 +296,27 @@ function mg_navBar($length,$ppp,$base=false){
 	}
 	$tpl=new template();
 	$pstr='';
+	$counts=array();
 	for($i=0;$i<$pages;$i++){
 		$tpl->tpl_load($GLOBALS['MG']['PAGE']['TPL'],'mgnb_pdelim');
-		$url=mg_genUrl(array_merge($base,array('pn',(string)$i)));
-		$tpl->tpl_parse(array('URL'=>$url,'PG'=>(string)($i+1),'INDEX'=>(string)$i,'LENGTH'=>(string)$pages),'mgnb_pdelim');
+		$tempBase=$base;
+		if($sortedQty!==false){
+			$temp=$sortedQty-($ppp*$i);
+			if($temp >= 0){
+				$temp='0';
+			}
+			else{
+				$temp=(string)abs($temp);
+			}
+			$tempBase[]='c';
+			$tempBase[]=$temp;
+			$counts[]=$temp;
+		}
+		$url=mg_genUrl(array_merge($tempBase,array('pn',(string)$i)));
+		$parse=array('URL'=>$url,'PG'=>(string)($i+1),'INDEX'=>(string)$i,'LENGTH'=>(string)$pages);
+		$tpl->tpl_parse($parse,'mgnb_pdelim');
 		$pstr.=$tpl->tpl_return('mgnb_pdelim');
+
 	}
 
 	$back = $GLOBALS['MG']['GET']['PAGE_NUMBER']-1;
@@ -272,11 +324,21 @@ function mg_navBar($length,$ppp,$base=false){
 	$urlb=false;
 	$urln=false;
 	if($back >= 0){
-		$urlb=mg_genUrl(array_merge($base,array('pn',(string)$back)));
+		$urlBase=$base;
+		if($sortedQty!==false){
+			$urlBase[]='c';
+			$urlBase[]=$counts[$back];
+		}
+		$urlb=mg_genUrl(array_merge($urlBase,array('pn',(string)$back)));
 		$back="true";
 	}
 	if($next < $pages){
-		$urln=mg_genUrl(array_merge($base,array('pn',(string)$next)));
+		$urlBase=$base;
+		if($sortedQty!==false){
+			$urlBase[]='c';
+			$urlBase[]=$counts[$next];
+		}
+		$urln=mg_genUrl(array_merge($urlBase,array('pn',(string)$next)));
 		$next="true";
 	}
 		
@@ -287,7 +349,16 @@ function mg_navBar($length,$ppp,$base=false){
 	return $ret;
 }
 
-function mg_updateSiteTime($page,$timestamp,$user){
+function mg_updateSiteTime($page=false,$timestamp=false,$user=false){
+	if(!$page){
+		$page=$GLOBALS['MG']['PAGE']['PATH'];
+	}
+	if(!$timestamp){
+		$timestamp=$GLOBALS['MG']['SITE']['TIME'];
+	}
+	if(!$user){
+		$user=$GLOBALS['MG']['USER']['UID'];
+	}
 	$conds=array(array(false,false,'page_path','=',$page));
 	$up=array(array('page_modified',$timestamp),array('page_modifiedby',$user));
 	if(!$GLOBALS['MG']['SQL']->sql_dataCommands(DB_UPDATE,array(TABLE_PREFIX.'pages'),$conds,$up)){
@@ -295,4 +366,65 @@ function mg_updateSiteTime($page,$timestamp,$user){
 		return false;
 	}
 	return true;
+}
+
+function mg_hexBinDec($data,$c='dec'){
+	if(preg_match('/0b/',$data)){
+		$data=preg_replace('/0b/','',$data);
+		if($c=='hex'){
+			return dechex(bindec($data));
+		}
+		else if($c=='dec'){
+			return bindec($data);
+		}
+	}
+	else if(preg_match('/0x/',$data)){
+		$data=preg_replace('/0x/','',$data);
+		if($c=='dec'){
+			return hexdec($data);
+		}
+		else if($c=='bin'){
+			return decbin(hexdec($data));
+		}
+	}
+	else{
+		if($c=='hex'){
+			return dechex($data);
+		}
+		else if($c=='bin'){
+			return decbin($data);
+		}
+	}
+	return $data;
+}
+
+function mg_updatePackageConfig($package_name,$key,$data){
+	$c=array(array(false,array(DB_AND,1),'pkg_name','=',$package_name),array(false,array(DB_AND,1),'var_name','=',$key),array(false,array(DB_OR,2),'page_path','=',$GLOBALS['MG']['PAGE']['PATH']),array(false,array(false,2),'page_path','=','*'));
+	$data=array(array('var_value',$data));
+	return $GLOBALS['MG']['SQL']->sql_dataCommands(DB_UPDATE,array(TABLE_PREFIX.'packageconf'),$c,$data);
+}
+
+function mg_addPackageConfig($package_name,$key,$data,$pageSpecific=false){
+	$insert=array('pkg_name','var_name','var_value');
+	$data=array($package_name,$key,$data);
+	if($pageSpecific){
+		$insert[]='page_path';
+		$data[]=$pageSpecific;
+	}
+	return $GLOBALS['MG']['SQL']->sql_dataCommands(DB_INSERT,array(TABLE_PREFIX.'packageconf'),$insert,$data);
+}
+
+function mg_getPackageData($package_name){
+	$c=array(array(false,array(DB_AND,1),'pkg_name','=',$package_name),array(false,array(DB_OR,2),'page_path','=',$GLOBALS['MG']['PAGE']['PATH']),array(false,array(false,2),'page_path','=','*'));
+	$dta=$GLOBALS['MG']['SQL']->sql_fetchArray(array(TABLE_PREFIX.'packageconf'),false,$c);
+	$cfg=array();
+	for($i=0;$i<$dta['count'];$i++){
+		$cfg[(string)$dta[$i]['var_name']]=(string)$dta[$i]['var_value'];
+	}
+	return $cfg;
+}
+
+function mg_setAJAX(){
+   	$GLOBALS['MG']['PAGE']['NOERRORPARSE']=true;
+	$GLOBALS['MG']['PAGE']['NOSITETPL']=true; 
 }

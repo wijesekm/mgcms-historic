@@ -38,10 +38,17 @@ class mailer{
 	
 	private $mail;
 	private $mcfg;
+	private $logDb;
+	private $logmsg;
 
-	public function __construct($cfg=false){
+	public function __construct($cfg=false,$parse=false){
+		if($parse==true){
+			$cfg=$this->phpm_parseConfig($cfg);
+		}
 		$this->mail = new phpmailer();
 		$this->mcfg=$cfg;
+		$this->logDb=false;
+		$this->logmsg='';
 		$keys=array_keys($cfg);
 		foreach($cfg as $keys=>$value){
 		switch($keys){
@@ -91,9 +98,30 @@ class mailer{
 			case 'singleto':
 				$this->mail->SingleTo=$value;
 			break;	
+			case 'logdb':
+				$this->logDb=$value;
+			break;
 		};			
 		}
 
+	}
+	
+	private function phpm_parseConfig($conf){
+		preg_match_all("/(.*?)\=\>(.*?)\;/",$conf,$temp);
+		$conf=array();
+		$soq=count($temp[1]);
+		for($i=0;$i<$soq;$i++){
+			if($temp[2][$i]=='true'){
+				$conf[$temp[1][$i]]=true;
+			}
+			else if($temp[2][$i]=='false'){
+				$conf[$temp[1][$i]]=false;
+			}
+			else{
+				$conf[$temp[1][$i]]=$temp[2][$i];
+			}
+		}
+		return $conf;
 	}
 	
 	public function phpm_reset(){
@@ -115,7 +143,7 @@ class mailer{
   		$this->mail->attachment = array();
   		$this->mail->CustomHeader = array();
 	}
-	
+
 	public function phpm_setFrom($name,$email,$confirmMsg=false){
 		if(!$email){
 			return false;
@@ -164,6 +192,9 @@ class mailer{
 		if(!$name){
 			$name=$email;
 		}
+		if($this->logDb){
+			$this->logmsg.=$type.': '.$name.'<'.$email.'>'."\n";
+		}
 		switch($type){
 			case 'bcc':
 				$this->mail->AddBCC($email,$name);
@@ -183,11 +214,21 @@ class mailer{
 	}
 	
 	public function phpm_send($dryRun=false){
+		if($this->logDb){
+			$rows=array('uid','timestamp','page','recipients');
+			$data=array($GLOBALS['MG']['USER']['UID'],$GLOBALS['MG']['SITE']['TIME'],$GLOBALS['MG']['PAGE']['PATH'],$this->logmsg);
+			$GLOBALS['MG']['SQL']->sql_dataCommands(DB_INSERT,array($this->logDb),$rows,$data);
+			$this->logmsg='';
+		}
 		if(!$dryRun){
 			return $this->mail->Send();
 		}
 		else{
 			print_r($this->mail);
 		}
+	}
+	
+	public function phpm_attach($file,$name){
+		$this->mail->AddAttachment($file,$name);
 	}
 }

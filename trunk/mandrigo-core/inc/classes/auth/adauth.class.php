@@ -67,7 +67,7 @@ class adauth extends auth{
 		}
 	}
 	
-	final public function auth_authenticate($username,$password,$encoding='md5'){
+	final public function auth_authenticate($username,$password){
 		return $this->ad->authenticate($username,$password);
 	}
 	

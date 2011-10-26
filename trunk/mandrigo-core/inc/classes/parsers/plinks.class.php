@@ -96,7 +96,7 @@ class plinks{
 			$soq2=count($link);
 			for($j=0;$j<$soq2;$j++){
 				if($link[$j]){
-						$key=ereg_replace('=','',$link[$j]);
+						$key=preg_replace('/=/','',$link[$j]);
 						$j++;
 						$this->new_links[$i][trim($key)]=trim($link[$j]);
 				}					
@@ -129,7 +129,7 @@ class plinks{
 		for($i=0;$i<$soq;$i++){
 			if($this->new_links[$keys[$i]]){
 				$this->links_to_repl[$keys[$i]]=preg_quote($this->links_to_repl[$keys[$i]]);
-				$content= ereg_replace($this->links_to_repl[$keys[$i]],$this->new_links[$keys[$i]],$content);					
+				$content= preg_replace('/'.$this->links_to_repl[$keys[$i]].'/',$this->new_links[$keys[$i]],$content);					
 			}
 		}
 		return $content;

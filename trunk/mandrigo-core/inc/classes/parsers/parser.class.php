@@ -35,8 +35,8 @@ class parser{
 		$keys=array_keys($vars);
 		$soq=count($keys);
 		for($i=0;$i<$soq;$i++){
-			if(ereg('{'.$keys[$i].'}',$text)){
-				$text=ereg_replace('{'.$keys[$i].'}',$vars[$keys[$i]],$text);
+			if(preg_match('/{'.$keys[$i].'}/',$text)){
+				$text=preg_replace('/{'.$keys[$i].'}/',$vars[$keys[$i]],$text);
 			}
 		}
 		return $text;
@@ -46,13 +46,13 @@ class parser{
 		$keys=array_keys($lang);
 		$soq=count($keys);
 		for($i=0;$i<$soq;$i++){
-			if(ereg('ACRO:',$keys[$i])&&eregi('{'.$keys[$i].'}',$text)){
+			if(preg_match('/ACRO:/',$keys[$i])&&preg_match('/{'.$keys[$i].'}/',$text)){
 				$tmp=explode(':',$keys[$i]);
-				$text=eregi_replace('{ACRO:('.$tmp[1].')}',$GLOBALS['MG']['LANG']['ACRO'],$text);
-				$text=ereg_replace('{AP_ACROVALUE}',$lang[$keys[$i]],$text);
+				$text=preg_replace('/{ACRO:\('.$tmp[1].'\)}/',$GLOBALS['MG']['LANG']['ACRO'],$text);
+				$text=preg_replace('/{AP_ACROVALUE}/',$lang[$keys[$i]],$text);
 			}
-			else if(ereg('{LANG:'.$keys[$i].'}',$text)){
-				$text=ereg_replace('{LANG:'.$keys[$i].'}',$lang[$keys[$i]],$text);
+			else if(preg_match('/{LANG:'.$keys[$i].'}/',$text)){
+				$text=preg_replace('/{LANG:'.$keys[$i].'}/',$lang[$keys[$i]],$text);
 			}
 		}
 		return $text;
@@ -69,7 +69,7 @@ class parser{
 				$section_split=explode(parser::P_CODE_END,$section[$cco]);
 				$retvar='';
 				if(!eval($section_split[0])){
-					trigger_error('(TEMPLATE): Compile Error in template or return value not specified!',E_USER_WARNING);
+					trigger_error('(TEMPLATE): Compile Error or return value not specified! '.$section_split[0],E_USER_WARNING);
 				}
 				
 				$section[$cco]=$retvar.$section_split[1];

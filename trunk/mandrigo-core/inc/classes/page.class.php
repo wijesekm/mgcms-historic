@@ -35,7 +35,7 @@ class page{
 	const PAGE_TPL_NAME		= 'site.tpl';
 	
 	public function __construct(){
-		if(eregi($GLOBALS['MG']['SITE']['URL_DELIM'],$GLOBALS['MG']['PAGE']['PATH'])){
+		if(preg_match('/'.preg_quote($GLOBALS['MG']['SITE']['URL_DELIM'],'/').'/',$GLOBALS['MG']['PAGE']['PATH'])){
 			$base=explode($GLOBALS['MG']['SITE']['URL_DELIM'],$GLOBALS['MG']['PAGE']['PATH']);
 			$base=$base[0];
 		}
@@ -45,7 +45,6 @@ class page{
 		$GLOBALS['MG']['PAGE']['VARS']['NO']='';
 		$GLOBALS['MG']['PAGE']['VARS']=array(
 			'URI'=>$GLOBALS['MG']['SITE']['URI'],
-			'URI_SSL'=>$GLOBALS['MG']['SITE']['URI_SSL'],
 			'SERVER_NAME'=>$_SERVER['SERVER_NAME'],
 			'SSL'=>(isset($_SERVER['HTTPS'])&&$_SERVER['HTTPS']!='off')?'1':'0',
 			'REQUEST_URI'=>$_SERVER['REQUEST_URI'],
@@ -112,6 +111,7 @@ class page{
 		}
 		$GLOBALS['MG']['PAGE']['NOSITETPL']=false;
 		$GLOBALS['MG']['CFG']['STOPCUSTOMPARSERS']=false;
+		$GLOBALS['MG']['PAGE']['NOERRORPARSE']=false;
 		$tpl=new template();
 		if(!$tpl->tpl_load($GLOBALS['MG']['CFG']['PATH']['TPL'].$GLOBALS['MG']['LANG']['NAME'].'/'.page::PAGE_TPL_NAME,'main')){
 			trigger_error('(PAGE): Could not load site template',E_USER_ERROR);
@@ -186,7 +186,7 @@ class page{
 					$this->content.=$tmp;
 				}
 				else{
-					trigger_error('(PAGE): No content or error during hook evaluation.',E_USER_NOTICE);
+					trigger_error('(PAGE): No content or error during hook evaluation. ('.$GLOBALS['MG']['PAGE']['CONTENTHOOKS'][$i].')',E_USER_NOTICE);
 				}
 			}
 		}
@@ -196,7 +196,7 @@ class page{
 		if(!$hook){
 			return false;
 		}
-		if(eregi('::',$hook)){
+		if(preg_match('/::/',$hook)){
 			
 			$hook=explode('::',$hook);
 			
@@ -224,6 +224,9 @@ class page{
 	}
 	
 	private function page_error($content){
+		if($GLOBALS['MG']['PAGE']['NOERRORPARSE']){
+			return $content;
+		}
 		switch((int)$content){
 			case 500:
 				$GLOBALS['MG']['PAGE']['VARS']['NO']='no';
@@ -262,4 +265,5 @@ class page{
 			break;
 		};
 	}
+
 }

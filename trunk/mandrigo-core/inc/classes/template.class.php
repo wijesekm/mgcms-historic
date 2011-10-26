@@ -98,7 +98,7 @@ class template{
 		}
 		if(is_array($s_name)){
 			foreach($s_name as $tmp){
-				if(!eregi(template::TPL_START.$tmp.template::TPL_E,$str)||!eregi(template::TPL_END.$tmp.template::TPL_E,$str)){
+				if(!$this->tpl_checkSectionIsValid($tmp,$str)){
 					trigger_error('(TEMPLATE): Could not find section '.$tmp.' in template: '.$input, E_USER_ERROR);
 					return false;
 				}
@@ -107,7 +107,7 @@ class template{
 			}
 		}
 		else{
-			if(!eregi(template::TPL_START.$s_name.template::TPL_E,$str)||!eregi(template::TPL_END.$s_name.template::TPL_E,$str)){
+			if(!$this->tpl_checkSectionIsValid($s_name,$str)){
 				trigger_error('(TEMPLATE): Could not find section '.$s_name.' in template: '.$input, E_USER_ERROR);
 				return false;
 			}
@@ -118,6 +118,12 @@ class template{
 		$this->size=count($this->keys);
 		return true;
 	}
+    
+    private function tpl_checkSectionIsValid($section,$data){
+        $str = '/'.preg_quote(template::TPL_START.$section.template::TPL_E,'/');
+        $str.='(.*?)'.preg_quote(template::TPL_END.$section.template::TPL_E,'/').'/mis';
+        return preg_match($str,$data);
+    }
 	
 	private function tpl_checkWrite($filename,$s_name){
 		$str='';
@@ -130,31 +136,32 @@ class template{
 		}
 		fclose($f);
 		$this->adminTpl=$str;
-		if(!eregi(template::TPL_START.$s_name.template::TPL_E,$str)||!eregi(template::TPL_END.$s_name.template::TPL_E,$str)){
+		if(!$this->tpl_checkSectionIsValid($s_name,$str)){
 			return false;
 		}
 		return true;
 	}
 	
 	public function tpl_write($content,$s_name,$filename){
-		$start=template::TPL_START.$s_name.template::TPL_E;
-		$end=template::TPL_END.$s_name.template::TPL_E;
+        $str = '/'.preg_quote(template::TPL_START.$s_name.template::TPL_E,'/');
+        $str.='(.*?)'.preg_quote(template::TPL_END.$s_name.template::TPL_E,'/').'/mis';
 		$write='';
-		$content=$start."\n".$content."\n".$end;
+		$content=template::TPL_START.$s_name.template::TPL_E."\n".$content."\n".template::TPL_END.$s_name.template::TPL_E;
 		if(!$this->tpl_checkWrite($filename,$s_name)){
 			$write=$this->adminTpl."\n\n".$content;
 		}
 		else{
-			$write=ereg_replace($start.'(.*)'.$end,$content,$this->adminTpl);
+			$write=preg_replace($str,$content,$this->adminTpl);
 		}
 		if(!$f=fopen($filename,'w')){
-			trigger_error('(TEMPLATE): Cannto open template for writing: '.$filename,E_USER_ERROR);
+			trigger_error('(TEMPLATE): Cannot open template for writing: '.$filename,E_USER_ERROR);
 			return false;
 		}
 		fwrite($f,$write);
 		fclose($f);
 		return true;
 	}
+
 	
 	/**
 	* tpl_return($s_name=template::TPL_ALL)
@@ -299,7 +306,7 @@ class template{
 			return false;
 		}
 		if($rempty){
-			$section=eregi_replace("[{]+[a-z0-9_-]+[}]","",$section);
+			$section=preg_replace("/{[a-z0-9_-]+}/i","",$section);
 		}
 		return $section;
 		

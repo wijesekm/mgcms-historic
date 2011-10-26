@@ -28,7 +28,7 @@ if(!defined('STARTED')){
 
 class sqlauth extends auth{
 	
-	final public function auth_authenticate($username,$password,$encoding='md5'){
+	final public function auth_authenticate($username,$password){
 		if($username!=$GLOBALS['MG']['USER']['UID']){
 			trigger_error('(SQLAUTH): Script did not initialize GLOBALS array with new user data for account!',E_USER_WARNING);
 			return false;
@@ -37,24 +37,7 @@ class sqlauth extends auth{
 			trigger_error('(SQLAUTH): No user password set in database!',E_USER_NOTICE);
 			return false;
 		}
-		switch($encoding){
-			case 'smd5':
-				return $this->auth_smd5comp($password,$GLOBALS['MG']['USER']['PASSWORD']);
-			break;
-			case 'sha':
-				return $this->auth_shacomp($password,$GLOBALS['MG']['USER']['PASSWORD']);
-			break;
-			case 'ssha':
-				return $this->auth_sshacomp($password,$GLOBALS['MG']['USER']['PASSWORD']);
-			break;
-			case 'md5':
-				return $this->auth_md5comp($password,$GLOBALS['MG']['USER']['PASSWORD']);
-			break;
-			default:
-				return $this->auth_cryptcomp($password,$GLOBALS['MG']['USER']['PASSWORD'],$encoding);
-			break;
-		};
-		return false;
+		return $this->auth_passcomp($password,$GLOBALS['MG']['USER']['PASSWORD']);
 	}
 	
 	final public function auth_supported(){
@@ -62,16 +45,13 @@ class sqlauth extends auth{
 	}	
 
 	final public function auth_changePass($uid,$newPass,$encoding='md5'){
-		echo $uid.$newPass.$encoding;
 		$encPass=$this->act_encryptpasswd($newPass,$encoding);
 		$params=array(array(false,false,'user_uid','=',$uid));
 		$dta=array(array('user_password',$encPass));
-		$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['SITE']['ACCOUNT_DB']);
-		if(!$c=$GLOBALS['MG']['SQL']->sql_dataCommands(DB_UPDATE,array($GLOBALS['MG']['SITE']['ACCOUNT_TBL']),$params,$dta)){
+		if(!$c=$GLOBALS['MG']['SQL']->sql_dataCommands(DB_UPDATE,array(TABLE_PREFIX.'users'),$params,$dta)){
 			trigger_error('(SQLAUTH): Could not set new password!',E_USER_ERROR);
 			return false;
 		}
-		$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['CFG']['SQL']['DB']);
 		return $c;
 	}	
 }
