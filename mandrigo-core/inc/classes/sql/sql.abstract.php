@@ -27,6 +27,7 @@ if(!defined('STARTED')){
 }
 
 define("DB_LIKE","SQL_LIKE");
+define("DB_NOTLIKE","SQL_NOTLIKE");
 define("DB_AND","SQL_AND");
 define("DB_OR","SQL_OR");
 define("DB_BETWEEN","SQL_BETWEEN");
@@ -43,6 +44,8 @@ define("DB_NULL","default NULL");
 define("DB_AUTOINC","NOT NULL auto_increment");
 define("DB_PKEY","SQL_P");
 define("DB_UKEY","SQL_U");
+define("NOT_REGEXP","SQL_NOT_REGEXP");
+define("REGEXP","SQL_REGEXP");
 
 abstract class sql{
 	
@@ -59,6 +62,8 @@ abstract class sql{
 	abstract public function sql_info();
 	
 	abstract public function sql_listTables();
+    
+    abstract public function sql_getLastError();
 
 	abstract public function sql_switchDB($new_database);
 	
@@ -66,7 +71,7 @@ abstract class sql{
 	
 	abstract public function sql_fetchArray($table,$field,$params,$type=DB_ASSOC,$rows=DB_ALL_ROWS,$additParams=false);
 	
-	abstract public function sql_numRows($table,$params,$result=false,$distinct=true);
+	abstract public function sql_numRows($table,$params,$result=false,$distinct=true,$addit=false);
 	
 	abstract public function sql_numFields($table,$params,$result=false,$distinct=true);
 	

@@ -88,6 +88,9 @@ class errorLogger{
 			else if(eregi('<errortype>',$line)){
 				$log[$i]['error_type']=trim(ereg_replace('<errortype>(.*)</errortype>','\\1',$line));
 			}
+			else if(eregi('<erroruri>',$line)){
+				$log[$i]['error_uri']=trim(ereg_replace('<erroruri>(.*)</erroruri>','\\1',$line));
+			}
 			else if(eregi('<errormsg>',$line)){
 				$log[$i]['error_msg']=trim(ereg_replace('<errormsg>(.*)</errormsg>','\\1',$line));
 			}
@@ -120,14 +123,15 @@ class errorLogger{
 	*/	
 	public function el_addError($errno, $errmsg, $filename, $linenum, $vars){
 		$dt = @date("Y-m-d H:i:s (T)");
-	 	$err = "<error>\n";
-	    $err .= "\t<datetime>" . $dt . "</datetime>\n";
-	    $err .= "\t<errornum>" . $errno . "</errornum>\n";
-	    $err .= "\t<errortype>" . $this->errorTypes[$errno] . "</errortype>\n";
-		$err .= "\t<errormsg>" . $errmsg . "</errormsg>\n";
-		$err .= "\t<scriptname>" . $filename . "</scriptname>\n";
-		$err .= "\t<scriptlinenum>" . $linenum . "</scriptlinenum>\n";
-		$err .= "</error>\n";
+	 	$err = "<error>\r\n";
+	    $err .= "\t<datetime>" . $dt . "</datetime>\r\n";
+	    $err .= "\t<errornum>" . $errno . "</errornum>\r\n";
+	    $err .= "\t<errortype>" . $this->errorTypes[$errno] . "</errortype>\r\n";
+	    $err .= "\t<erroruri>".$_SERVER['REQUEST_URI']."</erroruri>\r\n";
+		$err .= "\t<errormsg>" . $errmsg . "</errormsg>\r\n";
+		$err .= "\t<scriptname>" . $filename . "</scriptname>\r\n";
+		$err .= "\t<scriptlinenum>" . $linenum . "</scriptlinenum>\r\n";
+		$err .= "</error>\r\n";
 		$this->el_logRotate($GLOBALS['MG']['CFG']['PATH']['LOG'].$this->errorTypes[$errno].'.log');
 		return @error_log($err, 3,$GLOBALS['MG']['CFG']['PATH']['LOG'].$this->errorTypes[$errno].'.log');		
 	}
@@ -154,7 +158,7 @@ class errorLogger{
 			touch($fname);
 		}
 		if(@filesize($fname)>$GLOBALS['MG']['CFG']['ERRORLOGGER']['SIZE']){
-			$new_name=ereg_replace('\.log','-'.$dt.'.log',$fname);
+			$new_name=preg_replace('/\.log','-'.$dt.'.log/i',$fname);
 			if(!@copy($fname,$new_name)){
 				return false;
 			}

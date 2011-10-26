@@ -33,7 +33,8 @@ $GLOBALS['MG']['CFG']['ALLOWWRITECACHE']=false;
 mginit_loadVars();
 
 function mginit_loadVars(){
-
+	$mime_keys = array_keys($GLOBALS['MG']['MIME']);
+	
 	$fileUploadErrors = array(
 	    UPLOAD_ERR_INI_SIZE => 'The uploaded file exceeds the upload_max_filesize directive in php.ini.',
 	    UPLOAD_ERR_FORM_SIZE => 'The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form.',
@@ -43,14 +44,7 @@ function mginit_loadVars(){
 	    UPLOAD_ERR_CANT_WRITE => 'Failed to write file to disk.',
 	    UPLOAD_ERR_EXTENSION => 'File upload stopped by extension.',
 	);
-	
-	if(!empty($GLOBALS['MG']['SITE']['KNOWN_EXTENSIONS'])){
-		$GLOBALS['MG']['SITE']['KNOWN_EXTENSIONS']=explode(';',$GLOBALS['MG']['SITE']['KNOWN_EXTENSIONS']);	
-	}
-	else{
-		$GLOBALS['MG']['SITE']['KNOWN_EXTENSIONS']=array();
-	}
-	
+
 	$addit=array();
 	$addit['orderby']=array(array('var_id'),array('ASC'));
 	$vars=$GLOBALS['MG']['SQL']->sql_fetcharray(array(TABLE_PREFIX.'vars'),false,false,DB_ASSOC,DB_ALL_ROWS,$addit);
@@ -81,16 +75,26 @@ function mginit_loadVars(){
 					case 'GET':
 						if(substr($uname,-1)=='*'){
 							$uname=substr($uname,0,-1);
-							$end=false;
-							$k=0;
-							while(!$end){
-								$GLOBALS['MG']['GET'][$name][$k]=isset($url[$uname.$k])?mginit_cleanVar($url[$uname.$k],$clean):$vars[$i]['var_default'];
-								if($vars[$i]['var_stopCache']=='1'&&$GLOBALS['MG']['GET'][$name][$k]&&$GLOBALS['MG']['GET'][$name][$k]!=$vars[$i]['var_default']){
-									$GLOBALS['MG']['CFG']['STOPCACHE']=true;
+							foreach($url as $key=>$val){
+								if(preg_match("/^".$uname."/",$key)){
+									$store_name=strtoupper(preg_replace("/^".$uname."/",'',$key));
+									$GLOBALS['MG']['GET'][$name.$store_name]=isset($val)?mginit_cleanVar($val,$clean):$vars[$i]['var_default'];
+									if($vars[$i]['var_stopCache']=='1'&&$GLOBALS['MG']['POST'][$name.$store_name]&&$GLOBALS['MG']['GET'][$name.$store_name]!=$vars[$i]['var_default']){
+										$GLOBALS['MG']['CFG']['STOPCACHE']=true;
+									}								
 								}
-								$k++;
-								if(!isset($url[$uname.$k])){
-									$end=true;
+							}
+						}
+						else if(preg_match('/\[\*\]/',$uname)){
+
+							$uname=preg_replace('/\[\*\]/','',$uname);
+							foreach($url as $key=>$val){
+								if(preg_match("/^".$uname."/",$key)){
+									$store_name=strtoupper(preg_replace("/^".$uname."/",'',$key));
+									$GLOBALS['MG']['GET'][$name][$store_name]=isset($val)?mginit_cleanVar($val,$clean):$vars[$i]['var_default'];
+									if($vars[$i]['var_stopCache']=='1'&&$GLOBALS['MG']['POST'][$name][$store_name]&&$GLOBALS['MG']['GET'][$name][$store_name]!=$vars[$i]['var_default']){
+										$GLOBALS['MG']['CFG']['STOPCACHE']=true;
+									}								
 								}
 							}
 						}
@@ -101,19 +105,24 @@ function mginit_loadVars(){
 							}
 						}
 					break;
+                    case 'JSON':
+                        if(isset($_POST[$uname])){
+                            $GLOBALS['MG']['POST'][$name]=mginit_cleanArray($_POST[$uname],$clean);
+                            if($vars[$i]['var_stopCache']=='1'&&$GLOBALS['MG']['POST'][$name]&&$GLOBALS['MG']['POST'][$name]!=$vars[$i]['var_default']){
+    						  $GLOBALS['MG']['CFG']['STOPCACHE']=true;
+                            }                            
+                        }
+                    break;
 					case 'POST':
 						if(substr($uname,-1)=='*'){
 							$uname=substr($uname,0,-1);
-							$end=false;
-							$k=0;
-							while(!$end){
-								$GLOBALS['MG']['POST'][$name][$k]=isset($_POST[$uname.$k])?mginit_cleanVar($_POST[$uname.$k],$clean):$vars[$i]['var_default'];
-								if($vars[$i]['var_stopCache']=='1'&&$GLOBALS['MG']['POST'][$name][$k]&&$GLOBALS['MG']['POST'][$name][$k]!=$vars[$i]['var_default']){
-									$GLOBALS['MG']['CFG']['STOPCACHE']=true;
-								}
-								$k++;
-								if(!isset($_POST[$uname.$k])){
-									$end=true;
+							foreach($_POST as $key=>$val){
+								if(preg_match("/^".$uname."/",$key)){
+									$store_name=strtoupper(preg_replace("/^".$uname."/",'',$key));
+                                    $GLOBALS['MG']['POST'][$name.$store_name]=isset($val)?mginit_cleanVar($val,$clean):$vars[$i]['var_default'];
+									if($vars[$i]['var_stopCache']=='1'&&$GLOBALS['MG']['POST'][$name.$store_name]&&$GLOBALS['MG']['POST'][$name.$store_name]!=$vars[$i]['var_default']){
+										$GLOBALS['MG']['CFG']['STOPCACHE']=true;
+									}								
 								}
 							}
 						}
@@ -135,8 +144,9 @@ function mginit_loadVars(){
 							else{
 							 	$GLOBALS['MG']['FILE'][$name]['HOST_FILENAME']=stripslashes($_FILES[$uname]['name']);
 								$GLOBALS['MG']['FILE'][$name]['EXT']=pathinfo($GLOBALS['MG']['FILE'][$name]['HOST_FILENAME'],PATHINFO_EXTENSION);
-							 	if(!in_array($GLOBALS['MG']['FILE'][$name]['EXT'],$GLOBALS['MG']['SITE']['KNOWN_EXTENSIONS'])){
-									trigger_error('(BVARS): File upload unknown filetype',E_USER_WARNING);
+								
+							 	if(!in_array('.'.strtolower($GLOBALS['MG']['FILE'][$name]['EXT']),$mime_keys)){
+									trigger_error('(BVARS): File upload unknown filetype .'.$GLOBALS['MG']['FILE'][$name]['EXT'],E_USER_WARNING);
 									$GLOBALS['MG']['FILE'][$name]['ERROR']='UNKNOWNTYPE';
 								}
 								else{
@@ -174,11 +184,20 @@ function mginit_loadVarOnlyOnePage($loadOnly){
 }
 
 function mginit_genURLType3(){
+	if(preg_match('/\//',$GLOBALS['MG']['SITE']['URI'])){
+		$base_uri = explode('/',$GLOBALS['MG']['SITE']['URI']);
+		array_splice($base_uri,0,1);
+		$base_uri = implode('/',$base_uri);
+		if(isset($_GET['url'])){
+			$_GET['url'] = preg_replace('/'.preg_quote($base_uri,'/').'/','',$_GET['url']);
+		}
+	}
+
 	$raw_url=(isset($_GET['url']))?$_GET['url']:'';
 	$raw_url=ereg_replace('\/\/','/',$raw_url);
     $raw_url = explode('/',$raw_url);
     $url=array();
-    
+
 	$soq=count($raw_url);
     for($i=0;$i<$soq;$i=$i+2){
     	if($raw_url[$i]){

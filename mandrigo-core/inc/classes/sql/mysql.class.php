@@ -34,6 +34,7 @@ class mysql extends sql{
 	
 	protected $print;
 	private $cur_db=false;
+	private $log;
 	/**
 	* Constants
 	*/	
@@ -211,6 +212,10 @@ class mysql extends sql{
 		return $tables;
 	}
 
+    final public function sql_getLastError(){
+        return mysql_error($this->db);
+    }
+
 	/**
 	* public function sql_switchDB($new_database)
 	*
@@ -243,6 +248,15 @@ class mysql extends sql{
 		return true;
 	}
 	
+	final public function sql_logging($log_table){
+		if($log_table){
+			$this->log=$log_table;	
+		}
+		else{
+			$this->log=false;
+		}
+	}
+	
 	/**
 	* Database Public Functions
 	*/
@@ -270,7 +284,7 @@ class mysql extends sql{
 			return false;
 		}
 		$q='';
-		if($fields['funct']){
+		if(isset($fields['funct'])){
 			$q=$this->sql_formatFunctions($fields);
 		}
 		else{
@@ -300,6 +314,7 @@ class mysql extends sql{
 		$orderby=false;
 		$limit=false;
 		$having=false;
+		$join=false;
 		if(isset($additParams['distinct'])){
 			$distinct=$additParams['distinct'];	
 		}
@@ -312,6 +327,10 @@ class mysql extends sql{
 		if(isset($additParams['having'])){
 			$having=$additParams['having'];
 		}
+		if(isset($additParams['join'])){
+			$join=mysql_real_escape_string($additParams['join'][0]).' `'.mysql_real_escape_string($additParams['join'][1]).'` ON ';
+			$join.=mysql_real_escape_string($additParams['join'][2]).'='.mysql_real_escape_string($additParams['join'][3]);
+		}
 		
 		if($distinct){
 			$query=$this->sql_formatFields($fields,'SELECT DISTINCT').' ';
@@ -319,7 +338,11 @@ class mysql extends sql{
 		else{
 			$query=$this->sql_formatFields($fields).' ';
 		}
-		$query.=$this->sql_formatTable($table).$this->sql_formatConds($params).' ';
+		$query.=$this->sql_formatTable($table);
+		if($join){
+			$query.=$join.' ';
+		}
+		$query.=$this->sql_formatConds($params).' ';
 		if($orderby){
 			$query.=$this->sql_formatOrderBy($orderby[0],$orderby[1]).' ';
 		}
@@ -389,15 +412,20 @@ class mysql extends sql{
    * @param bool $distinct
    * @return
    */
-	final public function sql_numRows($table,$params,$result=false,$distinct=true){
+	final public function sql_numRows($table,$params,$result=false,$distinct=true,$addit=false){
 		if(!$result){
-			if($distinct){
-				$query=$this->sql_formatFields(false,'SELECT DISTINCT').' ';
+			$join='';
+			if(isset($addit['join'])){
+				$join=mysql_real_escape_string($addit['join'][0]).' `'.mysql_real_escape_string($addit['join'][1]).'` ON ';
+				$join.=mysql_real_escape_string($addit['join'][2]).'='.mysql_real_escape_string($addit['join'][3]);
+			}
+			if(is_array($distinct)){
+				$query=$this->sql_formatFields($distinct,'SELECT DISTINCT',' ');
 			}
 			else{
 				$query=$this->sql_formatFields(false).' ';
 			}
-			$query.=$this->sql_formatTable($table).$this->sql_formatConds($params).';';
+			$query.=$this->sql_formatTable($table).$join.' '.$this->sql_formatConds($params).';';
 			$result=$this->sql_query($query);
 			$num=mysql_num_rows($result);
 			$this->sql_freeResult($result);
@@ -455,11 +483,18 @@ class mysql extends sql{
 			return false;
 		}
 		switch($type){
+			
 			case DB_UPDATE:
 				$query=$this->sql_formatTable($table,'UPDATE').' SET ';
 				$ssize=count($data);
 				for($k=0;$k<$ssize;$k++){
-					$query.='`'.$this->sql_escape($data[$k][0]).'`=\''.$this->sql_escape($data[$k][1]).'\'';
+					if(isset($data[$k][2])){
+						$query.=$this->sql_escape($data[$k][0],false,1).'='.$this->sql_escape($data[$k][2]).'('.$this->sql_escape($data[$k][3],false,1).','.$this->sql_escape($data[$k][1],false,2).')';
+					}
+					else{
+						$query.=$this->sql_escape($data[$k][0],false,1).'='.$this->sql_escape($data[$k][1],false,2);
+					}
+					
 					if($k+1<$ssize){
 						$query.=', ';
 					}
@@ -468,11 +503,11 @@ class mysql extends sql{
 			break;
 			case DB_INSERT:
 				$query=$this->sql_formatTable($table,'INSERT INTO');
-				$query.='(`'.implode('`,`',$params).'`) VALUES';
+				$query.='(`'.implode('`,`',$this->sql_escape($params,true)).'`) VALUES';
 				if(is_array($data[0])){
 					$soq=count($data);
 					for($i=0;$i<$soq;$i++){
-						$query.=' (\''.implode('\',\'',$data[$i]).'\')';
+						$query.=' (\''.implode('\',\'',$this->sql_escape($data[$i],true)).'\')';
 						if($i+1<$soq){
 							$query.=',';
 						}
@@ -480,7 +515,7 @@ class mysql extends sql{
 					$query.=';';
 				}
 				else{
-					$query.=' (\''.implode('\',\'',$data).'\');';
+					$query.=' (\''.implode('\',\'',$this->sql_escape($data,true)).'\');';
 				}
 			break;
 			case DB_RESETAUTO:
@@ -498,6 +533,9 @@ class mysql extends sql{
 			break;
 
 		};
+		if($this->log&&$table[0]!=$this->log){
+			$this->sql_log($query);
+		}
 		if($this->sql_query($query)){
 			return true;	
 		}
@@ -520,7 +558,7 @@ class mysql extends sql{
 				$query=$this->sql_formatTable($table,'DROP TABLE');
 			break;
 			case DB_TRUNCATE:
-				$query=$this->sql_formatTable($table,'TRUNCATE TABLE');
+				$query=$this->sql_formatTable($table,'TRUNCATE TABLE').';';
 			break;
 			case DB_ADD:
 				$query=$this->sql_formatTable($table,'CREATE TABLE').' (';
@@ -547,6 +585,9 @@ class mysql extends sql{
 			
 			break;			
 		};
+		if($this->log&&$table[0]!=$this->log){
+			$this->sql_log($query);
+		}
 		$this->sql_query($query);
 	}
 	
@@ -640,11 +681,11 @@ class mysql extends sql{
 		for($i=0;$i<$fsize;$i++){
 			if(isset($fields[$i][1])){
 				$str.=$this->sql_escape($fields[$i][1]);
-				$str.='(`'.$this->sql_escape($fields[$i][0]).'`)';
+				$str.=$this->sql_escape($fields[$i][0],false,1);
 				$this->groupBy['allow']=true;
 			}
 			else{
-				$str.='`'.$this->sql_escape($fields[$i][0]).'`';				
+				$str.=$this->sql_escape($fields[$i][0],false,1);				
 			}
 			if(!empty($fields[$i][2])){
 				$this->groupBy['field']=$fields[$i][2];
@@ -670,11 +711,14 @@ class mysql extends sql{
 			return $prefix.' * '.$postfix;
 		}
 		$str=$prefix;
-		switch($fields['funct']){
+		switch($fields['funct'][0]){
+			case 'MAX':
+				$str.=' MAX(`'.$this->sql_escape($fields['funct'][1]).'`)';
+			break;
 			case 'SUM':
-				$str.=' SUM(`'.$this->sql_escape($fields[0][0]).'`)';
+				$str.=' SUM(`'.$this->sql_escape($fields['funct'][1][0]).'`)';
 				if($fields[0][1]){
-					$str.=' AS \''.$fields[0][1].'\'';
+					$str.=' AS \''.$fields['funct'][1][1].'\'';
 				}
 			break;
 		}
@@ -707,17 +751,42 @@ class mysql extends sql{
 
 			switch($conds[$i][0]){
 				case DB_LIKE:
-					$str.='`'.$this->sql_escape($conds[$i][2]).'` LIKE \''.$this->sql_escape($conds[$i][3]).'\'';
+				case DB_NOTLIKE:
+					$str.=$this->sql_escape($conds[$i][2],false,1);
+					if($conds[$i][0]==DB_NOTLIKE){
+						$str.=' NOT';
+					}
+					$str.=' LIKE \''.$this->sql_escape($conds[$i][3]).'\'';
+				break;
+				case NOT_REGEXP:
+				case REGEXP:
+					$str.=$this->sql_escape($conds[$i][2],false,1);
+					if($conds[$i][0]==NOT_REGEXP){
+						$str.=' NOT';
+					}
+					$str.=' REGEXP '.$this->sql_escape($conds[$i][3],false,2);
 				break;
 				case DB_BETWEEN:
-					$str.='`'.$this->sql_escape($conds[$i][2]).'` BETWEEN ';
+					$str.=$this->sql_escape($conds[$i][2],false,1).' BETWEEN ';
 					$str.='\''.$this->sql_escape($conds[$i][3]).'\' AND \''.$this->sql_escape($conds[$i][4]).'\'';
 				break;
 				case DB_IN:
-					$str.='`'.$this->sql_escape($conds[$i][2]).'` IN (\''.inplode('\',\'',$$conds[$i][3]).'\')';
+					$str.=$this->sql_escape($conds[$i][2],false,1).' IN (\''.inplode('\',\'',$$conds[$i][3]).'\')';
 				break;
 				default:
-					$str.='`'.$this->sql_escape($conds[$i][2]).'` '.$this->sql_escape($conds[$i][3]).' \''.$this->sql_escape($conds[$i][4]).'\'';
+					if($conds[$i][4]===null){
+						$conds[$i][4]='';
+						if($conds[$i][3]=='='){
+							$str.=$this->sql_escape($conds[$i][2],false,1).' IS NULL';
+
+						}
+						else{
+							$str.=$this->sql_escape($conds[$i][2],false,1).' NOT NULL';
+						}
+					}
+					else{
+						$str.=$this->sql_escape($conds[$i][2],false,1).' '.$this->sql_escape($conds[$i][3]).' '.$this->sql_escape($conds[$i][4],false,2);	
+					}
 				break;
 			}
 			if(isset($conds[$i+1][1][1])){
@@ -728,10 +797,10 @@ class mysql extends sql{
 			}
 			switch($conds[$i][1][0]){
 				case DB_AND:
-					$str.=' AND';
+					$str.=' AND ';
 				break;
 				case DB_OR:
-					$str.=' OR';
+					$str.=' OR ';
 				break;
 				default:
 				
@@ -757,10 +826,10 @@ class mysql extends sql{
 			return false;
 		}
 		$str='ORDER BY ';
-		$fields=$this->sql_escape($fields,true);
+		$fields=$this->sql_escape($fields,true,1);
 		$dirs=$this->sql_escape($dirs,true);
 		for($i=0;$i<$soq;$i++){
-			$str.='`'.$fields[$i].'` '.$dirs[$i];
+			$str.=$fields[$i].' '.$dirs[$i];
 			if($i+1<$soq){
 				$str.=',';
 			}
@@ -791,7 +860,7 @@ class mysql extends sql{
    */
 	final protected function sql_formatGroupBy($field){
 		if($field){
-			return 'GROUP BY `'.$this->sql_escape($field).'`';	
+			return 'GROUP BY '.$this->sql_escape($field,false,1);	
 		}
 		return '';
 		
@@ -808,7 +877,7 @@ class mysql extends sql{
    */
 	final protected function sql_formatHaving($funct,$field,$opr,$value){
 		if($field){
-			return 'HAVING '.$this->sql_escape($funct).'(`'.$this->sql_escape($field).'`) '.$this->sql_escape($opr).' '.$this->sql_escape($value);	
+			return 'HAVING '.$this->sql_escape($funct).'('.$this->sql_escape($field,false,1).') '.$this->sql_escape($opr).' '.$this->sql_escape($value);	
 		}
 		return '';
 	}
@@ -822,13 +891,13 @@ class mysql extends sql{
 	final protected function sql_formatKey($data){
 		switch($data[0]){
 			case DB_PKEY:
-				return 'PRIMARY KEY (`'.$this->sql_escape($data[1]).'`)';
+				return 'PRIMARY KEY ('.$this->sql_escape($data[1],false,1).')';
 			break;
 			case DB_UKEY:
-				return 'UNIQUE '.$this->sql_escape($data[1]).' `'.$this->sql_escape($data[2]).'` (`'.$this->sql_escape($data[3]).'`)';
+				return 'UNIQUE '.$this->sql_escape($data[1]).' '.$this->sql_escape($data[2],false,1).' ('.$this->sql_escape($data[3],false,1).')';
 			break;
 			default:
-				return $this->sql_escape($data[1]).' `'.$this->sql_escape($data[2]).'` (`'.$this->sql_escape($data[3]).'`)';
+				return $this->sql_escape($data[1]).' '.$this->sql_escape($data[2],false,1).' ('.$this->sql_escape($data[3],false,1).')';
 			break;
 		};
 	}
@@ -839,7 +908,7 @@ class mysql extends sql{
    * @return
    */
 	final protected function sql_formatTableLine($params){
-		$query='`'.$this->sql_escape($params[0]).'` ';
+		$query=$this->sql_escape($params[0],false,1).' ';
 		$query.=$this->sql_escape($params[1][0]);
 		if($params[1][1]){
 			$query.='('.$this->sql_escape($params[1][1]).') ';
@@ -852,7 +921,7 @@ class mysql extends sql{
 				$query.=DB_AUTO_INC;
 			break;
 			default:
-				$query.='NOT NULL default \''.$this->sql_escape($params[3]).'\'';
+				$query.='NOT NULL default '.$this->sql_escape($params[3],false,2);
 			break;
 		};
 		return $query;
@@ -865,16 +934,51 @@ class mysql extends sql{
    * @param bool $isArray
    * @return
    */
-	final protected function sql_escape($data,$isArray=false){
+	final protected function sql_escape($data,$isArray=false,$type=0){
 		if($isArray){
 			$soq=count($data);
 			for($i=0;$i<$soq;$i++){
-				$data[$i]=mysql_real_escape_string($data[$i]);
+			$append='';
+			switch($type){
+				default:
+					$append='';
+				break;
+				case '1':
+					if(!preg_match('/\./',$data[$i])){
+						$append='`';
+					}
+				break;
+				case '2':
+					$append='\'';		
+				break;
+			}
+				$data[$i]=$append.mysql_real_escape_string($data[$i]).$append;
 			}			
 		}
 		else{
-			$data=mysql_real_escape_string($data);
+			switch($type){
+				default:
+					$append='';
+				break;
+				case '1':
+					if(!preg_match('/\./',$data)){
+						$append='`';
+					}
+				break;
+				case '2':
+					$append='\'';		
+				break;
+			}
+			$data=$append.mysql_real_escape_string($data).$append;
 		}
 		return $data;
+	}
+	
+	final protected function sql_log($query){
+		$query=mysql_real_escape_string($query);
+		$data=array($GLOBALS['MG']['USER']['UID'],$GLOBALS['MG']['SITE']['TIME'],$GLOBALS['MG']['PAGE']['PATH'],$query);
+		if(!$GLOBALS['MG']['SQL']->sql_dataCommands(DB_INSERT,array($this->log),array('uid','timestamp','page','action'),$data)){
+			trigger_error('(MYSQL): Could not log to database log',E_USER_WARNING);
+		}
 	}
 }

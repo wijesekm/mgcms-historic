@@ -28,7 +28,7 @@ if(!defined('STARTED')){
 
 abstract class auth{
 	
-	abstract public function auth_authenticate($username,$password,$encoding='md5');
+	abstract public function auth_authenticate($username,$password);
 	
 	abstract public function auth_changePass($uid,$newPass,$encoding='md5');
 	
@@ -55,28 +55,28 @@ abstract class auth{
                     return false;
                 }
                 $seed = $this->act_randstring(2);
-                return crypt($pwd,$seed);
+                return '{CRYPT}'.crypt($pwd,$seed);
             break;
 			case 'blowfish_crypt':
                 if(CRYPT_BLOWFISH!=1){
                     return false;
                 }
                 $seed = '$2$' . $this->act_randstring(13);
-                return crypt($pwd,$seed);
+                return '{CRYPTBF}'.crypt($pwd,$seed);
             break;
             case 'md5_crypt':
                 if(CRYPT_MD5!=1){
                     return false;
                 }
                 $seed = '$1$' . $this->act_randstring(9);
-                return crypt($pwd,$seed);
+                return '{CRYPTMD5}'.crypt($pwd,$seed);
             break;
             case 'ext_crypt':
                 if(CRYPT_EXT_DES!=1){
                     return false;
                 }
                 $seed = $this->act_randstring(9);
-                return crypt($pwd,$seed);
+                return '{CRYPTEXT}'.crypt($pwd,$seed);
             break;
             case 'smd5':
                 if(!function_exists('mhash')){
@@ -92,6 +92,12 @@ abstract class auth{
                 }
                 return '{SHA}' . base64_encode(mhash(MHASH_SHA1,$pwd));
             break;
+            case 'sha256':
+                if(!function_exists('mhash')){
+                    return false;
+                }
+                return '{SHA256}' . base64_encode(bin2hex(mhash(MHASH_SHA256,$pwd)));
+            break;
             case 'ssha':
                 if(!function_exists('mhash')){
                     return false;
@@ -101,63 +107,103 @@ abstract class auth{
                 return '{SSHA}' . base64_encode($hash . $seed);
             break;
             case 'md5':
-                return md5($pwd);
+                return '{MD5}'.md5($pwd);
             break;
+  
         }
         return false;		
 	}
-	
-    protected function auth_smd5comp($form_val,$db_val){   
-        $hash = base64_decode(substr($db_val,6));
-        $orig_hash = substr($hash, 0, 16);
-        $salt = substr($hash, 16);
-        $new_hash = mhash(MHASH_MD5,$form_val . $salt);
-        if(strcmp($orig_hash,$new_hash) == 0){
-            return true;
-        }
-        return false;
-    }
-    
-    protected function auth_shacomp($form_val,$db_val){
-        $hash = base64_decode(substr($db_val,5));
-        $new_hash = mhash(MHASH_SHA1,$form_val);
-        if(strcmp($hash,$new_hash) == 0){
-            return true;
-        }
-        return false;
-    }
-    
-    protected function auth_sshacomp($form_val,$db_val){
-        $hash = base64_decode(substr($db_val, 6));
-        $orig_hash = substr($hash, 0, 20);
-        $salt = substr($hash, 20);
-        $new_hash = mhash(MHASH_SHA1, $form_val . $salt);
-        if(strcmp($orig_hash,$new_hash) == 0){
-            return true;
-        }
-        return false;
-    }
-    
-    protected function auth_md5comp($form_val,$db_val){
-    	if(md5($form_val)==$db_val){
-        	return true;
-        }
-        return false;
-    }
+
+	protected function auth_passcomp($form_val,$db_val){
+		preg_match('/\{+([A-Z0-9])+\}/',$db_val,$type);
+		$type=$type[0];
+		$db_val=preg_replace('/\{+([A-Z0-9])+\}/','',$db_val);
+		$type=preg_replace('/[\{\}]/','',$type);
+		switch($type){
+          	case 'CRYPT':
+		        $salt = substr($db_val, 0, 2);
+		        $new_hash = crypt($form_val, $salt);
+		
+		        if(strcmp($db_val,$new_hash) == 0){
+		            return true;
+		        }
+		        return false;           
+            break;
+            case 'CRYPTBF':
+  		        $salt = substr($db_val, 0, 16);
+		        $new_hash = crypt($form_val, $salt);
+		
+		        if(strcmp($db_val,$new_hash) == 0){
+		            return true;
+		        }
+		        return false;            
+            break;
+            case 'CRYPTEXT':
+		        $salt = substr($db_val, 0, 9);
+		        $new_hash = crypt($form_val, $salt);
+		
+		        if(strcmp($db_val,$new_hash) == 0){
+		            return true;
+		        }
+		        return false;              
+            break;
+            case 'CRYPTMD5':
+ 		        $salt = substr($db_val, 0, 12);
+		        $new_hash = crypt($form_val, $salt);
+		
+		        if(strcmp($db_val,$new_hash) == 0){
+		            return true;
+		        }
+		        return false;
+            break;
+			case 'SHA256':
+		        $hash = base64_decode($db_val);
+		        $new_hash =bin2hex(mhash(MHASH_SHA256,$form_val));
+		        if(strcmp($hash,$new_hash) == 0){
+		            return true;
+		        }
+		        return false;
+			break;
+			case 'SSHA':
+		        $hash = base64_decode($db_val);
+		        $orig_hash = substr($hash, 0, 20);
+		        $salt = substr($hash, 20);
+		        $new_hash = mhash(MHASH_SHA1, $form_val . $salt);
+		        if(strcmp($orig_hash,$new_hash) == 0){
+		            return true;
+		        }
+		        return false;
+			break;
+			case 'SHA':
+		        $hash = base64_decode($db_val);
+		        $new_hash = mhash(MHASH_SHA1,$form_val);
+		        if(strcmp($hash,$new_hash) == 0){
+		            return true;
+		        }
+		        return false;
+			break;
+			case 'SMD5':
+		        $salt = substr($hash, 16);
+		        $new_hash = mhash(MHASH_MD5,$form_val . $salt);
+		        if(strcmp($hash,$new_hash) == 0){
+		            return true;
+		        }
+		        return false;
+			break;
+			case 'MD5':
+		    	if(md5($form_val)==$db_val){
+		        	return true;
+		        }
+		        return false;			
+			break;
+			default:
+				return false;
+			break;
+		}
+	}
+
     
     protected function auth_cryptcomp($form_val,$db_val,$type){
-        $saltlen = array(
-            'blowfish_crypt' => 16,
-            'md5_crypt' => 12,
-            'ext_crypt' => 9,
-            'crypt' => 2
-        );
-        $salt = substr($db_val, 0, (int)$saltlen[$type]);
-        $new_hash = crypt($form_val, $salt);
 
-        if(strcmp($db_val,$new_hash) == 0){
-            return true;
-        }
-        return false;
     }    
 }

@@ -26,13 +26,46 @@ if(!defined('STARTED')){
 	die();
 }
 
+function mginit_cleanArray($value,$clean){
+	//
+	//In earlier versions not all 7 slots were used so lets pad the clean array with false so it is not undefined
+	//
+	if(count($clean) < 7){
+		$clean=array_pad($clean,7,false);
+	}
+    return mginit_cleanArraySub($value,$clean,$GLOBALS['MG']['CLEAN'][$clean[0]],$GLOBALS['MG']['CLEAN'][$clean[0]]['0000default']);
+}
+
+function mginit_cleanArraySub($value,$clean,$cleanPath,$default){
+    $keys = array_keys($value);
+    $soq = count($keys);
+    for($i=0;$i<$soq;$i++){
+        if(is_array($value[$keys[$i]])){
+            $value[$keys[$i]]=mginit_cleanArraySub($value[$keys[$i]],$clean,$cleanPath[$keys[$i]],$default);
+        }
+        else{
+            $tempClean = $clean;
+            $tempClean[0] = $default;
+            if(isset($cleanPath[$keys[$i]])){
+                $tempClean[0] = $cleanPath[$keys[$i]];
+            }
+            else if(isset($cleanPath['0000default'])){
+                $tempClean[0] = $cleanPath['0000default'];
+            }
+            //echo $value[$keys[$i]]
+            $value[$keys[$i]]=mginit_cleanVar($value[$keys[$i]],$tempClean);
+            //echo $value[$keys[$i]].'<br/>';
+        }
+    }
+    return $value;
+}
+
 function mginit_cleanVar($value,$clean){
 	
 	//
 	//In earlier versions not all 7 slots were used so lets pad the clean array with false so it is not undefined
 	//
-	$soq=count($clean);
-	if($soq < 7){
+	if(count($clean) < 7){
 		$clean=array_pad($clean,7,false);
 	}
 	if((boolean)$clean[5]){
@@ -54,39 +87,25 @@ function mginit_cleanVar($value,$clean){
 	if((boolean)$clean[6]){
 		$value=stripslashes($value);
 	}
-
 	switch ($clean[0]){
 		case 'boolean':
-			return ($value!="")?1:0;
+        case 'bool':
+			return ( $value=="" || $value=="false" || $value == "0" )?false:true;
 		break;
 		case 'int':
-			return (eregi("^[0-9]+$",$value))?$value:false;
+			return (preg_match("/^[0-9]+$/",$value))?$value:false;
 		break;
 		case 'float':
-			return (eregi("^[0-9]+\.?[0-9]+$",$value))?$value:false;
+			return (preg_match("/^[0-9]+(\.?[0-9]+)$/",$value))?$value:false;
 		break;
 		case 'char':
-			return (eregi("^.{1}$$",$value))?$value:false;
+			return (preg_match("/^.{1}$$/",$value))?$value:false;
 		break;
 		case 'string':
 			return $value;
 		break;
 		default:
-			switch($GLOBALS['MG']['CLEAN'][$clean[0]][0]){
-				case 'preg_match':
-					return (preg_match($GLOBALS['MG']['CLEAN'][$clean[0]][1],$value))?$value:false;
-				break;
-				case 'ereg':
-					return (ereg($GLOBALS['MG']['CLEAN'][$clean[0]][1],$value))?$value:false;
-				break;
-				case '!eregi':
-					return (!eregi($GLOBALS['MG']['CLEAN'][$clean[0]][1],$value))?$value:false;
-				break;
-				case 'eregi':
-				default:
-					return (eregi($GLOBALS['MG']['CLEAN'][$clean[0]][1],$value))?$value:false;
-				break;
-			}
+            return (preg_match($GLOBALS['MG']['CLEAN'][$clean[0]][1],$value) == $GLOBALS['MG']['CLEAN'][$clean[0]][0])?$value:false;
 		break;
 	};
 	return false;
