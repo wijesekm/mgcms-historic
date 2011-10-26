@@ -59,13 +59,13 @@ class parser{
 	}
 	
 	public function p_phpcompile($section){
-		if(!eregi(parser::P_CODE_START,$section)||!eregi(parser::P_CODE_END,$section)){
+		if(!preg_match('/'.parser::P_CODE_START.'/',$section)||!preg_match('/'.parser::P_CODE_END.'/',$section)){
 			return $section;
 		}
 		$section=explode(parser::P_CODE_START,$section);
 		$ssoc=count($section);
 		for($cco=0;$cco<$ssoc;$cco++){
-			if(eregi(parser::P_CODE_END,$section[$cco])){
+			if(preg_match('/'.parser::P_CODE_END.'/',$section[$cco])){
 				$section_split=explode(parser::P_CODE_END,$section[$cco]);
 				$retvar='';
 				if(!eval($section_split[0])){
@@ -80,7 +80,7 @@ class parser{
 	}
 	
 	public function p_runCustomParsers($text,$hooks){
-		$hook= ereg_replace('(.*)parser](.*)','\\2',$hooks);
+		$hook= preg_replace('/(.*)parser](.*)/','\\2',$hooks);
 		$hook=explode('==>',$hook);
 		$hook=explode(';',$hook[0]);
 		foreach($hook as $value){
@@ -124,7 +124,7 @@ class parser{
 		if(!$hook){
 			return false;
 		}
-		if(eregi('::',$hook)){
+		if(preg_match('/::/',$hook)){
 			$hook=explode('::',$hook);
 			mginit_loadCustomPackages(array($hook[0]));
 			eval('$obj=new '.$hook[0].'();');

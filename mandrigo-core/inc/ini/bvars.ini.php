@@ -194,7 +194,7 @@ function mginit_genURLType3(){
 	}
 
 	$raw_url=(isset($_GET['url']))?$_GET['url']:'';
-	$raw_url=ereg_replace('\/\/','/',$raw_url);
+	$raw_url=preg_replace('/\/\//','/',$raw_url);
     $raw_url = explode('/',$raw_url);
     $url=array();
 
@@ -212,15 +212,15 @@ function mginit_genURLType3(){
 	return $url;
 }
 function mginit_genURLType2(){
-    if(!ereg($GLOBALS['MG']['SITE']['INDEX_NAME']."/",$_SERVER["REQUEST_URI"])){
+    if(!preg_match('/'.preg_quote($GLOBALS['MG']['SITE']['INDEX_NAME']."/",$_SERVER["REQUEST_URI"],'/').'/')){
 		$raw_url=$GLOBALS['MG']['SITE']['INDEX_NAME'].$_SERVER["REQUEST_URI"];
     }
 	else{
 		$raw_url=$_SERVER["REQUEST_URI"];
     }
 
-    $raw_url = eregi_replace("^.*".$GLOBALS['MG']['SITE']['INDEX_NAME']."/p","p",$raw_url);
-    $raw_url=ereg_replace('\/\/','/',$raw_url);
+    $raw_url = eregi_replace("/^.*".preg_quote($GLOBALS['MG']['SITE']['INDEX_NAME'],'/')."\/p/","p",$raw_url);
+    $raw_url=preg_replace('/\/\//','/',$raw_url);
     $raw_url = explode("/",$raw_url);
     $url=array();
     
