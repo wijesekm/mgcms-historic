@@ -78,7 +78,7 @@ class mysql extends sql{
 		}
 		
 		$type='s';
-		if(eregi("^[0-9]+$",$port_socket)){
+		if(preg_match("/^[0-9]+$/",$port_socket)){
 			$type='p';
 		}
 		if(!$host){
