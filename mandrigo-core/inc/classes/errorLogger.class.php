@@ -76,31 +76,31 @@ class errorLogger{
 		$i=0;
 		while(!feof($f)){
 			$line=fgets($f);
-			if(eregi('<error>',$line)){
+			if(preg_match('/<error>/',$line)){
 				$log[$i]=array();
 			}
-			else if(eregi('<datetime>',$line)){
-				$log[$i]['date_time']=trim(ereg_replace('<datetime>(.*)</datetime>','\\1',$line));
+			else if(preg_match('/<datetime>/',$line)){
+				$log[$i]['date_time']=trim(preg_replace('/<datetime>(.*)<\/datetime>/','\\1',$line));
 			}
-			else if(eregi('<errornum>',$line)){
-				$log[$i]['error_number']=trim(ereg_replace('<errornum>(.*)</errornum>','\\1',$line));
+			else if(preg_match('/<errornum>/',$line)){
+				$log[$i]['error_number']=trim(preg_replace('/<errornum>(.*)<\/errornum>/','\\1',$line));
 			}
-			else if(eregi('<errortype>',$line)){
-				$log[$i]['error_type']=trim(ereg_replace('<errortype>(.*)</errortype>','\\1',$line));
+			else if(preg_match('/<errortype>/',$line)){
+				$log[$i]['error_type']=trim(preg_replace('/<errortype>(.*)<\/errortype>/','\\1',$line));
 			}
-			else if(eregi('<erroruri>',$line)){
-				$log[$i]['error_uri']=trim(ereg_replace('<erroruri>(.*)</erroruri>','\\1',$line));
+			else if(preg_match('/<erroruri>/',$line)){
+				$log[$i]['error_uri']=trim(preg_replace('/<erroruri>(.*)<\/erroruri>/','\\1',$line));
 			}
-			else if(eregi('<errormsg>',$line)){
-				$log[$i]['error_msg']=trim(ereg_replace('<errormsg>(.*)</errormsg>','\\1',$line));
+			else if(preg_match('/<errormsg>/',$line)){
+				$log[$i]['error_msg']=trim(preg_replace('/<errormsg>(.*)<\/errormsg>/','\\1',$line));
 			}
-			else if(eregi('<scriptname>',$line)){
-				$log[$i]['script_name']=trim(ereg_replace('<scriptname>(.*)</scriptname>','\\1',$line));
+			else if(preg_match('/<scriptname>/',$line)){
+				$log[$i]['script_name']=trim(preg_replace('/<scriptname>(.*)<\/scriptname>/','\\1',$line));
 			}
-			else if(eregi('<scriptlinenum>',$line)){
-				$log[$i]['script_line_num']=trim(ereg_replace('<scriptlinenum>(.*)</scriptlinenum>','\\1',$line));
+			else if(preg_match('/<scriptlinenum>/',$line)){
+				$log[$i]['script_line_num']=trim(preg_replace('/<scriptlinenum>(.*)<\/scriptlinenum>/','\\1',$line));
 			}
-			else if(eregi('</error>',$line)){
+			else if(preg_match('/<\/error>/',$line)){
 				$i++;
 			}
 		}
@@ -158,7 +158,7 @@ class errorLogger{
 			touch($fname);
 		}
 		if(@filesize($fname)>$GLOBALS['MG']['CFG']['ERRORLOGGER']['SIZE']){
-			$new_name=preg_replace('/\.log','-'.$dt.'.log/i',$fname);
+			$new_name=preg_replace('/\.log/i','-'.$dt.'.log',$fname);
 			if(!@copy($fname,$new_name)){
 				return false;
 			}

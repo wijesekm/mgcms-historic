@@ -196,10 +196,9 @@ class page{
 		if(!$hook){
 			return false;
 		}
-		if(preg_match('/::/',$hook)){
+		if(preg_match('/\:\:/',$hook)){
 			
 			$hook=explode('::',$hook);
-			
 			if(!isset($this->obj[$hook[0]])){
 				$this->obj[$hook[0]]=true;
 			}
