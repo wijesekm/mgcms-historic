@@ -51,59 +51,57 @@ class mailer{
 		$this->logmsg='';
 		$keys=array_keys($cfg);
 		foreach($cfg as $keys=>$value){
-		switch($keys){
-			case 'priority':
-				$this->mail->Priority=(int)$value;
-			break;
-			case 'charset':
-				$this->mail->CharSet=$value;
-			break;
-			case 'contenttype ':
-				$this->mail->ContentType =$value;
-			break;
-			case 'encoding':
-				$this->mail->Encoding=$value;
-			break;
-			case 'mailer':
-				$this->mail->Mailer=$value;
-			break;
-			case 'sendmailpath':
-				$this->mail->Sendmail=$value;
-			break;
-			case 'host':
-			default:
-				if(!$value){
-					$cfg['host']=explode('/',$GLOBALS['MG']['SITE']['URI']);
-					$cfg['host']=$cfg['host'][0];
-				}
-				$this->mail->Hostname=$value;
-			break;
-		 	case 'smpthost':
-		 		$this->mail->Host=$value;
-		 	break;
-		 	case 'smptport':
-		 		$this->mail->Port=$value;
-		 	break;
-		 	case 'smpthelo':
-		 		$this->mail->Helo=$value;
-		 	break;
-		 	case 'smptsecure':
-		 		$this->mail->SMTPSecure=$value;
-		 	break;
-		 	case 'smptauth':
-		 		$this->mail->SMTPAuth=true;
-		 		$this->mail->Username=$value[0];
-		 		$this->mail->Password=$value[1];
-		 	break;
-			case 'singleto':
-				$this->mail->SingleTo=$value;
-			break;	
-			case 'logdb':
-				$this->logDb=$value;
-			break;
-		};			
+    		switch($keys){
+    			case 'priority':
+    				$this->mail->Priority=(int)$value;
+    			break;
+    			case 'charset':
+    				$this->mail->CharSet=$value;
+    			break;
+    			case 'contenttype':
+    				$this->mail->ContentType =$value;
+    			break;
+    			case 'encoding':
+    				$this->mail->Encoding=$value;
+    			break;
+    			case 'mailer':
+    				$this->mail->Mailer=$value;
+    			break;
+    			case 'sendmailpath':
+    				$this->mail->Sendmail=$value;
+    			break;
+    			case 'host':
+    				if(!$value){
+    					$cfg['host']=explode('/',$GLOBALS['MG']['SITE']['URI']);
+    					$cfg['host']=$cfg['host'][0];
+    				}
+    				$this->mail->Hostname=$value;
+    			break;
+    		 	case 'smpthost':
+    		 		$this->mail->Host=$value;
+    		 	break;
+    		 	case 'smptport':
+    		 		$this->mail->Port=$value;
+    		 	break;
+    		 	case 'smpthelo':
+    		 		$this->mail->Helo=$value;
+    		 	break;
+    		 	case 'smptsecure':
+    		 		$this->mail->SMTPSecure=$value;
+    		 	break;
+    		 	case 'smptauth':
+    		 		$this->mail->SMTPAuth=true;
+    		 		$this->mail->Username=$value[0];
+    		 		$this->mail->Password=$value[1];
+    		 	break;
+    			case 'singleto':
+    				$this->mail->SingleTo=$value;
+    			break;	
+    			case 'logdb':
+    				$this->logDb=$value;
+    			break;
+    		};			
 		}
-
 	}
 	
 	private function phpm_parseConfig($conf){
@@ -112,13 +110,13 @@ class mailer{
 		$soq=count($temp[1]);
 		for($i=0;$i<$soq;$i++){
 			if($temp[2][$i]=='true'){
-				$conf[$temp[1][$i]]=true;
+				$conf[trim($temp[1][$i])]=true;
 			}
 			else if($temp[2][$i]=='false'){
-				$conf[$temp[1][$i]]=false;
+				$conf[trim($temp[1][$i])]=false;
 			}
 			else{
-				$conf[$temp[1][$i]]=$temp[2][$i];
+				$conf[trim($temp[1][$i])]=trim($temp[2][$i]);
 			}
 		}
 		return $conf;

@@ -154,7 +154,7 @@ class sqlact extends accounts{
 	}
 	
 	
-	final public function acl_updateField($uid,$field,$value){
+	final public function act_updateField($uid,$field,$value){
 		if(!$uid){
 			return false;
 		}

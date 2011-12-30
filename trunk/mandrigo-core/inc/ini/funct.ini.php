@@ -398,6 +398,25 @@ function mg_hexBinDec($data,$c='dec'){
 	return $data;
 }
 
+function mg_processCfgString($str){
+    preg_match_all("/(.*?)\=\>(.*?)\;/",$str,$temp);
+    $conf=array();
+    $soq=count($temp[1]);
+    for($i=0;$i<$soq;$i++){
+        $conf[trim($temp[1][$i])]=array();
+        if($temp[2][$i]=='true'){
+            $conf[trim($temp[1][$i])]=true;
+        }
+        else if($temp[2][$i]=='false'){
+            $conf[trim($temp[1][$i])]=false;
+        }
+        else{
+            $conf[trim($temp[1][$i])]=$temp[2][$i];
+        }
+    }
+    return $conf;
+}
+
 function mg_updatePackageConfig($package_name,$key,$data){
 	$c=array(array(false,array(DB_AND,1),'pkg_name','=',$package_name),array(false,array(DB_AND,1),'var_name','=',$key),array(false,array(DB_OR,2),'page_path','=',$GLOBALS['MG']['PAGE']['PATH']),array(false,array(false,2),'page_path','=','*'));
 	$data=array(array('var_value',$data));

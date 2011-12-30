@@ -106,6 +106,7 @@ function mginit_loadVars(){
 						}
 					break;
                     case 'JSON':
+                    
                         if(isset($_POST[$uname])){
                             $GLOBALS['MG']['POST'][$name]=mginit_cleanArray($_POST[$uname],$clean);
                             if($vars[$i]['var_stopCache']=='1'&&$GLOBALS['MG']['POST'][$name]&&$GLOBALS['MG']['POST'][$name]!=$vars[$i]['var_default']){

@@ -29,27 +29,23 @@ if(!defined('STARTED')){
 class crypt{
 	
 	private $iv;
-	private $useIv;
 	private $secret;
 	private $mode;
-	private $type;
+    private $cipher;
 	
 	public function cr_encrypt($text){
-		$this->cr_cryptType();
-		return trim(mcrypt_encrypt($this->type, $this->secret, $text, $this->mode, $this->iv));
+		return trim(mcrypt_encrypt($this->cipher, $this->secret, $text, $this->mode, $this->iv));
 	}
 	
 	public function cr_decrypt($text){
-		$this->cr_cryptType();
-		return trim(mcrypt_decrypt($this->type, $this->secret, $text, $this->mode, $this->iv));
+		return trim(mcrypt_decrypt($this->cipher, $this->secret, $text, $this->mode, $this->iv));
 	}
-	
-	private function cr_genIV(){
-		$iv_size = mcrypt_get_iv_size($this->type, $this->mode);
- 		$this->iv = mcrypt_create_iv($iv_size, MCRYPT_RAND);					
-	}
-
-	private function cr_genSecret(){
+    
+    public function cr_getIv(){
+        return trim($this->iv);
+    }
+    
+	public function cr_genNewKey(){
 		$this->secret=md5(uniqid(rand(),true)).md5(uniqid(rand(),true));
 		switch($this->type){
 			case MCRYPT_RIJNDAEL_128:
@@ -64,68 +60,20 @@ class crypt{
 			break;
 		};
 	}	
-	
-	private function cr_cryptType(){
-		if(!is_array($GLOBALS['MG']['SITE']['CRYPT_TYPE'])){
-			$GLOBALS['MG']['SITE']['CRYPT_TYPE']=explode(';',$GLOBALS['MG']['SITE']['CRYPT_TYPE']);	
-		}
-		$this->useIv=false;
-		switch($GLOBALS['MG']['SITE']['CRYPT_TYPE'][0]){
-			case 'stream':
-				$this->mode=MCRYPT_MODE_STREAM;
-			break;
-			case 'ebc':
-				$this->mode=MCRYPT_MODE_EBC;
-			break;
-			case 'cfb':
-				$this->useIv=true;
-				$this->mode=MCRYPT_MODE_CFB;
-			break;
-			case 'ofb':
-				$this->useIv=true;
-				$this->mode=MCRYPT_MODE_OFB;
-			break;
-			case 'nofb':
-				$this->mode=MCRYPT_MODE_NOFB;
-			break;
-			case 'cbc':
-			default:
-				$this->useIv=true;
-				$this->mode=MCRYPT_MODE_CBC;
-			break;			
-		};
-		switch($GLOBALS['MG']['SITE']['CRYPT_TYPE'][0]){
-			case 'aes128':
-				$this->type=MCRYPT_RIJNDAEL_128;
-			break;
-			case 'aes256':
-				$this->type=MCRYPT_RIJNDAEL_256;
-			break;
-			case 'blowfish':
-			default:
-				$this->type=MCRYPT_BLOWFISH;
-			break;
-		};
 
-		$this->iv=$GLOBALS['MG']['SITE']['CRYPT_IV'];
-		if(!$this->iv&&$this->useIv){
-			$this->cr_genIV();
-			$GLOBALS['MG']['SITE']['CRYPT_IV']=$this->iv;
-			if(!$GLOBALS['MG']['SQL']->sql_dataCommands(DB_INSERT,TABLE_PREFIX.'config',array('cfg_var','cfg_data'),array('CRYPT_IV',$this->iv))){
-				$GLOBALS['MG']['SQL']->sql_dataCommands(DB_UPDATE,TABLE_PREFIX.'config',array(array(false,false,'cfg_var','=','CRYPT_IV')),array(array('cfg_data',$this->iv)));
-			}
-		}
-		else if(!$this->useIv){
-			$this->iv=false;
-		}
-		$this->secret=$GLOBALS['MG']['SITE']['CRYPT_SECRET'];
-		if(!$this->secret){
-			$this->cr_genSecret();
-			$GLOBALS['MG']['SITE']['CRYPT_SECRET']=$this->secret;
-			if(!$GLOBALS['MG']['SQL']->sql_dataCommands(DB_INSERT,TABLE_PREFIX.'config',array('cfg_var','cfg_data'),array('CRYPT_SECRET',$this->secret))){
-				$GLOBALS['MG']['SQL']->sql_dataCommands(DB_UPDATE,TABLE_PREFIX.'config',array(array(false,false,'cfg_var','=','CRYPT_SECRET')),array(array('cfg_data',$this->secret)));
-			}
-		}
-		
-	}
+    public function cr_setup($key,$cipher,$mode,$iv=false){
+        $this->mode = $mode;
+        $this->cipher = $cipher;
+        $block = mcrypt_get_block_size($cipher, $mode);
+        $pad = $block - (strlen($key) % $block);
+        $key .= str_repeat(chr($pad), $pad);
+        $this->secret=$key;
+        $this->iv=false;
+        if($mode != MCRYPT_MODE_STREAM && $mode !=MCRYPT_MODE_ECB && $mode !=MCRYPT_MODE_NOFB && !$iv){
+            $this->iv = mcrypt_create_iv(mcrypt_get_iv_size($this->cipher, $this->mode), MCRYPT_RAND);	
+        }
+        else if($iv){
+            $this->iv=$iv;
+        }
+    }
 }
