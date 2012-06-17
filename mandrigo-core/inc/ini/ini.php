@@ -125,7 +125,7 @@ mginit_loadPackage($load);
 
 /**
 * User Data
-*/				
+*/
 $ses=new session(0);
 eval('$act=new '.$GLOBALS['MG']['SITE']['ACCOUNT_TYPE'].'();');
 if(!$act){
@@ -140,7 +140,9 @@ if(isset($GLOBALS['MG']['POST']['USER_NAME'])&&preg_match('/;/',$GLOBALS['MG']['
 else{
 	$GLOBALS['MG']['COOKIE']['USER_NAME']=explode(';',$GLOBALS['MG']['COOKIE']['USER_NAME']);
 }
-
+if(!isset($GLOBALS['MG']['COOKIE']['USER_NAME'][1])){
+    $GLOBALS['MG']['COOKIE']['USER_NAME'][1]='';
+}
 if(!$ses->session_load($GLOBALS['MG']['COOKIE']['USER_NAME'][0],$GLOBALS['MG']['COOKIE']['USER_NAME'][1],$GLOBALS['MG']['COOKIE']['USER_SESSION'])){
 
 	$GLOBALS['MG']['USER']=$act->act_load($GLOBALS['MG']['SITE']['DEFAULT_ACT']);
@@ -151,6 +153,23 @@ else{
 	$GLOBALS['MG']['USER']=$act->act_load($GLOBALS['MG']['COOKIE']['USER_NAME'][1]);
 	$GLOBALS['MG']['USER']=$GLOBALS['MG']['USER'][$GLOBALS['MG']['COOKIE']['USER_NAME'][1]];
 	$GLOBALS['MG']['USER']['NOAUTH']=false;
+}
+
+/**
+ * Impersonate Settings
+ */
+ 
+ $GLOBALS['MG']['REAL_USER']=array();
+ 
+if(isset($GLOBALS['MG']['SITE']['ALLOW_IMPERSONATE']) && isset($GLOBALS['MG']['COOKIE']['ALTERNATE_UID'])){
+    if($GLOBALS['MG']['SITE']['ALLOW_IMPERSONATE'] == '1' && $GLOBALS['MG']['COOKIE']['ALTERNATE_UID'] != '' && mg_checkACL('*','admin')){
+        if($act->act_isAccount($GLOBALS['MG']['COOKIE']['ALTERNATE_UID'])){
+            $GLOBALS['MG']['REAL_USER'] = $GLOBALS['MG']['USER'];
+        	$GLOBALS['MG']['USER']=$act->act_load($GLOBALS['MG']['COOKIE']['ALTERNATE_UID']);
+        	$GLOBALS['MG']['USER']=$GLOBALS['MG']['USER'][$GLOBALS['MG']['COOKIE']['ALTERNATE_UID']];
+        	$GLOBALS['MG']['USER']['NOAUTH']=false;
+        }
+    }
 }
 
 /**
@@ -274,7 +293,8 @@ function mginit_errorHandler($errno, $errmsg, $filename, $linenum, $vars){
 }
 
 function mginit_loadLang($lang_id){
-	$langs=$GLOBALS['MG']['SQL']->sql_fetcharray(array(TABLE_PREFIX.'lang'),false,array(array(false,false,'lang_id','=',$lang_id)));
+    $conds = array(array(false,array(DB_OR),'lang_id','=',$lang_id),array(false,false,'lang_id','=','0'));
+	$langs=$GLOBALS['MG']['SQL']->sql_fetcharray(array(TABLE_PREFIX.'lang'),false,$conds);
 	$ret=array();
 	for($i=0;$i<$langs['count'];$i++){
 		$ret[(string)$langs[$i]['lang_callname']]=(string)$langs[$i]['lang_value'];

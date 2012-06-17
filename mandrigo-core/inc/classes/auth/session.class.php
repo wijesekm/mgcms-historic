@@ -60,7 +60,7 @@ class session{
 		if(!$this->session_setCookies($cdata)){
 			return false;
 		}
-		return true;
+		return $this->sid;
 	}
 	
 	public function session_stop($cdata){

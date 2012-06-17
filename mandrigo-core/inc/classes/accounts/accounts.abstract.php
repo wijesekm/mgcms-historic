@@ -38,5 +38,7 @@ abstract class accounts{
 	abstract public function act_add($uid,$name,$email,$type);
 
 	abstract public function act_remove($uid);
+    
+    abstract public function act_searchUsers($string,$ob='ASC');
 	
 }

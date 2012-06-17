@@ -601,16 +601,19 @@ class mysql extends sql{
 	final public function sql_dbCommands($type,$db){
 		switch($type){
 			case DB_DROP:
-				$query=$this->sql_formatTable($table,'DROP DATABASE');
+				$query=$this->sql_formatTable(array($db),'DROP DATABASE');
 			break;
 			case DB_ADD:
-				$query=$this->sql_formatTable($table,'CREATE DATABASE');
+				$query=$this->sql_formatTable(array($db),'CREATE DATABASE');
 			break;
 			default:
 			
 			break;
-
 		};
+		if($this->log&&$table[0]!=$this->log){
+			$this->sql_log($query);
+		}
+		$this->sql_query($query);
 	}
 	
 	/**

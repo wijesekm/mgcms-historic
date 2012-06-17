@@ -47,18 +47,8 @@ class crypt{
     
 	public function cr_genNewKey(){
 		$this->secret=md5(uniqid(rand(),true)).md5(uniqid(rand(),true));
-		switch($this->type){
-			case MCRYPT_RIJNDAEL_128:
-				$this->secret=substr($this->secret,0,32);
-			break;
-			case MCRYPT_RIJNDAEL_256:
-				$this->secret=substr($this->secret,0,56);
-			break;
-			case MCRYPT_BLOWFISH:
-			default:
-				$this->secret=substr($this->secret,0,56);
-			break;
-		};
+		$this->secret=substr($this->secret,0,mcrypt_get_block_size($this->cipher, $this->mode)-1);
+        return $this->secret;
 	}	
 
     public function cr_setup($key,$cipher,$mode,$iv=false){
