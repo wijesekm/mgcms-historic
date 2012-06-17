@@ -49,64 +49,53 @@ abstract class auth{
     }
     
     protected function act_encryptpasswd($pwd,$type){
-    	switch($type){
-        	case 'crypt':
+
+    	switch(strtoupper($type)){
+        	case 'CRYPT':
                 if(CRYPT_STD_DES!=1){
                     return false;
                 }
                 $seed = $this->act_randstring(2);
                 return '{CRYPT}'.crypt($pwd,$seed);
             break;
-			case 'blowfish_crypt':
+			case 'BLOWFISH_CRYPT':
                 if(CRYPT_BLOWFISH!=1){
                     return false;
                 }
                 $seed = '$2$' . $this->act_randstring(13);
                 return '{CRYPTBF}'.crypt($pwd,$seed);
             break;
-            case 'md5_crypt':
+            case 'MD5_CRYPT':
                 if(CRYPT_MD5!=1){
                     return false;
                 }
                 $seed = '$1$' . $this->act_randstring(9);
                 return '{CRYPTMD5}'.crypt($pwd,$seed);
             break;
-            case 'ext_crypt':
+            case 'EXT_CRYPT':
                 if(CRYPT_EXT_DES!=1){
                     return false;
                 }
                 $seed = $this->act_randstring(9);
                 return '{CRYPTEXT}'.crypt($pwd,$seed);
             break;
-            case 'smd5':
-                if(!function_exists('mhash')){
-				    return false;
-                }
+            case 'SMD5':
                 $seed = $this->act_randstring(8);
-                $hash = mhash(MHASH_MD5, $pwd . $seed);
+                $hash = hash('md5', $pwd . $seed);
                 return '{SMD5}' . base64_encode($hash . $seed);
             break;
-            case 'sha':
-                if(!function_exists('mhash')){
-                    return false;
-                }
-                return '{SHA}' . base64_encode(mhash(MHASH_SHA1,$pwd));
+            case 'SHA':
+                return '{SHA}' . base64_encode(hash('sha1',$pwd));
             break;
-            case 'sha256':
-                if(!function_exists('mhash')){
-                    return false;
-                }
-                return '{SHA256}' . base64_encode(bin2hex(mhash(MHASH_SHA256,$pwd)));
+            case 'SHA256':
+                return '{SHA256}' . base64_encode(bin2hex(hash('sha256',$pwd)));
             break;
-            case 'ssha':
-                if(!function_exists('mhash')){
-                    return false;
-                }
+            case 'SSHA':
                 $seed = $this->act_randstring(8);
-                $hash = mhash(MHASH_SHA1, $pwd . $seed);
+                $hash = hash('sha1', $pwd . $seed);
                 return '{SSHA}' . base64_encode($hash . $seed);
             break;
-            case 'md5':
+            case 'MD5':
                 return '{MD5}'.md5($pwd);
             break;
   
@@ -158,7 +147,7 @@ abstract class auth{
             break;
 			case 'SHA256':
 		        $hash = base64_decode($db_val);
-		        $new_hash =bin2hex(mhash(MHASH_SHA256,$form_val));
+		        $new_hash =bin2hex(hash('sha256',$form_val));
 		        if(strcmp($hash,$new_hash) == 0){
 		            return true;
 		        }
@@ -168,7 +157,7 @@ abstract class auth{
 		        $hash = base64_decode($db_val);
 		        $orig_hash = substr($hash, 0, 20);
 		        $salt = substr($hash, 20);
-		        $new_hash = mhash(MHASH_SHA1, $form_val . $salt);
+		        $new_hash = hash('sha1', $form_val . $salt);
 		        if(strcmp($orig_hash,$new_hash) == 0){
 		            return true;
 		        }
@@ -176,7 +165,7 @@ abstract class auth{
 			break;
 			case 'SHA':
 		        $hash = base64_decode($db_val);
-		        $new_hash = mhash(MHASH_SHA1,$form_val);
+		        $new_hash = hash('sha1',$form_val);
 		        if(strcmp($hash,$new_hash) == 0){
 		            return true;
 		        }
@@ -184,7 +173,7 @@ abstract class auth{
 			break;
 			case 'SMD5':
 		        $salt = substr($hash, 16);
-		        $new_hash = mhash(MHASH_MD5,$form_val . $salt);
+		        $new_hash = hash('md5',$form_val . $salt);
 		        if(strcmp($hash,$new_hash) == 0){
 		            return true;
 		        }

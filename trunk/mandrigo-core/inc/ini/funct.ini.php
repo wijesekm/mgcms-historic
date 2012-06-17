@@ -37,7 +37,6 @@ function mg_checkACL($page,$acl='read'){
 		$page=$GLOBALS['MG']['PAGE']['PATH'];
 
 	}
-    //print_r($GLOBALS['MG']['USER']);
 	$ret=false;
 	$deny=false;
 	$adm=false;

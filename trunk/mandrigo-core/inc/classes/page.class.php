@@ -68,6 +68,7 @@ class page{
 			'USER_NOAUTH'=>$GLOBALS['MG']['USER']['NOAUTH'],
 			'USER_TIME'=>date($GLOBALS['MG']['SITE']['TIME_FORMAT'],$GLOBALS['MG']['USER']['TIME']),
 			'USER_DATE'=>date($GLOBALS['MG']['SITE']['DATE_FORMAT'],$GLOBALS['MG']['USER']['TIME']),
+            'USER_GROUPS'=>implode(';',$GLOBALS['MG']['USER']['GROUPS']),
 			'PAGE_PATH'=>$GLOBALS['MG']['PAGE']['PATH'],
 			'PAGE_PATH_BASE'=>$base,
 			'PAGE_NAME'=>$GLOBALS['MG']['PAGE']['NAME'],
@@ -79,7 +80,7 @@ class page{
 			'PAGE_ROOT'=>$GLOBALS['MG']['PAGE']['ROOT'],
 			'ACL_ADMIN'=>(mg_checkACL($GLOBALS['MG']['PAGE']['PATH'],'admin'))?'1':'0',
 			'ACL_MODIFY'=>(mg_checkACL($GLOBALS['MG']['PAGE']['PATH'],'modify'))?'1':'0',
-			'ACL_WRITE'=>(mg_checkACL($GLOBALS['MG']['PAGE']['PATH'],'modify'))?'1':'0',
+			'ACL_WRITE'=>(mg_checkACL($GLOBALS['MG']['PAGE']['PATH'],'write'))?'1':'0',
 			'ACL_READ'=>(mg_checkACL($GLOBALS['MG']['PAGE']['PATH'],'read'))?'1':'0'
 		);
 

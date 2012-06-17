@@ -231,7 +231,7 @@ class group{
 		$act=false;
 		return $r;
 	}
-	
+    	
 	public function group_modify($gid,$newUsersList,$newAdminList=false){
 		if(!$gid){
 			return false;

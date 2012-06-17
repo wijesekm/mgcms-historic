@@ -38,8 +38,30 @@ class sqlact extends accounts{
 	public function __construct(){
 		$this->lastLength=0;
 		$this->table=(isset($GLOBALS['MG']['SITE']['ACCOUNT_TBL']))?array($GLOBALS['MG']['SITE']['ACCOUNT_TBL']):array(TABLE_PREFIX.'users');
-
 	}
+
+    final public function act_searchUsers($string,$ob='ASC'){
+        $params = array(array(DB_LIKE,false,'user_uid','%'.$string.'%'));
+        $additParams=array();
+        $additParams['orderby']=array(array('user_uid'),array($ob));
+		if(isset($GLOBALS['MG']['SITE']['ACCOUNT_DB'])){
+			$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['SITE']['ACCOUNT_DB']);
+		}
+		if(!$users=$GLOBALS['MG']['SQL']->sql_fetchArray($this->table,array(array('user_uid'),array('user_fullname')),$params,DB_ASSOC,DB_ALL_ROWS,$additParams)){
+			trigger_error('(SQLACT): Could not load user data',E_USER_ERROR);
+			return false;
+		}
+		if(isset($GLOBALS['MG']['SITE']['ACCOUNT_DB'])){
+			$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['CFG']['SQL']['DB']);
+		}
+        $ret = array();
+        foreach($users as $key=>$val){
+            if(isset($val['user_uid'])){
+                $ret[$val['user_uid']] = $val['user_fullname'];
+            }
+        }
+        return $ret;
+    }
 
 	final public function act_load($uid=false,$search=false,$start=false,$length=false,$acl=true,$ob='ASC'){
 		
