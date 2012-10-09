@@ -36,7 +36,7 @@ class parser{
 		$soq=count($keys);
 		for($i=0;$i<$soq;$i++){
 			if(preg_match('/{'.$keys[$i].'}/',$text)){
-				$text=preg_replace('/{'.$keys[$i].'}/',$vars[$keys[$i]],$text);
+				$text=str_replace('{'.$keys[$i].'}',$vars[$keys[$i]],$text);
 			}
 		}
 		return $text;
@@ -48,11 +48,11 @@ class parser{
 		for($i=0;$i<$soq;$i++){
 			if(preg_match('/ACRO:/',$keys[$i])&&preg_match('/{'.$keys[$i].'}/',$text)){
 				$tmp=explode(':',$keys[$i]);
-				$text=preg_replace('/{ACRO:\('.$tmp[1].'\)}/',$GLOBALS['MG']['LANG']['ACRO'],$text);
-				$text=preg_replace('/{AP_ACROVALUE}/',$lang[$keys[$i]],$text);
+				$text=str_replace('{ACRO:('.$tmp[1].')}',$GLOBALS['MG']['LANG']['ACRO'],$text);
+				$text=str_replace('{AP_ACROVALUE}',$lang[$keys[$i]],$text);
 			}
 			else if(preg_match('/{LANG:'.$keys[$i].'}/',$text)){
-				$text=preg_replace('/{LANG:'.$keys[$i].'}/',$lang[$keys[$i]],$text);
+				$text=str_replace('{LANG:'.$keys[$i].'}',$lang[$keys[$i]],$text);
 			}
 		}
 		return $text;

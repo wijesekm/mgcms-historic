@@ -107,6 +107,7 @@ foreach($dta as $val){
 		$GLOBALS['MG']['MIME'][$val['mime_ext']]=array();
 		$GLOBALS['MG']['MIME'][$val['mime_ext']]['img']=$val['mime_img'];
 		$GLOBALS['MG']['MIME'][$val['mime_ext']]['type']=$val['mime_type'];
+        $GLOBALS['MG']['MIME'][$val['mime_ext']]['display']=($val['mime_canView']=='1')?true:false;
 	}
 }
 if(isset($GLOBALS['MG']['SITE']['MIME_TABLE'])){

@@ -41,13 +41,25 @@ class sqlact extends accounts{
 	}
 
     final public function act_searchUsers($string,$ob='ASC'){
-        $params = array(array(DB_LIKE,false,'user_uid','%'.$string.'%'));
+        return $this->act_search($string);
+    }
+    
+    final public function act_search($string,$fields=false,$data=array()){
+        if($fields == false){
+            $fields = array('user_uid');
+        }
+        $data = array_merge(array(array('user_uid'),array('user_fullname')),$data);
+        $params = array();
+        foreach($fields as $key=>$val){
+            $params[]=array(DB_LIKE,array(DB_OR),$val,'%'.$string.'%');
+        }
+        $params[count($params)-1][1] = false;
         $additParams=array();
         $additParams['orderby']=array(array('user_uid'),array($ob));
 		if(isset($GLOBALS['MG']['SITE']['ACCOUNT_DB'])){
 			$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['SITE']['ACCOUNT_DB']);
 		}
-		if(!$users=$GLOBALS['MG']['SQL']->sql_fetchArray($this->table,array(array('user_uid'),array('user_fullname')),$params,DB_ASSOC,DB_ALL_ROWS,$additParams)){
+		if(!$users=$GLOBALS['MG']['SQL']->sql_fetchArray($this->table,$data,$params,DB_ASSOC,DB_ALL_ROWS,$additParams)){
 			trigger_error('(SQLACT): Could not load user data',E_USER_ERROR);
 			return false;
 		}
@@ -56,11 +68,15 @@ class sqlact extends accounts{
 		}
         $ret = array();
         foreach($users as $key=>$val){
-            if(isset($val['user_uid'])){
-                $ret[$val['user_uid']] = $val['user_fullname'];
+            if(!empty($val['user_uid'])){
+                $ret[$val['user_uid']] = array();
+                foreach($val as $key2=>$val2){
+                    $key2 = strtoupper(preg_replace('/user_/','',$key2));
+                    $ret[$val['user_uid']][$key2]=$val2;
+                }
             }
         }
-        return $ret;
+        return $ret;        
     }
 
 	final public function act_load($uid=false,$search=false,$start=false,$length=false,$acl=true,$ob='ASC'){

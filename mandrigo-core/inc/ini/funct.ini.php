@@ -446,3 +446,26 @@ function mg_setAJAX(){
    	$GLOBALS['MG']['PAGE']['NOERRORPARSE']=true;
 	$GLOBALS['MG']['PAGE']['NOSITETPL']=true; 
 }
+
+/**
+* mg_jsonEncode($array)
+*
+* wrapper around json_encode.  Handles extra character
+ * encoding
+*
+* INPUTS:
+* $array - array of data
+*
+* OUTPUTS:
+* json string
+*/	
+function mg_jsonEncode($array,$inline=false){
+    if($inline){
+        $search = array("\\","\\\\","'");
+        $replace = array("\\\\","\\\\\\\\","\\\\'");
+        return str_replace($search, $replace, json_encode($array));  
+    }
+    else{
+        return json_encode($array);
+    }
+}
