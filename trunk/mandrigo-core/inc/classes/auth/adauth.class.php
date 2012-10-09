@@ -38,14 +38,18 @@ class adauth extends auth{
 		if(!is_array($GLOBALS['MG']['SITE']['AD_DOMAIN_CONTROLLERS'])){
 			$GLOBALS['MG']['SITE']['AD_DOMAIN_CONTROLLERS']=explode(';',$GLOBALS['MG']['SITE']['AD_DOMAIN_CONTROLLERS']);
 		}
-		
-		$index=array_search($GLOBALS['MG']['POST']['AD_DOMAIN'],$domains);
-		if($index===false){
-			trigger_error('(ADAUTH): Bad Domain Selected',E_USER_ERROR);
-			return false;
+		if(!empty($domains[1])){
+    		$index=array_search($GLOBALS['MG']['POST']['AD_DOMAIN'],$domains);
+    		if($index===false){
+    			trigger_error('(ADAUTH): Bad Domain Selected',E_USER_ERROR);
+    			return false;
+    		}
 		}
+        else{
+            $index = 0;
+        }
+
 		$options=array('base_dn'=>$GLOBALS['MG']['SITE']['AD_BASE_DN'][$index],'account_suffix'=>'@'.$domains[$index],'domain_controllers'=>array($GLOBALS['MG']['SITE']['AD_DOMAIN_CONTROLLERS'][$index]));
-		
 		switch($GLOBALS['MG']['SITE']['AD_TLS_SSL']){
 			case 'tls':
 				$options['use_tls']=true;

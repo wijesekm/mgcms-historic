@@ -209,6 +209,10 @@ class template{
 	* true on success, false on fail
 	*/	
 	public function tpl_parse($vars=array(),$s_name=template::TPL_ALL,$level=2,$rempty=false){
+
+        /*
+        * Format Vars to prevent issues
+        */
 		if($s_name==template::TPL_ALL){
 			for($i=0;$i<$this->size;$i++){
 				$t=$this->tpl_parseSection($vars,$this->tpl[$this->keys[$i]][0],$level,$rempty);

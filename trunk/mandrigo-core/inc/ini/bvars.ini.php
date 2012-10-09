@@ -146,9 +146,9 @@ function mginit_loadVars(){
 							 	$GLOBALS['MG']['FILE'][$name]['HOST_FILENAME']=stripslashes($_FILES[$uname]['name']);
 								$GLOBALS['MG']['FILE'][$name]['EXT']=pathinfo($GLOBALS['MG']['FILE'][$name]['HOST_FILENAME'],PATHINFO_EXTENSION);
 								
-							 	if(!in_array('.'.strtolower($GLOBALS['MG']['FILE'][$name]['EXT']),$mime_keys)){
-									trigger_error('(BVARS): File upload unknown filetype .'.$GLOBALS['MG']['FILE'][$name]['EXT'],E_USER_WARNING);
-									$GLOBALS['MG']['FILE'][$name]['ERROR']='UNKNOWNTYPE';
+							 	if(!in_array('.'.strtolower($GLOBALS['MG']['FILE'][$name]['EXT']),$mime_keys) && !in_array('*',$mime_keys)){
+                                    trigger_error('(BVARS): File upload unknown filetype .'.$GLOBALS['MG']['FILE'][$name]['EXT'],E_USER_WARNING);
+				    	            $GLOBALS['MG']['FILE'][$name]['ERROR']='UNKNOWNTYPE';
 								}
 								else{
 									if($_FILES[$uname]['size'] > $clean[0]){
