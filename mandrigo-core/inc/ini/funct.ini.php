@@ -462,7 +462,7 @@ function mg_setAJAX(){
 function mg_jsonEncode($array,$inline=false){
     if($inline){
         $search = array("\\","\\\\","'");
-        $replace = array("\\\\","\\\\\\\\","\\\\'");
+        $replace = array("\\\\","\\\\\\\\","\\'");
         return str_replace($search, $replace, json_encode($array));  
     }
     else{

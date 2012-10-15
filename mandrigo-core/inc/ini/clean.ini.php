@@ -105,7 +105,10 @@ function mginit_cleanVar($value,$clean){
 			return $value;
 		break;
 		default:
-            return (preg_match($GLOBALS['MG']['CLEAN'][$clean[0]][1],$value) == $GLOBALS['MG']['CLEAN'][$clean[0]][0])?$value:false;
+            if(isset($GLOBALS['MG']['CLEAN'][$clean[0]])){
+                return (preg_match($GLOBALS['MG']['CLEAN'][$clean[0]][1],$value) == $GLOBALS['MG']['CLEAN'][$clean[0]][0])?$value:false;
+            }
+            return $value;
 		break;
 	};
 	return false;

@@ -32,7 +32,9 @@ class errorLogger{
 	* Variables
 	*/
 	public $errorTypes;
-	
+	private $fatalErrors = array();
+    private $errors = array();
+    
 	/**
 	* Construct and Destruction functions
 	*/
@@ -122,7 +124,16 @@ class errorLogger{
 	* true on success, false on fail
 	*/	
 	public function el_addError($errno, $errmsg, $filename, $linenum, $vars){
-		$dt = @date("Y-m-d H:i:s (T)");
+	   $dt = @date("Y-m-d H:i:s (T)");
+        if($errno == E_ERROR || $errno == E_CORE_ERROR || $errno == E_USER_ERROR){
+            $this->fatalErrors[] = array(
+                $dt,$errno,$this->errorTypes[$errno],$_SERVER['REQUEST_URI'],$errmsg,$filename,$linenum
+            );
+        }
+        $this->errors[] = array(
+            $this->errorTypes[$errno],$errmsg,$filename,$linenum
+        );
+		
 	 	$err = "<error>\r\n";
 	    $err .= "\t<datetime>" . $dt . "</datetime>\r\n";
 	    $err .= "\t<errornum>" . $errno . "</errornum>\r\n";
@@ -135,7 +146,54 @@ class errorLogger{
 		$this->el_logRotate($GLOBALS['MG']['CFG']['PATH']['LOG'].$this->errorTypes[$errno].'.log');
 		return @error_log($err, 3,$GLOBALS['MG']['CFG']['PATH']['LOG'].$this->errorTypes[$errno].'.log');		
 	}
-	
+    
+	/**
+	* el_checkFatal()
+	*
+	* Checks for the existance of fatal errors and stops execution if one is detected.
+    * If DISPFATAL config is set it will also display information on the fatal error.
+	*
+	*/	    
+    public function el_checkFatal(){
+        
+        if(count($this->fatalErrors) == 0){
+            return false;
+        }
+        $GLOBALS['MG']['SQL']->sql_close();
+        echo '<html><head><style type="text/css">
+            .title{font-size: 26px; background: #FF6666; padding: 10px; }
+            .err{ margin-top: 10px; padding: 10px; border: 1px dashed #ADADAD; background: #EDEDED; }
+            .ts,.einfo{ margin-right: 7px; }
+        </style></head><body>';
+        echo '<div class="title">This application encountered fatal errors and was unable to process your request</div>';
+        if($GLOBALS['MG']['CFG']['ERRORLOGGER']['DISPFATAL']){
+            foreach($this->fatalErrors as $key=>$err){
+                echo '<div class="err">';
+                //echo '<span class="ts">'.$err[0].'</span>';
+                echo '<span class="einfo">'.$err[4].' ('.$err[2].')</span><br/>';
+                echo '<span class="dta">'.$err[5].' ('.$err[6].')</span>';
+                echo '</div>';
+            }
+        }
+        echo '</body></html>';
+        die();
+    }
+    
+	/**
+	* el_setErrorVar()
+	*
+	* Sets the ERROR_LIST var
+	*
+	*/	    
+    public function el_setErrorVar(){
+       if(count($this->errors) > 0 && $GLOBALS['MG']['CFG']['ERRORLOGGER']['DISPERRORS']){
+            $GLOBALS['MG']['PAGE']['VARS']['ERROR_LIST']=mg_jsonEncode($this->errors,true);
+       }
+       else{
+            $GLOBALS['MG']['PAGE']['VARS']['ERROR_LIST'] = '{}';
+       }
+    }
+		
 	/**
 	* Private Functions
 	*/
