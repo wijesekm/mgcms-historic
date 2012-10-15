@@ -30,6 +30,8 @@ if(!defined('STARTED')){
 abstract class accounts{
 
 	abstract public function act_load($uid=false,$search=false,$start=false,$length=false,$acl=true,$ob='ASC');
+    
+    abstract public function act_load_query($query,$fields);
 
 	abstract public function act_getLastLength();
 	

@@ -71,7 +71,7 @@ class session{
 		$this->session_setCookies($cdata);
 	}
 	
-	public function session_load($idC,$uidC,$sidC){
+	public function session_load($idC,$uidC,$sidC,$twofact=false){
 		if(!$uidC||!$idC||!$sidC){
 			return false;
 		}
@@ -80,12 +80,23 @@ class session{
 		$d=$GLOBALS['MG']['SQL']->sql_fetchArray($this->table,false,$conds);
 		$this->session_dbSwitch(1);
 		$d=$d[0];
+        foreach($d as $key=>$val){
+            $GLOBALS['MG']['SESSION'][strtoupper(preg_replace('/ses_/','',$key))] = $val;
+        }
 		$this->id=$d['ses_id'];
 		$this->uid=$d['ses_uid'];
 		$this->sid=$d['ses_sid'];
 		$this->length=$d['ses_length'];
+
 		if($this->sid===$sidC&&$this->uid===$uidC&&$this->id===$idC){
-			return true;
+            if($twofact){
+                if($d['ses_twofactor']=='1'){
+                    return true;
+                }
+            }
+            else{
+                return true;
+            }
 		}
 		
 		$this->id=false;

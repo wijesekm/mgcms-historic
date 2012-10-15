@@ -531,7 +531,7 @@ class PHPMailer {
     /* Retry while there is no connection */
     while($index < count($hosts) && $connection == false) {
       $hostinfo = array();
-      if(eregi('^(.+):([0-9]+)$', $hosts[$index], $hostinfo)) {
+      if(preg_match('/^(.+):([0-9]+)$/', $hosts[$index], $hostinfo)) {
         $host = $hostinfo[1];
         $port = $hostinfo[2];
       } else {
@@ -593,7 +593,7 @@ class PHPMailer {
       include($lang_path.'phpmailer.lang-en.php');
     } else {
       $PHPMAILER_LANG = array();
-      $PHPMAILER_LANG["provide_address"]      = 'You must provide at least one ' .
+      $PHPMAILER_LANG["provide_address"]      = 'You must provide at least one ';
       $PHPMAILER_LANG["mailer_not_supported"] = ' mailer is not supported.';
       $PHPMAILER_LANG["execute"]              = 'Could not execute: ';
       $PHPMAILER_LANG["instantiate"]          = 'Could not instantiate mail function.';

@@ -60,7 +60,7 @@ class sqlact extends accounts{
 			$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['SITE']['ACCOUNT_DB']);
 		}
 		if(!$users=$GLOBALS['MG']['SQL']->sql_fetchArray($this->table,$data,$params,DB_ASSOC,DB_ALL_ROWS,$additParams)){
-			trigger_error('(SQLACT): Could not load user data',E_USER_ERROR);
+			trigger_error('(SQLACT): Could not load user data',E_USER_WARNING);
 			return false;
 		}
 		if(isset($GLOBALS['MG']['SITE']['ACCOUNT_DB'])){
@@ -77,6 +77,31 @@ class sqlact extends accounts{
             }
         }
         return $ret;        
+    }
+    
+    final public function act_load_query($query,$fields=array(array('user_email'))){
+        $fields = array_merge(array(array('user_uid'),array('user_fullname')),$fields);
+		if(isset($GLOBALS['MG']['SITE']['ACCOUNT_DB'])){
+			$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['SITE']['ACCOUNT_DB']);
+		}
+		if(!$users=$GLOBALS['MG']['SQL']->sql_fetchArray($this->table,$fields,$query)){
+			trigger_error('(SQLACT): Could not load user data',E_USER_WARNING);
+			return false;
+		}
+		if(isset($GLOBALS['MG']['SITE']['ACCOUNT_DB'])){
+			$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['CFG']['SQL']['DB']);
+		}
+        $ret = array();
+        foreach($users as $key=>$val){
+            if(!empty($val['user_uid'])){
+                $ret[$val['user_uid']] = array();
+                foreach($val as $key2=>$val2){
+                    $key2 = strtoupper(preg_replace('/user_/','',$key2));
+                    $ret[$val['user_uid']][$key2]=$val2;
+                }
+            }
+        }
+        return $ret;  
     }
 
 	final public function act_load($uid=false,$search=false,$start=false,$length=false,$acl=true,$ob='ASC'){
@@ -105,7 +130,7 @@ class sqlact extends accounts{
 			$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['SITE']['ACCOUNT_DB']);
 		}
 		if(!$users=$GLOBALS['MG']['SQL']->sql_fetchArray($this->table,false,$parms,DB_ASSOC,DB_ALL_ROWS,$additParams)){
-			trigger_error('(SQLACT): Could not load user data',E_USER_ERROR);
+			trigger_error('(SQLACT): Could not load user data',E_USER_WARNING);
 			return false;
 		}
 		

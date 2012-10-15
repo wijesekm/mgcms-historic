@@ -3,8 +3,8 @@
 /**
  * @file		ini.php
  * @author 		Kevin Wijesekera
- * @copyright 	2008
- * @edited		2-13-2009
+ * @copyright 	2012
+ * @edited		10-9-2012
  
  ###################################
  This program is free software: you can redistribute it and/or modify
@@ -50,8 +50,14 @@ $load=array(array('template','class','/classes/'),
 			array('session','class','/classes/auth/'),
 			array('mgtime','class','/classes/'),
 			array('clean','ini','/ini/'),
-			array('page','class','/classes/'),
 			array('funct','ini','/ini/'));
+            
+if(!defined('AJAX')){
+    $load[]=array('page','class','/classes/');
+}
+else{
+    $load[]=array('ajax','class','/classes/');
+}
 mginit_loadPackage($load);
 
 /**
@@ -107,7 +113,7 @@ foreach($dta as $val){
 		$GLOBALS['MG']['MIME'][$val['mime_ext']]=array();
 		$GLOBALS['MG']['MIME'][$val['mime_ext']]['img']=$val['mime_img'];
 		$GLOBALS['MG']['MIME'][$val['mime_ext']]['type']=$val['mime_type'];
-        $GLOBALS['MG']['MIME'][$val['mime_ext']]['display']=($val['mime_canView']=='1')?true:false;
+        //$GLOBALS['MG']['MIME'][$val['mime_ext']]['display']=($val['mime_canView']=='1')?true:false;
 	}
 }
 if(isset($GLOBALS['MG']['SITE']['MIME_TABLE'])){
@@ -184,20 +190,23 @@ $t=false;
 /**
 * Update Cookies
 */
-$cdta=array(
-	'SECURE'=>(boolean)$GLOBALS['MG']['SITE']['COOKIE_SECURE'],
-	'PATH'=>$GLOBALS['MG']['SITE']['COOKIE_PATH'],
-	'DOM'=>$GLOBALS['MG']['SITE']['COOKIE_DOM'],
-);
-if($GLOBALS['MG']['USER']['BANNED']){
-	$ses->session_stop($cdta);
-	$GLOBALS['MG']['USER']=$act->act_load($GLOBALS['MG']['SITE']['DEFAULT_ACT']);
-	$GLOBALS['MG']['USER']=$GLOBALS['MG']['USER'][$GLOBALS['MG']['SITE']['DEFAULT_ACT']];
-	$GLOBALS['MG']['USER']['NOAUTH']=true;
+if(!defined('AJAX')){
+    $cdta=array(
+    	'SECURE'=>(boolean)$GLOBALS['MG']['SITE']['COOKIE_SECURE'],
+    	'PATH'=>$GLOBALS['MG']['SITE']['COOKIE_PATH'],
+    	'DOM'=>$GLOBALS['MG']['SITE']['COOKIE_DOM'],
+    );
+    if($GLOBALS['MG']['USER']['BANNED']){
+    	$ses->session_stop($cdta);
+    	$GLOBALS['MG']['USER']=$act->act_load($GLOBALS['MG']['SITE']['DEFAULT_ACT']);
+    	$GLOBALS['MG']['USER']=$GLOBALS['MG']['USER'][$GLOBALS['MG']['SITE']['DEFAULT_ACT']];
+    	$GLOBALS['MG']['USER']['NOAUTH']=true;
+    }
+    else{
+    	$ses->session_loadUD($GLOBALS['MG']['USER']['TIME'],$cdta);
+    }
 }
-else{
-	$ses->session_loadUD($GLOBALS['MG']['USER']['TIME'],$cdta);
-}
+
 $ses=false;
 
 /**
@@ -264,11 +273,12 @@ if(!$lang){
 	}
 }
 $lang=$GLOBALS['MG']['SQL']->sql_fetcharray(array(TABLE_PREFIX.'langsets'),false,array(array(false,false,'lang_name','=',strtolower($lang))));
+
 if(!$lang[0]['lang_id']){
 	$lang=$GLOBALS['MG']['SQL']->sql_fetcharray(array(TABLE_PREFIX.'langsets'),false,array(array(false,false,'lang_name','=',strtolower($GLOBALS['MG']['SITE']['DEFAULT_LANGUAGE']))));	
 }
 
-$GLOBALS['MG']['LANG']=mginit_loadLang($lang[0]['lang_id']);
+mginit_loadLang($lang[0]['lang_name']);
 $GLOBALS['MG']['LANG']['ENCODING']=$lang[0]['lang_encoding'];
 $GLOBALS['MG']['LANG']['NAME']=$lang[0]['lang_name'];
 $GLOBALS['MG']['LANG']['CONTENT_TYPE']='text/html';
@@ -276,10 +286,6 @@ $lang=false;
 
 $GLOBALS['MG']['PAGE']['TPL']=$GLOBALS['MG']['CFG']['PATH']['TPL'].$GLOBALS['MG']['LANG']['NAME'].'/pages/'.implode('/',explode($GLOBALS['MG']['SITE']['URL_DELIM'],$GLOBALS['MG']['PAGE']['PATH'])).'.tpl';
 
-
-if(!include_once($GLOBALS['MG']['CFG']['PATH']['TPL'].$GLOBALS['MG']['LANG']['NAME'].'/ini'.PHPEXT)){
-	trigger_error('(WLINIT): Could not load language ini data.',E_USER_ERROR);
-}
 
 /**
 * Load Packages
@@ -294,13 +300,9 @@ function mginit_errorHandler($errno, $errmsg, $filename, $linenum, $vars){
 }
 
 function mginit_loadLang($lang_id){
-    $conds = array(array(false,array(DB_OR),'lang_id','=',$lang_id),array(false,false,'lang_id','=','0'));
-	$langs=$GLOBALS['MG']['SQL']->sql_fetcharray(array(TABLE_PREFIX.'lang'),false,$conds);
-	$ret=array();
-	for($i=0;$i<$langs['count'];$i++){
-		$ret[(string)$langs[$i]['lang_callname']]=(string)$langs[$i]['lang_value'];
-	}
-	return $ret;
+    if(!include_once($GLOBALS['MG']['CFG']['PATH']['TPL'].'/'.$lang_id.'/lang.ini'.PHPEXT)){
+        trigger_error('(INI): Could not load language file',E_USER_ERROR);
+    }
 }
 
 function mginit_loadPackage($data){
@@ -308,7 +310,7 @@ function mginit_loadPackage($data){
 	for($i=0;$i<$soq;$i++){
 		$path=$data[$i][2].$data[$i][0].'.'.$data[$i][1].PHPEXT;
 		if(!include_once($GLOBALS['MG']['CFG']['PATH']['INC'].$path)){
-			trigger_error('(WLINIT): Could not load package: '.$data[$i][0].'.'.$data[$i][1].PHPEXT,E_USER_ERROR);
+			trigger_error('(INI): Could not load package: '.$data[$i][0].'.'.$data[$i][1].PHPEXT,E_USER_ERROR);
 		}
 	}
 }
@@ -323,12 +325,12 @@ function mginit_loadCustomPackages($pkgs){
 			}
 			if($pkgdta[0]['pkg_type']=='pkg'){
 				if(!include_once($GLOBALS['MG']['CFG']['PATH']['PKG'].$pkgdta[0]['pkg_package'].'/'.$pkgs[$i].'.pkg'.PHPEXT)){
-					trigger_error('(WLINIT): Could not load package file: '.$pkgs[$i].'.pkg'.PHPEXT,E_USER_ERROR);
+					trigger_error('(INI): Could not load package file: '.$pkgs[$i].'.pkg'.PHPEXT,E_USER_ERROR);
 				}
 			}
 			else{
 				if(!include_once($GLOBALS['MG']['CFG']['PATH']['INC'].'/classes/'.$pkgdta[0]['pkg_package'].'/'.$pkgs[$i].'.'.$pkgdta[0]['pkg_type'].PHPEXT)){
-					trigger_error('(WLINIT): Could not load mandrigo package file: '.$pkgs[$i].'.'.$pkgdta[0]['pkg_type'].PHPEXT,E_USER_ERROR);
+					trigger_error('(INI): Could not load mandrigo package file: '.$pkgs[$i].'.'.$pkgdta[0]['pkg_type'].PHPEXT,E_USER_ERROR);
 				}
 			}
 		}
