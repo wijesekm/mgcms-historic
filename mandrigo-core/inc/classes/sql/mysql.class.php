@@ -32,11 +32,9 @@ define("DB_BOTH",MYSQL_BOTH);
 
 class mysql extends sql{
 	
-	protected $print;
 	private $cur_db=false;
-	private $log;
-    private $log_mode = false;
-    private $admin = false;
+	
+    
     
 	/**
 	* Constants
@@ -269,6 +267,7 @@ class mysql extends sql{
 			$this->log=false;
 		}
 	}
+ 
 	
 	/**
 	* Database Public Functions
@@ -954,20 +953,20 @@ class mysql extends sql{
 		if($isArray){
 			$soq=count($data);
 			for($i=0;$i<$soq;$i++){
-			$append='';
-			switch($type){
-				default:
-					$append='';
-				break;
-				case '1':
-					if(!preg_match('/\./',$data[$i])){
-						$append='`';
-					}
-				break;
-				case '2':
-					$append='\'';		
-				break;
-			}
+    			$append='';
+    			switch($type){
+    				default:
+    					$append='';
+    				break;
+    				case '1':
+    					if(!preg_match('/\./',$data[$i])){
+    						$append='`';
+    					}
+    				break;
+    				case '2':
+    					$append='\'';		
+    				break;
+    			}
 				$data[$i]=$append.mysql_real_escape_string($data[$i]).$append;
 			}			
 		}
@@ -991,6 +990,10 @@ class mysql extends sql{
 	}
 	
 	final protected function sql_log($query){
+        if($this->stopCtr > 0){
+            $this->stopCtr--;
+            return;
+        }
         if($this->log_mode){
             mg_logEvent($query,$this->admin);
         }

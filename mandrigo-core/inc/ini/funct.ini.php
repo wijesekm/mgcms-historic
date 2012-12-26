@@ -484,6 +484,7 @@ function mg_logEvent($event,$admin=false){
     $table = ($admin)?array(TABLE_PREFIX.'log_admin'):array(TABLE_PREFIX.'log_user');
     $cols = array('uid','timestamp','page','action');
     $data=array($GLOBALS['MG']['USER']['UID'],$GLOBALS['MG']['SITE']['TIME'],$GLOBALS['MG']['PAGE']['PATH'],$event);
+    $GLOBALS['MG']['SQL']->sql_stopLogging();
     $GLOBALS['MG']['SQL']->sql_dataCommands(DB_INSERT,$table,$cols,$data);
 }
 

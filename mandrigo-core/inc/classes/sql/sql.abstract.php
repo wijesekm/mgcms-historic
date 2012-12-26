@@ -52,7 +52,11 @@ abstract class sql{
 	protected $db;
 	protected $print;
 	protected $groupBy=false;
-	
+	protected $log_mode = false;
+    protected $log;
+    protected $admin = false;
+    protected $stopCtr = 0;
+    
 	abstract public function sql_connect($host,$port_socket,$user,$password,$database,$persistent=true,$ssl=false);
 	
 	abstract public function sql_close();
@@ -60,6 +64,10 @@ abstract class sql{
 	abstract public function sql_checkConnection();
 	
     abstract public function sql_logging($log_table,$newMode=false);
+    
+    final public function sql_stopLogging($queryCount=1){
+        $this->stopCtr = $queryCount;
+    }
     
 	abstract public function sql_info();
 	

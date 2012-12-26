@@ -326,10 +326,12 @@ class group{
 		}
 		
         $ud[]=array('group_desc',$newDesc);
+
 		if(isset($GLOBALS['MG']['SITE']['GROUP_TBL'])){
 			$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['SITE']['ACCOUNT_DB']);
 		}
 		$r=true;
+
 		if(!$GLOBALS['MG']['SQL']->sql_dataCommands(DB_UPDATE,$this->table,$conds,$ud)){
 			trigger_error('(GROUPS): Could not update group in database: '.$gid,E_USER_ERROR);
 			$r= false;
