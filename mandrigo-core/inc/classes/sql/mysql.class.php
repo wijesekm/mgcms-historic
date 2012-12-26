@@ -35,6 +35,9 @@ class mysql extends sql{
 	protected $print;
 	private $cur_db=false;
 	private $log;
+    private $log_mode = false;
+    private $admin = false;
+    
 	/**
 	* Constants
 	*/	
@@ -50,6 +53,10 @@ class mysql extends sql{
 	final public function __construct($debug=false){
 		$this->print=$debug;
 	}
+    
+    
+    
+    
 	
 	/**
 	* General Public Functions
@@ -248,7 +255,13 @@ class mysql extends sql{
 		return true;
 	}
 	
-	final public function sql_logging($log_table){
+	final public function sql_logging($log_table,$newMode = false){
+        if($newMode){
+            $this->log_mode = true;
+            if($log_table == 'admin'){
+                $this->admin = true;
+            }
+	    }
 		if($log_table){
 			$this->log=$log_table;	
 		}
@@ -978,10 +991,15 @@ class mysql extends sql{
 	}
 	
 	final protected function sql_log($query){
-		$query=mysql_real_escape_string($query);
-		$data=array($GLOBALS['MG']['USER']['UID'],$GLOBALS['MG']['SITE']['TIME'],$GLOBALS['MG']['PAGE']['PATH'],$query);
-		if(!$GLOBALS['MG']['SQL']->sql_dataCommands(DB_INSERT,array($this->log),array('uid','timestamp','page','action'),$data)){
-			trigger_error('(MYSQL): Could not log to database log',E_USER_WARNING);
-		}
+        if($this->log_mode){
+            mg_logEvent($query,$this->admin);
+        }
+        else{
+    		$query=mysql_real_escape_string($query);
+    		$data=array($GLOBALS['MG']['USER']['UID'],$GLOBALS['MG']['SITE']['TIME'],$GLOBALS['MG']['PAGE']['PATH'],$query);
+    		if(!$GLOBALS['MG']['SQL']->sql_dataCommands(DB_INSERT,array($this->log),array('uid','timestamp','page','action'),$data)){
+    			trigger_error('(MYSQL): Could not log to database log',E_USER_WARNING);
+    		}
+        }
 	}
 }

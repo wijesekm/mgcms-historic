@@ -213,7 +213,7 @@ class mailer{
 	
 	public function phpm_send($dryRun=false){
 		if($this->logDb){
-			$rows=array('uid','timestamp','page','recipients');
+			$rows=array('uid','timestamp','page','action');
 			$data=array($GLOBALS['MG']['USER']['UID'],$GLOBALS['MG']['SITE']['TIME'],$GLOBALS['MG']['PAGE']['PATH'],$this->logmsg);
 			$GLOBALS['MG']['SQL']->sql_dataCommands(DB_INSERT,array($this->logDb),$rows,$data);
 			$this->logmsg='';
