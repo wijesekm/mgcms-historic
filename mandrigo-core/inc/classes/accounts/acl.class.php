@@ -31,14 +31,7 @@ class acl{
 		
 	public function acl_load($uid,$groups){
 		$userACL=array();	
-		$conds=array();
-		for($i=0;$i<$groups['COUNT'];$i++){
-			$conds[$i]=array(false,false,'acl_group','=',$groups[$i]);
-			if($i+1<$groups['COUNT']){
-				$conds[$i][1]=array(DB_OR);
-			}
-		}
-		$acls=$GLOBALS['MG']['SQL']->sql_fetcharray(array(TABLE_PREFIX.'acl'),false,$conds);
+		$acls=$this->acl_getAll($groups);
 		foreach($acls as $acl){
 			if($acl['acl_page']){
 				if(!isset($userACL[$acl['acl_page']])){
@@ -107,6 +100,20 @@ class acl{
 		}
 		return true;
 	}
+    
+    public function acl_getAll($groups){	
+		$conds=array();
+        foreach($groups as $key=>$val){
+            $conds[]=array(false,array(DB_OR),'acl_group','=',$val);
+            if(preg_match('/-/',$val)){
+                $tmp = preg_split('/-/',$val);
+                $conds[]=array(DB_LIKE,array(DB_OR),'acl_group','*-'.$tmp[1].'%');
+            }
+        }
+        $conds[count($conds)-1][1]=false;
+        $dta = $GLOBALS['MG']['SQL']->sql_fetcharray(array(TABLE_PREFIX.'acl'),false,$conds);
+		return $dta;
+    }
 
 	private function acl_comp($old,$new){
 		switch($new){

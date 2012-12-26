@@ -175,6 +175,9 @@ class page{
 		if($GLOBALS['MG']['PAGE']['NOERRORPARSE']){
 			return $content;
 		}
+        if(preg_match('/:/',$content)){
+            return $content;
+        }
 		switch((int)$content){
             case 200:
 				$this->content='200: Success';

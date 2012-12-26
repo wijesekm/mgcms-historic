@@ -43,19 +43,24 @@ class sqlact extends accounts{
     final public function act_searchUsers($string,$ob='ASC'){
         return $this->act_search($string);
     }
+
     
-    final public function act_search($string,$fields=false,$data=array()){
+    final public function act_search($string,$fields=false,$data=array(),$like=true){
         if($fields == false){
             $fields = array('user_uid');
+        }
+        $append='';
+        if($like){
+            $append='%';
         }
         $data = array_merge(array(array('user_uid'),array('user_fullname')),$data);
         $params = array();
         foreach($fields as $key=>$val){
-            $params[]=array(DB_LIKE,array(DB_OR),$val,'%'.$string.'%');
+            $params[]=array(DB_LIKE,array(DB_OR),$val,$append.$string.$append);
         }
         $params[count($params)-1][1] = false;
         $additParams=array();
-        $additParams['orderby']=array(array('user_uid'),array($ob));
+        $additParams['orderby']=array(array('user_uid'),array('ASC'));
 		if(isset($GLOBALS['MG']['SITE']['ACCOUNT_DB'])){
 			$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['SITE']['ACCOUNT_DB']);
 		}
@@ -104,7 +109,7 @@ class sqlact extends accounts{
         return $ret;  
     }
 
-	final public function act_load($uid=false,$search=false,$start=false,$length=false,$acl=true,$ob='ASC'){
+	final public function act_load($uid=false,$search=false,$start=false,$length=false,$acl=true,$ob='ASC',$fields=false){
 		
 		$this->user=array();
 		
@@ -129,7 +134,7 @@ class sqlact extends accounts{
 		if(isset($GLOBALS['MG']['SITE']['ACCOUNT_DB'])){
 			$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['SITE']['ACCOUNT_DB']);
 		}
-		if(!$users=$GLOBALS['MG']['SQL']->sql_fetchArray($this->table,false,$parms,DB_ASSOC,DB_ALL_ROWS,$additParams)){
+		if(!$users=$GLOBALS['MG']['SQL']->sql_fetchArray($this->table,$fields,$parms,DB_ASSOC,DB_ALL_ROWS,$additParams)){
 			trigger_error('(SQLACT): Could not load user data',E_USER_WARNING);
 			return false;
 		}

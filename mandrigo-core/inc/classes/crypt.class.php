@@ -28,42 +28,63 @@ if(!defined('STARTED')){
 
 class crypt{
 	
-	private $iv;
 	private $secret;
 	private $mode;
     private $cipher;
+    private $setup;
 	
-	public function cr_encrypt($text){
-		return trim(mcrypt_encrypt($this->cipher, $this->secret, $text, $this->mode, $this->iv));
+	public function cr_encrypt($text,$salt_len=0){
+        $iv = mcrypt_create_iv(mcrypt_get_iv_size($this->cipher,$this->mode),MCRYPT_RAND);
+        $salt = $this->cr_genSalt($salt_len);
+		return base64_encode($iv.mcrypt_encrypt($this->cipher, $this->secret, $salt.$text, $this->mode, $iv));
 	}
 	
-	public function cr_decrypt($text){
-		return trim(mcrypt_decrypt($this->cipher, $this->secret, $text, $this->mode, $this->iv));
+	public function cr_decrypt($text,$salt_len=0){
+        $text = base64_decode($text);
+        $iv = substr($text,0,mcrypt_get_iv_size($this->cipher,$this->mode));
+        $text = substr($text,mcrypt_get_iv_size($this->cipher,$this->mode));
+		return trim(substr(mcrypt_decrypt($this->cipher, $this->secret, $text, $this->mode, $iv),$salt_len));
 	}
-    
-    public function cr_getIv(){
-        return trim($this->iv);
-    }
-    
-	public function cr_genNewKey(){
-		$this->secret=md5(uniqid(rand(),true)).md5(uniqid(rand(),true));
-		$this->secret=substr($this->secret,0,mcrypt_get_block_size($this->cipher, $this->mode)-1);
-        return $this->secret;
-	}	
 
-    public function cr_setup($key,$cipher,$mode,$iv=false){
+    public function cr_setup($key,$cipher,$mode){
+        if(!$cipher || !$mode){
+            $cipher = MCRYPT_RIJNDAEL_256;
+            $mode = MCRYPT_MODE_CBC;
+        }
+        if($mode == MCRYPT_MODE_ECB){
+            trigger_error('(CRYPT): ECB mode is not secure and not supported.  Switching to CBC mode',E_USER_NOTICE);
+            $mode = MCRYPT_MODE_CBC;
+        }
+
+        if(!@mcrypt_get_block_size($cipher,$mode)){
+            trigger_error('(CRYPT): Cipher not supported.  Switching to RIJNDAEL 256 with CBC',E_USER_NOTICE);
+            $cipher = MCRYPT_RIJNDAEL_256;
+            $mode = MCRYPT_MODE_CBC;
+        }
         $this->mode = $mode;
         $this->cipher = $cipher;
-        $block = mcrypt_get_block_size($cipher, $mode);
-        $pad = $block - (strlen($key) % $block);
-        $key .= str_repeat(chr($pad), $pad);
-        $this->secret=$key;
-        $this->iv=false;
-        if($mode != MCRYPT_MODE_STREAM && $mode !=MCRYPT_MODE_ECB && $mode !=MCRYPT_MODE_NOFB && !$iv){
-            $this->iv = mcrypt_create_iv(mcrypt_get_iv_size($this->cipher, $this->mode), MCRYPT_RAND);	
+        $this->secret = $this->cr_genKey($key);
+        return $this->secret;
+        
+    }
+    
+    private function cr_genKey($key_base=""){
+        $length = mcrypt_get_block_size($this->cipher,$this->mode);
+        $base_len = strlen($key_base);
+        if($base_len > $length){
+            return $key_base;
         }
-        else if($iv){
-            $this->iv=$iv;
+        for($length-=$base_len;$length > 0; $length--){
+            $key_base .= chr(rand(33,255));
         }
+        return $key_base;
+    }
+    
+    private function cr_genSalt($length){
+        $salt = "";
+        for($length;$length > 0; $length--){
+            $salt .= chr(rand(33,255));
+        }
+        return $salt;
     }
 }

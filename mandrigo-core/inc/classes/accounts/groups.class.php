@@ -57,6 +57,29 @@ class group{
 		$userGroups['COUNT']++;
 		return $userGroups;			
 	}
+    
+    public function group_getAdmin($uid){
+		if(isset($GLOBALS['MG']['SITE']['GROUP_TBL'])){
+			$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['SITE']['ACCOUNT_DB']);
+		}		
+		$groups=$GLOBALS['MG']['SQL']->sql_fetchArray($this->table,false,array(array(DB_LIKE,array(DB_OR),'group_admins','%;'.$uid.';%'),array(DB_LIKE,false,'group_admins','%;*;%')));
+		if(isset($GLOBALS['MG']['SITE']['GROUP_TBL'])){
+			$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['CFG']['SQL']['DB']);
+		}
+		$userGroups=array();
+		$userGroups['COUNT']=$groups['count'];
+		for($i=0;$i<$groups['count'];$i++){
+			if(preg_match('/;\*;/',$groups[$i]['group_admins'])&&preg_match('/-'.preg_quote($uid).'/',$groups[$i]['group_admins'])){
+				$userGroups['COUNT']--;
+			}
+			else{
+				$userGroups[]=$groups[$i]['group_gid'];	
+			}
+		}
+		$userGroups[]='*';
+		$userGroups['COUNT']++;
+		return $userGroups;		
+    }
 	
 	public function group_isValid($group){
 		$conds=array(array(false,false,'group_gid','=',$group));
@@ -74,7 +97,7 @@ class group{
 		return false;
 	}
 	
-	public function group_getGroup($start=0,$length=10,$search=false,$loadOnly=false,$searchadm=false){
+	public function group_getGroup($start=0,$length=10,$search=false,$loadOnly=false,$searchadm=false,$anchorSearch=3){
 		if($loadOnly){
 			$conds=array(array(false,false,'group_gid','=',$loadOnly));
 			if(isset($GLOBALS['MG']['SITE']['GROUP_TBL'])){
@@ -96,15 +119,24 @@ class group{
 			}
 			$conds=false;
 			$totalLength=0;
+            
+            $before='';
+            $after='';
+            if($anchorSearch ==1 || $anchorSearch==3){
+                $before='%';
+            }
+            if($anchorSearch ==2 || $anchorSearch==3){
+                $after='%';
+            }            
 			if($search){
-				$conds=array(array(DB_LIKE,false,'group_gid','%'.$search.'%'));
+				$conds=array(array(DB_LIKE,false,'group_gid',$before.$search.$after));
 			}
 			if($searchadm){
 				if(is_array($conds)){
-					$conds[]=array(DB_LIKE,false,'group_admins','%'.$searchadm.'%');
+					$conds[]=array(DB_LIKE,false,'group_admins',$before.$searchadm.$after);
 				}
 				else{
-					$conds=array(array(DB_LIKE,false,'group_admins','%'.$searchadm.'%'));
+					$conds=array(array(DB_LIKE,false,'group_admins',$before.$searchadm.$after));
 				}
 			}		
 			if(isset($GLOBALS['MG']['SITE']['GROUP_TBL'])){
@@ -120,22 +152,55 @@ class group{
 			}
 			$ret=array();
 			for($i=0;$i<$groups['count'];$i++){
-				$ret[$groups[$i]['group_gid']]['members']=explode(';',$groups[$i]['group_members']);
-				$ret[$groups[$i]['group_gid']]['admins']=explode(';',$groups[$i]['group_admins']);
+                $ret[$groups[$i]] = array();
+                foreach($groups[$i] as $key=>$val){
+                    $key = preg_replace('/group_/','',$key);
+                    if($key == 'members' || $key == 'admins'){
+                        $ret[$groups[$i]['group_gid']][$key] = explode(';',$val);
+                    }
+                    else{
+                        $ret[$groups[$i]['group_gid']][$key] = $val;
+                    }
+                   
+                }
 			}
 			$ret['count']=count($ret);
 			return $ret;		
 		}
 	}
+    
+    public function group_getAcl($gids){
+        $ac = new acl();
+        if(!is_array($gids)){
+            $gids= array($gids);
+        }
+        return $ac->acl_getAll($gids);
+    }
 	
-	public function group_add($gid,$members,$admins){
+	public function group_add($gid,$members,$admins,$desc=''){
 		if(!$gid){
 			return false;
 		}
-		$members=';'.implode(';',$members).';';
-		$admins=';'.implode(';',$admins).';';
-		$dta=array($gid,$members,$admins);
-		$fields=array('group_gid','group_members','group_admins');
+        if(is_array($members)){
+            $members=implode(';',$members);
+        }
+        if(is_array($admins)){
+            $admins=implode(';',$admins);
+        }		
+		if(substr($members,0,1)!=';'){
+			$members=';'.$members;
+		}
+		if(substr($members,-1,1)!=';'){
+			$members.=';';
+		}
+		if(substr($admins,0,1)!=';'){
+			$admins=';'.$admins;
+		}
+		if(substr($admins,-1,1)!=';'){
+			$admins.=';';
+		}
+		$dta=array($gid,$members,$admins,$desc);
+		$fields=array('group_gid','group_members','group_admins','group_desc');
 		if(isset($GLOBALS['MG']['SITE']['GROUP_TBL'])){
 			$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['SITE']['ACCOUNT_DB']);
 		}
@@ -158,7 +223,7 @@ class group{
 		}
 		$r=true;
 		$conds=array(array(false,false,'group_gid','=',$gid));
-		if(!$GLOBALS['MG']['SQL']->sql_dataCommands(DB_REMOVE,array(TABLE_PREFIX.'groups'),$conds)){
+		if(!$GLOBALS['MG']['SQL']->sql_dataCommands(DB_REMOVE,$this->table,$conds)){
 			trigger_error('(GROUPS): Could not remove group from database: '.$gid,E_USER_ERROR);
 			$r =false;
 		}
@@ -181,9 +246,6 @@ class group{
 		$udata=$this->group_getGroup(false,false,false,$gid);
 		$udata=$udata[1]['group_members'];
 		if(in_array($uid,$udata)){
-			return true;
-		}
-		if(in_array($uid,$udata)){
 			trigger_error('(GROUPS): User '.$uid.' already in group '.$gid.'. Not adding.',E_USER_NOTICE);
 			return true;
 		}
@@ -191,7 +253,8 @@ class group{
 			$udata=array('','','count'=>2);
 		}
 		$udata[$udata['count']-1]=$uid;
-		$udata['count']='';
+        unset($udata['count']);
+		$udata[]='';
 		return $this->group_modify($gid,$udata);
 	}
 	
@@ -232,37 +295,42 @@ class group{
 		return $r;
 	}
     	
-	public function group_modify($gid,$newUsersList,$newAdminList=false){
+	public function group_modify($gid,$newUsersList,$newAdminList=false,$newDesc=''){
 		if(!$gid){
 			return false;
 		}
-		$newUsersList=implode(';',$newUsersList);
-		if(substr(0,1,$newUsersList)!=';'){
+        if(is_array($newUsersList)){
+            $newUsersList=implode(';',$newUsersList);
+        }
+		if(substr($newUsersList,0,1)!=';'){
 			$newUsersList=';'.$newUsersList;
 		}
-		if(substr(-1,1,$newUsersList)!=';'){
+		if(substr($newUsersList,-1,1)!=';'){
 			$newUsersList.=';';
-		}	
+		}
 		$conds=array(array(false,false,'group_gid','=',$gid));
 		$ud=array(array('group_members',$newUsersList));
 		if($newAdminList!==false){
-			$newAdminList=implode(';',$newAdminList);
-			if(substr(0,1,$newAdminList)!=';'){
-				$newAdminList=';'.$newAdminList;
-			}
-			if(substr(-1,1,$newAdminList)!=';'){
-				$newAdminList.=';';
-			}	
+            if($newAdminList != ''){
+                if(is_array($newAdminList)){
+                    $newAdminList=implode(';',$newAdminList);
+                }
+    			if(substr(0,1,$newAdminList)!=';'){
+    				$newAdminList=';'.$newAdminList;
+    			}
+    			if(substr(-1,1,$newAdminList)!=';'){
+    				$newAdminList.=';';
+    			}
+            }
 			$ud[]=array('group_admins',$newAdminList);	
 		}
 		
-
-
+        $ud[]=array('group_desc',$newDesc);
 		if(isset($GLOBALS['MG']['SITE']['GROUP_TBL'])){
 			$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['SITE']['ACCOUNT_DB']);
 		}
 		$r=true;
-		if(!$GLOBALS['MG']['SQL']->sql_dataCommands(DB_UPDATE,array(TABLE_PREFIX.'groups'),$conds,$ud)){
+		if(!$GLOBALS['MG']['SQL']->sql_dataCommands(DB_UPDATE,$this->table,$conds,$ud)){
 			trigger_error('(GROUPS): Could not update group in database: '.$gid,E_USER_ERROR);
 			$r= false;
 		}

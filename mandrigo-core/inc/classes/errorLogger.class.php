@@ -52,7 +52,8 @@ class errorLogger{
                 E_USER_WARNING       => 'User_Warning',
                 E_USER_NOTICE        => 'User_Notice',
                 E_STRICT             => 'Runtime_Notice',
-                E_RECOVERABLE_ERROR  => 'Catchable_Fatal_Error'
+                E_RECOVERABLE_ERROR  => 'Catchable_Fatal_Error',
+                E_DEPRECATED         => 'Deprecated'
                 );
         foreach($this->errorTypes as $key => $value){
 			if(!is_file($GLOBALS['MG']['CFG']['PATH']['LOG'].$value.'.log')){
@@ -131,6 +132,7 @@ class errorLogger{
             );
         }
         $this->errors[] = array(
+            
             $this->errorTypes[$errno],$errmsg,$filename,$linenum
         );
 		

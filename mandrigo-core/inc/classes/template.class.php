@@ -45,6 +45,7 @@ class template{
 	private $size;
 	private $parser;
 	private $adminTpl;
+    private $tmp_str;
 	
 	/**
 	* Construct and Destruction functions
@@ -77,15 +78,17 @@ class template{
 	* $input	-	Text or filename of section (string)
 	* $s_name	-	Section Name (string)
 	* $file		-	Is File? (bool)
-	*
+	* $fatal    -   Fatal error on failure?
+    * 
 	* OUTPUTS:
 	* true on success, false on fail (bool)
-	*/	
-	public function tpl_load($input,$s_name,$file=true){	
+	*/
+	public function tpl_load($input,$s_name,$file=true,$fatal=true){	
 		$str='';
 		if($file){
 			if(!$f=fopen($input,'r')){
-				trigger_error('(TEMPLATE): Cannot open template: '.$input, E_USER_ERROR);
+
+				trigger_error('(TEMPLATE): Cannot open template: '.$input, ($fatal)?E_USER_ERROR:E_USER_WARNING);
 				return false;
 			}
 			while(!feof($f)){
@@ -99,7 +102,7 @@ class template{
 		if(is_array($s_name)){
 			foreach($s_name as $tmp){
 				if(!$this->tpl_checkSectionIsValid($tmp,$str)){
-					trigger_error('(TEMPLATE): Could not find section '.$tmp.' in template: '.$input, E_USER_ERROR);
+					trigger_error('(TEMPLATE): Could not find section '.$tmp.' in template: '.$input, ($fatal)?E_USER_ERROR:E_USER_WARNING);
 					return false;
 				}
 				$tmp_str=explode(template::TPL_START.$tmp.template::TPL_E,$str);
@@ -108,7 +111,7 @@ class template{
 		}
 		else{
 			if(!$this->tpl_checkSectionIsValid($s_name,$str)){
-				trigger_error('(TEMPLATE): Could not find section '.$s_name.' in template: '.$input, E_USER_ERROR);
+				trigger_error('(TEMPLATE): Could not find section '.$s_name.' in template: '.$input, ($fatal)?E_USER_ERROR:E_USER_WARNING);
 				return false;
 			}
 			$str=explode(template::TPL_START.$s_name.template::TPL_E,$str);
@@ -118,7 +121,7 @@ class template{
 		$this->size=count($this->keys);
 		return true;
 	}
-    
+
     private function tpl_checkSectionIsValid($section,$data){
         $str = '/'.preg_quote(template::TPL_START.$section.template::TPL_E,'/');
         $str.='(.*?)'.preg_quote(template::TPL_END.$section.template::TPL_E,'/').'/mis';
