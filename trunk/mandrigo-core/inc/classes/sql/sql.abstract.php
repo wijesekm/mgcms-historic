@@ -59,6 +59,8 @@ abstract class sql{
 	
 	abstract public function sql_checkConnection();
 	
+    abstract public function sql_logging($log_table,$newMode=false);
+    
 	abstract public function sql_info();
 	
 	abstract public function sql_listTables();
