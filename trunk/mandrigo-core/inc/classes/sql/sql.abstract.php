@@ -104,4 +104,17 @@ abstract class sql{
 	abstract protected function sql_formatTableLine($params);
 	
 	abstract protected function sql_escape($data,$isArray=false);
+    
+    final public function sql_formatUpdateInsert($key,$val,&$array1,&$array2,$add,$num=false){
+        if($num){
+            $val=(isset($val)&&trim($val)!='')?$val:'0';
+        }
+        if($add){
+            $array2[]=$key;
+            $array1[]=$val;	
+        }
+        else{
+            $array1[]=array($key,$val);				
+        }
+    }
 }

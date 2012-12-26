@@ -469,3 +469,46 @@ function mg_jsonEncode($array,$inline=false){
         return json_encode($array);
     }
 }
+
+/**
+* mg_logEvent($event,$admin=false)
+*
+* Logs an event to the event log
+*
+* INPUTS:
+* $event - String to log
+* $admin - if true log to admin table, if false log to user table
+* 
+*/
+function mg_logEvent($event,$admin=false){
+    $table = ($admin)?array(TABLE_PREFIX.'log_admin'):array(TABLE_PREFIX.'log_user');
+    $cols = array('uid','timestamp','page','action');
+    $data=array($GLOBALS['MG']['USER']['UID'],$GLOBALS['MG']['SITE']['TIME'],$GLOBALS['MG']['PAGE']['PATH'],$event);
+    $GLOBALS['MG']['SQL']->sql_dataCommands(DB_INSERT,$table,$cols,$data);
+}
+
+/**
+ * This function formats an item for a database add or update
+ * 
+ * @author Kevin Wijesekera <kwijesekera@riversidemfg.com>
+ * @date 12/08/2012
+ * 
+ * @param $key Database col
+ * @param $val Database row data
+ * @param $array1 Data Array
+ * @param $array2 Cols Array
+ * @param $add To add or not
+ * @param $num if the object cannot be '' and instead must be 0 on empty
+ */
+function mg_formatDBItem($key,$val,&$array1,&$array2,$add,$num=false){
+    if($num){
+        $val=(isset($val)&&trim($val)!='')?$val:'0';
+    }
+    if($add){
+        $array2[]=$key;
+		$array1[]=$val;	
+    }
+    else{
+		$array1[]=array($key,$val);				
+    }
+}

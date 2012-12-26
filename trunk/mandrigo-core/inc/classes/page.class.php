@@ -32,8 +32,6 @@ class page{
 	private $error;
 	private $obj;
 	
-	const PAGE_TPL_NAME		= 'site.tpl';
-	
 	public function __construct(){
 		if(preg_match('/'.preg_quote($GLOBALS['MG']['SITE']['URL_DELIM'],'/').'/',$GLOBALS['MG']['PAGE']['PATH'])){
 			$base=explode($GLOBALS['MG']['SITE']['URL_DELIM'],$GLOBALS['MG']['PAGE']['PATH']);
@@ -69,21 +67,29 @@ class page{
 			'USER_TIME'=>date($GLOBALS['MG']['SITE']['TIME_FORMAT'],$GLOBALS['MG']['USER']['TIME']),
 			'USER_DATE'=>date($GLOBALS['MG']['SITE']['DATE_FORMAT'],$GLOBALS['MG']['USER']['TIME']),
             'USER_GROUPS'=>implode(';',$GLOBALS['MG']['USER']['GROUPS']),
-			'PAGE_PATH'=>$GLOBALS['MG']['PAGE']['PATH'],
-			'PAGE_PATH_BASE'=>$base,
-			'PAGE_NAME'=>$GLOBALS['MG']['PAGE']['NAME'],
-			'PAGE_NAME_SIMPLE'=>$GLOBALS['MG']['PAGE']['SIMPLENAME'],
-			'PAGE_CREATOR'=>$GLOBALS['MG']['PAGE']['CREATEDBY'],
-			'PAGE_MODIFIER'=>$GLOBALS['MG']['PAGE']['MODIFIEDBY'],
-			'PAGE_CREATED_DATE'=>date($GLOBALS['MG']['SITE']['DATE_FORMAT'],$GLOBALS['MG']['PAGE']['CREATED']),
-			'PAGE_MODIFIED_DATE'=>date($GLOBALS['MG']['SITE']['DATE_FORMAT'],$GLOBALS['MG']['PAGE']['MODIFIED']),
-			'PAGE_ROOT'=>$GLOBALS['MG']['PAGE']['ROOT'],
 			'ACL_ADMIN'=>(mg_checkACL($GLOBALS['MG']['PAGE']['PATH'],'admin'))?'1':'0',
 			'ACL_MODIFY'=>(mg_checkACL($GLOBALS['MG']['PAGE']['PATH'],'modify'))?'1':'0',
 			'ACL_WRITE'=>(mg_checkACL($GLOBALS['MG']['PAGE']['PATH'],'write'))?'1':'0',
 			'ACL_READ'=>(mg_checkACL($GLOBALS['MG']['PAGE']['PATH'],'read'))?'1':'0'
 		);
+        
+        if(!empty($GLOBALS['MG']['PAGE']['PATH'])){
 
+            $GLOBALS['MG']['PAGE']['VARS'] = array_merge_recursive($GLOBALS['MG']['PAGE']['VARS'],
+                    array(			
+                        'PAGE_PATH'=>$GLOBALS['MG']['PAGE']['PATH'],
+            			'PAGE_PATH_BASE'=>$base,
+            			'PAGE_NAME'=>$GLOBALS['MG']['PAGE']['NAME'],
+            			'PAGE_NAME_SIMPLE'=>$GLOBALS['MG']['PAGE']['SIMPLENAME'],
+            			'PAGE_CREATOR'=>$GLOBALS['MG']['PAGE']['CREATEDBY'],
+            			'PAGE_MODIFIER'=>$GLOBALS['MG']['PAGE']['MODIFIEDBY'],
+            			'PAGE_CREATED_DATE'=>date($GLOBALS['MG']['SITE']['DATE_FORMAT'],$GLOBALS['MG']['PAGE']['CREATED']),
+            			'PAGE_MODIFIED_DATE'=>date($GLOBALS['MG']['SITE']['DATE_FORMAT'],$GLOBALS['MG']['PAGE']['MODIFIED']),
+            			'PAGE_ROOT'=>$GLOBALS['MG']['PAGE']['ROOT'])
+                    );
+            
+        }
+        $GLOBALS['MG']['SITE']['TPL'] = 'site.tpl';
 		$this->content='';
 		$this->error=false;
 	}
@@ -114,8 +120,9 @@ class page{
 		$GLOBALS['MG']['PAGE']['STOPCUSTOMPARSERS']=false;
 		$GLOBALS['MG']['PAGE']['NOERRORPARSE']=false;
         $GLOBALS['MG']['PAGE']['STOPPARSERS'] = false;
+        
 		$tpl=new template();
-		if(!$tpl->tpl_load($GLOBALS['MG']['CFG']['PATH']['TPL'].$GLOBALS['MG']['LANG']['NAME'].'/'.page::PAGE_TPL_NAME,'main')){
+		if(!$tpl->tpl_load($GLOBALS['MG']['CFG']['PATH']['TPL'].$GLOBALS['MG']['LANG']['NAME'].'/'.$GLOBALS['MG']['SITE']['TPL'],'main')){
 			trigger_error('(PAGE): Could not load site template',E_USER_ERROR);
 			return false;
 		}
@@ -146,7 +153,7 @@ class page{
 			
 			$GLOBALS['MG']['PAGE']['VARS']['CONTENT']=$this->content;
 			$tpl->tpl_parse($GLOBALS['MG']['PAGE']['VARS'],'main',2,false);
-			if(!$GLOBALS['MG']['CFG']['STOPCUSTOMPARSERS']){
+			if(!$GLOBALS['MG']['PAGE']['STOPCUSTOMPARSERS'] && isset($gdd[0]['page_customHooks'])){
 				$tpl->tpl_parseCustom($gdd[0]['page_customHooks'],'main');
 			}
 			$tpl->tpl_parse($GLOBALS['MG']['PAGE']['VARS'],'main',2,true);

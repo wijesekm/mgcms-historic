@@ -86,7 +86,6 @@ function mginit_loadVars(){
 							}
 						}
 						else if(preg_match('/\[\*\]/',$uname)){
-
 							$uname=preg_replace('/\[\*\]/','',$uname);
 							foreach($url as $key=>$val){
 								if(preg_match("/^".$uname."/",$key)){
@@ -139,8 +138,15 @@ function mginit_loadVars(){
 						$GLOBALS['MG']['FILE'][$name]['ERROR']='';
 						if(!empty($_FILES[$uname]['name'])){
 							if($_FILES[$uname]['error'] !=  UPLOAD_ERR_OK){
-								trigger_error('(BVARS): File upload error: '.$fileUploadErrors($_FILES[$uname]['error']),E_USER_WARNING);
-								$GLOBALS['MG']['FILE'][$name]['ERROR']=$fileUploadErrors($_FILES[$uname]['error']);
+                                if(isset($fileUploadErrors[$_FILES[$uname]['error']])){
+                                    trigger_error('(BVARS): File upload error: '.$fileUploadErrors[$_FILES[$uname]['error']],E_USER_WARNING);
+								    $GLOBALS['MG']['FILE'][$name]['ERROR']=$fileUploadErrors[$_FILES[$uname]['error']];
+                                }
+                                else{
+                                    trigger_error('(BVARS): File upload error: Unknown Error',E_USER_WARNING);
+								    $GLOBALS['MG']['FILE'][$name]['ERROR']='Unknown Error';
+                                }
+								
 							}
 							else{
 							 	$GLOBALS['MG']['FILE'][$name]['HOST_FILENAME']=stripslashes($_FILES[$uname]['name']);

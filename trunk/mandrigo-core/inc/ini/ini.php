@@ -28,7 +28,11 @@ if(!defined('STARTED')){
 
 date_default_timezone_set('America/New_York');//this is to prevent errors and will be reset later
 
+/*
+* Setup a few arrays to remove warnings
+*/
 $GLOBALS['MG']['HDR']=array();
+$GLOBALS['MG']['PAGE']=array('PATH'=>'','PACKAGES'=>array(),'CONTENTHOOKS'=>array(),'ALLOWCACHE'=>'0');
 
 /**
 * Start Error Logger

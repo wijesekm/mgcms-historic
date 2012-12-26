@@ -79,6 +79,9 @@ class session{
 		$conds=array(array(false,array(DB_AND),'ses_id','=',$idC),array(false,false,'ses_uid','=',$uidC));
 		$d=$GLOBALS['MG']['SQL']->sql_fetchArray($this->table,false,$conds);
 		$this->session_dbSwitch(1);
+        if(!is_array($d[0])){
+            return false;
+        }
 		$d=$d[0];
         foreach($d as $key=>$val){
             $GLOBALS['MG']['SESSION'][strtoupper(preg_replace('/ses_/','',$key))] = $val;

@@ -61,7 +61,6 @@ function mginit_cleanArraySub($value,$clean,$cleanPath,$default){
 }
 
 function mginit_cleanVar($value,$clean){
-	
 	//
 	//In earlier versions not all 7 slots were used so lets pad the clean array with false so it is not undefined
 	//
