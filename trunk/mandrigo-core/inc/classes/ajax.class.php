@@ -129,8 +129,8 @@ class page{
 		for($i=0;$i<$soq;$i++){
 			if($GLOBALS['MG']['PAGE']['AJAXHOOKS'][$i]){
 				$tmp=$this->page_hookEval($GLOBALS['MG']['PAGE']['AJAXHOOKS'][$i]);
-				$tmp=$this->page_error($tmp);
 				if($tmp){
+				    $tmp=$this->page_error($tmp);
 					$this->content.=$tmp;
 				}
 				else{
