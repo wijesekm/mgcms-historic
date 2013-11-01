@@ -84,11 +84,16 @@ abstract class auth{
                 $hash = hash('md5', $pwd . $seed);
                 return '{SMD5}' . base64_encode($hash . $seed);
             break;
-            case 'SHA':
-                return '{SHA}' . base64_encode(hash('sha1',$pwd));
-            break;
             case 'SHA256':
                 return '{SHA256}' . base64_encode(bin2hex(hash('sha256',$pwd)));
+            break;
+            case 'SSHA256':
+                $seed = $this->act_randstring(8);
+                $hash = hash('sha256', $pwd . $seed);
+                return '{SSHA256}' . base64_encode($hash . $seed);
+            break;
+            case 'SHA':
+                return '{SHA}' . base64_encode(hash('sha1',$pwd));
             break;
             case 'SSHA':
                 $seed = $this->act_randstring(8);
@@ -149,6 +154,16 @@ abstract class auth{
 		        $hash = base64_decode($db_val);
 		        $new_hash =bin2hex(hash('sha256',$form_val));
 		        if(strcmp($hash,$new_hash) == 0){
+		            return true;
+		        }
+		        return false;
+			break;
+			case 'SSHA256':
+		        $hash = base64_decode($db_val);
+		        $orig_hash = substr($hash, 0, 20);
+		        $salt = substr($hash, 20);
+		        $new_hash = hash('sha256', $form_val . $salt);
+		        if(strcmp($orig_hash,$new_hash) == 0){
 		            return true;
 		        }
 		        return false;

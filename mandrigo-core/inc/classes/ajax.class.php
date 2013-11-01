@@ -86,7 +86,7 @@ class page{
 		$this->error=false;
 	}
 	
-	public function page_generate(){
+	public function page_generate($v=false){
 		$cache=false;
 		$gdd=$GLOBALS['MG']['SQL']->sql_fetchArray(array(TABLE_PREFIX.'pages'),false,array(array(false,false,'page_path','=','*')));
 		mginit_loadCustomPackages(explode(';',$gdd[0]['page_packages']));		
@@ -97,12 +97,12 @@ class page{
         $GLOBALS['MG']['PAGE']['STOPPARSERS'] = false;
 		$tpl=new template();
 
-		$this->page_getContent();
+		$this->page_getContent($v);
 		
 		/**
 		* Get Global Page Vars/Cache Info
 		*/
-		$globalPageVars=explode(';',$gdd[0]['page_ajaxHooks']);
+		$globalPageVars=explode(';',$gdd[0][($v)?'page_extHooks':'page_ajaxHooks']);
 		$soq=count($globalPageVars);
 		for($i=0;$i<$soq;$i++){
             if(!$GLOBALS['MG']['PAGE']['STOPPARSERS']){
@@ -116,25 +116,27 @@ class page{
 		
 	}
 
-	
-	private function page_getContent(){
-		if(!$GLOBALS['MG']['PAGE']['AJAXHOOKS']){
+	private function page_getContent($v){
+        $hooks = $GLOBALS['MG']['PAGE']['AJAXHOOKS'];
+        if($v){
+            $hooks = $GLOBALS['MG']['PAGE']['EXTHOOKS'];
+        }
+		if(!$hooks){
 			$this->page_error('404');
 			trigger_error('(PAGE): No content hooks.',E_USER_WARNING);
 			return false;
 		}
-        $GLOBALS['MG']['PAGE']['AJAXHOOKS'] = explode(';',$GLOBALS['MG']['PAGE']['AJAXHOOKS']);
 
-		$soq=count($GLOBALS['MG']['PAGE']['AJAXHOOKS']);
+		$soq=count($hooks);
 		for($i=0;$i<$soq;$i++){
-			if($GLOBALS['MG']['PAGE']['AJAXHOOKS'][$i]){
-				$tmp=$this->page_hookEval($GLOBALS['MG']['PAGE']['AJAXHOOKS'][$i]);
+			if($hooks[$i]){
+				$tmp=$this->page_hookEval($hooks[$i]);
 				if($tmp){
 				    $tmp=$this->page_error($tmp);
 					$this->content.=$tmp;
 				}
 				else{
-					trigger_error('(PAGE): No content or error during hook evaluation. ('.$GLOBALS['MG']['PAGE']['AJAXHOOKS'][$i].')',E_USER_NOTICE);
+					trigger_error('(PAGE): No content or error during hook evaluation. ('.$hooks[$i].')',E_USER_NOTICE);
 				}
 			}
 		}

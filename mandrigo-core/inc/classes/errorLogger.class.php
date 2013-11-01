@@ -138,6 +138,12 @@ class errorLogger{
 		
 	 	$err = "<error>\r\n";
 	    $err .= "\t<datetime>" . $dt . "</datetime>\r\n";
+        if(isset($GLOBALS['MG']['USER']['UID'])){
+            $err .= "\t<user>" . $GLOBALS['MG']['USER']['UID'] . "</user>\r\n";
+        }
+        if(isset($_POST)){
+            $err .= "\t<post>" . var_export($_POST,true) . "</post>\r\n";
+        }
 	    $err .= "\t<errornum>" . $errno . "</errornum>\r\n";
 	    $err .= "\t<errortype>" . $this->errorTypes[$errno] . "</errortype>\r\n";
 	    $err .= "\t<erroruri>".$_SERVER['REQUEST_URI']."</erroruri>\r\n";

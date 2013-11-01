@@ -245,7 +245,7 @@ class sqlact extends accounts{
 			return false;
 		}
 		if(!is_array($name)){
-			$name=array($name);
+			$name=explode(' ',$name);
 		}
 		if(!is_array($rview)){
 			$rview=array($rview);

@@ -152,7 +152,6 @@ function mg_genUrl($urlParts,$base=false,$ssl='auto'){
 
 function mg_redirectTarget($target){
 	if(!$target){
-		trigger_error('(FUNCT): Invalid Redirect Target',E_USER_WARNING);
 		if(isset($_SERVER['HTTPS'])&&$_SERVER['HTTPS']!='off'){
 			$port=($_SERVER['SERVER_PORT']!='443')?':'.$_SERVER['SERVER_PORT']:'';
 			header('Location: https://'.$_SERVER['SERVER_NAME'].$port);
@@ -502,6 +501,7 @@ function mg_logEvent($event,$admin=false){
  * @param $num if the object cannot be '' and instead must be 0 on empty
  */
 function mg_formatDBItem($key,$val,&$array1,&$array2,$add,$num=false){
+    trigger_error("mg_formatItem is depricated.  Use the function in sql instead.",E_USER_NOTICE);
     if($num){
         $val=(isset($val)&&trim($val)!='')?$val:'0';
     }

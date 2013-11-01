@@ -305,7 +305,10 @@ class mysql extends sql{
 		if(!$result=$this->sql_query($q.' '.$this->sql_formatTable($table).' '.$this->sql_formatConds($params).';')){
 			return false;
 		}
-		$value=mysql_result($result,$row);
+        if($row > mysql_num_rows($result)){
+            return "";
+        }
+		$value=@mysql_result($result,$row);
 		$this->sql_freeResult($result);
 		return $value;
 	}
@@ -950,6 +953,7 @@ class mysql extends sql{
    * @return
    */
 	final protected function sql_escape($data,$isArray=false,$type=0){
+	   $append='';
 		if($isArray){
 			$soq=count($data);
 			for($i=0;$i<$soq;$i++){

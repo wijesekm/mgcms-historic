@@ -29,7 +29,7 @@ if(!defined('STARTED')){
 class adauth extends auth{
 	
 	private $ad;
-	
+
 	public function __construct(){
 		$domains=explode(';',$GLOBALS['MG']['SITE']['AD_DOMAINS']);
 		if(!is_array($GLOBALS['MG']['SITE']['AD_BASE_DN'])){
@@ -38,41 +38,43 @@ class adauth extends auth{
 		if(!is_array($GLOBALS['MG']['SITE']['AD_DOMAIN_CONTROLLERS'])){
 			$GLOBALS['MG']['SITE']['AD_DOMAIN_CONTROLLERS']=explode(';',$GLOBALS['MG']['SITE']['AD_DOMAIN_CONTROLLERS']);
 		}
-		if(!empty($domains[1])){
-    		$index=array_search($GLOBALS['MG']['POST']['AD_DOMAIN'],$domains);
-    		if($index===false){
-    			trigger_error('(ADAUTH): Bad Domain Selected',E_USER_ERROR);
-    			return false;
-    		}
-		}
-        else{
-            $index = 0;
-        }
-
-		$options=array('base_dn'=>$GLOBALS['MG']['SITE']['AD_BASE_DN'][$index],'account_suffix'=>'@'.$domains[$index],'domain_controllers'=>array($GLOBALS['MG']['SITE']['AD_DOMAIN_CONTROLLERS'][$index]));
-		switch($GLOBALS['MG']['SITE']['AD_TLS_SSL']){
-			case 'tls':
-				$options['use_tls']=true;
-			break;
-			case 'ssl':
-				$options['use_ssl']=true;
-			break;
-			default:
-			
-			break;
+		if(!is_array($GLOBALS['MG']['SITE']['AD_DOMAINS'])){
+			$GLOBALS['MG']['SITE']['AD_DOMAINS']=explode(';',$GLOBALS['MG']['SITE']['AD_DOMAINS']);
 		}
 		
-		try {
-			$this->ad=new adLDAP($options);
-		}
-		catch (adLDAPException $e) {
-			trigger_error('(ADAUTH): Could not start adLDAP class: '.$e,E_USER_ERROR);
-			return false;
-		}
 	}
 	
 	final public function auth_authenticate($username,$password){
-		return $this->ad->authenticate($username,$password);
+	   $ret = false;
+        $size = count($GLOBALS['MG']['SITE']['AD_DOMAIN_CONTROLLERS']);
+        for($i=0;$i <$size;$i++){
+            if(!empty($GLOBALS['MG']['SITE']['AD_BASE_DN'][$i])){
+      		    $options=array('base_dn'=>$GLOBALS['MG']['SITE']['AD_BASE_DN'][$i],'account_suffix'=>'@'.$GLOBALS['MG']['SITE']['AD_DOMAINS'][$i],'domain_controllers'=>array($GLOBALS['MG']['SITE']['AD_DOMAIN_CONTROLLERS'][$i]));
+                switch($GLOBALS['MG']['SITE']['AD_TLS_SSL']){
+        			case 'tls':
+        				$options['use_tls']=true;
+        			break;
+        			case 'ssl':
+        				$options['use_ssl']=true;
+        			break;
+        			default:
+        			
+        			break;
+        		}
+                try {
+        			$this->ad=new adLDAP($options);
+        		}
+        		catch (adLDAPException $e) {
+        			trigger_error('(ADAUTH): Could not start adLDAP class: '.$e,E_USER_ERROR);
+        			return false;
+        		}
+                $ret = $this->ad->authenticate($username,$password);
+                if($ret){
+                    $i = $size+1;
+                }
+            }
+        }
+		return $ret;
 	}
 	
 	final public function auth_supported(){
