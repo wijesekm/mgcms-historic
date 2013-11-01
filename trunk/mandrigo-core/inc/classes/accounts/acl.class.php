@@ -31,7 +31,7 @@ class acl{
 		
 	public function acl_load($uid,$groups){
 		$userACL=array();	
-		$acls=$this->acl_getAll($groups);
+		$acls=$this->acl_getAll($groups,false);
 		foreach($acls as $acl){
 			if($acl['acl_page']){
 				if(!isset($userACL[$acl['acl_page']])){
@@ -101,11 +101,11 @@ class acl{
 		return true;
 	}
     
-    public function acl_getAll($groups){	
+    public function acl_getAll($groups,$exact){	
 		$conds=array();
         foreach($groups as $key=>$val){
             $conds[]=array(false,array(DB_OR),'acl_group','=',$val);
-            if(preg_match('/-/',$val)){
+            if(!$exact && preg_match('/-/',$val)){
                 $tmp = preg_split('/-/',$val);
                 $conds[]=array(DB_LIKE,array(DB_OR),'acl_group','*-'.$tmp[1].'%');
             }
@@ -114,7 +114,7 @@ class acl{
         $dta = $GLOBALS['MG']['SQL']->sql_fetcharray(array(TABLE_PREFIX.'acl'),false,$conds);
 		return $dta;
     }
-
+    
 	private function acl_comp($old,$new){
 		switch($new){
 			case '-':

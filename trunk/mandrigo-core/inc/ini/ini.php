@@ -225,7 +225,9 @@ if(is_array($tmp[0])){
 		switch($key){
 			case 'PACKAGES':
 			case 'CONTENTHOOKS':
-			case 'VARHOOKS':
+			case 'CACHEHOOKS':
+            case 'AJAXHOOKS':
+            case 'EXTHOOKS':
 				$GLOBALS['MG']['PAGE'][$key]=explode(';',$tmp[0][$keys[$i]]);
 			break;
 			default:
@@ -324,7 +326,7 @@ function mginit_loadCustomPackages($pkgs){
 	for($i=0;$i<$soq;$i++){
 		if($pkgs[$i]){
 			$pkgdta=$GLOBALS['MG']['SQL']->sql_fetcharray(array(TABLE_PREFIX.'packages'),false,array(array(false,false,'pkg_filename','=',strtolower($pkgs[$i]))));
-			if($pkgdta[0]['pkg_deps']){
+            if($pkgdta[0]['pkg_deps']){
 				mginit_loadCustomPackages(explode(';',$pkgdta[0]['pkg_deps']));
 			}
 			if($pkgdta[0]['pkg_type']=='pkg'){

@@ -152,16 +152,18 @@ class group{
 			}
 			$ret=array();
 			for($i=0;$i<$groups['count'];$i++){
-                $ret[$groups[$i]] = array();
-                foreach($groups[$i] as $key=>$val){
-                    $key = preg_replace('/group_/','',$key);
-                    if($key == 'members' || $key == 'admins'){
-                        $ret[$groups[$i]['group_gid']][$key] = explode(';',$val);
+                if(!empty($groups[$i])){
+                    $ret[$groups[$i]['group_gid']] = array();
+                    foreach($groups[$i] as $key=>$val){
+                        $key = preg_replace('/group_/','',$key);
+                        if($key == 'members' || $key == 'admins'){
+                            $ret[$groups[$i]['group_gid']][$key] = explode(';',$val);
+                        }
+                        else{
+                            $ret[$groups[$i]['group_gid']][$key] = $val;
+                        }
+                       
                     }
-                    else{
-                        $ret[$groups[$i]['group_gid']][$key] = $val;
-                    }
-                   
                 }
 			}
 			$ret['count']=count($ret);
@@ -174,7 +176,7 @@ class group{
         if(!is_array($gids)){
             $gids= array($gids);
         }
-        return $ac->acl_getAll($gids);
+        return $ac->acl_getAll($gids,true);
     }
 	
 	public function group_add($gid,$members,$admins,$desc=''){
@@ -315,10 +317,10 @@ class group{
                 if(is_array($newAdminList)){
                     $newAdminList=implode(';',$newAdminList);
                 }
-    			if(substr(0,1,$newAdminList)!=';'){
+    			if(substr($newAdminList,0,1)!=';'){
     				$newAdminList=';'.$newAdminList;
     			}
-    			if(substr(-1,1,$newAdminList)!=';'){
+    			if(substr($newAdminList,-1,1)!=';'){
     				$newAdminList.=';';
     			}
             }

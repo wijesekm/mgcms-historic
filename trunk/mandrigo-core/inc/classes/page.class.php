@@ -110,7 +110,7 @@ class page{
 			}
 			if(!$GLOBALS['MG']['CFG']['STOPCACHE']){
 				$cache=new mgcache();  
-				$content=$cache->mgc_readcache(filemtime($GLOBALS['MG']['CFG']['PATH']['TPL'].$GLOBALS['MG']['LANG']['NAME'].'/'.page::PAGE_TPL_NAME));
+				$content=$cache->mgc_readcache(filemtime($GLOBALS['MG']['CFG']['PATH']['TPL'].$GLOBALS['MG']['LANG']['NAME'].'/'.$GLOBALS['MG']['SITE']['TPL']));
 				if($content!=false){
 					return $content;
 				}				

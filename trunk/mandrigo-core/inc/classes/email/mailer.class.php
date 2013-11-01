@@ -90,6 +90,7 @@ class mailer{
     		 		$this->mail->SMTPSecure=$value;
     		 	break;
     		 	case 'smptauth':
+                    $value = explode(',',$value);
     		 		$this->mail->SMTPAuth=true;
     		 		$this->mail->Username=$value[0];
     		 		$this->mail->Password=$value[1];

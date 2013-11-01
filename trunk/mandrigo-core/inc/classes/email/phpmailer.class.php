@@ -409,7 +409,6 @@ class PHPMailer {
       if($i != 0) { $to .= ', '; }
       $to .= $this->AddrFormat($this->to[$i]);
     }
-
     $toArr = split(',', $to);
 
     $params = sprintf("-oi -f %s", $this->Sender);
@@ -494,8 +493,8 @@ class PHPMailer {
       }
       $error = $this->Lang('recipients_failed') . $error;
       $this->SetError($error);
-      $this->smtp->Reset();
-      return false;
+      //$this->smtp->Reset();
+      //return false;
     }
 
     if(!$this->smtp->Data($header . $body)) {

@@ -95,7 +95,7 @@ function mginit_cleanVar($value,$clean){
 			return (preg_match("/^[0-9]+$/",$value))?$value:false;
 		break;
 		case 'float':
-			return (preg_match("/^[0-9]+(\.[0-9]+)?$/",$value))?$value:false;
+			return (preg_match("/^[-+]{0,1}[0-9]+(\.[0-9]+)?$/",$value))?$value:false;
 		break;
 		case 'char':
 			return (preg_match("/^.{1}$$/",$value))?$value:false;
