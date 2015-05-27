@@ -506,6 +506,9 @@ class mysql extends sql{
 					if(isset($data[$k][2])){
 						$query.=$this->sql_escape($data[$k][0],false,1).'='.$this->sql_escape($data[$k][2]).'('.$this->sql_escape($data[$k][3],false,1).','.$this->sql_escape($data[$k][1],false,2).')';
 					}
+                    else if($data[$k][1]=='++'){
+                        $query.=$this->sql_escape($data[$k][0],false,1).'='.$this->sql_escape($data[$k][0],false,1).'+1';
+                    }
 					else{
 						$query.=$this->sql_escape($data[$k][0],false,1).'='.$this->sql_escape($data[$k][1],false,2);
 					}
@@ -766,7 +769,10 @@ class mysql extends sql{
 					$last=$conds[$i][1][1];
 				}				
 			}
-
+			if(!isset($conds[$i][0]) || count($conds[$i]) < 3){
+				trigger_error('(SQL): Incorrect Format Conds: '.var_export($conds,true),E_USER_WARNING);
+				break;
+			}
 			switch($conds[$i][0]){
 				case DB_LIKE:
 				case DB_NOTLIKE:

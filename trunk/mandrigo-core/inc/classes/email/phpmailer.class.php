@@ -126,7 +126,7 @@ class PHPMailer {
    * Sets the path of the sendmail program.
    * @var string
    */
-  var $Sendmail          = '/usr/sbin/sendmail';
+  var $Sendmail          = 'C:\\webdev\\bin\\sendmail\\sendmail.exe';
 
   /**
    * Holds PHPMailer version.
