@@ -40,6 +40,9 @@ class page{
 		else{
 			$base=$GLOBALS['MG']['PAGE']['PATH'];
 		}
+		if(!isset($_SERVER['SERVER_SIGNATURE'])){
+			$_SERVER['SERVER_SIGNATURE']='';
+		}
 		$GLOBALS['MG']['PAGE']['VARS']['NO']='';
 		$GLOBALS['MG']['PAGE']['VARS']=array(
 			'URI'=>$GLOBALS['MG']['SITE']['URI'],
