@@ -578,6 +578,13 @@ class mysql extends sql{
 			case DB_TRUNCATE:
 				$query=$this->sql_formatTable($table,'TRUNCATE TABLE').';';
 			break;
+			case DB_LOCK:
+				$query= $this->sql_formatTable($table,'LOCK TABLE');
+				$query.=' '.(($params == 'READ')?'READ;':'WRITE;');
+			break;
+			case DB_UNLOCK:
+				$query = 'UNLOCK TABLES;';
+			break;
 			case DB_ADD:
 				$query=$this->sql_formatTable($table,'CREATE TABLE').' (';
 				$tsize=count($params);

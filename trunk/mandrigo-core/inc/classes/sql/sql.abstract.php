@@ -27,6 +27,8 @@ if(!defined('STARTED')){
 }
 
 define("DB_LIKE","SQL_LIKE");
+define("DB_LOCK",'SQL_LOCK');
+define("DB_UNLOCK","SQL_UNLOCK");
 define("DB_NOTLIKE","SQL_NOTLIKE");
 define("DB_AND","SQL_AND");
 define("DB_OR","SQL_OR");
