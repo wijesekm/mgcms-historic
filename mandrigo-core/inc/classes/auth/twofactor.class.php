@@ -122,7 +122,7 @@ class twofactor{
 
     public function twofactor_create($user){
         $this->twofactor_changeDb();
-        $code = $this->twofactor_genhotp(16,8);
+        $code = $this->twofactor_genhotp(16,6);
         if(!$GLOBALS['MG']['SQL']->sql_dataCommands(DB_INSERT,$this->table,array('token','user','ip'),array($code,$user,'new'))){
             $GLOBALS['MG']['SQL']->sql_dataCommands(DB_REMOVE,$this->table,array(array(false,array(DB_AND),'user','=',$user),array(false,false,'ip','=','new')));
             if(!$GLOBALS['MG']['SQL']->sql_dataCommands(DB_INSERT,$this->table,array('token','user','ip'),array($code,$user,'new'))){

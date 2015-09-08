@@ -77,19 +77,19 @@ class mailer{
     				}
     				$this->mail->Hostname=$value;
     			break;
-    		 	case 'smpthost':
+    		 	case 'smtphost':
     		 		$this->mail->Host=$value;
     		 	break;
-    		 	case 'smptport':
+    		 	case 'smtpport':
     		 		$this->mail->Port=$value;
     		 	break;
-    		 	case 'smpthelo':
+    		 	case 'smtphelo':
     		 		$this->mail->Helo=$value;
     		 	break;
-    		 	case 'smptsecure':
+    		 	case 'smtpsecure':
     		 		$this->mail->SMTPSecure=$value;
     		 	break;
-    		 	case 'smptauth':
+    		 	case 'smtpauth':
                     $value = explode(',',$value);
     		 		$this->mail->SMTPAuth=true;
     		 		$this->mail->Username=$value[0];

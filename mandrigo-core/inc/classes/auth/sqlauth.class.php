@@ -39,12 +39,8 @@ class sqlauth extends auth{
 		}
 		return $this->auth_passcomp($password,$GLOBALS['MG']['USER']['PASSWORD']);
 	}
-	
-	final public function auth_supported(){
-		return array('change_pass'=>true);
-	}	
 
-	final public function auth_changePass($uid,$newPass,$encoding='md5'){
+	final public function auth_changePass($uid,$newPass){
 
 		$encPass=$this->act_encryptpasswd($newPass,$encoding);
         if(!$encPass){
@@ -57,5 +53,9 @@ class sqlauth extends auth{
 			return false;
         }
 		return true;
-	}	
+	}
+	
+	final public function auth_getAutoReg($uid,$password){
+		return false;
+	}
 }

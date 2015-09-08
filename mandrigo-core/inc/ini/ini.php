@@ -336,7 +336,7 @@ function mginit_loadCustomPackages($pkgs){
 			}
 			else{
 				if(!include_once($GLOBALS['MG']['CFG']['PATH']['INC'].'/classes/'.$pkgdta[0]['pkg_package'].'/'.$pkgs[$i].'.'.$pkgdta[0]['pkg_type'].PHPEXT)){
-					trigger_error('(INI): Could not load mandrigo package file: '.$pkgs[$i].'.'.$pkgdta[0]['pkg_type'].PHPEXT,E_USER_ERROR);
+					trigger_error('(INI): Could not load mg package file: '.$pkgs[$i].'.'.$pkgdta[0]['pkg_type'].PHPEXT,E_USER_ERROR);
 				}
 			}
 		}

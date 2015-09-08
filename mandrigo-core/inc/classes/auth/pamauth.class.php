@@ -51,11 +51,11 @@ class pamauth extends auth{
         return (trim($stat)=='OK')?true:false;
 	}
 	
-	final public function auth_supported(){
-		return array('change_pass'=>false);
+	final public function auth_changePass($uid,$newPass,$encoding='md5'){
+		return false;
 	}
 	
-	final public function auth_changePass($uid,$newPass,$encoding='md5'){
+	final public function auth_getAutoReg($uid,$password){
 		return false;
 	}
 }
