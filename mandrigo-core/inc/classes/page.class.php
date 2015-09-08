@@ -45,6 +45,8 @@ class page{
 		}
 		$GLOBALS['MG']['PAGE']['VARS']['NO']='';
 		$GLOBALS['MG']['PAGE']['VARS']=array(
+			'VERSION'=>$GLOBALS['MG']['SITE']['VERSION'],
+			'VERSION_BUNDLE'=>$GLOBALS['MG']['SITE']['BUNDLE_VERSION'],
 			'URI'=>$GLOBALS['MG']['SITE']['URI'],
 			'SERVER_NAME'=>$_SERVER['SERVER_NAME'],
 			'SSL'=>(isset($_SERVER['HTTPS'])&&$_SERVER['HTTPS']!='off')?'1':'0',
