@@ -60,7 +60,7 @@ class ewsauth extends auth{
 	final public function auth_getAutoReg($uid,$password){
 		$ch = curl_init();
 		$opts = array(
-				CURLOPT_URL             => 'https://mail.munciepower.com/EWS/Exchange.asmx',
+				CURLOPT_URL             => $GLOBALS['MG']['SITE']['EWS_SERVER'].'/EWS/Exchange.asmx',
 				CURLOPT_HTTPAUTH        => CURLAUTH_NTLM,
 				CURLOPT_CUSTOMREQUEST   => 'POST',
 				CURLOPT_POSTFIELDS      => 

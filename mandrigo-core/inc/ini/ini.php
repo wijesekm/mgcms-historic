@@ -76,7 +76,7 @@ if($GLOBALS['MG']['CFG']['PATH']['TMP']){
  * Sql Database Init
  */
 
-eval('$GLOBALS[\'MG\'][\'SQL\']=new '.$GLOBALS['MG']['CFG']['SQL']['METHOD'].'();');
+$GLOBALS['MG']['SQL'] = new $GLOBALS['MG']['CFG']['SQL']['METHOD']();
 if(!$GLOBALS['MG']['SQL']){
 	trigger_error('(INI): Invalid SQL method or no method set!', E_USER_ERROR);
 	die();
@@ -138,7 +138,7 @@ mginit_loadPackage($load);
 * User Data
 */
 $ses=new session(0);
-eval('$act=new '.$GLOBALS['MG']['SITE']['ACCOUNT_TYPE'].'();');
+$act = new $GLOBALS['MG']['SITE']['ACCOUNT_TYPE']();
 if(!$act){
 	trigger_error('(INI): Invalid account type or not account type set!', E_USER_ERROR);
 	die();
