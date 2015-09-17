@@ -38,7 +38,7 @@ $GLOBALS['MG']['PAGE']=array('PATH'=>'','PACKAGES'=>array(),'CONTENTHOOKS'=>arra
 * Start Error Logger
 */
 if(!include_once($GLOBALS['MG']['CFG']['PATH']['INC'].'classes/errorLogger.class'.PHPEXT)){
-	die('Could not start Error Logging!');
+	die('Could not start Error Logging');
 }
 $GLOBALS['MG']['ERROR']['LOGGER']=new errorLogger();
 set_error_handler('mginit_errorHandler');
@@ -75,25 +75,33 @@ if($GLOBALS['MG']['CFG']['PATH']['TMP']){
 /**
  * Sql Database Init
  */
-
+if(!class_exists($GLOBALS['MG']['CFG']['SQL']['METHOD'])){
+	trigger_error('(INI): Invalid SQL Type', E_USER_ERROR);
+	$GLOBALS['MG']['ERROR']['LOGGER']->el_checkFatal();
+}
 $GLOBALS['MG']['SQL'] = new $GLOBALS['MG']['CFG']['SQL']['METHOD']();
 if(!$GLOBALS['MG']['SQL']){
-	trigger_error('(INI): Invalid SQL method or no method set!', E_USER_ERROR);
-	die();
+	trigger_error('(INI): Invalid SQL method or no method set', E_USER_ERROR);
+	$GLOBALS['MG']['ERROR']['LOGGER']->el_checkFatal();
 }
 
 $t=$GLOBALS['MG']['SQL']->sql_connect($GLOBALS['MG']['CFG']['SQL']['HOST'],$GLOBALS['MG']['CFG']['SQL']['PORT_SOCKET']
 								  ,$GLOBALS['MG']['CFG']['SQL']['USERNAME'],$GLOBALS['MG']['CFG']['SQL']['PASSWORD']
 								  ,$GLOBALS['MG']['CFG']['SQL']['DB'],$GLOBALS['MG']['CFG']['SQL']['PERSISTENT'],$GLOBALS['MG']['CFG']['SQL']['SSL']);
 if(!$t){
-	trigger_error('(INI): Could not connect to SQL database!', E_USER_ERROR);
-	die();
+	trigger_error('(INI): Could not connect to SQL database', E_USER_ERROR);
+	$GLOBALS['MG']['ERROR']['LOGGER']->el_checkFatal();
 }
 
 /**
 * Load Site Data
 */
 $tmp=$GLOBALS['MG']['SQL']->sql_fetcharray(array(TABLE_PREFIX.'config'),false,false);
+if($tmp['count'] < 1){
+	trigger_error('(INI): Could not load Site Configuration.  Database is blank.', E_USER_ERROR);
+	$GLOBALS['MG']['ERROR']['LOGGER']->el_checkFatal();
+}
+
 for($i=0;$i<$tmp['count'];$i++){
 	$GLOBALS['MG']['SITE'][(string)$tmp[$i]['cfg_var']]=$tmp[$i]['cfg_data'];
 }
@@ -138,10 +146,14 @@ mginit_loadPackage($load);
 * User Data
 */
 $ses=new session(0);
+if(!class_exists($GLOBALS['MG']['SITE']['ACCOUNT_TYPE'])){
+	trigger_error('(INI): Invalid Account Type', E_USER_ERROR);
+	$GLOBALS['MG']['ERROR']['LOGGER']->el_checkFatal();
+}
 $act = new $GLOBALS['MG']['SITE']['ACCOUNT_TYPE']();
 if(!$act){
-	trigger_error('(INI): Invalid account type or not account type set!', E_USER_ERROR);
-	die();
+	trigger_error('(INI): Invalid account type or not account type set', E_USER_ERROR);
+	$GLOBALS['MG']['ERROR']['LOGGER']->el_checkFatal();
 }
 
 if(isset($GLOBALS['MG']['POST']['USER_NAME'])&&preg_match('/;/',$GLOBALS['MG']['POST']['USER_NAME'])){
