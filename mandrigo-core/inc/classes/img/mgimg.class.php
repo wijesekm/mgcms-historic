@@ -305,7 +305,7 @@ class mgimg{
 	public function img_display($filename=false,$jpgquality=100,$pngcomp=9,$pngfilters=false){
 	 	$f=$GLOBALS['MG']['CFG']['PATH']['TMP'].'/'.md5(uniqid(rand(),true));
 		if($filename){
-			$f=$filename.$this->ext;
+			$f=$filename;
 		}
 		switch($this->mime){
 			case mgimg::IMG_MIME_GIF:
