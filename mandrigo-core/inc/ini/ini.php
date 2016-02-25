@@ -48,19 +48,24 @@ set_error_handler('mginit_errorHandler');
 */
 $load=array(array('template','class','/classes/'),
 			array('parser','class','/classes/parsers/'),
-			array('mgcache','class','/classes/'),
 			array('sql','abstract','/classes/sql/'),
 			array($GLOBALS['MG']['CFG']['SQL']['METHOD'],'class','/classes/sql/'),
-			array('session','class','/classes/auth/'),
 			array('mgtime','class','/classes/'),
 			array('clean','ini','/ini/'),
 			array('funct','ini','/ini/'));
+if(!defined('CRON')){
+	$load[]=array('mgcache','class','/classes/');
+	$load[]=array('session','class','/classes/auth/');
+}
             
-if(!defined('AJAX')){
-    $load[]=array('page','class','/classes/');
+if(defined('AJAX')){
+    $load[]=array('ajax','class','/classes/');
+}
+else if(defined('CRON')){
+	$load[]=array('cron','class','/classes/');
 }
 else{
-    $load[]=array('ajax','class','/classes/');
+    $load[]=array('page','class','/classes/');
 }
 mginit_loadPackage($load);
 
@@ -135,66 +140,72 @@ if(isset($GLOBALS['MG']['SITE']['MIME_TABLE'])){
 /**
 * Load some more packages
 */
-$load=array(array('bvars','ini','/ini/'),
-			array('accounts','abstract','/classes/accounts/'),
-			array('groups','class','/classes/accounts/'),
-			array('acl','class','/classes/accounts/'),
-			array($GLOBALS['MG']['SITE']['ACCOUNT_TYPE'],'class','/classes/accounts/'));
-mginit_loadPackage($load);
 
+$load=array(array('accounts','abstract','/classes/accounts/'),
+			array('groups','class','/classes/accounts/'),
+			array($GLOBALS['MG']['SITE']['ACCOUNT_TYPE'],'class','/classes/accounts/'));
+
+if(!defined('CRON')){
+	$load[] = array('acl','class','/classes/accounts/');
+	$load[] = array('bvars','ini','/ini/');
+}
+mginit_loadPackage($load);
 /**
 * User Data
 */
-$ses=new session(0);
-if(!class_exists($GLOBALS['MG']['SITE']['ACCOUNT_TYPE'])){
-	trigger_error('(INI): Invalid Account Type', E_USER_ERROR);
-	$GLOBALS['MG']['ERROR']['LOGGER']->el_checkFatal();
-}
-$act = new $GLOBALS['MG']['SITE']['ACCOUNT_TYPE']();
-if(!$act){
-	trigger_error('(INI): Invalid account type or not account type set', E_USER_ERROR);
-	$GLOBALS['MG']['ERROR']['LOGGER']->el_checkFatal();
-}
+if(!defined('CRON')){
+	$ses=new session(0);
+	if(!class_exists($GLOBALS['MG']['SITE']['ACCOUNT_TYPE'])){
+		trigger_error('(INI): Invalid Account Type', E_USER_ERROR);
+		$GLOBALS['MG']['ERROR']['LOGGER']->el_checkFatal();
+	}
+	$act = new $GLOBALS['MG']['SITE']['ACCOUNT_TYPE']();
+	if(!$act){
+		trigger_error('(INI): Invalid account type or not account type set', E_USER_ERROR);
+		$GLOBALS['MG']['ERROR']['LOGGER']->el_checkFatal();
+	}
+	
+	if(isset($GLOBALS['MG']['POST']['USER_NAME'])&&preg_match('/;/',$GLOBALS['MG']['POST']['USER_NAME'])){
+			$GLOBALS['MG']['COOKIE']['USER_NAME']=explode(';',$GLOBALS['MG']['POST']['USER_NAME']);
+			$GLOBALS['MG']['COOKIE']['USER_SESSION']=$GLOBALS['MG']['POST']['USER_SESSION'];
+	}
+	else{
+		$GLOBALS['MG']['COOKIE']['USER_NAME']=explode(';',$GLOBALS['MG']['COOKIE']['USER_NAME']);
+	}
+	if(!isset($GLOBALS['MG']['COOKIE']['USER_NAME'][1])){
+	    $GLOBALS['MG']['COOKIE']['USER_NAME'][1]='';
+	}
+	if(!$ses->session_load($GLOBALS['MG']['COOKIE']['USER_NAME'][0],$GLOBALS['MG']['COOKIE']['USER_NAME'][1],$GLOBALS['MG']['COOKIE']['USER_SESSION'])){
+		$GLOBALS['MG']['USER']=$act->act_load($GLOBALS['MG']['SITE']['DEFAULT_ACT']);
+		$GLOBALS['MG']['USER']=$GLOBALS['MG']['USER'][$GLOBALS['MG']['SITE']['DEFAULT_ACT']];
+		$GLOBALS['MG']['USER']['NOAUTH']=true;
+	}
+	else{
+		$GLOBALS['MG']['USER']=$act->act_load($GLOBALS['MG']['COOKIE']['USER_NAME'][1]);
+		$GLOBALS['MG']['USER']=$GLOBALS['MG']['USER'][$GLOBALS['MG']['COOKIE']['USER_NAME'][1]];
+		$GLOBALS['MG']['USER']['NOAUTH']=false;
+	}
 
-if(isset($GLOBALS['MG']['POST']['USER_NAME'])&&preg_match('/;/',$GLOBALS['MG']['POST']['USER_NAME'])){
-		$GLOBALS['MG']['COOKIE']['USER_NAME']=explode(';',$GLOBALS['MG']['POST']['USER_NAME']);
-		$GLOBALS['MG']['COOKIE']['USER_SESSION']=$GLOBALS['MG']['POST']['USER_SESSION'];
+	/**
+	 * Impersonate Settings
+	 */
+	 
+	 $GLOBALS['MG']['REAL_USER']=array();
+	 
+	if(isset($GLOBALS['MG']['SITE']['ALLOW_IMPERSONATE']) && isset($GLOBALS['MG']['COOKIE']['ALTERNATE_UID'])){
+	    if($GLOBALS['MG']['SITE']['ALLOW_IMPERSONATE'] == '1' && $GLOBALS['MG']['COOKIE']['ALTERNATE_UID'] != '' && mg_checkACL('*','admin')){
+	        if($act->act_isAccount($GLOBALS['MG']['COOKIE']['ALTERNATE_UID'])){
+	            $GLOBALS['MG']['REAL_USER'] = $GLOBALS['MG']['USER'];
+	        	$GLOBALS['MG']['USER']=$act->act_load($GLOBALS['MG']['COOKIE']['ALTERNATE_UID']);
+	        	$GLOBALS['MG']['USER']=$GLOBALS['MG']['USER'][$GLOBALS['MG']['COOKIE']['ALTERNATE_UID']];
+	        	$GLOBALS['MG']['USER']['NOAUTH']=false;
+	        }
+	    }
+	}
 }
 else{
-	$GLOBALS['MG']['COOKIE']['USER_NAME']=explode(';',$GLOBALS['MG']['COOKIE']['USER_NAME']);
+	$GLOBALS['MG']['USER']['TZ'] = '';
 }
-if(!isset($GLOBALS['MG']['COOKIE']['USER_NAME'][1])){
-    $GLOBALS['MG']['COOKIE']['USER_NAME'][1]='';
-}
-if(!$ses->session_load($GLOBALS['MG']['COOKIE']['USER_NAME'][0],$GLOBALS['MG']['COOKIE']['USER_NAME'][1],$GLOBALS['MG']['COOKIE']['USER_SESSION'])){
-
-	$GLOBALS['MG']['USER']=$act->act_load($GLOBALS['MG']['SITE']['DEFAULT_ACT']);
-	$GLOBALS['MG']['USER']=$GLOBALS['MG']['USER'][$GLOBALS['MG']['SITE']['DEFAULT_ACT']];
-	$GLOBALS['MG']['USER']['NOAUTH']=true;
-}
-else{
-	$GLOBALS['MG']['USER']=$act->act_load($GLOBALS['MG']['COOKIE']['USER_NAME'][1]);
-	$GLOBALS['MG']['USER']=$GLOBALS['MG']['USER'][$GLOBALS['MG']['COOKIE']['USER_NAME'][1]];
-	$GLOBALS['MG']['USER']['NOAUTH']=false;
-}
-
-/**
- * Impersonate Settings
- */
- 
- $GLOBALS['MG']['REAL_USER']=array();
- 
-if(isset($GLOBALS['MG']['SITE']['ALLOW_IMPERSONATE']) && isset($GLOBALS['MG']['COOKIE']['ALTERNATE_UID'])){
-    if($GLOBALS['MG']['SITE']['ALLOW_IMPERSONATE'] == '1' && $GLOBALS['MG']['COOKIE']['ALTERNATE_UID'] != '' && mg_checkACL('*','admin')){
-        if($act->act_isAccount($GLOBALS['MG']['COOKIE']['ALTERNATE_UID'])){
-            $GLOBALS['MG']['REAL_USER'] = $GLOBALS['MG']['USER'];
-        	$GLOBALS['MG']['USER']=$act->act_load($GLOBALS['MG']['COOKIE']['ALTERNATE_UID']);
-        	$GLOBALS['MG']['USER']=$GLOBALS['MG']['USER'][$GLOBALS['MG']['COOKIE']['ALTERNATE_UID']];
-        	$GLOBALS['MG']['USER']['NOAUTH']=false;
-        }
-    }
-}
-
 /**
 * Time Data
 */
@@ -206,7 +217,7 @@ $t=false;
 /**
 * Update Cookies
 */
-if(!defined('AJAX')){
+if(!defined('AJAX') && !defined('CRON')){
     $cdta=array(
     	'SECURE'=>(boolean)$GLOBALS['MG']['SITE']['COOKIE_SECURE'],
     	'PATH'=>$GLOBALS['MG']['SITE']['COOKIE_PATH'],
@@ -228,35 +239,63 @@ $ses=false;
 /**
 * Load Page Data
 */
-$tmp=$GLOBALS['MG']['SQL']->sql_fetcharray(array(TABLE_PREFIX.'pages'),false,array(array(false,false,'page_path','=',strtolower($GLOBALS['MG']['GET']['PAGE']))));
-if(is_array($tmp[0])){
-	$keys=array_keys($tmp[0]);
-	$soq=count($keys);
-	for($i=0;$i<$soq;$i++){
-		$key=strtoupper(preg_replace('/page_/','',$keys[$i]));
-		switch($key){
-			case 'PACKAGES':
-			case 'CONTENTHOOKS':
-			case 'CACHEHOOKS':
-            case 'AJAXHOOKS':
-            case 'EXTHOOKS':
-				$GLOBALS['MG']['PAGE'][$key]=explode(';',$tmp[0][$keys[$i]]);
-			break;
-			default:
-				$GLOBALS['MG']['PAGE'][$key]=$tmp[0][$keys[$i]];	
-			break;
+if(!defined('CRON')){
+	$tmp=$GLOBALS['MG']['SQL']->sql_fetcharray(array(TABLE_PREFIX.'pages'),false,array(array(false,false,'page_path','=',strtolower($GLOBALS['MG']['GET']['PAGE']))));
+	if(is_array($tmp[0])){
+		foreach($tmp[0] as $key=>$val){
+			$key=strtoupper(preg_replace('/page_/','',$key));
+			switch($key){
+				case 'PACKAGES':
+				case 'CONTENTHOOKS':
+				case 'CACHEHOOKS':
+				case 'AJAXHOOKS':
+				case 'EXTHOOKS':
+					$GLOBALS['MG']['PAGE'][$key]=explode(';',$val);
+					break;
+				default:
+					$GLOBALS['MG']['PAGE'][$key]=$val;
+					break;
+			}
 		}
+		$tmp=false;	
 	}
 	$tmp=false;
-	$keys=false;	
+	$GLOBALS['MG']['PAGE']['REDIRECT']=false;
+	
+	if(mg_checkACL($GLOBALS['MG']['PAGE']['PATH'],'admin')&&isset($GLOBALS['MG']['GET']['USER_NAME'])&&$GLOBALS['MG']['GET']['USER_NAME']!=''){
+		$GLOBALS['MG']['USER']=$act->act_load($GLOBALS['MG']['GET']['USER_NAME']);
+		$GLOBALS['MG']['USER']=$GLOBALS['MG']['USER'][$GLOBALS['MG']['GET']['USER_NAME']];
+		$GLOBALS['MG']['USER']['NOAUTH']=false;
+	}
 }
-$tmp=false;
-$GLOBALS['MG']['PAGE']['REDIRECT']=false;
-
-if(mg_checkACL($GLOBALS['MG']['PAGE']['PATH'],'admin')&&isset($GLOBALS['MG']['GET']['USER_NAME'])&&$GLOBALS['MG']['GET']['USER_NAME']!=''){
-	$GLOBALS['MG']['USER']=$act->act_load($GLOBALS['MG']['GET']['USER_NAME']);
-	$GLOBALS['MG']['USER']=$GLOBALS['MG']['USER'][$GLOBALS['MG']['GET']['USER_NAME']];
-	$GLOBALS['MG']['USER']['NOAUTH']=false;
+else{
+	//load cron data
+	$tmp=$GLOBALS['MG']['SQL']->sql_fetcharray(array(TABLE_PREFIX.'cron'),false,false);
+	$GLOBALS['MG']['PAGE']['PATH'] = 'cron';
+	$GLOBALS['MG']['PAGE']['DATA']=array();
+	if(is_array($tmp[0])){
+		foreach($tmp as $key=>$val){
+			if(!is_array($val)){
+				continue;
+			}
+			$GLOBALS['MG']['PAGE']['DATA'][$key] = array();
+			foreach($val as $key2=>$val2){
+				$key2=strtoupper(preg_replace('/cron_/','',$key2));
+				switch($key2){
+					case 'PACKAGE':
+						$GLOBALS['MG']['PAGE']['PACKAGES'][]=$val2;
+					break;
+					default:
+						$GLOBALS['MG']['PAGE']['DATA'][$key][$key2]=$val2;
+					break;
+				};
+			}
+			
+			
+		}
+		$tmp=false;
+	}
+	$tmp=false;
 }
 $act=false;
 /**
@@ -264,17 +303,17 @@ $act=false;
 */
 $lang=false;
 if($GLOBALS['MG']['SITE']['LANG_ALLOW_OVERRIDE']=='1'){
-	if(isset($GLOBALS['MG']['COOKIE']['LANGUAGE'])){
+	if(!empty($GLOBALS['MG']['COOKIE']['LANGUAGE'])){
 		$lang=$GLOBALS['MG']['COOKIE']['LANGUAGE'];	
 	}
-	else if(isset($GLOBALS['MG']['GET']['LANGUAGE'])){
+	else if(!empty($GLOBALS['MG']['GET']['LANGUAGE'])){
 		$lang=$GLOBALS['MG']['GET']['LANGUAGE'];
 		$s=$GLOBALS['MG']['SITE'];
 		@setcookie($s['COOKIE_PREFIX'].'lang',$GLOBALS['MG']['GET']['LANGUAGE'],0,$s['COOKIE_PATH'],$s['COOKIE_DOM'],$s['COOKIE_SECURE']);
 	}
-	else if($GLOBALS['MG']['USER']['LANG']){
+	else if(!empty($GLOBALS['MG']['USER']['LANG'])){
 		$lang=$GLOBALS['MG']['USER']['LANG'];
-		if(isset($GLOBALS['MG']['SITE']['MOBILE_SUPPORT'])){
+		if(!empty($GLOBALS['MG']['SITE']['MOBILE_SUPPORT'])){
 			if(mginit_mobileDeviceCheck()){
 				$lang.=$GLOBALS['MG']['SITE']['MOBILE_SUPPORT'];
 			}			
@@ -284,7 +323,7 @@ if($GLOBALS['MG']['SITE']['LANG_ALLOW_OVERRIDE']=='1'){
 }
 if(!$lang){
 	$lang=$GLOBALS['MG']['SITE']['DEFAULT_LANGUAGE'];
-	if(isset($GLOBALS['MG']['SITE']['MOBILE_SUPPORT'])){
+	if(!empty($GLOBALS['MG']['SITE']['MOBILE_SUPPORT'])){
 		if(mginit_mobileDeviceCheck()){
 			$lang.=$GLOBALS['MG']['SITE']['MOBILE_SUPPORT'];
 		}			
@@ -303,7 +342,6 @@ $GLOBALS['MG']['LANG']['CONTENT_TYPE']='text/html';
 $lang=false;
 
 $GLOBALS['MG']['PAGE']['TPL']=$GLOBALS['MG']['CFG']['PATH']['TPL'].$GLOBALS['MG']['LANG']['NAME'].'/pages/'.implode('/',explode($GLOBALS['MG']['SITE']['URL_DELIM'],$GLOBALS['MG']['PAGE']['PATH'])).'.tpl';
-
 
 /**
 * Load Packages

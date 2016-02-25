@@ -123,11 +123,11 @@ class session{
 			$cdata['EXPIRES']+=$this->t;
 		}
 		
-		if(!setcookie($GLOBALS['MG']['SITE']['COOKIE_PREFIX'].session::CUSER,$this->id.';'.$this->uid,$cdata['EXPIRES'],$cdata['PATH'],$cdata['DOM'],$cdata['SECURE'])){
+		if(!setcookie($GLOBALS['MG']['SITE']['COOKIE_PREFIX'].session::CUSER,$this->id.';'.$this->uid,$cdata['EXPIRES'],$cdata['PATH'],$cdata['DOM'],$cdata['SECURE'],true)){
 			trigger_error('(SESSION): Could not set user cookie',E_USER_WARNING);
 			return false;
 		}
-		if(!setcookie($GLOBALS['MG']['SITE']['COOKIE_PREFIX'].session::CSESSION,$this->sid,$cdata['EXPIRES'],$cdata['PATH'],$cdata['DOM'],$cdata['SECURE'])){
+		if(!setcookie($GLOBALS['MG']['SITE']['COOKIE_PREFIX'].session::CSESSION,$this->sid,$cdata['EXPIRES'],$cdata['PATH'],$cdata['DOM'],$cdata['SECURE'],true)){
 			trigger_error('(SESSION): Could not set session cookie',E_USER_WARNING);
 			return false;
 		}

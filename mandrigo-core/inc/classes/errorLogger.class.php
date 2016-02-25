@@ -161,7 +161,11 @@ class errorLogger{
 	* Checks for the existance of fatal errors and stops execution if one is detected.
     * If DISPFATAL config is set it will also display information on the fatal error.
 	*
-	*/	    
+	*/	   
+	public function el_hasFatalErrors(){
+		return count($this->fatalErrors) != 0;
+	}
+	
     public function el_checkFatal(){
         
         if(count($this->fatalErrors) == 0){

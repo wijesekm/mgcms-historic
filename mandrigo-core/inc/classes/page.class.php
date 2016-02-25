@@ -46,7 +46,6 @@ class page{
 		$GLOBALS['MG']['PAGE']['VARS']['NO']='';
 		$GLOBALS['MG']['PAGE']['VARS']=array(
 			'VERSION'=>$GLOBALS['MG']['SITE']['VERSION'],
-			'VERSION_BUNDLE'=>$GLOBALS['MG']['SITE']['BUNDLE_VERSION'],
 			'URI'=>$GLOBALS['MG']['SITE']['URI'],
 			'SERVER_NAME'=>$_SERVER['SERVER_NAME'],
 			'SSL'=>(isset($_SERVER['HTTPS'])&&$_SERVER['HTTPS']!='off')?'1':'0',
@@ -75,7 +74,8 @@ class page{
 			'ACL_ADMIN'=>(mg_checkACL($GLOBALS['MG']['PAGE']['PATH'],'admin'))?'1':'0',
 			'ACL_MODIFY'=>(mg_checkACL($GLOBALS['MG']['PAGE']['PATH'],'modify'))?'1':'0',
 			'ACL_WRITE'=>(mg_checkACL($GLOBALS['MG']['PAGE']['PATH'],'write'))?'1':'0',
-			'ACL_READ'=>(mg_checkACL($GLOBALS['MG']['PAGE']['PATH'],'read'))?'1':'0'
+			'ACL_READ'=>(mg_checkACL($GLOBALS['MG']['PAGE']['PATH'],'read'))?'1':'0',
+			'UNIQUE_ID'=>md5(uniqid(rand(),true))
 		);
         
         if(!empty($GLOBALS['MG']['PAGE']['PATH'])){
