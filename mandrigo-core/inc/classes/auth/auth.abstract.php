@@ -5,18 +5,18 @@
  * @author 		Kevin Wijesekera
  * @copyright 	2008
  * @edited		6-8-2008
- 
+
  ###################################
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
- 
+
  This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
- 
+
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see http://www.gnu.org/licenses/.
  ###################################
@@ -27,11 +27,11 @@ if(!defined('STARTED')){
 }
 
 abstract class auth{
-	
+
 	abstract public function auth_authenticate($username,$password);
-	
+
 	abstract public function auth_changePass($uid,$newPass);
-	
+
 	abstract public function auth_getAutoReg($uid,$password);
 
     protected function act_randstring($size){
@@ -47,13 +47,13 @@ abstract class auth{
         }
         return $str;
     }
-    
+
     protected function act_encryptpasswd($pwd){
 		return password_hash($pwd,PASSWORD_DEFAULT);
 	}
 
 	protected function auth_passcomp($form_val,$db_val){
-		return password_hash($form_val,PASSWORD_DEFAULT) === $db_val;
+		return password_verify($form_val,$db_val);
 	}
 
 }

@@ -11,12 +11,12 @@
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
- 
+
  This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
- 
+
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see http://www.gnu.org/licenses/.
  ###################################
@@ -27,14 +27,14 @@ if(!defined('STARTED')){
 }
 
 class errorLogger{
-	
+
 	/**
 	* Variables
 	*/
 	public $errorTypes;
 	private $fatalErrors = array();
     private $errors = array();
-    
+
 	/**
 	* Construct and Destruction functions
 	*/
@@ -65,7 +65,7 @@ class errorLogger{
 		$this->userErrors=false;
 		$this->errorTypes=false;
 	}
-	
+
 	/**
 	* Public Functions
 	*/
@@ -123,19 +123,19 @@ class errorLogger{
 	*
 	* OUTPUTS:
 	* true on success, false on fail
-	*/	
+	*/
 	public function el_addError($errno, $errmsg, $filename, $linenum, $vars){
 	   $dt = @date("Y-m-d H:i:s (T)");
         if($errno == E_ERROR || $errno == E_CORE_ERROR || $errno == E_USER_ERROR){
             $this->fatalErrors[] = array(
-                $dt,$errno,$this->errorTypes[$errno],$_SERVER['REQUEST_URI'],$errmsg,$filename,$linenum
+                $dt,$errno,$this->errorTypes[$errno],(isset($_SERVER['REQUEST_URI']))?$_SERVER['REQUEST_URI']:'',$errmsg,$filename,$linenum
             );
         }
         $this->errors[] = array(
-            
+
             $this->errorTypes[$errno],$errmsg,$filename,$linenum
         );
-		
+
 	 	$err = "<error>\r\n";
 	    $err .= "\t<datetime>" . $dt . "</datetime>\r\n";
         if(isset($GLOBALS['MG']['USER']['UID'])){
@@ -146,28 +146,28 @@ class errorLogger{
         }
 	    $err .= "\t<errornum>" . $errno . "</errornum>\r\n";
 	    $err .= "\t<errortype>" . $this->errorTypes[$errno] . "</errortype>\r\n";
-	    $err .= "\t<erroruri>".$_SERVER['REQUEST_URI']."</erroruri>\r\n";
+	    $err .= "\t<erroruri>".(isset($_SERVER['REQUEST_URI']))?$_SERVER['REQUEST_URI']:''."</erroruri>\r\n";
 		$err .= "\t<errormsg>" . $errmsg . "</errormsg>\r\n";
 		$err .= "\t<scriptname>" . $filename . "</scriptname>\r\n";
 		$err .= "\t<scriptlinenum>" . $linenum . "</scriptlinenum>\r\n";
 		$err .= "</error>\r\n";
 		$this->el_logRotate($GLOBALS['MG']['CFG']['PATH']['LOG'].$this->errorTypes[$errno].'.log');
-		return @error_log($err, 3,$GLOBALS['MG']['CFG']['PATH']['LOG'].$this->errorTypes[$errno].'.log');		
+		return @error_log($err, 3,$GLOBALS['MG']['CFG']['PATH']['LOG'].$this->errorTypes[$errno].'.log');
 	}
-    
+
 	/**
 	* el_checkFatal()
 	*
 	* Checks for the existance of fatal errors and stops execution if one is detected.
     * If DISPFATAL config is set it will also display information on the fatal error.
 	*
-	*/	   
+	*/
 	public function el_hasFatalErrors(){
 		return count($this->fatalErrors) != 0;
 	}
-	
+
     public function el_checkFatal(){
-        
+
         if(count($this->fatalErrors) == 0){
             return false;
         }
@@ -190,13 +190,13 @@ class errorLogger{
         echo '</body></html>';
         die();
     }
-    
+
 	/**
 	* el_setErrorVar()
 	*
 	* Sets the ERROR_LIST var
 	*
-	*/	    
+	*/
     public function el_setErrorVar(){
        if(count($this->errors) > 0 && $GLOBALS['MG']['CFG']['ERRORLOGGER']['DISPERRORS']){
             $GLOBALS['MG']['PAGE']['VARS']['ERROR_LIST']=mg_jsonEncode($this->errors,true);
@@ -205,11 +205,11 @@ class errorLogger{
             $GLOBALS['MG']['PAGE']['VARS']['ERROR_LIST'] = '{}';
        }
     }
-		
+
 	/**
 	* Private Functions
 	*/
-	
+
 	/**
 	* el_logRotate($fname='error')
 	*
@@ -220,7 +220,7 @@ class errorLogger{
 	*
 	* OUTPUTS:
 	* true on success, false on fail
-	*/	
+	*/
 
 	private function el_logRotate($fname){
 		$dt = date("Y-m-d");
