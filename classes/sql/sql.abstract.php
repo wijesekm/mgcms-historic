@@ -42,6 +42,8 @@ define("DB_REMOVE","SQL_REMOVE");
 define("DB_DROP","SQL_DROP");
 define("DB_TRUNCATE","SQL_TRUNCATE");
 define("DB_ADD","SQL_ADD");
+define("DB_APPEND","SQL_APPEND");
+define("DB_INC","SQL_INC");
 define("DB_NULL","default NULL");
 define("DB_AUTOINC","NOT NULL auto_increment");
 define("DB_PKEY","SQL_P");
@@ -52,6 +54,7 @@ define("REGEXP","SQL_REGEXP");
 abstract class sql{
 	
 	protected $db;
+    protected $cur_db=false;
 	protected $print;
 	protected $groupBy=false;
 	protected $log_mode = false;
@@ -71,6 +74,10 @@ abstract class sql{
         $this->stopCtr = $queryCount;
     }
     
+	final public function sql_setDebug($debug = true){
+		$this->print = $debug;
+	}
+
 	abstract public function sql_info();
 	
 	abstract public function sql_listTables();

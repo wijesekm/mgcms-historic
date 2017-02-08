@@ -33,33 +33,51 @@ function mginit_cleanArray($value,$clean){
 	if(count($clean) < 7){
 		$clean=array_pad($clean,7,false);
 	}
+    if(!isset($GLOBALS['MG']['CLEAN'][$clean[0]])){
+        trigger_error('(CLEAN): Could no find clean type requested: '.$clean[0],E_USER_ERROR);
+    }
+    if(!isset($GLOBALS['MG']['CLEAN'][$clean[0]]['0000default'])){
+        $GLOBALS['MG']['CLEAN'][$clean[0]]['0000default'] = 'string';
+    }
     return mginit_cleanArraySub($value,$clean,$GLOBALS['MG']['CLEAN'][$clean[0]],$GLOBALS['MG']['CLEAN'][$clean[0]]['0000default']);
 }
 
 function mginit_cleanArraySub($value,$clean,$cleanPath,$default){
     $keys = array_keys($value);
     $soq = count($keys);
-    for($i=0;$i<$soq;$i++){
-        if(is_array($value[$keys[$i]])){
-            $value[$keys[$i]]=mginit_cleanArraySub($value[$keys[$i]],$clean,$cleanPath[$keys[$i]],$default);
+    foreach($value as $key=>$val){
+        if(is_array($val)){
+            if(!isset($cleanPath[$key])){
+                $value[$key] = mginit_cleanArraySub($val,$clean,array(),$default);
+            }
+            else{
+                $value[$key] = mginit_cleanArraySub($val,$clean,$cleanPath[$key],$default);
+            }
         }
         else{
             $tempClean = $clean;
             $tempClean[0] = $default;
-            if(isset($cleanPath[$keys[$i]])){
-                $tempClean[0] = $cleanPath[$keys[$i]];
+            if(isset($cleanPath[$key])){
+                $tempClean[0] = $cleanPath[$key];
+
             }
             else if(isset($cleanPath['0000default'])){
                 $tempClean[0] = $cleanPath['0000default'];
             }
-            //echo $value[$keys[$i]]
-            $value[$keys[$i]]=mginit_cleanVar($value[$keys[$i]],$tempClean);
-            //echo $value[$keys[$i]].'<br/>';
+            $value[$key]=mginit_cleanVar($val,$tempClean);
         }
     }
     return $value;
 }
-
+/**
+* 0 - clean name
+* 1 - URL Decode
+* 2 - Strip HTML Tags
+* 3 - Trim
+* 4 - Remove last URL deliminiator
+* 5 - base64 decode
+* 6 - strip slashes
+*/
 function mginit_cleanVar($value,$clean){
 	//
 	//In earlier versions not all 7 slots were used so lets pad the clean array with false so it is not undefined
@@ -95,7 +113,7 @@ function mginit_cleanVar($value,$clean){
 			return (preg_match("/^[0-9]+$/",$value))?$value:false;
 		break;
 		case 'float':
-			return (preg_match("/^[-+]{0,1}[0-9]+(\.[0-9]+)?$/",$value))?$value:false;
+			return (preg_match("/^(-|\+)?([0-9]+)?(\.[0-9]+)?$/",$value))?$value:false;
 		break;
 		case 'char':
 			return (preg_match("/^.{1}$$/",$value))?$value:false;

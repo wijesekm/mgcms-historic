@@ -143,8 +143,14 @@ class sqlact extends accounts{
 
 		for($i=0;$i<$users['count'];$i++){
 			$dta=$users[$i];
+            if(is_array($dta)){
 			$keys=array_keys($dta);
 			$soq=count($dta);
+            }
+            else{
+                $soq = 0;
+            }
+			
 			for($j=0;$j<$soq;$j++){
 				$nkey=strtoupper(preg_replace('/user_/','',$keys[$j]));
 				switch($nkey){

@@ -30,9 +30,11 @@ if(!defined('STARTED')){
 class group{
 	
 	private $table;
+    private $tableDesc;
 	
 	public function __construct(){
 		$this->table=(isset($GLOBALS['MG']['SITE']['GROUP_TBL']))?array($GLOBALS['MG']['SITE']['GROUP_TBL']):array(TABLE_PREFIX.'groups');
+        $this->tableDesc=(isset($GLOBALS['MG']['SITE']['GROUP_TBL']))?array($GLOBALS['MG']['SITE']['GROUP_TBL'].'_description'):array(TABLE_PREFIX.'groups_description');
 	}	
 	
 	public function group_getMembership($uid){
@@ -98,7 +100,7 @@ class group{
 	}
 	
 	public function group_getGroup($start=0,$length=10,$search=false,$loadOnly=false,$searchadm=false,$anchorSearch=3){
-		if($loadOnly){
+		if(!empty($loadOnly)){
 			$conds=array(array(false,false,'group_gid','=',$loadOnly));
 			if(isset($GLOBALS['MG']['SITE']['GROUP_TBL'])){
 				$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['SITE']['ACCOUNT_DB']);
@@ -107,10 +109,14 @@ class group{
 			if(isset($GLOBALS['MG']['SITE']['GROUP_TBL'])){
 				$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['CFG']['SQL']['DB']);
 			}
-			$groups=$groups[0];
-			$groups['group_members']=explode(';',$groups['group_members']);
-			$groups['group_members']['count']=count($groups['group_members']);
-			return array(1,$groups);	
+            if(!is_array($groups[0])){
+                return false;
+            }
+			$output = array();
+            $output['GID'] = $groups[0]['group_gid'];
+			$output['MEMBERS']=explode(';',$groups[0]['group_members']);
+            $output['ADMINS']=explode(';',$groups[0]['group_admins']);
+			return $output;
 		}
 		else{
 			$addit['orderby']=array(array('group_gid'),array('DESC'));
@@ -162,7 +168,6 @@ class group{
                         else{
                             $ret[$groups[$i]['group_gid']][$key] = $val;
                         }
-                       
                     }
                 }
 			}
@@ -201,14 +206,20 @@ class group{
 		if(substr($admins,-1,1)!=';'){
 			$admins.=';';
 		}
-		$dta=array($gid,$members,$admins,$desc);
-		$fields=array('group_gid','group_members','group_admins','group_desc');
+		$dta=array($gid,$members,$admins);
+		$fields=array('group_gid','group_members','group_admins');
 		if(isset($GLOBALS['MG']['SITE']['GROUP_TBL'])){
 			$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['SITE']['ACCOUNT_DB']);
 		}
 		$r=true;
 		if(!$GLOBALS['MG']['SQL']->sql_dataCommands(DB_INSERT,$this->table,$fields,$dta)){
 			trigger_error('(GROUPS): Could not add group to database: '.$gid,E_USER_ERROR);
+			$r=false;
+		}
+        $dta=array($gid,$desc);
+		$fields=array('group_gid','group_description');
+        if(!$GLOBALS['MG']['SQL']->sql_dataCommands(DB_INSERT,$this->tableDesc,$fields,$dta)){
+			trigger_error('(GROUPS): Could not add group description to database: '.$gid,E_USER_ERROR);
 			$r=false;
 		}
 		if(isset($GLOBALS['MG']['SITE']['GROUP_TBL'])){
@@ -229,6 +240,12 @@ class group{
 			trigger_error('(GROUPS): Could not remove group from database: '.$gid,E_USER_ERROR);
 			$r =false;
 		}
+
+		if(!$GLOBALS['MG']['SQL']->sql_dataCommands(DB_REMOVE,$this->tableDesc,$conds)){
+			trigger_error('(GROUPS): Could not remove group description from database: '.$gid,E_USER_ERROR);
+			$r =false;
+		}
+
 		if(isset($GLOBALS['MG']['SITE']['GROUP_TBL'])){
 			$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['CFG']['SQL']['DB']);
 		}
@@ -246,7 +263,7 @@ class group{
 	
 	public function group_addUser($gid,$uid){
 		$udata=$this->group_getGroup(false,false,false,$gid);
-		$udata=$udata[1]['group_members'];
+		$udata=$udata['MEMBERS'];
 		if(in_array($uid,$udata)){
 			trigger_error('(GROUPS): User '.$uid.' already in group '.$gid.'. Not adding.',E_USER_NOTICE);
 			return true;
@@ -262,7 +279,7 @@ class group{
 	
 	public function group_removeUser($gid,$uid){
 		$udata=$this->group_getGroup(false,false,false,$gid);
-		$udata=$udata[1]['group_members'];
+		$udata=$udata['MEMBERS'];
 		$key=array_search($uid,$udata);
 		if($key===false){
 			trigger_error('GROUPS: User '.$uid.' not in group '.$gid.'. Not removing.',E_USER_NOTICE);
@@ -297,7 +314,7 @@ class group{
 		return $r;
 	}
     	
-	public function group_modify($gid,$newUsersList,$newAdminList=false,$newDesc=''){
+	public function group_modify($gid,$newUsersList,$newAdminList=false,$newDesc=false){
 		if(!$gid){
 			return false;
 		}
@@ -312,7 +329,7 @@ class group{
 		}
 		$conds=array(array(false,false,'group_gid','=',$gid));
 		$ud=array(array('group_members',$newUsersList));
-		if($newAdminList!==false){
+		if(!empty($newAdminList)){
             if($newAdminList != ''){
                 if(is_array($newAdminList)){
                     $newAdminList=implode(';',$newAdminList);
@@ -327,8 +344,6 @@ class group{
 			$ud[]=array('group_admins',$newAdminList);	
 		}
 		
-        $ud[]=array('group_desc',$newDesc);
-
 		if(isset($GLOBALS['MG']['SITE']['GROUP_TBL'])){
 			$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['SITE']['ACCOUNT_DB']);
 		}
@@ -338,6 +353,16 @@ class group{
 			trigger_error('(GROUPS): Could not update group in database: '.$gid,E_USER_ERROR);
 			$r= false;
 		}
+
+        if(!empty($newDesc)){
+            $ud=array(array('group_description',$newDesc));
+    		if(!$GLOBALS['MG']['SQL']->sql_dataCommands(DB_UPDATE,$this->tableDesc,$conds,$ud)){
+    			trigger_error('(GROUPS): Could not update group description in database: '.$gid,E_USER_ERROR);
+    			$r= false;
+    		}
+
+        }
+
 		if(isset($GLOBALS['MG']['SITE']['GROUP_TBL'])){
 			$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['CFG']['SQL']['DB']);
 		}

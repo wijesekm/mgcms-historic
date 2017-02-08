@@ -150,28 +150,45 @@ class page{
 		if(!$hook){
 			return false;
 		}
+        $ret = false;
 		if(preg_match('/\:\:/',$hook)){
+			$hook_exp=explode('::',$hook);
+			if(!isset($this->obj[$hook_exp[0]])){
+				$this->obj[$hook_exp[0]]=true;
+			}
+			if(!is_object($this->obj[$hook_exp[0]])){
+                if(!class_exists($hook_exp[0])){
+                    trigger_error('(PAGE): No class found for hook: '.$hook,E_USER_ERROR);
+                    return false;
+                }
 			
-			$hook=explode('::',$hook);
-			if(!isset($this->obj[$hook[0]])){
-				$this->obj[$hook[0]]=true;
+				eval('$this->obj[\''.$hook_exp[0].'\']=new '.$hook_exp[0].'();');
+				if(!is_object($this->obj[$hook_exp[0]])){
+					trigger_error('(PAGE): Could not create page class: '.$hook,E_USER_ERROR);
+                    return false;
+				}
 			}
-			if(!is_object($this->obj[$hook[0]])){
-				eval('$this->obj[\''.$hook[0].'\']=new '.$hook[0].'();');
-				if(!is_object($this->obj[$hook[0]])){
-					trigger_error('(PAGE): Could not create page class: '.$hook[0],E_USER_WARNING);
+            try{
+                $reflection = new ReflectionMethod($this->obj[$hook_exp[0]],$hook_exp[1]);
 				}			
+            catch(ReflectionException $execpt){
+                trigger_error('(PAGE): No function in class found for hook: '.$hook,E_USER_ERROR);
+                return false;
 			}
-			eval('$ret=$this->obj[\''.$hook[0].'\']->'.$hook[1].'();');
-			if(!$ret){
-				trigger_error('(PAGE): Could not evaluate hook: '.$hook[1],E_USER_WARNING);
+
+            if(!$reflection->isPublic()){
+                trigger_error('(PAGE): Requested hook is not Public: '.$hook,E_USER_ERROR);
+                return false;
 			}
+			eval('$ret=$this->obj[\''.$hook_exp[0].'\']->'.$hook_exp[1].'();');
 		}
 		else{
 			eval('$ret='.$hook.'();');
+
+		}
 			if(!$ret){
-				trigger_error('(PAGE): Could not evaluate hook: '.$hook,E_USER_WARNING);
-			}
+		  trigger_error('(PAGE): Could not evaluate hook: '.$hook,E_USER_ERROR);
+          return false;
 		}
 		return $ret;
 	}

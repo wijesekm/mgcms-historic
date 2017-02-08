@@ -32,10 +32,6 @@ define("DB_BOTH",MYSQL_BOTH);
 
 class mysql extends sql{
 	
-	private $cur_db=false;
-	
-    
-    
 	/**
 	* Constants
 	*/	
@@ -52,10 +48,6 @@ class mysql extends sql{
 		$this->print=$debug;
 	}
     
-    
-    
-    
-	
 	/**
 	* General Public Functions
 	*/
@@ -147,23 +139,6 @@ class mysql extends sql{
 		}
 		return true;
 	}
-
-  /**
-   * mysql::sql_setDebug()
-   *
-   * @return
-   */
-	final public function sql_setDebug(){
-		if($this->print==true){
-			$this->print=false;
-		}
-		else{
-			$this->print=true;
-		}
-		return true;
-	}
-
-
   /**
    * mysql::sql_info()
    *
@@ -305,7 +280,8 @@ class mysql extends sql{
 		if(!$result=$this->sql_query($q.' '.$this->sql_formatTable($table).' '.$this->sql_formatConds($params).';')){
 			return false;
 		}
-        if($row > mysql_num_rows($result)){
+        $numrows = mysql_num_rows($result);
+        if($row > $numrows || $numrows == 0){
             return "";
         }
 		$value=@mysql_result($result,$row);
@@ -343,8 +319,8 @@ class mysql extends sql{
 			$having=$additParams['having'];
 		}
 		if(isset($additParams['join'])){
-			$join=mysql_real_escape_string($additParams['join'][0]).' `'.mysql_real_escape_string($additParams['join'][1]).'` ON ';
-			$join.=mysql_real_escape_string($additParams['join'][2]).'='.mysql_real_escape_string($additParams['join'][3]);
+            $join=$this->sql_escape($additParams['join'][0],false,0).' '.$this->sql_escape($additParams['join'][1],false,1).' ON ';
+            $join.=$this->sql_escape($additParams['join'][2],false,1).'='.$this->sql_escape($additParams['join'][3],false,1);
 		}
 		
 		if($distinct){
@@ -431,8 +407,8 @@ class mysql extends sql{
 		if(!$result){
 			$join='';
 			if(isset($addit['join'])){
-				$join=mysql_real_escape_string($addit['join'][0]).' `'.mysql_real_escape_string($addit['join'][1]).'` ON ';
-				$join.=mysql_real_escape_string($addit['join'][2]).'='.mysql_real_escape_string($addit['join'][3]);
+				$join=$this->sql_escape($addit['join'][0],false,0).' '.$this->sql_escape($addit['join'][1],false,1).' ON ';
+				$join.=$this->sql_escape($addit['join'][2],false,1).'='.$this->sql_escape($addit['join'][3],false,1);
 			}
 			if(is_array($distinct)){
 				$query=$this->sql_formatFields($distinct,'SELECT DISTINCT',' ');
@@ -503,10 +479,18 @@ class mysql extends sql{
 				$query=$this->sql_formatTable($table,'UPDATE').' SET ';
 				$ssize=count($data);
 				for($k=0;$k<$ssize;$k++){
-					if(isset($data[$k][2])){
+				    if($data[$k][0] == DB_APPEND){
+                        if(is_int($data[$k][2])){
+                            $query.=$this->sql_escape($data[$k][1],false,1).'= IFNULL('.$this->sql_escape($data[$k][1],false,1).',0) + '.$this->sql_escape($data[$k][2],false,2);
+                        }
+                        else{
+                            $query.=$this->sql_escape($data[$k][1],false,1).'= CONCAT('.$this->sql_escape($data[$k][1],false,1).','.$this->sql_escape($data[$k][2],false,2).')';
+                        }
+                    }
+					else if(isset($data[$k][2])){
 						$query.=$this->sql_escape($data[$k][0],false,1).'='.$this->sql_escape($data[$k][2]).'('.$this->sql_escape($data[$k][3],false,1).','.$this->sql_escape($data[$k][1],false,2).')';
 					}
-                    else if($data[$k][1]=='++'){
+                    else if($data[$k][1]==='++'){
                         $query.=$this->sql_escape($data[$k][0],false,1).'='.$this->sql_escape($data[$k][0],false,1).'+1';
                     }
 					else{
@@ -765,15 +749,22 @@ class mysql extends sql{
 		if(!$conds){
 			return $str.'1';
 		}
-		$last=false;
-		$ended=true;
+		$last=array(false,false);
+		$ended=array(true,true);
 		$csize=count($conds);
 		for($i=0;$i<$csize;$i++){
 			if(isset($conds[$i][1][1])){
-				if($last!=$conds[$i][1][1]){
+				if($last[0]!=$conds[$i][1][1]){
 					$str.='( ';
-					$ended=false;
-					$last=$conds[$i][1][1];
+					$ended[0]=false;
+					$last[0]=$conds[$i][1][1];
+				}
+			}
+			if(isset($conds[$i][1][2])){
+				if($last[1]!=$conds[$i][1][2]){
+					$str.='( ';
+					$ended[1]=false;
+					$last[1]=$conds[$i][1][2];
 				}				
 			}
 			if(!isset($conds[$i][0]) || count($conds[$i]) < 3){
@@ -812,7 +803,7 @@ class mysql extends sql{
 
 						}
 						else{
-							$str.=$this->sql_escape($conds[$i][2],false,1).' NOT NULL';
+							$str.=$this->sql_escape($conds[$i][2],false,1).' IS NOT NULL';
 						}
 					}
 					else{
@@ -820,10 +811,20 @@ class mysql extends sql{
 					}
 				break;
 			}
-			if(isset($conds[$i+1][1][1])){
-				if($last!=$conds[$i+1][1][1]){
+			if(isset($conds[$i+1][1][2])){
+				if($last[1]!=$conds[$i+1][1][2]){
 					$str.=' )';
-					$ended=true;
+					$ended[1]=true;
+				}
+			}
+			if(isset($conds[$i+1][1][1])){
+				if($last[0]!=$conds[$i+1][1][1]){
+				    if(!$ended[1]){
+				        $str.=' )';
+                        $ended[1] = true;
+				    }
+					$str.=' )';
+					$ended[0]=true;
 				}				
 			}
 			switch($conds[$i][1][0]){
@@ -838,7 +839,10 @@ class mysql extends sql{
 				break 2;
 			}
 		}
-		if(!$ended){
+		if(!$ended[1]){
+			$str.=' )';
+		}
+		if(!$ended[0]){
 			$str.=' )';
 		}
 		return $str;
@@ -976,8 +980,9 @@ class mysql extends sql{
     					$append='';
     				break;
     				case '1':
-    					if(!preg_match('/\./',$data[$i])){
     						$append='`';
+    					if(preg_match('/\./',$data[$i])){
+   						   $data[$i] =preg_replace('/\./','`.`',$data[$i]);
     					}
     				break;
     				case '2':
@@ -993,8 +998,9 @@ class mysql extends sql{
 					$append='';
 				break;
 				case '1':
-					if(!preg_match('/\./',$data)){
 						$append='`';
+                    if(preg_match('/\./',$data)){
+                        $data = preg_replace('/\./','`.`',$data);
 					}
 				break;
 				case '2':
