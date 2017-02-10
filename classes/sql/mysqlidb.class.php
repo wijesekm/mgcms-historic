@@ -278,7 +278,6 @@ class mysqlidb extends sql{
 		if(!$result=$this->sql_query($q.' '.$this->sql_formatTable($table).' '.$this->sql_formatConds($params).';')){
 			return false;
 		}
-        $numrows = mysql_num_rows($result);
         if($row > $result->num_rows || $result->num_rows == 0){
             return "";
         }
