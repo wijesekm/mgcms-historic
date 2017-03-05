@@ -109,7 +109,8 @@ class group{
 			if(isset($GLOBALS['MG']['SITE']['GROUP_TBL'])){
 				$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['CFG']['SQL']['DB']);
 			}
-            if(!is_array($groups[0])){
+            if(!is_array($groups[0]) || !isset($groups[0]['group_gid'])){
+                trigger_error("Could not find group: ".$loadOnly,E_USER_WARNING);
                 return false;
             }
 			$output = array();

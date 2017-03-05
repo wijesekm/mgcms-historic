@@ -351,16 +351,13 @@ class mysqlidb extends sql{
 		}
 		$tmp=array();
         $items = $result->fetch_all($type);
-		if(!$rows){
-			$tmp['count']=1;
-			$tmp[]=$items[0];
-		}
-		else{
-			$tmp['count']=$rows;
-			for($i=0;$i<$rows;$i++){
-				$tmp[]=$items[$i];
-			}
-		}
+		$tmp['count']=$rows;
+        if($rows == 0){
+            $tmp[] = array();
+        }
+		for($i=0;$i<$rows;$i++){
+			$tmp[]=$items[$i];
+        }
 		$result->free();
 		return $tmp;
 	}

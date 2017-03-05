@@ -49,7 +49,6 @@ class mailer{
 		$this->mcfg=$cfg;
 		$this->logDb=false;
 		$this->logmsg='';
-		$keys=array_keys($cfg);
 		foreach($cfg as $keys=>$value){
     		switch($keys){
     			case 'priority':
