@@ -285,6 +285,9 @@ else{
 					case 'PACKAGE':
 						$GLOBALS['MG']['PAGE']['PACKAGES'][]=$val2;
 					break;
+                    case 'HOOK':
+                        $pkg = explode('::',$val2);
+                        $GLOBALS['MG']['PAGE']['PACKAGES'][] = $pkg[0];
 					default:
 						$GLOBALS['MG']['PAGE']['DATA'][$key][$key2]=$val2;
 					break;
