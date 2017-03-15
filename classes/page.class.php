@@ -45,6 +45,7 @@ class page{
 		}
 		$GLOBALS['MG']['PAGE']['VARS']['NO']='';
 		$GLOBALS['MG']['PAGE']['VARS']=array(
+            'SITE_NAME'=>$GLOBALS['MG']['SITE']['NAME'],
 			'VERSION'=>$GLOBALS['MG']['SITE']['VERSION'],
 			'URI'=>$GLOBALS['MG']['SITE']['URI'],
 			'SERVER_NAME'=>$_SERVER['SERVER_NAME'],
