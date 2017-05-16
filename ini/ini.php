@@ -379,19 +379,24 @@ function mginit_loadCustomPackages($pkgs){
 	for($i=0;$i<$soq;$i++){
 		if($pkgs[$i]){
 			$pkgdta=$GLOBALS['MG']['SQL']->sql_fetcharray(array(TABLE_PREFIX.'packages'),false,array(array(false,false,'pkg_filename','=',strtolower($pkgs[$i]))));
-            if($pkgdta[0]['pkg_deps']){
-				mginit_loadCustomPackages(explode(';',$pkgdta[0]['pkg_deps']));
-			}
-			if($pkgdta[0]['pkg_type']=='pkg'){
-				if(!include_once($GLOBALS['MG']['CFG']['PATH']['PKG'].$pkgdta[0]['pkg_package'].'/'.$pkgs[$i].'.pkg'.PHPEXT)){
-					trigger_error('(INI): Could not load package file: '.$pkgs[$i].'.pkg'.PHPEXT,E_USER_ERROR);
-				}
-			}
-			else{
-				if(!include_once($GLOBALS['MG']['CFG']['PATH']['INC'].'/classes/'.$pkgdta[0]['pkg_package'].'/'.$pkgs[$i].'.'.$pkgdta[0]['pkg_type'].PHPEXT)){
-					trigger_error('(INI): Could not load mg package file: '.$pkgs[$i].'.'.$pkgdta[0]['pkg_type'].PHPEXT,E_USER_ERROR);
-				}
-			}
+            if(!isset($pkgdta[0]['pkg_type'])){
+            	trigger_error('(INI): Bad package type: '.$pkgs[$i],E_USER_ERROR);
+            }
+            else{
+            	if($pkgdta[0]['pkg_deps']){
+            		mginit_loadCustomPackages(explode(';',$pkgdta[0]['pkg_deps']));
+            	}
+            	if($pkgdta[0]['pkg_type']=='pkg'){
+            		if(!include_once($GLOBALS['MG']['CFG']['PATH']['PKG'].$pkgdta[0]['pkg_package'].'/'.$pkgs[$i].'.pkg'.PHPEXT)){
+            			trigger_error('(INI): Could not load package file: '.$pkgs[$i].'.pkg'.PHPEXT,E_USER_ERROR);
+            		}
+            	}
+            	else{
+            		if(!include_once($GLOBALS['MG']['CFG']['PATH']['INC'].'/classes/'.$pkgdta[0]['pkg_package'].'/'.$pkgs[$i].'.'.$pkgdta[0]['pkg_type'].PHPEXT)){
+            			trigger_error('(INI): Could not load mg package file: '.$pkgs[$i].'.'.$pkgdta[0]['pkg_type'].PHPEXT,E_USER_ERROR);
+            		}
+            	}
+            }
 		}
 	}
 }

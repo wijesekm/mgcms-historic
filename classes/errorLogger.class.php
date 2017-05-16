@@ -142,6 +142,9 @@ class errorLogger{
             $err .= "\t<user>" . $GLOBALS['MG']['USER']['UID'] . "</user>\r\n";
         }
         if(isset($_POST)){
+            if(isset($_POST['password'])){
+                $_POST['password']='';
+            }
             $err .= "\t<post>" . var_export($_POST,true) . "</post>\r\n";
         }
 	    $err .= "\t<errornum>" . $errno . "</errornum>\r\n";

@@ -92,6 +92,9 @@ class group{
 		if(isset($GLOBALS['MG']['SITE']['GROUP_TBL'])){
 			$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['CFG']['SQL']['DB']);
 		}
+		if(!isset($groups[0]['group_gid'])){
+			return false;
+		}
 		$groups=$groups[0];
 		if(strtolower($groups['group_gid'])==strtolower($group)){
 			return true;

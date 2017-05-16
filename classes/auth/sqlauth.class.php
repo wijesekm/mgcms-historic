@@ -42,7 +42,7 @@ class sqlauth extends auth{
 
 	final public function auth_changePass($uid,$newPass){
 
-		$encPass=$this->act_encryptpasswd($newPass,$encoding);
+		$encPass=$this->act_encryptpasswd($newPass);
         if(!$encPass){
 			trigger_error('(SQLAUTH): Could not set new password. Encrpytion failure!',E_USER_WARNING);
 			return false;
