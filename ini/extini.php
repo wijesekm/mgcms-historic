@@ -5,22 +5,24 @@
  * @author 		Kevin Wijesekera
  * @copyright 	2012
  * @edited		10-9-2012
- 
+
  ###################################
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
- 
+
  This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
- 
+
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see http://www.gnu.org/licenses/.
  ###################################
  */
+
+define('EXT_AUTH',true);
 
 if(!defined('STARTED')){
 	die();
@@ -51,7 +53,6 @@ $load=array(array('template','class','/classes/'),
 			array('mgcache','class','/classes/'),
 			array('sql','abstract','/classes/sql/'),
 			array($GLOBALS['MG']['CFG']['SQL']['METHOD'],'class','/classes/sql/'),
-			array('session','class','/classes/auth/'),
 			array('mgtime','class','/classes/'),
 			array('clean','ini','/ini/'),
 			array('funct','ini','/ini/'),
@@ -79,7 +80,7 @@ if(!$GLOBALS['MG']['SQL']){
 
 $t=$GLOBALS['MG']['SQL']->sql_connect($GLOBALS['MG']['CFG']['SQL']['HOST'],$GLOBALS['MG']['CFG']['SQL']['PORT_SOCKET']
 								  ,$GLOBALS['MG']['CFG']['SQL']['USERNAME'],$GLOBALS['MG']['CFG']['SQL']['PASSWORD']
-								  ,$GLOBALS['MG']['CFG']['SQL']['DB'],$GLOBALS['MG']['CFG']['S<br />QL']['PERSISTENT'],$GLOBALS['MG']['CFG']['SQL']['SSL']);
+								  ,$GLOBALS['MG']['CFG']['SQL']['DB'],$GLOBALS['MG']['CFG']['SQL']['PERSISTENT'],$GLOBALS['MG']['CFG']['SQL']['SSL']);
 if(!$t){
 	trigger_error('(INI): Could not connect to SQL database!', E_USER_ERROR);
 	die('500: Sql init');
@@ -140,23 +141,24 @@ if(!$act || !$auth){
 	trigger_error('(INI): Invalid account type or not account type set!', E_USER_ERROR);
 	die('500: Invalid account type');
 }
-if(!preg_match('/;/',$GLOBALS['MG']['POST']['EXT_AUTH'])){
-	trigger_error('(INI): External Auth Not Set!', E_USER_ERROR);
-	die('401: No auth token set'); 
-}
-$GLOBALS['MG']['POST']['EXT_AUTH'] = explode(';',$GLOBALS['MG']['POST']['EXT_AUTH']);
 
-$GLOBALS['MG']['USER']=$act->act_load($GLOBALS['MG']['POST']['EXT_AUTH'][0]);
-if(!isset($GLOBALS['MG']['USER'][$GLOBALS['MG']['POST']['EXT_AUTH'][0]])){
+
+if(!isset($GLOBALS['MG']['EAUTH']['USER']) || !isset($GLOBALS['MG']['EAUTH']['KEY'])){
 	trigger_error('(INI): External Auth Not Set!', E_USER_ERROR);
-	die('401: Invalid Auth Token');   
+	die('401: No auth token set');
 }
-$GLOBALS['MG']['USER']=$GLOBALS['MG']['USER'][$GLOBALS['MG']['POST']['EXT_AUTH'][0]];
+
+$GLOBALS['MG']['USER']=$act->act_load($GLOBALS['MG']['EAUTH']['USER']);
+if(!isset($GLOBALS['MG']['USER'][$GLOBALS['MG']['EAUTH']['USER']])){
+	trigger_error('(INI): API user does not exist!', E_USER_ERROR);
+	die('401: Invalid Auth Token');
+}
+$GLOBALS['MG']['USER']=$GLOBALS['MG']['USER'][$GLOBALS['MG']['EAUTH']['USER']];
 $GLOBALS['MG']['USER']['NOAUTH']=false;
 
-if(!$auth->auth_authenticate($GLOBALS['MG']['POST']['EXT_AUTH'][0],$GLOBALS['MG']['POST']['EXT_AUTH'][1])){
-	trigger_error('(INI): External Auth Not Set!', E_USER_ERROR);
-	die('401: Invalid Auth Token'); 
+if(!$auth->auth_authenticate($GLOBALS['MG']['EAUTH']['USER'],$GLOBALS['MG']['EAUTH']['KEY'])){
+	trigger_error('(INI): API key invalid!', E_USER_ERROR);
+	die('401: Invalid Auth Token');
 }
 
 
@@ -187,12 +189,12 @@ if(is_array($tmp[0])){
 				$GLOBALS['MG']['PAGE'][$key]=explode(';',$tmp[0][$keys[$i]]);
 			break;
 			default:
-				$GLOBALS['MG']['PAGE'][$key]=$tmp[0][$keys[$i]];	
+				$GLOBALS['MG']['PAGE'][$key]=$tmp[0][$keys[$i]];
 			break;
 		}
 	}
 	$tmp=false;
-	$keys=false;	
+	$keys=false;
 }
 $tmp=false;
 $GLOBALS['MG']['PAGE']['REDIRECT']=false;
@@ -213,7 +215,7 @@ if(!$lang){
 $lang=$GLOBALS['MG']['SQL']->sql_fetcharray(array(TABLE_PREFIX.'langsets'),false,array(array(false,false,'lang_name','=',strtolower($lang))));
 
 if(!$lang[0]['lang_id']){
-	$lang=$GLOBALS['MG']['SQL']->sql_fetcharray(array(TABLE_PREFIX.'langsets'),false,array(array(false,false,'lang_name','=',strtolower($GLOBALS['MG']['SITE']['DEFAULT_LANGUAGE']))));	
+	$lang=$GLOBALS['MG']['SQL']->sql_fetcharray(array(TABLE_PREFIX.'langsets'),false,array(array(false,false,'lang_name','=',strtolower($GLOBALS['MG']['SITE']['DEFAULT_LANGUAGE']))));
 }
 
 mginit_loadLang($lang[0]['lang_name']);

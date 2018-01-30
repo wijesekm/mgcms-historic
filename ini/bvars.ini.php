@@ -5,18 +5,18 @@
  * @author 		Kevin Wijesekera
  * @copyright 	2009
  * @edited		8-24-2009
- 
+
  ###################################
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
- 
+
  This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
- 
+
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see http://www.gnu.org/licenses/.
  ###################################
@@ -34,7 +34,7 @@ mginit_loadVars();
 
 function mginit_loadVars(){
 	$mime_keys = array_keys($GLOBALS['MG']['MIME']);
-	
+
 	$fileUploadErrors = array(
 	    UPLOAD_ERR_INI_SIZE => 'The uploaded file exceeds the upload_max_filesize directive in php.ini.',
 	    UPLOAD_ERR_FORM_SIZE => 'The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form.',
@@ -48,7 +48,7 @@ function mginit_loadVars(){
 	$addit=array();
 	$addit['orderby']=array(array('var_id'),array('ASC'));
 	$vars=$GLOBALS['MG']['SQL']->sql_fetcharray(array(TABLE_PREFIX.'vars'),false,false,DB_ASSOC,DB_ALL_ROWS,$addit);
-	
+
 	if($GLOBALS['MG']['SITE']['URLTYPE']==3){
 		$url = mginit_genURLType3();
 	}
@@ -58,17 +58,21 @@ function mginit_loadVars(){
 	else{
 		$url= & $_GET;
 	}
+	if(defined('EXT_AUTH')){
+	    $GLOBALS['MG']['EAUTH']['USER'] = isset($_SERVER['PHP_AUTH_USER'])?mginit_cleanVar($_SERVER['PHP_AUTH_USER'],array('username',1,0,1,0,0,0)):'';
+	    $GLOBALS['MG']['EAUTH']['KEY'] = isset($_SERVER['PHP_AUTH_PW'])?mginit_cleanVar($_SERVER['PHP_AUTH_PW'],array('username',1,0,1,0,0,0)):'';
+	}
 
 	for($i=0;$i<$vars['count'];$i++){
-		
+
 		if(mginit_loadVarOnlyOnePage($vars[$i]['var_loadOnPageOnly'])){
 			$name=$vars[$i]['var_callname'];
 			$uname=$vars[$i]['var_getname'];
-	
+
 			if($vars[$i]['var_useInCache']=='1'){
 				$GLOBALS['MG']['CACHE']['USEINCACHE'][]=$name;
 			}
-			
+
 			if($name){
 				$clean=explode(',',$vars[$i]['var_clean']);
 				switch($vars[$i]['var_type']){
@@ -81,7 +85,7 @@ function mginit_loadVars(){
 									$GLOBALS['MG']['GET'][$name.$store_name]=isset($val)?mginit_cleanVar($val,$clean):$vars[$i]['var_default'];
 									if($vars[$i]['var_stopCache']=='1'&&$GLOBALS['MG']['POST'][$name.$store_name]&&$GLOBALS['MG']['GET'][$name.$store_name]!=$vars[$i]['var_default']){
 										$GLOBALS['MG']['CFG']['STOPCACHE']=true;
-									}								
+									}
 								}
 							}
 						}
@@ -93,7 +97,7 @@ function mginit_loadVars(){
 									$GLOBALS['MG']['GET'][$name][$store_name]=isset($val)?mginit_cleanVar($val,$clean):$vars[$i]['var_default'];
 									if($vars[$i]['var_stopCache']=='1'&&$GLOBALS['MG']['POST'][$name][$store_name]&&$GLOBALS['MG']['GET'][$name][$store_name]!=$vars[$i]['var_default']){
 										$GLOBALS['MG']['CFG']['STOPCACHE']=true;
-									}								
+									}
 								}
 							}
 						}
@@ -105,12 +109,26 @@ function mginit_loadVars(){
 						}
 					break;
                     case 'JSON':
-                    
-                        if(isset($_POST[$uname])){
-                            $GLOBALS['MG']['POST'][$name]=mginit_cleanArray($_POST[$uname],$clean);
+                        $data = '';
+                        if($_SERVER["CONTENT_TYPE"] == 'application/json'){
+                            $data = file_get_contents('php://input');
+                            $data = json_decode($data,TRUE);
+                            if(isset($data[$uname])){
+                                $data = $data[$uname];
+                            }
+                            else{
+                                $data = '';
+                            }
+                        }
+                        else if(isset($_POST[$uname])){
+                            $data = $_POST[$uname];
+                        }
+
+                        if(!empty($data)){
+                            $GLOBALS['MG']['POST'][$name]=mginit_cleanArray($data,$clean);
                             if($vars[$i]['var_stopCache']=='1'&&$GLOBALS['MG']['POST'][$name]&&$GLOBALS['MG']['POST'][$name]!=$vars[$i]['var_default']){
     						  $GLOBALS['MG']['CFG']['STOPCACHE']=true;
-                            }                            
+                            }
                         }
                     break;
 					case 'POST':
@@ -122,7 +140,7 @@ function mginit_loadVars(){
                                     $GLOBALS['MG']['POST'][$name.$store_name]=isset($val)?mginit_cleanVar($val,$clean):$vars[$i]['var_default'];
 									if($vars[$i]['var_stopCache']=='1'&&$GLOBALS['MG']['POST'][$name.$store_name]&&$GLOBALS['MG']['POST'][$name.$store_name]!=$vars[$i]['var_default']){
 										$GLOBALS['MG']['CFG']['STOPCACHE']=true;
-									}								
+									}
 								}
 							}
 						}
@@ -151,7 +169,7 @@ function mginit_loadVars(){
                                             trigger_error('(BVARS): File upload error: Unknown Error',E_USER_WARNING);
         								    $GLOBALS['MG']['FILE'][$name][$j]['ERROR']='Unknown Error';
                                         }
-        								
+
         							}
         							else{
         								$GLOBALS['MG']['FILE'][$name][$j]['EXT']=pathinfo($GLOBALS['MG']['FILE'][$name][$j]['HOST_FILENAME'],PATHINFO_EXTENSION);
@@ -166,7 +184,7 @@ function mginit_loadVars(){
         									}
         									else{
         										$GLOBALS['MG']['FILE'][$name][$j]['SIZE']=$_FILES[$uname]['size'][$j];
-        										$GLOBALS['MG']['FILE'][$name][$j]['SERVER_FILENAME']=$_FILES[$uname]['tmp_name'][$j];	
+        										$GLOBALS['MG']['FILE'][$name][$j]['SERVER_FILENAME']=$_FILES[$uname]['tmp_name'][$j];
         									}
         								}
         							}
@@ -184,7 +202,7 @@ function mginit_loadVars(){
                                         trigger_error('(BVARS): File upload error: Unknown Error',E_USER_WARNING);
     								    $GLOBALS['MG']['FILE'][$name]['ERROR']='Unknown Error';
                                     }
-    								
+
     							}
     							else{
     								$GLOBALS['MG']['FILE'][$name]['EXT']=pathinfo($GLOBALS['MG']['FILE'][$name]['HOST_FILENAME'],PATHINFO_EXTENSION);
@@ -199,19 +217,19 @@ function mginit_loadVars(){
     									}
     									else{
     										$GLOBALS['MG']['FILE'][$name]['SIZE']=$_FILES[$uname]['size'];
-    										$GLOBALS['MG']['FILE'][$name]['SERVER_FILENAME']=$_FILES[$uname]['tmp_name'];	
+    										$GLOBALS['MG']['FILE'][$name]['SERVER_FILENAME']=$_FILES[$uname]['tmp_name'];
     									}
     								}
     							}
                             }
-                            
+
                         }
 					break;
 					case 'COOKIE':
-						$GLOBALS['MG']['COOKIE'][$name]=isset($_COOKIE[$uname])?mginit_cleanVar($_COOKIE[$uname],$clean):$vars[$i]['var_default'];		
+						$GLOBALS['MG']['COOKIE'][$name]=isset($_COOKIE[$uname])?mginit_cleanVar($_COOKIE[$uname],$clean):$vars[$i]['var_default'];
 					break;
 				};
-			}			
+			}
 		}
 	}
 }
@@ -250,11 +268,11 @@ function mginit_genURLType3(){
     for($i=0;$i<$soq;$i=$i+2){
     	if($raw_url[$i]){
     		if(isset($raw_url[$i+1])){
-				$url = array_merge_recursive($url, array($raw_url[$i]=>$raw_url[$i+1]));	
+				$url = array_merge_recursive($url, array($raw_url[$i]=>$raw_url[$i+1]));
 			}
 			else{
 				$url = array_merge_recursive($url, array($raw_url[$i]=>''));
-			}		
+			}
 		}
     }
 	return $url;
@@ -271,16 +289,16 @@ function mginit_genURLType2(){
     $raw_url=preg_replace('/\/\//','/',$raw_url);
     $raw_url = explode("/",$raw_url);
     $url=array();
-    
+
 	$soq=count($raw_url);
     for($i=0;$i<$soq;$i=$i+2){
     	if($raw_url[$i]){
     		if($raw_url[$i+1]){
-				$url = array_merge_recursive($url, array($raw_url[$i]=>$raw_url[$i+1]));	
+				$url = array_merge_recursive($url, array($raw_url[$i]=>$raw_url[$i+1]));
 			}
 			else{
 				$url = array_merge_recursive($url, array($raw_url[$i]=>''));
-			}			
+			}
 		}
     }
 	return $url;

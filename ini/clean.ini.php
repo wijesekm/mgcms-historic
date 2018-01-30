@@ -5,18 +5,18 @@
  * @author 		Kevin Wijesekera
  * @copyright 	2008
  * @edited		8-24-2009
- 
+
  ###################################
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
- 
+
  This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
- 
+
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see http://www.gnu.org/licenses/.
  ###################################
@@ -48,18 +48,22 @@ function mginit_cleanArraySub($value,$clean,$cleanPath,$default){
     foreach($value as $key=>$val){
         if(is_array($val)){
             if(!isset($cleanPath[$key])){
-                $value[$key] = mginit_cleanArraySub($val,$clean,array(),$default);
+                $value[$key] = mginit_cleanArraySub($val,$clean,(isset($cleanPath['arr']))?$cleanPath['arr']:array(),$default);
             }
             else{
-                $value[$key] = mginit_cleanArraySub($val,$clean,$cleanPath[$key],$default);
+                $value[$key] = mginit_cleanArraySub($val,$clean,(isset($cleanPath[$key]))?$cleanPath[$key]:array(),$default);
             }
         }
         else{
             $tempClean = $clean;
             $tempClean[0] = $default;
             if(isset($cleanPath[$key])){
-                $tempClean[0] = $cleanPath[$key];
-
+                if(is_array($cleanPath[$key])){
+                    $tempClean = $cleanPath[$key];
+                }
+                else{
+                    $tempClean[0] = $cleanPath[$key];
+                }
             }
             else if(isset($cleanPath['0000default'])){
                 $tempClean[0] = $cleanPath['0000default'];
@@ -72,7 +76,7 @@ function mginit_cleanArraySub($value,$clean,$cleanPath,$default){
 /**
 * 0 - clean name
 * 1 - URL Decode
-* 2 - Strip HTML Tags
+* 2 - Don't Strip HTML Tags
 * 3 - Trim
 * 4 - Remove last URL deliminiator
 * 5 - base64 decode
@@ -90,7 +94,7 @@ function mginit_cleanVar($value,$clean){
 	}
 	if((boolean)$clean[1]){
 		$value=urldecode($value);
-	}	
+	}
 	if(!(boolean)$clean[2]){
 		$value=strip_tags($value);
 	}
