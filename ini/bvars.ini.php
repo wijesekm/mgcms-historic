@@ -60,7 +60,7 @@ function mginit_loadVars(){
 	}
 	if(defined('EXT_AUTH')){
 	    $GLOBALS['MG']['EAUTH']['USER'] = isset($_SERVER['PHP_AUTH_USER'])?mginit_cleanVar($_SERVER['PHP_AUTH_USER'],array('username',1,0,1,0,0,0)):'';
-	    $GLOBALS['MG']['EAUTH']['KEY'] = isset($_SERVER['PHP_AUTH_PW'])?mginit_cleanVar($_SERVER['PHP_AUTH_PW'],array('username',1,0,1,0,0,0)):'';
+	    $GLOBALS['MG']['EAUTH']['KEY'] = isset($_SERVER['PHP_AUTH_PW'])?mginit_cleanVar($_SERVER['PHP_AUTH_PW'],array('password',0,0,1,0,0,0)):'';
 	}
 
 	for($i=0;$i<$vars['count'];$i++){
