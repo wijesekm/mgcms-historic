@@ -98,16 +98,17 @@ class ewsauth extends auth{
 			$p = xml_parser_create();
 			xml_parse_into_struct($p, $response, $vals, $index);
 			xml_parser_free($p);
-
+			$n = explode(',',$vals[$index['T:NAME'][0]]['value']);
 			return array(
-					'NAME'=>$vals[$index['T:NAME'][0]]['value'],
+					'NAME'=>array(trim($n[1]),'',trim($n[0])),
 					'EMAIL'=>$vals[$index['T:EMAILADDRESS'][0]]['value'],
 					'COMPANY'=>$vals[$index['T:COMPANYNAME'][0]]['value'],
 					'ADDRESS'=>
 					$vals[$index['T:STREET'][0]]['value']."\n".$vals[$index['T:CITY'][0]]['value'].' '.$vals[$index['T:STATE'][0]]['value'].
 					' '.$vals[$index['T:COUNTRYORREGION'][0]]['value'].' '.$vals[$index['T:POSTALCODE'][0]]['value'],
 					'ABOUT'=>$vals[$index['T:JOBTITLE'][0]]['value']."\n".$vals[$index['T:DEPARTMENT'][0]]['value'],
-					'PHONE'=>$vals[$index['T:PHONENUMBERS'][0]+1]['value']
+					'PHONE'=>$vals[$index['T:PHONENUMBERS'][0]+1]['value'],
+					'LOCATION'=>$vals[$index['T:STATE'][0]]['value']
 			);
 		}
 		return false;

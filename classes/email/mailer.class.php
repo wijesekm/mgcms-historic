@@ -40,12 +40,15 @@ class mailer{
 	private $mcfg;
 	private $logDb;
 	private $logmsg;
+	private $msg;
 
 	public function __construct($cfg=false,$parse=false){
 		if($parse==true){
 			$cfg=$this->phpm_parseConfig($cfg);
 		}
 		$this->mail = new phpmailer();
+		$this->msg = '';
+		$this->mail->Debugoutput = function($str, $level) {$this->msg .= $str;};
 		$this->mcfg=$cfg;
 		$this->logDb=false;
 		$this->logmsg='';
@@ -217,6 +220,7 @@ class mailer{
 	}
 
 	public function phpm_send($dryRun=false){
+	    $r = false;
 		if($this->logDb){
 			$rows=array('uid','timestamp','page','action');
 			$data=array($GLOBALS['MG']['USER']['UID'],$GLOBALS['MG']['SITE']['TIME'],$GLOBALS['MG']['PAGE']['PATH'],$this->logmsg);
@@ -224,11 +228,19 @@ class mailer{
 			$this->logmsg='';
 		}
 		if(!$dryRun){
-			return $this->mail->Send();
+			$r = $this->mail->Send();
+			if(!empty($this->mail->ErrorInfo )){
+			    trigger_error($this->mail->ErrorInfo,E_USER_WARNING);
+			}
+			if(!empty($this->msg)){
+			    trigger_error($this->msg,E_USER_NOTICE);
+			}
+
 		}
 		else{
 			print_r($this->mail);
 		}
+		return $r;
 	}
 
 	public function phpm_attach($file,$name){
