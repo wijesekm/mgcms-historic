@@ -31,7 +31,7 @@ class ewsauth extends auth{
 	final public function auth_authenticate($username,$password){
 		$ch = curl_init();
 		$opts = array(
-				CURLOPT_URL             => $GLOBALS['MG']['SITE']['EWS_SERVER'].'/EWS/Services.asmx',
+				CURLOPT_URL             => $GLOBALS['MG']['SITE']['EWS_SERVER'].'/ews/Services.wsdl',
 				CURLOPT_HTTPAUTH        => CURLAUTH_NTLM,
 				CURLOPT_RETURNTRANSFER  => true,
 				CURLOPT_USERPWD         => $username.':'.$password,
@@ -42,6 +42,8 @@ class ewsauth extends auth{
 				CURLOPT_IPRESOLVE       => CURL_IPRESOLVE_V4,
 				CURLOPT_SSL_VERIFYPEER  => true,
 				CURLOPT_SSL_VERIFYHOST  => 2,
+		        CURLOPT_FRESH_CONNECT   => true,
+		        CURLOPT_USERAGENT       => 'Advantage+ CURL',
 		);
 		// Set the appropriate content-type.
 		curl_setopt_array($ch, $opts);
@@ -60,7 +62,7 @@ class ewsauth extends auth{
 	final public function auth_getAutoReg($uid,$password){
 		$ch = curl_init();
 		$opts = array(
-				CURLOPT_URL             => $GLOBALS['MG']['SITE']['EWS_SERVER'].'/EWS/Exchange.asmx',
+				CURLOPT_URL             => $GLOBALS['MG']['SITE']['EWS_SERVER'].'/ews/Exchange.asmx',
 				CURLOPT_HTTPAUTH        => CURLAUTH_NTLM,
 				CURLOPT_CUSTOMREQUEST   => 'POST',
 				CURLOPT_POSTFIELDS      =>
@@ -87,6 +89,7 @@ class ewsauth extends auth{
 				CURLOPT_IPRESOLVE       => CURL_IPRESOLVE_V4,
 				CURLOPT_SSL_VERIFYPEER  => true,
 				CURLOPT_SSL_VERIFYHOST  => 2,
+		        CURLOPT_FRESH_CONNECT => true
 		);
 		// Set the appropriate content-type.
 		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: text/xml; charset=utf-8'));
