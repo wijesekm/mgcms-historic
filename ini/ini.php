@@ -108,15 +108,12 @@ if($tmp['count'] < 1){
 }
 
 for($i=0;$i<$tmp['count'];$i++){
+    if(strpos($tmp[$i]['cfg_data'],'{hostname}') !== false){
+        $tmp[$i]['cfg_data'] = str_replace('{hostname}',$_SERVER['HTTP_HOST'],$tmp[$i]['cfg_data']);
+    }
 	$GLOBALS['MG']['SITE'][(string)$tmp[$i]['cfg_var']]=$tmp[$i]['cfg_data'];
 }
 
-if(strpos($GLOBALS['MG']['SITE']['URI'],'{hostname}') !== false){
-    $GLOBALS['MG']['SITE']['URI'] = str_replace('{hostname}',$_SERVER['HTTP_HOST'],$GLOBALS['MG']['SITE']['URI']);
-}
-if(strpos($GLOBALS['MG']['SITE']['LOGIN_URL'],'{uri}') !== false){
-    $GLOBALS['MG']['SITE']['LOGIN_URL'] = str_replace('{uri}',$GLOBALS['MG']['SITE']['URI'],$GLOBALS['MG']['SITE']['LOGIN_URL']);
-}
 
 /**
  * Mime Types

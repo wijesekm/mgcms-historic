@@ -5,18 +5,18 @@
  * @author              Kevin Wijesekera
  * @copyright   		2008
  * @edited              8-24-2009
- 
+
  ###################################
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
- 
+
  This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
- 
+
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see http://www.gnu.org/licenses/.
  ###################################
@@ -106,7 +106,7 @@ function mg_genUrl($urlParts,$base=false,$ssl='auto'){
 		}
 		else{
 			$ssl=false;
-		}		
+		}
 	}
 	else if($ssl=='false'){
 		$ssl=false;
@@ -128,7 +128,7 @@ function mg_genUrl($urlParts,$base=false,$ssl='auto'){
 		$url.=$base;
 	}
 	$url.='/';
-	
+
 	switch($GLOBALS['MG']['SITE']['URLTYPE']){
 		case 3:
 			$url.=implode('/',$urlParts);
@@ -154,12 +154,12 @@ function mg_redirectTarget($target){
 	if(!$target){
 		if(isset($_SERVER['HTTPS'])&&$_SERVER['HTTPS']!='off'){
 			$port=($_SERVER['SERVER_PORT']!='443')?':'.$_SERVER['SERVER_PORT']:'';
-			header('Location: https://'.$_SERVER['SERVER_NAME'].$port);
+			header('Location: https://'.$_SERVER['HTTP_HOST'].$port);
 			die();
 		}
 		else{
 			$port=($_SERVER['SERVER_PORT']!='80')?':'.$_SERVER['SERVER_PORT']:'';
-			header('Location: http://'.$_SERVER['SERVER_NAME'].$port);
+			header('Location: http://'.$_SERVER['HTTP_HOST'].$port);
 			die();
 		}
 	}
@@ -172,13 +172,13 @@ function mg_redirectToLogin(){
 		return false;
 	}
 	if(isset($_SERVER['HTTPS'])&&$_SERVER['HTTPS']!='off'){
-		$url='https://'.$_SERVER['SERVER_NAME'];
+		$url='https://'.$_SERVER['HTTP_HOST'];
 		if($_SERVER['SERVER_PORT']!='443'){
 			$url.=':'.$_SERVER['SERVER_PORT'];
 		}
 	}
 	else{
-		$url='http://'.$_SERVER['SERVER_NAME'];
+		$url='http://'.$_SERVER['HTTP_HOST'];
 		if($_SERVER['SERVER_PORT']!='80'){
 			$url.=':'.$_SERVER['SERVER_PORT'];
 		}
@@ -199,7 +199,7 @@ function mg_mkdir($path,$sep='/',$rights = 0775 ) {
     	if(!is_dir($path)){
 			if(!mkdir($path,$rights)){
 	        	trigger_error('(MKDIR): Could not create directory: '.$path,E_USER_WARNING);
-	            return false;				
+	            return false;
 			}
 		}
     }
@@ -216,7 +216,7 @@ function mg_checkPackageMod($package){
 		return false;
 	}
 	$last_mod_time=0;
-	foreach($f as $file){	
+	foreach($f as $file){
 		if(substr($file,0,1)!='.'&&$file!='manifest.php'){
 			$t=filemtime($dir.$file);
 			if($t > $last_mod_time){
@@ -243,7 +243,7 @@ function mg_rmdir($path,$sep='/'){
 			}
 			else if(is_dir($tmp)){
 				if(!mg_rmdir($tmp,$sep)){
-				    return false;   
+				    return false;
 				}
 			}
 		}
@@ -339,7 +339,7 @@ function mg_navBar($length,$ppp,$base=false,$sortedQty=false){
 		$urln=mg_genUrl(array_merge($urlBase,array('pn',(string)$next)));
 		$next="true";
 	}
-		
+
 	$tpl->tpl_load($GLOBALS['MG']['PAGE']['TPL'],'mgnb_navbar');
 	$tpl->tpl_parse(array('NAV_PAGES'=>$pstr,'BACK'=>$back,'NEXT'=>$next,'BACK_URL'=>$urlb,'NEXT_URL'=>$urln),'mgnb_navbar');
 	$ret=$tpl->tpl_return('mgnb_navbar');
@@ -443,7 +443,7 @@ function mg_getPackageData($package_name){
 
 function mg_setAJAX(){
    	$GLOBALS['MG']['PAGE']['NOERRORPARSE']=true;
-	$GLOBALS['MG']['PAGE']['NOSITETPL']=true; 
+	$GLOBALS['MG']['PAGE']['NOSITETPL']=true;
 }
 
 /**
@@ -457,12 +457,12 @@ function mg_setAJAX(){
 *
 * OUTPUTS:
 * json string
-*/	
+*/
 function mg_jsonEncode($array,$inline=false){
     if($inline){
         $search = array("\\","\\\\","'");
         $replace = array("\\\\","\\\\\\\\","\\'");
-        return str_replace($search, $replace, json_encode($array));  
+        return str_replace($search, $replace, json_encode($array));
     }
     else{
         return json_encode($array);
@@ -477,7 +477,7 @@ function mg_jsonEncode($array,$inline=false){
 * INPUTS:
 * $event - String to log
 * $admin - if true log to admin table, if false log to user table
-* 
+*
 */
 function mg_logEvent($event,$admin=false){
     $table = ($admin)?array(TABLE_PREFIX.'log_admin'):array(TABLE_PREFIX.'log_user');
@@ -489,10 +489,10 @@ function mg_logEvent($event,$admin=false){
 
 /**
  * This function formats an item for a database add or update
- * 
+ *
  * @author Kevin Wijesekera <kwijesekera@riversidemfg.com>
  * @date 12/08/2012
- * 
+ *
  * @param $key Database col
  * @param $val Database row data
  * @param $array1 Data Array
@@ -507,9 +507,9 @@ function mg_formatDBItem($key,$val,&$array1,&$array2,$add,$num=false){
     }
     if($add){
         $array2[]=$key;
-		$array1[]=$val;	
+		$array1[]=$val;
     }
     else{
-		$array1[]=array($key,$val);				
+		$array1[]=array($key,$val);
     }
 }
