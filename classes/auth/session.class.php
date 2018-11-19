@@ -5,18 +5,18 @@
  * @author 		Kevin Wijesekera
  * @copyright 	2008
  * @edited		6-8-2008
- 
+
  ###################################
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
- 
+
  This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
- 
+
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see http://www.gnu.org/licenses/.
  ###################################
@@ -27,17 +27,17 @@ if(!defined('STARTED')){
 }
 
 class session{
-	
+
 	const CSESSION		= 'sessionid';
 	const CUSER			= 'userid';
-	
+
 	private $sid;
 	private $id;
 	private $uid;
 	private $t;
 	private $length;
 	private $table;
-	
+
 	public function __construct($time){
 		$this->t=$time;
 		if(isset($GLOBALS['MG']['SITE']['ACCOUNTS_SESSION_TBL'])){
@@ -47,7 +47,7 @@ class session{
 			$this->table=array(TABLE_PREFIX.'sessions');
 		}
 	}
-	
+
 	public function session_start($uid,$cdata){
 		if(!$uid){
 			return false;
@@ -62,7 +62,7 @@ class session{
 		}
 		return $this->sid;
 	}
-	
+
 	public function session_stop($cdata){
 		$cdata['EXPIRES']=-600000;
 		$this->sid='';
@@ -70,7 +70,7 @@ class session{
 		$this->uid='';
 		$this->session_setCookies($cdata);
 	}
-	
+
 	public function session_load($idC,$uidC,$sidC,$twofact=false){
 		if(!$uidC||!$idC||!$sidC){
 			return false;
@@ -79,7 +79,7 @@ class session{
 		$conds=array(array(false,array(DB_AND),'ses_id','=',$idC),array(false,false,'ses_uid','=',$uidC));
 		$d=$GLOBALS['MG']['SQL']->sql_fetchArray($this->table,false,$conds);
 		$this->session_dbSwitch(1);
-        if(!is_array($d[0])){
+        if(!is_array($d[0]) && isset($d[0]['ses_id'])){
             return false;
         }
 		$d=$d[0];
@@ -101,13 +101,13 @@ class session{
                 return true;
             }
 		}
-		
+
 		$this->id=false;
 		$this->uid=false;
 		$this->sid=false;
 		return false;
 	}
-	
+
 	public function session_loadUD($time,$cdata){
 		if(!$this->uid||!$this->sid){
 			return false;
@@ -117,12 +117,12 @@ class session{
 		$cdata['EXPIRES']=$this->length;
 		$this->session_setCookies($cdata);
 	}
-	
+
 	private function session_setCookies($cdata){
 		if($cdata['EXPIRES']!=0){
 			$cdata['EXPIRES']+=$this->t;
 		}
-		
+
 		if(!setcookie($GLOBALS['MG']['SITE']['COOKIE_PREFIX'].session::CUSER,$this->id.';'.$this->uid,$cdata['EXPIRES'],$cdata['PATH'],$cdata['DOM'],$cdata['SECURE'],true)){
 			trigger_error('(SESSION): Could not set user cookie',E_USER_WARNING);
 			return false;
@@ -133,11 +133,11 @@ class session{
 		}
 		return true;
 	}
-	
+
 	private function session_startStopDB($stop=false,$length=0){
 		$r=true;
 		$this->session_dbSwitch(0);
-		if($stop){	
+		if($stop){
 			$conds=array(array(false,array(DB_AND),'ses_uid','=',$this->uid),array(false,false,'ses_id','=',$this->id));
 			$GLOBALS['MG']['SQL']->sql_dataCommands(DB_REMOVE,$this->table,$conds);
 		}
@@ -155,7 +155,7 @@ class session{
 		$this->session_dbSwitch(1);
 		return $r;
 	}
-	
+
 	private function session_updateDB(){
 		$r=true;
 		$this->session_dbSwitch(0);
@@ -168,7 +168,7 @@ class session{
 		$this->session_dbSwitch(1);
 		return $r;
 	}
-	
+
 	private function session_dbSwitch($mode=0){
 		if(!isset($GLOBALS['MG']['SITE']['ACCOUNT_DB'])){
 			return;
