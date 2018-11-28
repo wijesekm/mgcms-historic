@@ -41,6 +41,7 @@ class mailer{
 	private $logDb;
 	private $logmsg;
 	private $msg;
+	private $show_trace;
 
 	public function __construct($cfg=false,$parse=false){
 		if($parse==true){
@@ -52,6 +53,7 @@ class mailer{
 		$this->mcfg=$cfg;
 		$this->logDb=false;
 		$this->logmsg='';
+		$this->show_trace = false;
 		foreach($cfg as $keys=>$value){
     		switch($keys){
     			case 'priority':
@@ -107,6 +109,11 @@ class mailer{
     			break;
     			case 'logdb':
     				$this->logDb=$value;
+    			break;
+    			case 'trace':
+    			    $this->show_trace = $value;
+    			break;
+    			default:
     			break;
     		};
 		}
@@ -232,10 +239,11 @@ class mailer{
 			if(!empty($this->mail->ErrorInfo )){
 			    trigger_error($this->mail->ErrorInfo,E_USER_WARNING);
 			}
-			if(!empty($this->msg)){
-			    trigger_error($this->msg,E_USER_NOTICE);
+			if(!$r || $this->show_trace){
+			    if(!empty($this->msg)){
+			        trigger_error($this->msg,E_USER_NOTICE);
+			    }
 			}
-
 		}
 		else{
 			print_r($this->mail);
