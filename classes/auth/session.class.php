@@ -71,12 +71,12 @@ class session{
 		$this->session_setCookies($cdata);
 	}
 
-	public function session_load($idC,$uidC,$sidC,$twofact=false){
-		if(!$uidC||!$idC||!$sidC){
+	public function session_load($id,$sid,$twofact=false){
+	    if(!$id||!$sid){
 			return false;
 		}
 		$this->session_dbSwitch(0);
-		$conds=array(array(false,array(DB_AND),'ses_id','=',$idC),array(false,false,'ses_uid','=',$uidC));
+		$conds=array(array(false,array(DB_AND),'ses_id','=',$id),array(false,false,'ses_sid','=',$sid));
 		$d=$GLOBALS['MG']['SQL']->sql_fetchArray($this->table,false,$conds);
 		$this->session_dbSwitch(1);
         if(!is_array($d[0]) && isset($d[0]['ses_id'])){
@@ -91,7 +91,7 @@ class session{
 		$this->sid=$d['ses_sid'];
 		$this->length=$d['ses_length'];
 
-		if($this->sid===$sidC&&$this->uid===$uidC&&$this->id===$idC){
+		if($this->sid===$sid&&$this->id===$id){
             if($twofact){
                 if($d['ses_twofactor']=='1'){
                     return true;
@@ -106,6 +106,10 @@ class session{
 		$this->uid=false;
 		$this->sid=false;
 		return false;
+	}
+
+	public function session_getUID(){
+	    return $this->uid;
 	}
 
 	public function session_loadUD($time,$cdata){
@@ -123,11 +127,7 @@ class session{
 			$cdata['EXPIRES']+=$this->t;
 		}
 
-		if(!setcookie($GLOBALS['MG']['SITE']['COOKIE_PREFIX'].session::CUSER,$this->id.';'.$this->uid,$cdata['EXPIRES'],$cdata['PATH'],$cdata['DOM'],$cdata['SECURE'],true)){
-			trigger_error('(SESSION): Could not set user cookie',E_USER_WARNING);
-			return false;
-		}
-		if(!setcookie($GLOBALS['MG']['SITE']['COOKIE_PREFIX'].session::CSESSION,$this->sid,$cdata['EXPIRES'],$cdata['PATH'],$cdata['DOM'],$cdata['SECURE'],true)){
+		if(!setcookie($GLOBALS['MG']['SITE']['COOKIE_PREFIX'].session::CSESSION,$this->id.';'.$this->sid,$cdata['EXPIRES'],$cdata['PATH'],$cdata['DOM'],$cdata['SECURE'],true)){
 			trigger_error('(SESSION): Could not set session cookie',E_USER_WARNING);
 			return false;
 		}

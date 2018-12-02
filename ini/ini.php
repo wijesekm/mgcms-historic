@@ -168,25 +168,20 @@ if(!defined('CRON')){
 		trigger_error('(INI): Invalid account type or not account type set', E_USER_ERROR);
 		$GLOBALS['MG']['ERROR']['LOGGER']->el_checkFatal();
 	}
-
-	if(isset($GLOBALS['MG']['POST']['USER_NAME'])&&preg_match('/;/',$GLOBALS['MG']['POST']['USER_NAME'])){
-			$GLOBALS['MG']['COOKIE']['USER_NAME']=explode(';',$GLOBALS['MG']['POST']['USER_NAME']);
-			$GLOBALS['MG']['COOKIE']['USER_SESSION']=$GLOBALS['MG']['POST']['USER_SESSION'];
+	if(isset($GLOBALS['MG']['POST']['USER_SESSION'])&&preg_match('/;/',$GLOBALS['MG']['POST']['USER_SESSION'])){
+			$GLOBALS['MG']['COOKIE']['USER_SESSION']=explode(';',$GLOBALS['MG']['POST']['USER_SESSION']);
 	}
 	else{
-		$GLOBALS['MG']['COOKIE']['USER_NAME']=explode(';',$GLOBALS['MG']['COOKIE']['USER_NAME']);
+		$GLOBALS['MG']['COOKIE']['USER_SESSION']=explode(';',$GLOBALS['MG']['COOKIE']['USER_SESSION']);
 	}
-	if(!isset($GLOBALS['MG']['COOKIE']['USER_NAME'][1])){
-	    $GLOBALS['MG']['COOKIE']['USER_NAME'][1]='';
-	}
-	if(!$ses->session_load($GLOBALS['MG']['COOKIE']['USER_NAME'][0],$GLOBALS['MG']['COOKIE']['USER_NAME'][1],$GLOBALS['MG']['COOKIE']['USER_SESSION'])){
+	if(!$ses->session_load($GLOBALS['MG']['COOKIE']['USER_SESSION'][0],$GLOBALS['MG']['COOKIE']['USER_SESSION'][1])){
 		$GLOBALS['MG']['USER']=$act->act_load($GLOBALS['MG']['SITE']['DEFAULT_ACT']);
 		$GLOBALS['MG']['USER']=$GLOBALS['MG']['USER'][$GLOBALS['MG']['SITE']['DEFAULT_ACT']];
 		$GLOBALS['MG']['USER']['NOAUTH']=true;
 	}
 	else{
-		$GLOBALS['MG']['USER']=$act->act_load($GLOBALS['MG']['COOKIE']['USER_NAME'][1]);
-		$GLOBALS['MG']['USER']=$GLOBALS['MG']['USER'][$GLOBALS['MG']['COOKIE']['USER_NAME'][1]];
+	    $GLOBALS['MG']['USER']=$act->act_load($ses->session_getUID());
+	    $GLOBALS['MG']['USER']=$GLOBALS['MG']['USER'][$ses->session_getUID()];
 		$GLOBALS['MG']['USER']['NOAUTH']=false;
 	}
 
@@ -194,8 +189,7 @@ if(!defined('CRON')){
 	 * Impersonate Settings
 	 */
 
-	 $GLOBALS['MG']['REAL_USER']=array();
-
+    $GLOBALS['MG']['REAL_USER']=array();
 	if(isset($GLOBALS['MG']['SITE']['ALLOW_IMPERSONATE']) && isset($GLOBALS['MG']['COOKIE']['ALTERNATE_UID'])){
 	    if($GLOBALS['MG']['SITE']['ALLOW_IMPERSONATE'] == '1' && $GLOBALS['MG']['COOKIE']['ALTERNATE_UID'] != '' && mg_checkACL('*','admin')){
 	        if($act->act_isAccount($GLOBALS['MG']['COOKIE']['ALTERNATE_UID'])){
