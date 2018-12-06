@@ -44,6 +44,7 @@ class ewsauth extends auth{
 				CURLOPT_SSL_VERIFYHOST  => 2,
 		        CURLOPT_FRESH_CONNECT   => true,
 		        CURLOPT_USERAGENT       => 'Advantage+ CURL',
+		        CURLOPT_HTTP_VERSION    => CURL_HTTP_VERSION_1_1
 		);
 		// Set the appropriate content-type.
 		curl_setopt_array($ch, $opts);
@@ -89,7 +90,9 @@ class ewsauth extends auth{
 				CURLOPT_IPRESOLVE       => CURL_IPRESOLVE_V4,
 				CURLOPT_SSL_VERIFYPEER  => true,
 				CURLOPT_SSL_VERIFYHOST  => 2,
-		        CURLOPT_FRESH_CONNECT => true
+		        CURLOPT_FRESH_CONNECT   => true,
+		        CURLOPT_USERAGENT       => 'Advantage+ CURL',
+		        CURLOPT_HTTP_VERSION    => CURL_HTTP_VERSION_1_1
 		);
 		// Set the appropriate content-type.
 		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: text/xml; charset=utf-8'));
