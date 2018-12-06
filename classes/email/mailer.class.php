@@ -142,19 +142,12 @@ class mailer{
 		$this->mail->FromName=false;
 		$this->mail->Sender=false;
 		$this->mail->ConfirmReadingTo=false;
-		$this->mail->Subject=false;
-		$this->mail->AltBody=false;
-		$this->mail->Body=false;
-		$this->mail->to=array();
-		$this->mail->bcc=array();
-  		$this->mail->boundary = array();
- 		$this->mail->language = array();
- 		$this->mail->to = array();
-  		$this->mail->cc = array();
-  		$this->mail->bcc = array();
- 		$this->mail->ReplyTo = array();
-  		$this->mail->attachment = array();
-  		$this->mail->CustomHeader = array();
+		$this->mail->Subject = '';
+		$this->mail->Body = '';
+		$this->mail->AltBody = '';
+  		$this->mail->clearAddresses();
+  		$this->mail->ClearAllRecipients();
+  		$this->mail->clearAttachments();
 	}
 
 	public function phpm_setFrom($name,$email,$confirmMsg=false){

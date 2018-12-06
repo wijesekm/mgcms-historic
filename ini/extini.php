@@ -36,6 +36,19 @@ date_default_timezone_set('America/New_York');//this is to prevent errors and wi
 $GLOBALS['MG']['HDR']=array();
 $GLOBALS['MG']['PAGE']=array('PATH'=>'','PACKAGES'=>array(),'CONTENTHOOKS'=>array(),'ALLOWCACHE'=>'0');
 
+/*
+ * Check for standard $_SERVER missing items
+ */
+if(!isset($_SERVER['HTTP_HOST'])){
+    $_SERVER['HTTP_HOST']='';
+}
+if(!isset($_SERVER['REQUEST_URI'])){
+    $_SERVER['REQUEST_URI'] = '';
+}
+if(!isset($_SERVER['CONTENT_TYPE'])){
+    $_SERVER['CONTENT_TYPE']='';
+}
+
 /**
 * Start Error Logger
 */
