@@ -35,12 +35,17 @@ if(!isset($_SERVER['HTTP_HOST'])){
     $_SERVER['HTTP_HOST']='';
 }
 if(!isset($_SERVER['REQUEST_URI'])){
-    $_SERVER['REQUEST_URI'] = '';
+    $_SERVER['REQUEST_URI'] = '/';
 }
 if(!isset($_SERVER['CONTENT_TYPE'])){
     $_SERVER['CONTENT_TYPE']='';
 }
-
+if(!isset($_SERVER['REQUEST_METHOD'])){
+    $_SERVER['REQUEST_METHOD'] = 'GET';
+}
+if(!isset($_SERVER['SERVER_PROTOCOL'])){
+    $_SERVER['SERVER_PROTOCOL'] = 'HTTP';
+}
 /*
 * Setup a few arrays to remove warnings
 */
@@ -361,6 +366,14 @@ $GLOBALS['MG']['PAGE']['TPL']=$GLOBALS['MG']['CFG']['PATH']['TPL'].$GLOBALS['MG'
 * Load Packages
 */
 mginit_loadCustomPackages($GLOBALS['MG']['PAGE']['PACKAGES']);
+
+/*
+ * Log access voilations
+ */
+if(strpos($_SERVER['REQUEST_URI'],'p/'.$GLOBALS['MG']['PAGE']['PATH']) === false && $_SERVER['REQUEST_URI'] != '/'){
+    mginit_errorHandler(E_ACCESS_ERR,'Resource Not Found 404 '.$GLOBALS['MG']['PAGE']['PATH'],'','','');
+}
+
 
 /**
 * MISC Functions

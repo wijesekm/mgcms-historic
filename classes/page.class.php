@@ -5,18 +5,18 @@
  * @author 		Kevin Wijesekera
  * @copyright 	2008
  * @edited		8-24-2009
- 
+
  ###################################
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
- 
+
  This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
- 
+
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see http://www.gnu.org/licenses/.
  ###################################
@@ -27,11 +27,11 @@ if(!defined('STARTED')){
 }
 
 class page{
-	
+
 	private $content;
 	private $error;
 	private $obj;
-	
+
 	public function __construct(){
 		if(preg_match('/'.preg_quote($GLOBALS['MG']['SITE']['URL_DELIM'],'/').'/',$GLOBALS['MG']['PAGE']['PATH'])){
 			$base=explode($GLOBALS['MG']['SITE']['URL_DELIM'],$GLOBALS['MG']['PAGE']['PATH']);
@@ -78,11 +78,11 @@ class page{
 			'ACL_READ'=>(mg_checkACL($GLOBALS['MG']['PAGE']['PATH'],'read'))?'1':'0',
 			'UNIQUE_ID'=>md5(uniqid(rand(),true))
 		);
-        
+
         if(!empty($GLOBALS['MG']['PAGE']['PATH'])){
 
             $GLOBALS['MG']['PAGE']['VARS'] = array_merge_recursive($GLOBALS['MG']['PAGE']['VARS'],
-                    array(			
+                    array(
                         'PAGE_PATH'=>$GLOBALS['MG']['PAGE']['PATH'],
             			'PAGE_PATH_BASE'=>$base,
             			'PAGE_NAME'=>$GLOBALS['MG']['PAGE']['NAME'],
@@ -93,17 +93,17 @@ class page{
             			'PAGE_MODIFIED_DATE'=>date($GLOBALS['MG']['SITE']['DATE_FORMAT'],$GLOBALS['MG']['PAGE']['MODIFIED']),
             			'PAGE_ROOT'=>$GLOBALS['MG']['PAGE']['ROOT'])
                     );
-            
+
         }
         $GLOBALS['MG']['SITE']['TPL'] = 'site.tpl';
 		$this->content='';
 		$this->error=false;
 	}
-	
+
 	public function page_generate(){
 		$cache=false;
 		$gdd=$GLOBALS['MG']['SQL']->sql_fetchArray(array(TABLE_PREFIX.'pages'),false,array(array(false,false,'page_path','=','*')));
-		mginit_loadCustomPackages(explode(';',$gdd[0]['page_packages']));		
+		mginit_loadCustomPackages(explode(';',$gdd[0]['page_packages']));
 		/**
 		 * Load cache if it is enabled and the package says its ok to use it
 		 */
@@ -115,18 +115,18 @@ class page{
 				$this->page_hookEval($globalCacheHooks[$i]);
 			}
 			if(!$GLOBALS['MG']['CFG']['STOPCACHE']){
-				$cache=new mgcache();  
+				$cache=new mgcache();
 				$content=$cache->mgc_readcache(filemtime($GLOBALS['MG']['CFG']['PATH']['TPL'].$GLOBALS['MG']['LANG']['NAME'].'/'.$GLOBALS['MG']['SITE']['TPL']));
 				if($content!=false){
 					return $content;
-				}				
+				}
 			}
 		}
 		$GLOBALS['MG']['PAGE']['NOSITETPL']=false;
 		$GLOBALS['MG']['PAGE']['STOPCUSTOMPARSERS']=false;
 		$GLOBALS['MG']['PAGE']['NOERRORPARSE']=false;
         $GLOBALS['MG']['PAGE']['STOPPARSERS'] = false;
-        
+
 		$tpl=new template();
 		if(!$tpl->tpl_load($GLOBALS['MG']['CFG']['PATH']['TPL'].$GLOBALS['MG']['LANG']['NAME'].'/'.$GLOBALS['MG']['SITE']['TPL'],'main')){
 			trigger_error('(PAGE): Could not load site template',E_USER_ERROR);
@@ -134,7 +134,7 @@ class page{
 		}
 
 		$this->page_getContent();
-		
+
 		/**
 		* Get Global Page Vars/Cache Info
 		*/
@@ -154,9 +154,9 @@ class page{
 
 		/**
 		 * Set Page
-		 */ 
+		 */
 		if(!$GLOBALS['MG']['PAGE']['NOSITETPL']){
-			
+
 			$GLOBALS['MG']['PAGE']['VARS']['CONTENT']=$this->content;
 			$tpl->tpl_parse($GLOBALS['MG']['PAGE']['VARS'],'main',2,false);
 			if(!$GLOBALS['MG']['PAGE']['STOPCUSTOMPARSERS'] && isset($gdd[0]['page_customHooks'])){
@@ -168,7 +168,7 @@ class page{
 					$cache=new mgcache();
 				}
 				$cache->mgc_cache($tpl->tpl_return('main'));
-			}	
+			}
 			return $tpl->tpl_return('main');
 		}
 		else{
@@ -189,12 +189,13 @@ class page{
 			$tmp=$this->page_hookEval($GLOBALS['MG']['PAGE']['CACHEHOOKS'][$i]);
 		}
 	}
-	
+
 	private function page_getContent(){
-		if(!$GLOBALS['MG']['PAGE']['CONTENTHOOKS']){
+	    $this->content = "";
+	    if(!$GLOBALS['MG']['PAGE']['CONTENTHOOKS']){
 			$this->page_error('404');
 			trigger_error('(PAGE): No content hooks.',E_USER_WARNING);
-			return false;
+			return;
 		}
 		$soq=count($GLOBALS['MG']['PAGE']['CONTENTHOOKS']);
 		for($i=0;$i<$soq;$i++){
@@ -206,9 +207,11 @@ class page{
 				}
 				else{
 					trigger_error('(PAGE): No content or error during hook evaluation. ('.$GLOBALS['MG']['PAGE']['CONTENTHOOKS'][$i].')',E_USER_NOTICE);
+					return;
 				}
 			}
 		}
+		mginit_errorHandler(E_ACCESS,'Page Access 200 '.$GLOBALS['MG']['PAGE']['PATH'],'','','');
 	}
 
 	private function page_hookEval($hook){
@@ -226,13 +229,13 @@ class page{
                     trigger_error('(PAGE): No class found for hook: '.$hook,E_USER_ERROR);
                     return false;
                 }
-			
+
 				eval('$this->obj[\''.$hook_exp[0].'\']=new '.$hook_exp[0].'();');
 				if(!is_object($this->obj[$hook_exp[0]])){
 					trigger_error('(PAGE): Could not create page class: '.$hook,E_USER_ERROR);
                     return false;
 			}
-				}			
+				}
             try{
                 $reflection = new ReflectionMethod($this->obj[$hook_exp[0]],$hook_exp[1]);
             }
@@ -257,7 +260,7 @@ class page{
 		}
 		return $ret;
 	}
-	
+
 	private function page_error($content){
 		if($GLOBALS['MG']['PAGE']['NOERRORPARSE']){
 			return $content;
@@ -270,7 +273,8 @@ class page{
 				$GLOBALS['MG']['PAGE']['VARS']['TITLE']=$GLOBALS['MG']['LANG']['E500_TITLE'];
                 $GLOBALS['MG']['PAGE']['VARS']['PAGE_NAME_SIMPLE']=$GLOBALS['MG']['LANG']['E500_TITLE'];
 				$this->error=true;
-				return false;			
+				mginit_errorHandler(E_ACCESS_ERR,'Internal Server Error '.$content.' '.$GLOBALS['MG']['PAGE']['PATH'],'','','');
+				return false;
 			break;
 			case 404:
 				$GLOBALS['MG']['PAGE']['VARS']['NO']='no';
@@ -279,6 +283,7 @@ class page{
 				$GLOBALS['MG']['PAGE']['VARS']['TITLE']=$GLOBALS['MG']['LANG']['E404_TITLE'];
                 $GLOBALS['MG']['PAGE']['VARS']['PAGE_NAME_SIMPLE']=$GLOBALS['MG']['LANG']['E404_TITLE'];
 				$this->error=true;
+				mginit_errorHandler(E_ACCESS_ERR,'Resource Not Found '.$content.' '.$GLOBALS['MG']['PAGE']['PATH'],'','','');
 				return false;
 			break;
 			case 403:
@@ -288,7 +293,8 @@ class page{
 				$GLOBALS['MG']['PAGE']['VARS']['TITLE']=$GLOBALS['MG']['LANG']['E403_TITLE'];
                 $GLOBALS['MG']['PAGE']['VARS']['PAGE_NAME_SIMPLE']=$GLOBALS['MG']['LANG']['E403_TITLE'];
 				$this->error=true;
-				return false;			
+				mginit_errorHandler(E_ACCESS_ERR,'Forbidden '.$content.' '.$GLOBALS['MG']['PAGE']['PATH'],'','','');
+				return false;
 			break;
 			case 401:
 				$GLOBALS['MG']['PAGE']['VARS']['NO']='no';
@@ -297,7 +303,8 @@ class page{
 				$GLOBALS['MG']['PAGE']['VARS']['TITLE']=$GLOBALS['MG']['LANG']['E401_TITLE'];
                 $GLOBALS['MG']['PAGE']['VARS']['PAGE_NAME_SIMPLE']=$GLOBALS['MG']['LANG']['E401_TITLE'];
 				$this->error=true;
-				return false;			
+				mginit_errorHandler(E_ACCESS_ERR,'Authorization Required '.$content.' '.$GLOBALS['MG']['PAGE']['PATH'],'','','');
+				return false;
 			break;
 			default:
 				return $content;

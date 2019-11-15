@@ -26,12 +26,14 @@ if(!defined('STARTED')){
 	die();
 }
 
+define('E_ACCESS',16384);
+define('E_ACCESS_ERR',16385);
 class errorLogger{
 
 	/**
 	* Variables
 	*/
-	public $errorTypes;
+    public $errorTypes;
 	private $fatalErrors = array();
     private $errors = array();
 
@@ -42,24 +44,26 @@ class errorLogger{
 		$this->errorTypes = array (
                 E_ERROR              => 'Error',
                 E_WARNING            => 'Warning',
-                E_PARSE              => 'Parsing_Error',
+                E_PARSE              => 'Error',
                 E_NOTICE             => 'Notice',
-                E_CORE_ERROR         => 'Core_Error',
-                E_CORE_WARNING       => 'Core_Warning',
-                E_COMPILE_ERROR      => 'Compile_Error',
-                E_COMPILE_WARNING    => 'Compile_Warning',
-                E_USER_ERROR         => 'User_Error',
-                E_USER_WARNING       => 'User_Warning',
-                E_USER_NOTICE        => 'User_Notice',
-                E_STRICT             => 'Runtime_Notice',
-                E_RECOVERABLE_ERROR  => 'Catchable_Fatal_Error',
-                E_DEPRECATED         => 'Deprecated'
+                E_CORE_ERROR         => 'Core Error',
+                E_CORE_WARNING       => 'Core Warning',
+                E_COMPILE_ERROR      => 'Compile Error',
+                E_COMPILE_WARNING    => 'Compile Warning',
+                E_USER_ERROR         => 'User Error',
+                E_USER_WARNING       => 'User Warning',
+                E_USER_NOTICE        => 'User Notice',
+                E_STRICT             => 'Strict',
+                E_RECOVERABLE_ERROR  => 'Recoverable Error',
+                E_DEPRECATED         => 'Deprecated',
+		        E_ACCESS             => 'Access',
+		        E_ACCESS_ERR         => 'Access Error'
                 );
-        foreach($this->errorTypes as $key => $value){
+        /*foreach($this->errorTypes as $key => $value){
 			if(!is_file($GLOBALS['MG']['CFG']['PATH']['LOG'].$value.'.log')){
 				@touch($GLOBALS['MG']['CFG']['PATH']['LOG'].$value.'.log');
 			}
-		}
+		}*/
 	}
 	public function __destruct(){
 		$this->userErrors=false;
@@ -125,38 +129,36 @@ class errorLogger{
 	* true on success, false on fail
 	*/
 	public function el_addError($errno, $errmsg, $filename, $linenum, $vars){
-	   $dt = @date("Y-m-d H:i:s (T)");
+	   $dt = @date("Y-m-d H:i:s O");
         if($errno == E_ERROR || $errno == E_CORE_ERROR || $errno == E_USER_ERROR){
             $this->fatalErrors[] = array(
                 $dt,$errno,$this->errorTypes[$errno],(isset($_SERVER['REQUEST_URI']))?$_SERVER['REQUEST_URI']:'',$errmsg,$filename,$linenum
             );
         }
         $this->errors[] = array(
-
             $this->errorTypes[$errno],$errmsg,$filename,$linenum
         );
 
-	 	$err = "<error>\r\n";
-	    $err .= "\t<datetime>" . $dt . "</datetime>\r\n";
-        if(isset($GLOBALS['MG']['USER']['UID'])){
-            $err .= "\t<user>" . $GLOBALS['MG']['USER']['UID'] . "</user>\r\n";
+        $request = $_SERVER['REQUEST_METHOD'].' '.$_SERVER['REQUEST_URI']. ' '.$_SERVER['SERVER_PROTOCOL'];
+        $user = $_SERVER['REMOTE_ADDR'].' '.$GLOBALS['MG']['USER']['UID'];
+
+        //dont log if file is empty
+        if(empty($GLOBALS['MG']['CFG']['ERRORLOGGER']['FILES'][$errno])){
+            return;
         }
-        if(isset($_POST)){
-            $p = $_POST;
-            if(isset($p['password'])){
-                $p['password']='';
-            }
-            $err .= "\t<post>" . var_export($p,true) . "</post>\r\n";
+        // "" "{USER}" "" "" ""
+        $flds=array('{DATE}','{RMT_IP}','{USER}','{REQUEST}','{ERROR}','{MESSAGE}','{SCRIPT}');
+        $data=array($dt,$_SERVER['REMOTE_ADDR'],$GLOBALS['MG']['USER']['UID'],$request,$this->errorTypes[$errno],$errmsg);
+        if($errno < E_ACCESS){
+            $data[] = $filename.' '.$linenum;
         }
-	    $err .= "\t<errornum>" . $errno . "</errornum>\r\n";
-	    $err .= "\t<errortype>" . $this->errorTypes[$errno] . "</errortype>\r\n";
-	    $err .= "\t<erroruri>".(isset($_SERVER['REQUEST_URI']))?$_SERVER['REQUEST_URI']:''."</erroruri>\r\n";
-		$err .= "\t<errormsg>" . $errmsg . "</errormsg>\r\n";
-		$err .= "\t<scriptname>" . $filename . "</scriptname>\r\n";
-		$err .= "\t<scriptlinenum>" . $linenum . "</scriptlinenum>\r\n";
-		$err .= "</error>\r\n";
-		$this->el_logRotate($GLOBALS['MG']['CFG']['PATH']['LOG'].$this->errorTypes[$errno].'.log');
-		return @error_log($err, 3,$GLOBALS['MG']['CFG']['PATH']['LOG'].$this->errorTypes[$errno].'.log');
+        else{
+            $data[] = '';
+        }
+        $err = str_replace($flds,$data,$GLOBALS['MG']['CFG']['ERRORLOGGER']['FORMAT']);
+
+        $this->el_logRotate($GLOBALS['MG']['CFG']['PATH']['LOG'].$GLOBALS['MG']['CFG']['ERRORLOGGER']['FILES'][$errno]);
+        return @error_log($err, 3,$GLOBALS['MG']['CFG']['PATH']['LOG'].$GLOBALS['MG']['CFG']['ERRORLOGGER']['FILES'][$errno]);
 	}
 
 	/**
