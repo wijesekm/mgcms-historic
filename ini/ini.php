@@ -192,15 +192,15 @@ if(!defined('CRON')){
 	else{
 		$GLOBALS['MG']['COOKIE']['USER_SESSION']=explode(';',$GLOBALS['MG']['COOKIE']['USER_SESSION']);
 	}
-	if(is_array($GLOBALS['MG']['COOKIE']['USER_SESSION']) && !$ses->session_load($GLOBALS['MG']['COOKIE']['USER_SESSION'][0],$GLOBALS['MG']['COOKIE']['USER_SESSION'][1])){
-		$GLOBALS['MG']['USER']=$act->act_load($GLOBALS['MG']['SITE']['DEFAULT_ACT']);
-		$GLOBALS['MG']['USER']=$GLOBALS['MG']['USER'][$GLOBALS['MG']['SITE']['DEFAULT_ACT']];
-		$GLOBALS['MG']['USER']['NOAUTH']=true;
-	}
-	else{
+	if(is_array($GLOBALS['MG']['COOKIE']['USER_SESSION']) && count($GLOBALS['MG']['COOKIE']['USER_SESSION']) == 2 && $ses->session_load($GLOBALS['MG']['COOKIE']['USER_SESSION'][0],$GLOBALS['MG']['COOKIE']['USER_SESSION'][1])){
 	    $GLOBALS['MG']['USER']=$act->act_load($ses->session_getUID());
 	    $GLOBALS['MG']['USER']=$GLOBALS['MG']['USER'][$ses->session_getUID()];
-		$GLOBALS['MG']['USER']['NOAUTH']=false;
+	    $GLOBALS['MG']['USER']['NOAUTH']=false;
+	}
+	else{
+	    $GLOBALS['MG']['USER']=$act->act_load($GLOBALS['MG']['SITE']['DEFAULT_ACT']);
+	    $GLOBALS['MG']['USER']=$GLOBALS['MG']['USER'][$GLOBALS['MG']['SITE']['DEFAULT_ACT']];
+	    $GLOBALS['MG']['USER']['NOAUTH']=true;
 	}
 
 	/**
