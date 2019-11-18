@@ -5,18 +5,18 @@
  * @author 		Kevin Wijesekera
  * @copyright 	2012
  * @edited		10-8-2012
- 
+
  ###################################
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
- 
+
  This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
- 
+
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see http://www.gnu.org/licenses/.
  ###################################
@@ -27,7 +27,7 @@ if(!defined('STARTED')){
 }
 
 class page{
-	
+
 	private $content;
 	private $error;
 	private $obj;
@@ -85,15 +85,14 @@ class page{
 			'ACL_READ'=>(mg_checkACL($GLOBALS['MG']['PAGE']['PATH'],'read'))?'1':'0'
 		);
 
-		$this->content='';
+		$this->content='404';
 		$this->error=false;
 	}
-	
+
 	public function page_generate($v=false){
 		$cache=false;
 		$gdd=$GLOBALS['MG']['SQL']->sql_fetchArray(array(TABLE_PREFIX.'pages'),false,array(array(false,false,'page_path','=','*')));
-		mginit_loadCustomPackages(explode(';',$gdd[0]['page_packages']));		
-
+		mginit_loadCustomPackages(explode(';',$gdd[0]['page_packages']));
 
 		$GLOBALS['MG']['PAGE']['STOPCUSTOMPARSERS']=false;
 		$GLOBALS['MG']['PAGE']['NOERRORPARSE']=false;
@@ -101,7 +100,7 @@ class page{
 		$tpl=new template();
 
 		$this->page_getContent($v);
-		
+
 		/**
 		* Get Global Page Vars/Cache Info
 		*/
@@ -116,17 +115,18 @@ class page{
             }
 		}
         return $this->content;
-		
+
 	}
 
 	private function page_getContent($v){
-        $hooks = $GLOBALS['MG']['PAGE']['AJAXHOOKS'];
+        $hooks = $GLOBALS['MG']['PAGE']['EXTHOOKS'];
         if($v){
             $hooks = $GLOBALS['MG']['PAGE']['EXTHOOKS'];
         }
-		if(!$hooks){
+		if(empty($hooks[0])){
 			$this->page_error('404');
 			trigger_error('(PAGE): No content hooks.',E_USER_WARNING);
+			mginit_errorHandler(E_ACCESS_ERR,$this->content.' '.$GLOBALS['MG']['PAGE']['PATH'],'','','');
 			return false;
 		}
 
@@ -161,7 +161,7 @@ class page{
                     trigger_error('(PAGE): No class found for hook: '.$hook,E_USER_ERROR);
                     return false;
                 }
-			
+
 				eval('$this->obj[\''.$hook_exp[0].'\']=new '.$hook_exp[0].'();');
 				if(!is_object($this->obj[$hook_exp[0]])){
 					trigger_error('(PAGE): Could not create page class: '.$hook,E_USER_ERROR);
@@ -170,7 +170,7 @@ class page{
 			}
             try{
                 $reflection = new ReflectionMethod($this->obj[$hook_exp[0]],$hook_exp[1]);
-				}			
+				}
             catch(ReflectionException $execpt){
                 trigger_error('(PAGE): No function in class found for hook: '.$hook,E_USER_ERROR);
                 return false;
@@ -192,7 +192,7 @@ class page{
 		}
 		return $ret;
 	}
-	
+
 	private function page_error($content){
 		if($GLOBALS['MG']['PAGE']['NOERRORPARSE']){
 			return $content;
@@ -204,27 +204,31 @@ class page{
             case 200:
 				$this->content='200: Success';
 				$this->error=true;
-				return false;	
+				return false;
             break;
 			case 500:
 				$this->content='500: Internal Server Error';
 				$this->error=true;
-				return false;			
+				mginit_errorHandler(E_ACCESS_ERR,$this->content.' '.$GLOBALS['MG']['PAGE']['PATH'],'','','');
+				return false;
 			break;
 			case 404:
 				$this->content='404: Page Not Found';
 				$this->error=true;
-				return false;	
+				mginit_errorHandler(E_ACCESS_ERR,$this->content.' '.$GLOBALS['MG']['PAGE']['PATH'],'','','');
+				return false;
 			break;
 			case 403:
 				$this->content='403: Authorization Required';
 				$this->error=true;
-				return false;			
+				mginit_errorHandler(E_ACCESS_ERR,$this->content.' '.$GLOBALS['MG']['PAGE']['PATH'],'','','');
+				return false;
 			break;
 			case 401:
 				$this->content='401: Access Denied';
 				$this->error=true;
-				return false;		
+				mginit_errorHandler(E_ACCESS_ERR,$this->content.' '.$GLOBALS['MG']['PAGE']['PATH'],'','','');
+				return false;
 			break;
 			default:
 				return $content;

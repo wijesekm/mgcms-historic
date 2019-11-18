@@ -139,16 +139,20 @@ class errorLogger{
             $this->errorTypes[$errno],$errmsg,$filename,$linenum
         );
 
-        $request = $_SERVER['REQUEST_METHOD'].' '.$_SERVER['REQUEST_URI']. ' '.$_SERVER['SERVER_PROTOCOL'];
-        $user = $_SERVER['REMOTE_ADDR'].' '.$GLOBALS['MG']['USER']['UID'];
-
         //dont log if file is empty
         if(empty($GLOBALS['MG']['CFG']['ERRORLOGGER']['FILES'][$errno])){
             return;
         }
-        // "" "{USER}" "" "" ""
         $flds=array('{DATE}','{RMT_IP}','{USER}','{REQUEST}','{ERROR}','{MESSAGE}','{SCRIPT}');
-        $data=array($dt,$_SERVER['REMOTE_ADDR'],$GLOBALS['MG']['USER']['UID'],$request,$this->errorTypes[$errno],$errmsg);
+
+        //preprocess data
+        $uid = 'none';
+        if(isset($GLOBALS['MG']['USER']) && isset($GLOBALS['MG']['USER']['UID'])){
+            $uid =$GLOBALS['MG']['USER']['UID'];
+        }
+        $request = $_SERVER['REQUEST_METHOD'].' '.$_SERVER['REQUEST_URI']. ' '.$_SERVER['SERVER_PROTOCOL'];
+
+        $data=array($dt,$_SERVER['REMOTE_ADDR'],$uid,$request,$this->errorTypes[$errno],$errmsg);
         if($errno < E_ACCESS){
             $data[] = $filename.' '.$linenum;
         }
@@ -156,6 +160,7 @@ class errorLogger{
             $data[] = '';
         }
         $err = str_replace($flds,$data,$GLOBALS['MG']['CFG']['ERRORLOGGER']['FORMAT']);
+        $err .= "\n";
 
         $this->el_logRotate($GLOBALS['MG']['CFG']['PATH']['LOG'].$GLOBALS['MG']['CFG']['ERRORLOGGER']['FILES'][$errno]);
         return @error_log($err, 3,$GLOBALS['MG']['CFG']['PATH']['LOG'].$GLOBALS['MG']['CFG']['ERRORLOGGER']['FILES'][$errno]);
@@ -178,22 +183,32 @@ class errorLogger{
             return false;
         }
         $GLOBALS['MG']['SQL']->sql_close();
-        echo '<html><head><style type="text/css">
+
+        if($GLOBALS['MG']['CFG']['ERRORLOGGER']['DISPFATAL']){
+            if(defined('API') || defined('AJAX') || defined('CRON')){
+                echo '500: ';
+                foreach($this->fatalErrors as $key=>$err){
+                    echo $err[4].', ';
+                }
+                echo "\n";
+            }
+            else{
+                echo '<html><head><style type="text/css">
             .title{font-size: 26px; background: #FF6666; padding: 10px; }
             .err{ margin-top: 10px; padding: 10px; border: 1px dashed #ADADAD; background: #EDEDED; }
             .ts,.einfo{ margin-right: 7px; }
         </style></head><body>';
-        echo '<div class="title">This application encountered fatal errors and was unable to process your request</div>';
-        if($GLOBALS['MG']['CFG']['ERRORLOGGER']['DISPFATAL']){
-            foreach($this->fatalErrors as $key=>$err){
-                echo '<div class="err">';
-                //echo '<span class="ts">'.$err[0].'</span>';
-                echo '<span class="einfo">'.$err[4].' ('.$err[2].')</span><br/>';
-                echo '<span class="dta">'.$err[5].' ('.$err[6].')</span>';
-                echo '</div>';
+                echo '<div class="title">This application encountered fatal errors and was unable to process your request</div>';
+                foreach($this->fatalErrors as $key=>$err){
+                    echo '<div class="err">';
+                    //echo '<span class="ts">'.$err[0].'</span>';
+                    echo '<span class="einfo">'.$err[4].' ('.$err[2].')</span><br/>';
+                    echo '<span class="dta">'.$err[5].' ('.$err[6].')</span>';
+                    echo '</div>';
+                }
+                echo '</body></html>';
             }
         }
-        echo '</body></html>';
         die();
     }
 

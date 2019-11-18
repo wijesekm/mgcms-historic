@@ -46,6 +46,8 @@ if(!isset($_SERVER['REQUEST_METHOD'])){
 if(!isset($_SERVER['SERVER_PROTOCOL'])){
     $_SERVER['SERVER_PROTOCOL'] = 'HTTP';
 }
+$GLOBALS['MG']['USER']=array('UID'=>'none');
+
 /*
 * Setup a few arrays to remove warnings
 */
@@ -71,12 +73,12 @@ $load=array(array('template','class','/classes/'),
 			array('mgtime','class','/classes/'),
 			array('clean','ini','/ini/'),
 			array('funct','ini','/ini/'));
-if(!defined('CRON')){
+if(!defined('CRON') && !defined('API')){
 	$load[]=array('mgcache','class','/classes/');
 	$load[]=array('session','class','/classes/auth/');
 }
 
-if(defined('AJAX')){
+if(defined('AJAX') || defined('API')){
     $load[]=array('ajax','class','/classes/');
 }
 else if(defined('CRON')){
@@ -171,11 +173,44 @@ if(!defined('CRON')){
 	$load[] = array('acl','class','/classes/accounts/');
 	$load[] = array('bvars','ini','/ini/');
 }
+if(defined('API')){
+    $load[] = array('auth','abstract','/classes/auth/');
+    $load[] = array($GLOBALS['MG']['SITE']['EXT_AUTH'],'class','/classes/auth/');
+}
+
 mginit_loadPackage($load);
 /**
 * User Data
 */
-if(!defined('CRON')){
+if(defined('CRON')){
+    $GLOBALS['MG']['USER']=array('UID'=>'','TZ'=>'');
+
+}
+else if(defined('API')){
+    if(!class_exists($GLOBALS['MG']['SITE']['ACCOUNT_TYPE']) || !class_exists($GLOBALS['MG']['SITE']['EXT_AUTH'])){
+        trigger_error('(INI): Invalid Account Type or Auth', E_USER_ERROR);
+        $GLOBALS['MG']['ERROR']['LOGGER']->el_checkFatal();
+    }
+    $act = new $GLOBALS['MG']['SITE']['ACCOUNT_TYPE']();
+    $auth = new $GLOBALS['MG']['SITE']['EXT_AUTH']();
+    if(!$act || !$auth){
+        trigger_error('(INI): Invalid account type or not account type set', E_USER_ERROR);
+        $GLOBALS['MG']['ERROR']['LOGGER']->el_checkFatal();
+    }
+
+    if(isset($GLOBALS['MG']['EAUTH']['USER']) && isset($GLOBALS['MG']['EAUTH']['KEY'])
+            && $auth->auth_authenticate($GLOBALS['MG']['EAUTH']['USER'],$GLOBALS['MG']['EAUTH']['KEY'])){
+        $GLOBALS['MG']['USER']=$act->act_load($GLOBALS['MG']['SITE']['DEFAULT_ACT']);
+        $GLOBALS['MG']['USER']=$GLOBALS['MG']['USER'][$GLOBALS['MG']['SITE']['DEFAULT_ACT']];
+        $GLOBALS['MG']['USER']['NOAUTH']=true;
+    }
+    else{
+        $GLOBALS['MG']['USER']=$act->act_load($GLOBALS['MG']['SITE']['DEFAULT_ACT']);
+        $GLOBALS['MG']['USER']=$GLOBALS['MG']['USER'][$GLOBALS['MG']['SITE']['DEFAULT_ACT']];
+        $GLOBALS['MG']['USER']['NOAUTH']=true;
+    }
+}
+else{
 	$ses=new session(0);
 	if(!class_exists($GLOBALS['MG']['SITE']['ACCOUNT_TYPE'])){
 		trigger_error('(INI): Invalid Account Type', E_USER_ERROR);
@@ -219,9 +254,7 @@ if(!defined('CRON')){
 	    }
 	}
 }
-else{
-	$GLOBALS['MG']['USER']['TZ'] = '';
-}
+
 /**
 * Time Data
 */
@@ -233,7 +266,7 @@ $t=false;
 /**
 * Update Cookies
 */
-if(!defined('AJAX') && !defined('CRON')){
+if(!defined('AJAX') && !defined('CRON') && !defined('API')){
     $cdta=array(
     	'SECURE'=>(boolean)$GLOBALS['MG']['SITE']['COOKIE_SECURE'],
     	'PATH'=>$GLOBALS['MG']['SITE']['COOKIE_PATH'],
@@ -370,10 +403,11 @@ mginit_loadCustomPackages($GLOBALS['MG']['PAGE']['PACKAGES']);
 /*
  * Log access voilations
  */
-if(strpos($_SERVER['REQUEST_URI'],'p/'.$GLOBALS['MG']['PAGE']['PATH']) === false && $_SERVER['REQUEST_URI'] != '/'){
-    mginit_errorHandler(E_ACCESS_ERR,'Resource Not Found 404 '.$GLOBALS['MG']['PAGE']['PATH'],'','','');
+if(!defined('CRON')){
+    if(strpos($_SERVER['REQUEST_URI'],'p/'.$GLOBALS['MG']['PAGE']['PATH']) === false && $_SERVER['REQUEST_URI'] != '/'){
+        mginit_errorHandler(E_ACCESS_ERR,'Resource Not Found 404 '.$GLOBALS['MG']['PAGE']['PATH'],'','','');
+    }
 }
-
 
 /**
 * MISC Functions
