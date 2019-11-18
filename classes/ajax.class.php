@@ -140,10 +140,11 @@ class page{
 				}
 				else{
 					trigger_error('(PAGE): No content or error during hook evaluation. ('.$hooks[$i].')',E_USER_NOTICE);
+					return;
 				}
 			}
 		}
-
+		mginit_errorHandler(E_ACCESS,'Page Access 200 '.$GLOBALS['MG']['PAGE']['PATH'],'','','');
 	}
 
 	private function page_hookEval($hook){
@@ -209,25 +210,25 @@ class page{
 			case 500:
 				$this->content='500: Internal Server Error';
 				$this->error=true;
-				mginit_errorHandler(E_ACCESS_ERR,$this->content.' '.$GLOBALS['MG']['PAGE']['PATH'],'','','');
+				mginit_errorHandler(E_ACCESS_ERR,'Internal Server Error 500 '.$GLOBALS['MG']['PAGE']['PATH'],'','','');
 				return false;
 			break;
 			case 404:
 				$this->content='404: Page Not Found';
 				$this->error=true;
-				mginit_errorHandler(E_ACCESS_ERR,$this->content.' '.$GLOBALS['MG']['PAGE']['PATH'],'','','');
+				mginit_errorHandler(E_ACCESS_ERR,'Resource Not Found 404 '.$GLOBALS['MG']['PAGE']['PATH'],'','','');
 				return false;
 			break;
 			case 403:
-				$this->content='403: Authorization Required';
+				$this->content='403: Forbidden';
 				$this->error=true;
-				mginit_errorHandler(E_ACCESS_ERR,$this->content.' '.$GLOBALS['MG']['PAGE']['PATH'],'','','');
+				mginit_errorHandler(E_ACCESS_ERR,'Forbidden 403 '.$GLOBALS['MG']['PAGE']['PATH'],'','','');
 				return false;
 			break;
 			case 401:
 				$this->content='401: Access Denied';
 				$this->error=true;
-				mginit_errorHandler(E_ACCESS_ERR,$this->content.' '.$GLOBALS['MG']['PAGE']['PATH'],'','','');
+				mginit_errorHandler(E_ACCESS_ERR,'Authorization Required 401 '.$GLOBALS['MG']['PAGE']['PATH'],'','','');
 				return false;
 			break;
 			default:

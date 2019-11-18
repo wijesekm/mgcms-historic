@@ -273,7 +273,7 @@ class page{
 				$GLOBALS['MG']['PAGE']['VARS']['TITLE']=$GLOBALS['MG']['LANG']['E500_TITLE'];
                 $GLOBALS['MG']['PAGE']['VARS']['PAGE_NAME_SIMPLE']=$GLOBALS['MG']['LANG']['E500_TITLE'];
 				$this->error=true;
-				mginit_errorHandler(E_ACCESS_ERR,'Internal Server Error '.$content.' '.$GLOBALS['MG']['PAGE']['PATH'],'','','');
+				mginit_errorHandler(E_ACCESS_ERR,'Internal Server Error 500 '.$GLOBALS['MG']['PAGE']['PATH'],'','','');
 				return false;
 			break;
 			case 404:
@@ -283,7 +283,7 @@ class page{
 				$GLOBALS['MG']['PAGE']['VARS']['TITLE']=$GLOBALS['MG']['LANG']['E404_TITLE'];
                 $GLOBALS['MG']['PAGE']['VARS']['PAGE_NAME_SIMPLE']=$GLOBALS['MG']['LANG']['E404_TITLE'];
 				$this->error=true;
-				mginit_errorHandler(E_ACCESS_ERR,'Resource Not Found '.$content.' '.$GLOBALS['MG']['PAGE']['PATH'],'','','');
+				mginit_errorHandler(E_ACCESS_ERR,'Resource Not Found 404 '.$GLOBALS['MG']['PAGE']['PATH'],'','','');
 				return false;
 			break;
 			case 403:
@@ -293,7 +293,7 @@ class page{
 				$GLOBALS['MG']['PAGE']['VARS']['TITLE']=$GLOBALS['MG']['LANG']['E403_TITLE'];
                 $GLOBALS['MG']['PAGE']['VARS']['PAGE_NAME_SIMPLE']=$GLOBALS['MG']['LANG']['E403_TITLE'];
 				$this->error=true;
-				mginit_errorHandler(E_ACCESS_ERR,'Forbidden '.$content.' '.$GLOBALS['MG']['PAGE']['PATH'],'','','');
+				mginit_errorHandler(E_ACCESS_ERR,'Forbidden 403 '.$GLOBALS['MG']['PAGE']['PATH'],'','','');
 				return false;
 			break;
 			case 401:
@@ -303,7 +303,7 @@ class page{
 				$GLOBALS['MG']['PAGE']['VARS']['TITLE']=$GLOBALS['MG']['LANG']['E401_TITLE'];
                 $GLOBALS['MG']['PAGE']['VARS']['PAGE_NAME_SIMPLE']=$GLOBALS['MG']['LANG']['E401_TITLE'];
 				$this->error=true;
-				mginit_errorHandler(E_ACCESS_ERR,'Authorization Required '.$content.' '.$GLOBALS['MG']['PAGE']['PATH'],'','','');
+				mginit_errorHandler(E_ACCESS_ERR,'Authorization Required 401 '.$GLOBALS['MG']['PAGE']['PATH'],'','','');
 				return false;
 			break;
 			default:
