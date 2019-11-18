@@ -49,15 +49,13 @@ function mginit_loadVars(){
 	$addit['orderby']=array(array('var_id'),array('ASC'));
 	$vars=$GLOBALS['MG']['SQL']->sql_fetcharray(array(TABLE_PREFIX.'vars'),false,false,DB_ASSOC,DB_ALL_ROWS,$addit);
 
-	if($GLOBALS['MG']['SITE']['URLTYPE']==3){
-		$url = mginit_genURLType3();
-	}
-	else if($GLOBALS['MG']['SITE']['URLTYPE']==2){
-		$url=mginit_genURLType2();
+	if(isset($_GET['url'])){
+	    $url = mginit_genURLInline();
 	}
 	else{
-		$url= & $_GET;
+	    $url = $_GET;
 	}
+
 	if(defined('EXT_AUTH')){
 	    $GLOBALS['MG']['EAUTH']['USER'] = isset($_SERVER['PHP_AUTH_USER'])?mginit_cleanVar($_SERVER['PHP_AUTH_USER'],array('username',1,0,1,0,0,0)):'';
 	    $GLOBALS['MG']['EAUTH']['KEY'] = isset($_SERVER['PHP_AUTH_PW'])?mginit_cleanVar($_SERVER['PHP_AUTH_PW'],array('password',0,0,1,0,0,0)):'';
@@ -246,7 +244,7 @@ function mginit_loadVarOnlyOnePage($loadOnly){
 	return true;
 }
 
-function mginit_genURLType3(){
+function mginit_genURLInline(){
 	if(preg_match('/\//',$GLOBALS['MG']['SITE']['URI'])){
 		$base_uri = explode('/',$GLOBALS['MG']['SITE']['URI']);
 		array_splice($base_uri,0,1);
@@ -268,32 +266,6 @@ function mginit_genURLType3(){
     for($i=0;$i<$soq;$i=$i+2){
     	if($raw_url[$i]){
     		if(isset($raw_url[$i+1])){
-				$url = array_merge_recursive($url, array($raw_url[$i]=>$raw_url[$i+1]));
-			}
-			else{
-				$url = array_merge_recursive($url, array($raw_url[$i]=>''));
-			}
-		}
-    }
-	return $url;
-}
-function mginit_genURLType2(){
-    if(!preg_match('/'.preg_quote($GLOBALS['MG']['SITE']['INDEX_NAME']."/",$_SERVER["REQUEST_URI"],'/').'/')){
-		$raw_url=$GLOBALS['MG']['SITE']['INDEX_NAME'].$_SERVER["REQUEST_URI"];
-    }
-	else{
-		$raw_url=$_SERVER["REQUEST_URI"];
-    }
-
-    $raw_url = eregi_replace("/^.*".preg_quote($GLOBALS['MG']['SITE']['INDEX_NAME'],'/')."\/p/","p",$raw_url);
-    $raw_url=preg_replace('/\/\//','/',$raw_url);
-    $raw_url = explode("/",$raw_url);
-    $url=array();
-
-	$soq=count($raw_url);
-    for($i=0;$i<$soq;$i=$i+2){
-    	if($raw_url[$i]){
-    		if($raw_url[$i+1]){
 				$url = array_merge_recursive($url, array($raw_url[$i]=>$raw_url[$i+1]));
 			}
 			else{

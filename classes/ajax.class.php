@@ -85,7 +85,7 @@ class page{
 			'ACL_READ'=>(mg_checkACL($GLOBALS['MG']['PAGE']['PATH'],'read'))?'1':'0'
 		);
 
-		$this->content='404';
+		$this->content='';
 		$this->error=false;
 	}
 
@@ -119,7 +119,7 @@ class page{
 	}
 
 	private function page_getContent($v){
-        $hooks = $GLOBALS['MG']['PAGE']['EXTHOOKS'];
+        $hooks = $GLOBALS['MG']['PAGE']['AJAXHOOKS'];
         if($v){
             $hooks = $GLOBALS['MG']['PAGE']['EXTHOOKS'];
         }
