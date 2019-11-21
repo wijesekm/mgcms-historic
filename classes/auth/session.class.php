@@ -83,6 +83,9 @@ class session{
             return false;
         }
 		$d=$d[0];
+		if(!is_array($d)){
+		    return false;
+		}
         foreach($d as $key=>$val){
             $GLOBALS['MG']['SESSION'][strtoupper(preg_replace('/ses_/','',$key))] = $val;
         }

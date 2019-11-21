@@ -404,7 +404,7 @@ mginit_loadCustomPackages($GLOBALS['MG']['PAGE']['PACKAGES']);
  * Log access voilations
  */
 if(!defined('CRON')){
-    if(strpos($_SERVER['REQUEST_URI'],'p/'.$GLOBALS['MG']['PAGE']['PATH']) === false && $_SERVER['REQUEST_URI'] != '/'){
+    if((strpos($_SERVER['REQUEST_URI'],'p/'.$GLOBALS['MG']['PAGE']['PATH']) === false && $_SERVER['REQUEST_URI'] != '/') || (isset($_GET['p']) && $_GET['p'] != $_SERVER['REQUEST_URI'])){
         mginit_errorHandler(E_ACCESS_ERR,'Resource Not Found 404 '.$GLOBALS['MG']['PAGE']['PATH'],'','','');
     }
 }
