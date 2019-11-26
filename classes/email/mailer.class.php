@@ -150,6 +150,10 @@ class mailer{
   		$this->mail->clearAttachments();
 	}
 
+	public function phpm_clearAttach(){
+	    $this->mail->clearAttachments();
+	}
+
 	public function phpm_setFrom($name,$email,$confirmMsg=false){
 		if(!$email){
 			return false;
