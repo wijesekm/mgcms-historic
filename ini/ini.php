@@ -197,14 +197,10 @@ else if(defined('API')){
         trigger_error('(INI): Invalid account type or not account type set', E_USER_ERROR);
         $GLOBALS['MG']['ERROR']['LOGGER']->el_checkFatal();
     }
-
-    if(isset($GLOBALS['MG']['EAUTH']['USER']) && isset($GLOBALS['MG']['EAUTH']['KEY'])
-            && $auth->auth_authenticate($GLOBALS['MG']['EAUTH']['USER'],$GLOBALS['MG']['EAUTH']['KEY'])){
-        $GLOBALS['MG']['USER']=$act->act_load($GLOBALS['MG']['SITE']['DEFAULT_ACT']);
-        $GLOBALS['MG']['USER']=$GLOBALS['MG']['USER'][$GLOBALS['MG']['SITE']['DEFAULT_ACT']];
-        $GLOBALS['MG']['USER']['NOAUTH']=true;
-    }
-    else{
+    $GLOBALS['MG']['USER']=$act->act_load($GLOBALS['MG']['EAUTH']['USER']);
+    $GLOBALS['MG']['USER']=$GLOBALS['MG']['USER'][$GLOBALS['MG']['EAUTH']['USER']];
+    if(empty($GLOBALS['MG']['EAUTH']['USER']) || empty($GLOBALS['MG']['EAUTH']['KEY'])
+            || !$auth->auth_authenticate($GLOBALS['MG']['EAUTH']['USER'],$GLOBALS['MG']['EAUTH']['KEY'])){
         $GLOBALS['MG']['USER']=$act->act_load($GLOBALS['MG']['SITE']['DEFAULT_ACT']);
         $GLOBALS['MG']['USER']=$GLOBALS['MG']['USER'][$GLOBALS['MG']['SITE']['DEFAULT_ACT']];
         $GLOBALS['MG']['USER']['NOAUTH']=true;
