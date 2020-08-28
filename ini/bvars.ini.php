@@ -26,6 +26,9 @@ if(!defined('STARTED')){
 	die();
 }
 
+$GLOBALS['MG']['EAUTH']['SESSION']=false;
+$GLOBALS['MG']['EAUTH']['USER']=false;
+$GLOBALS['MG']['EAUTH']['KEY']=false;
 $GLOBALS['MG']['CFG']['USEINCACHE']=array();
 $GLOBALS['MG']['CFG']['STOPCACHE']=false;
 $GLOBALS['MG']['CFG']['ALLOWWRITECACHE']=false;
@@ -57,8 +60,13 @@ function mginit_loadVars(){
 	}
 
 	if(defined('EXT_AUTH')){
-	    $GLOBALS['MG']['EAUTH']['USER'] = isset($_SERVER['PHP_AUTH_USER'])?mginit_cleanVar($_SERVER['PHP_AUTH_USER'],array('username',1,0,1,0,0,0)):'';
-	    $GLOBALS['MG']['EAUTH']['KEY'] = isset($_SERVER['PHP_AUTH_PW'])?mginit_cleanVar($_SERVER['PHP_AUTH_PW'],array('password',0,0,1,0,0,0)):'';
+	    if(isset($_SERVER['HTTP_MSESSION'])){
+	        $GLOBALS['MG']['EAUTH']['SESSION'] = mginit_cleanVar($_SERVER['HTTP_MSESSION'],array('id',1,0,1,0,0,0));
+	    }
+	    else if(isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW'])){
+	        $GLOBALS['MG']['EAUTH']['USER'] = mginit_cleanVar($_SERVER['PHP_AUTH_USER'],array('username',1,0,1,0,0,0));
+	        $GLOBALS['MG']['EAUTH']['KEY'] = mginit_cleanVar($_SERVER['PHP_AUTH_PW'],array('password',0,0,1,0,0,0));
+	    }
 	}
 
 	for($i=0;$i<$vars['count'];$i++){

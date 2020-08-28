@@ -48,17 +48,19 @@ class session{
 		}
 	}
 
-	public function session_start($uid,$cdata){
+	public function session_start($uid,$cdata,$no_cookies=false,$fixed_id=-1){
 		if(!$uid){
 			return false;
 		}
 		$this->sid=md5(uniqid(rand(),true));
 		$this->uid=$uid;
-		if(!$this->session_startStopDB(false,$cdata['EXPIRES'])){
+		if(!$this->session_startStopDB(false,$cdata['EXPIRES'],$fixed_id)){
 			return false;
 		}
-		if(!$this->session_setCookies($cdata)){
-			return false;
+		if(!$no_cookies){
+		    if(!$this->session_setCookies($cdata)){
+		        return false;
+		    }
 		}
 		return $this->sid;
 	}
@@ -68,11 +70,13 @@ class session{
 		$this->sid='';
 		$this->session_startStopDB(true);
 		$this->uid='';
-		$this->session_setCookies($cdata);
+		if($cdata != false){
+		    $this->session_setCookies($cdata);
+		}
 	}
 
 	public function session_load($id,$sid,$twofact=false){
-	    if(!$id||!$sid){
+	    if(empty($id)||empty($sid)){
 			return false;
 		}
 		$this->session_dbSwitch(0);
@@ -87,14 +91,19 @@ class session{
 		    return false;
 		}
         foreach($d as $key=>$val){
-            $GLOBALS['MG']['SESSION'][strtoupper(preg_replace('/ses_/','',$key))] = $val;
+            $GLOBALS['MG']['SESSION'][strtoupper(substr($key,strpos($key,'_')+1))] = $val;
         }
-		$this->id=$d['ses_id'];
+		$this->id=(int)$d['ses_id'];
 		$this->uid=$d['ses_uid'];
 		$this->sid=$d['ses_sid'];
 		$this->length=$d['ses_length'];
 
-		if($this->sid===$sid&&$this->id===$id){
+		if($this->sid===$sid&&$this->id===(int)$id){
+		    /*echo $this->length."\n";
+		    echo ($this->length+$this->t)."\n";
+		    if($this->length != 0 && ($this->length+$this->t) < $d['ses_renewed']){
+		        die('expired');
+		    }*/
             if($twofact){
                 if($d['ses_twofactor']=='1'){
                     return true;
@@ -111,18 +120,25 @@ class session{
 		return false;
 	}
 
-	public function session_getUID(){
-	    return $this->uid;
+	public function check_after($time, $cdata, $banned, $no_cookies=true){
+	    $this->t = $time;
+
+	    if(($this->length != 0 && $this->t > ($GLOBALS['MG']['SESSION']['RENEWED']+ $this->length)) || $banned){
+	        $this->session_stop($no_cookies?false:$cdata);
+	        return false;
+	    }
+
+	    if(!$no_cookies){
+	        $this->session_updateDB();
+	        $cdata['EXPIRES']=$this->length;
+	        $this->session_setCookies($cdata);
+	    }
+
+	    return true;
 	}
 
-	public function session_loadUD($time,$cdata){
-		if(!$this->uid||!$this->sid){
-			return false;
-		}
-		$this->t=$time;
-		$this->session_updateDB();
-		$cdata['EXPIRES']=$this->length;
-		$this->session_setCookies($cdata);
+	public function session_getUID(){
+	    return $this->uid;
 	}
 
 	private function session_setCookies($cdata){
@@ -137,7 +153,7 @@ class session{
 		return true;
 	}
 
-	private function session_startStopDB($stop=false,$length=0){
+	private function session_startStopDB($stop=false,$length=0,$fixed_id=-1){
 		$r=true;
 		$this->session_dbSwitch(0);
 		if($stop){
@@ -145,9 +161,16 @@ class session{
 			$GLOBALS['MG']['SQL']->sql_dataCommands(DB_REMOVE,$this->table,$conds);
 		}
 		else{
-			$conds=array(array(false,false,'ses_uid','=',$this->uid));
-			$this->id=$GLOBALS['MG']['SQL']->sql_fetchResult($this->table,array('funct'=>array('MAX','ses_id')),$conds);
-			$this->id++;
+			if($fixed_id == -1){
+			    $conds=array(array(false,false,'ses_uid','=',$this->uid));
+			    $this->id=$GLOBALS['MG']['SQL']->sql_fetchResult($this->table,array('funct'=>array('MAX','ses_id')),$conds);
+			    $this->id++;
+			}
+            else{
+                $this->id = $fixed_id;
+                $conds=array(array(false,array(DB_AND),'ses_uid','=',$this->uid),array(false,false,'ses_id','=',$this->id));
+                $GLOBALS['MG']['SQL']->sql_dataCommands(DB_REMOVE,$this->table,$conds);
+            }
 			$fields=array('ses_id','ses_uid','ses_sid','ses_starttime','ses_renewed','ses_length','ses_ip');
 			$data=array($this->id,$this->uid,$this->sid,$this->t,$this->t,$length,$_SERVER['REMOTE_ADDR']);
 			if(!$GLOBALS['MG']['SQL']->sql_dataCommands(DB_INSERT,$this->table,$fields,$data)){

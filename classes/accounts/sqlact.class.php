@@ -76,7 +76,7 @@ class sqlact extends accounts{
             if(!empty($val['user_uid'])){
                 $ret[$val['user_uid']] = array();
                 foreach($val as $key2=>$val2){
-                    $key2 = strtoupper(preg_replace('/user_/','',$key2));
+                    $key2 = strtoupper(substr($key2,strpos($key2,'_')+1));
                     $ret[$val['user_uid']][$key2]=$val2;
                 }
             }
@@ -101,7 +101,7 @@ class sqlact extends accounts{
             if(!empty($val['user_uid'])){
                 $ret[$val['user_uid']] = array();
                 foreach($val as $key2=>$val2){
-                    $key2 = strtoupper(preg_replace('/user_/','',$key2));
+                    $key2 = strtoupper(substr($key2,strpos($key2,'_')+1));
                     $ret[$val['user_uid']][$key2]=$val2;
                 }
             }
@@ -152,7 +152,7 @@ class sqlact extends accounts{
             }
 
             for($j=0;$j<$soq;$j++){
-                $nkey=strtoupper(preg_replace('/user_/','',$keys[$j]));
+                $nkey=strtoupper(substr($keys[$j],strpos($keys[$j],'_')+1));
                 switch($nkey){
                     case 'IM':
                         $tmp=explode(';',$dta[$keys[$j]]);
