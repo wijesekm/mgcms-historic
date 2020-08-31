@@ -122,7 +122,7 @@ class page{
             return false;
         }
 
-        $this->content = $obj->$GLOBALS['MG']['PAGE']['ACTION_HOOK']();
+        $this->content = $obj->{$GLOBALS['MG']['PAGE']['ACTION_HOOK']}();
         $this->page_error($this->content);
         return true;
     }

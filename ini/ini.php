@@ -284,7 +284,7 @@ else{
 $t=new mgtime($GLOBALS['MG']['SITE']['TZ'],$GLOBALS['MG']['USER']['TZ']);
 $GLOBALS['MG']['SITE']['TIME']=$t->time_server();
 $GLOBALS['MG']['USER']['TIME']=$t->time_client();
-$t=false;
+
 
 /**
 * Check Session
@@ -299,11 +299,13 @@ if(!defined('CRON') && !defined('AJAX')){
         $GLOBALS['MG']['USER']=$act->act_load($GLOBALS['MG']['SITE']['DEFAULT_ACT']);
         $GLOBALS['MG']['USER']=$GLOBALS['MG']['USER'][$GLOBALS['MG']['SITE']['DEFAULT_ACT']];
         $GLOBALS['MG']['USER']['NOAUTH']=true;
+        $GLOBALS['MG']['SITE']['TIME']=$t->time_server();
+        $GLOBALS['MG']['USER']['TIME']=$t->time_client();
     }
 }
 
 $ses=false;
-
+$t=false;
 /**
 * Load Page Data
 */

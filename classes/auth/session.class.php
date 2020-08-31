@@ -66,11 +66,11 @@ class session{
 	}
 
 	public function session_stop($cdata){
-		$cdata['EXPIRES']=-600000;
 		$this->sid='';
 		$this->session_startStopDB(true);
 		$this->uid='';
 		if($cdata != false){
+		    $cdata['EXPIRES']=-600000;
 		    $this->session_setCookies($cdata);
 		}
 	}
