@@ -30,6 +30,22 @@ abstract class auth{
 
 	abstract public function auth_authenticate($username,$password);
 
+	public function auth_sessionStart($uid,$expires){
+	    $cdta=array(
+	            'SECURE'=>(boolean)$GLOBALS['MG']['SITE']['COOKIE_SECURE'],
+	            'PATH'=>$GLOBALS['MG']['SITE']['COOKIE_PATH'],
+	            'DOM'=>$GLOBALS['MG']['SITE']['COOKIE_DOM'],
+	            'EXPIRES'=>$expires
+	    );
+
+	    $ses= new session($GLOBALS['MG']['USER']['TIME']);
+	    if(!$ses_tok = $ses->session_start($uid,$cdta)){
+	        trigger_error('(AUTH): Could not start session',E_USER_ERROR);
+	        return false;
+	    }
+	    return $ses_tok;
+	}
+
 	abstract public function auth_changePass($uid,$newPass);
 
 	abstract public function auth_getAutoReg($uid,$password);

@@ -216,7 +216,6 @@ else{
     $fail = true;
     //HTTP basic auth
     if(!empty($GLOBALS['MG']['EAUTH']['USER']) && !empty($GLOBALS['MG']['EAUTH']['KEY'])){
-        print_r($GLOBALS['MG']['EAUTH']);
         $GLOBALS['MG']['USER']=$act->act_load($GLOBALS['MG']['EAUTH']['USER']);
         $GLOBALS['MG']['USER']=$GLOBALS['MG']['USER'][$GLOBALS['MG']['EAUTH']['USER']];
 
