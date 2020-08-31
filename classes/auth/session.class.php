@@ -87,7 +87,7 @@ class session{
             return false;
         }
 		$d=$d[0];
-		if(!is_array($d)){
+		if(!is_array($d) || !isset($d['ses_id'])){
 		    return false;
 		}
         foreach($d as $key=>$val){
