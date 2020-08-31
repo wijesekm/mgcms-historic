@@ -176,6 +176,7 @@ class sqlact extends accounts{
                     break;
                 }
             }
+            $this->user[$dta['user_uid']]['NOAUTH']=false;
         }
         if(isset($GLOBALS['MG']['SITE']['ACCOUNT_DB'])){
             $GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['CFG']['SQL']['DB']);

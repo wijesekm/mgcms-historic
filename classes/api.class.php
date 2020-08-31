@@ -80,6 +80,7 @@ class page{
 
     public function page_generate($v=false){
         if(!$GLOBALS['MG']['PAGE']['PATH']){
+            trigger_error('(PAGE): No content.',E_USER_WARNING);
             return '404:Resource Not Found';
         }
         if(empty($GLOBALS['MG']['PAGE']['ACTION_HOOK'])){

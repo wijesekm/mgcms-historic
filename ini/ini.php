@@ -178,9 +178,7 @@ if(!defined('CRON')){
 	$load[] = array('acl','class','/classes/accounts/');
 	$load[] = array('bvars','ini','/ini/');
 }
-if(defined('API')){
-    $load[] = array('auth','abstract','/classes/auth/');
-}
+
 
 mginit_loadPackage($load);
 /**
@@ -214,11 +212,13 @@ else{
     }
 
     $fail = true;
+
     //HTTP basic auth
     if(!empty($GLOBALS['MG']['EAUTH']['USER']) && !empty($GLOBALS['MG']['EAUTH']['KEY'])){
         $GLOBALS['MG']['USER']=$act->act_load($GLOBALS['MG']['EAUTH']['USER']);
         $GLOBALS['MG']['USER']=$GLOBALS['MG']['USER'][$GLOBALS['MG']['EAUTH']['USER']];
 
+        $load[] = array('auth','abstract','/classes/auth/');
         $load[] = array($GLOBALS['MG']['USER']['AUTH'],'class','/classes/auth/');
         mginit_loadPackage($load);
 
@@ -250,12 +250,10 @@ else{
         if(strlen($ses_data[1]) > 10 && $ses->session_load($ses_data[0],$ses_data[1])){
             $GLOBALS['MG']['USER']=$act->act_load($ses->session_getUID());
             $GLOBALS['MG']['USER']=$GLOBALS['MG']['USER'][$ses->session_getUID()];
-            $GLOBALS['MG']['USER']['NOAUTH']=false;
             $fail = false;
         }
         $ses_data = false;
     }
-
     //failed to load account
     if($fail){
         $GLOBALS['MG']['USER']=$act->act_load($GLOBALS['MG']['SITE']['DEFAULT_ACT']);
@@ -274,7 +272,6 @@ else{
                     $GLOBALS['MG']['REAL_USER'] = $GLOBALS['MG']['USER'];
                     $GLOBALS['MG']['USER']=$act->act_load($GLOBALS['MG']['COOKIE']['ALTERNATE_UID']);
                     $GLOBALS['MG']['USER']=$GLOBALS['MG']['USER'][$GLOBALS['MG']['COOKIE']['ALTERNATE_UID']];
-                    $GLOBALS['MG']['USER']['NOAUTH']=false;
                 }
             }
         }
@@ -344,7 +341,6 @@ if(defined('API')){
     else{
         $GLOBALS['MG']['PAGE']['ACTION_HOOK'] = false;
     }
-
 }
 else if(!defined('CRON')){
 	$tmp=$GLOBALS['MG']['SQL']->sql_fetcharray(array(TABLE_PREFIX.'pages'),false,array(array(false,false,'page_path','=',strtolower($GLOBALS['MG']['GET']['PAGE']))));
@@ -458,7 +454,7 @@ if(!defined('CRON')){
         }
     }
     else{
-        if(strlen($_SERVER['REQUEST_URI']) > 3 && strpos($_SERVER['REQUEST_URI'],'p/'.$GLOBALS['MG']['PAGE']['PATH']) === false){
+        if(strlen($_SERVER['REQUEST_URI']) > 3 && (strpos($_SERVER['REQUEST_URI'],'p/'.$GLOBALS['MG']['PAGE']['PATH']) === false || strlen($GLOBALS['MG']['PAGE']['PATH']) == 0)){
             mginit_errorHandler(E_ACCESS_ERR,'Resource Not Found 404 '.$GLOBALS['MG']['PAGE']['PATH'],'','','');
         }
     }
