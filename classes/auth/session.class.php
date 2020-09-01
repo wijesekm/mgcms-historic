@@ -99,11 +99,6 @@ class session{
 		$this->length=$d['ses_length'];
 
 		if($this->sid===$sid&&$this->id===(int)$id){
-		    /*echo $this->length."\n";
-		    echo ($this->length+$this->t)."\n";
-		    if($this->length != 0 && ($this->length+$this->t) < $d['ses_renewed']){
-		        die('expired');
-		    }*/
             if($twofact){
                 if($d['ses_twofactor']=='1'){
                     return true;

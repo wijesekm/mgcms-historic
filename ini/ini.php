@@ -430,7 +430,7 @@ if(!$lang){
 }
 $lang=$GLOBALS['MG']['SQL']->sql_fetcharray(array(TABLE_PREFIX.'langsets'),false,array(array(false,false,'lang_name','=',strtolower($lang))));
 
-if(!$lang[0]['lang_id']){
+if(!isset($lang[0]['lang_id'])){
 	$lang=$GLOBALS['MG']['SQL']->sql_fetcharray(array(TABLE_PREFIX.'langsets'),false,array(array(false,false,'lang_name','=',strtolower($GLOBALS['MG']['SITE']['DEFAULT_LANGUAGE']))));
 }
 
