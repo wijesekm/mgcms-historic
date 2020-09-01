@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @file		cert.class.php
+ * @file		certauth.class.php
  * @author 		Kevin Wijesekera
  * @copyright 	2020
  * @edited		8/31/2020
@@ -26,7 +26,7 @@ if(!defined('STARTED')){
     die();
 }
 
-class cert extends auth{
+class certauth extends auth{
 
     private $remote_server;
     private $cert_path;

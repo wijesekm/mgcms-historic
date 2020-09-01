@@ -218,6 +218,7 @@ else{
         $GLOBALS['MG']['USER']=$act->act_load($GLOBALS['MG']['EAUTH']['USER']);
         $GLOBALS['MG']['USER']=$GLOBALS['MG']['USER'][$GLOBALS['MG']['EAUTH']['USER']];
 
+        $load = array();
         $load[] = array('auth','abstract','/classes/auth/');
         $load[] = array($GLOBALS['MG']['USER']['AUTH'],'class','/classes/auth/');
         mginit_loadPackage($load);
