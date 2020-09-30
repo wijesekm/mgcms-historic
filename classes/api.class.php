@@ -89,7 +89,6 @@ class page{
             return $this->content;
 
         }
-
         if(!$this->page_execHook()){
             trigger_error('(PAGE): Could not execute API hook.',E_USER_ERROR);
             $this->page_error('500');

@@ -57,7 +57,6 @@ class certauth extends auth{
             trigger_error('(CERTAUTH): Could not start session',E_USER_ERROR);
             return false;
         }
-
         if($this->remote_server){
             $ch = curl_init();
             $opts = array(

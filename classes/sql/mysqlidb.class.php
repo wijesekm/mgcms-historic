@@ -335,7 +335,7 @@ class mysqlidb extends sql{
 		if($orderby){
 			$query.=$this->sql_formatOrderBy($orderby[0],$orderby[1]).' ';
 		}
-		if($this->groupBy['allow']){
+		if($this->groupBy && $this->groupBy['allow']){
 			$query.=$this->sql_formatGroupBy($this->groupBy['field']).' ';
 			$query.=$this->sql_formatHaving($having[0],$having[1],$having[2],$having[3]).' ';
 		}
@@ -781,16 +781,18 @@ class mysqlidb extends sql{
 					$ended[0]=true;
 				}
 			}
-			switch($conds[$i][1][0]){
-				case DB_AND:
-					$str.=' AND ';
-				break;
-				case DB_OR:
-					$str.=' OR ';
-				break;
-				default:
+			if(!empty($conds[$i][1])){
+			    switch($conds[$i][1][0]){
+			        case DB_AND:
+			            $str.=' AND ';
+			            break;
+			        case DB_OR:
+			            $str.=' OR ';
+			            break;
+			        default:
 
-				break 2;
+			            break 2;
+			    }
 			}
 		}
 		if(!$ended[1]){

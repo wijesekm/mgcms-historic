@@ -155,7 +155,7 @@ else{
 $dta=$GLOBALS['MG']['SQL']->sql_fetchArray(array($table),false,false);
 
 foreach($dta as $val){
-	if($val['mime_ext']){
+	if(isset($val['mime_ext'])){
 		$GLOBALS['MG']['MIME'][$val['mime_ext']]=array();
 		$GLOBALS['MG']['MIME'][$val['mime_ext']]['img']=$val['mime_img'];
 		$GLOBALS['MG']['MIME'][$val['mime_ext']]['type']=$val['mime_type'];
