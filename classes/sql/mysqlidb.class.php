@@ -471,6 +471,23 @@ class mysqlidb extends sql{
 				}
 				$query.=' '.$this->sql_formatConds($params).';';
 			break;
+			case DB_INSERT_IGNORE:
+			    $query=$this->sql_formatTable($table,'INSERT IGNORE INTO');
+			    $query.='(`'.implode('`,`',$this->sql_escape($params,true)).'`) VALUES';
+			    if(is_array($data[0])){
+			        $soq=count($data);
+			        for($i=0;$i<$soq;$i++){
+			            $query.=' (\''.implode('\',\'',$this->sql_escape($data[$i],true)).'\')';
+			            if($i+1<$soq){
+			                $query.=',';
+			            }
+			        }
+			        $query.=';';
+			    }
+			    else{
+			        $query.=' (\''.implode('\',\'',$this->sql_escape($data,true)).'\');';
+			    }
+			break;
 			case DB_INSERT:
 				$query=$this->sql_formatTable($table,'INSERT INTO');
 				$query.='(`'.implode('`,`',$this->sql_escape($params,true)).'`) VALUES';

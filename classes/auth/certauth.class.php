@@ -88,6 +88,7 @@ class certauth extends auth{
                 return substr($response,4);
             }
             else{
+                trigger_error('(CERTAUTH): External server error '.$response,E_USER_ERROR);
                 return false;
             }
         }
