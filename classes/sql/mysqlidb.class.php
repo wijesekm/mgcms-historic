@@ -351,15 +351,9 @@ class mysqlidb extends sql{
 		}
 		$tmp=array();
         $items = $result->fetch_all($type);
-		$tmp['count']=$rows;
-        if($rows == 0){
-            $tmp[] = array();
-        }
-		for($i=0;$i<$rows;$i++){
-			$tmp[]=$items[$i];
-        }
+        $items['count']=$rows;
 		$result->free();
-		return $tmp;
+		return $items;
 	}
 
   /**
@@ -853,9 +847,9 @@ class mysqlidb extends sql{
    * @param mixed $stop
    * @return
    */
-	final protected function sql_formatLimit($start,$stop){
+	final protected function sql_formatLimit($start,$num){
 		if($start!==false){
-			return 'LIMIT '.$this->sql_escape($start).', '.$this->sql_escape($stop);
+		    return 'LIMIT '.$this->sql_escape($num).' OFFSET '.$this->sql_escape($start);
 		}
 		return '';
 	}
