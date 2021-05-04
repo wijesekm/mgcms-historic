@@ -322,8 +322,7 @@ if(defined('API')){
         $GLOBALS['MG']['PAGE']['PATH_ROOT'] = strtolower(substr($GLOBALS['MG']['GET']['PAGE'],0,strrpos($GLOBALS['MG']['GET']['PAGE'],'.')));
     }
     $tmp=$GLOBALS['MG']['SQL']->sql_fetcharray(array(TABLE_PREFIX.'api'),false,array(array(false,false,'api_path','=',strtolower($GLOBALS['MG']['PAGE']['PATH_ROOT']))));
-
-    if(is_array($tmp[0]) && count($tmp[0]) > 1){
+    if($tmp['count'] == 1  && count($tmp[0]) > 1){
         foreach($tmp[0] as $key=>$val){
             $key=strtoupper(substr($key,strpos($key,'_')+1));
             switch($key){

@@ -356,6 +356,63 @@ class mysqlidb extends sql{
 		return $items;
 	}
 
+	final public function sql_fetchJSON($table,$fields,$params,$type=DB_ASSOC,$rows=DB_ALL_ROWS,$additParams=false){
+	    $distinct=false;
+	    $orderby=false;
+	    $limit=false;
+	    $having=false;
+	    $join=false;
+	    if(isset($additParams['distinct'])){
+	        $distinct=$additParams['distinct'];
+	    }
+	    if(isset($additParams['orderby'])){
+	        $orderby=$additParams['orderby'];
+	    }
+	    if(isset($additParams['limit'])){
+	        $limit=$additParams['limit'];
+	    }
+	    if(isset($additParams['having'])){
+	        $having=$additParams['having'];
+	    }
+	    if(isset($additParams['join'])){
+	        $join=$this->sql_escape($additParams['join'][0],false,0).' '.$this->sql_escape($additParams['join'][1],false,1).' ON ';
+	        $join.=$this->sql_escape($additParams['join'][2],false,1).'='.$this->sql_escape($additParams['join'][3],false,1);
+	    }
+	    if($distinct){
+	        $query=$this->sql_formatFields($fields,'SELECT DISTINCT').' ';
+	    }
+	    else{
+	        $query=$this->sql_formatFields($fields).' ';
+	    }
+	    $query.=$this->sql_formatTable($table);
+	    if($join){
+	        $query.=$join.' ';
+	    }
+	    $query.=$this->sql_formatConds($params).' ';
+	    if($orderby){
+	        $query.=$this->sql_formatOrderBy($orderby[0],$orderby[1]).' ';
+	    }
+	    if($this->groupBy && $this->groupBy['allow']){
+	        $query.=$this->sql_formatGroupBy($this->groupBy['field']).' ';
+	        $query.=$this->sql_formatHaving($having[0],$having[1],$having[2],$having[3]).' ';
+	    }
+	    if($limit){
+	        $query.=$this->sql_formatLimit($limit[0],$limit[1]).' ';
+	    }
+	    $query.=';';
+	    if(!$result=$this->sql_query($query)){
+	        return false;
+	    }
+	    $ret = '[';
+	    while($row = $result->fetch_array($type)){
+            $ret .= mg_jsonEncode($row).',';
+	    }
+	    if($ret[strlen($ret)-1] != '['){
+	        $ret[strlen($ret)-1] = ']';
+	    }
+	    return $ret;
+	}
+
   /**
    * mysql::sql_numRows()
    *
@@ -380,8 +437,13 @@ class mysqlidb extends sql{
 			}
 			$query.=$this->sql_formatTable($table).$join.' '.$this->sql_formatConds($params).';';
 			$result=$this->sql_query($query);
-			$num=$result->num_rows;
-			$result->free();
+			if($result){
+			    $num=$result->num_rows;
+			    $result->free();
+			}
+			else{
+			    $num = 0;
+			}
 		}
 		else{
 			$num=$result->num_rows;
