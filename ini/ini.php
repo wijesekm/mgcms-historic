@@ -378,7 +378,7 @@ else{
 	$tmp=$GLOBALS['MG']['SQL']->sql_fetcharray(array(TABLE_PREFIX.'cron'),false,false);
 	$GLOBALS['MG']['PAGE']['PATH'] = 'cron';
 	$GLOBALS['MG']['PAGE']['DATA']=array();
-	if(is_array($tmp[0])){
+	if($tmp['count'] != 0){
 		foreach($tmp as $key=>$val){
 			if(!is_array($val)){
 				continue;
