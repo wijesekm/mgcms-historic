@@ -410,6 +410,9 @@ class mysqlidb extends sql{
 	    if($ret[strlen($ret)-1] != '['){
 	        $ret[strlen($ret)-1] = ']';
 	    }
+	    else{
+	        $ret .= ']';
+	    }
 	    return $ret;
 	}
 
