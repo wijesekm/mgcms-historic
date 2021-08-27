@@ -136,6 +136,9 @@ function mginit_cleanVar($value,$clean){
 }
 
 function mginit_RLD($value){
+    if(empty($GLOBALS['MG']['SITE']['URL_DELIM'])){
+        return $value;
+    }
 	if(substr($value,strlen($value)-1,1)==$GLOBALS['MG']['SITE']['URL_DELIM']){
 		$value=substr($value,0,strlen($value)-1);
 	}

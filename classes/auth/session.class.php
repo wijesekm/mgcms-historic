@@ -80,13 +80,14 @@ class session{
 			return false;
 		}
 		$this->session_dbSwitch(0);
-		$conds=array(array(false,array(DB_AND),'ses_id','=',$id),array(false,false,'ses_sid','=',$sid));
+		$conds=array(array(false,false,'ses_sid','=',$sid));
 		$d=$GLOBALS['MG']['SQL']->sql_fetchArray($this->table,false,$conds);
 		$this->session_dbSwitch(1);
-        if(!is_array($d[0]) && isset($d[0]['ses_id'])){
+        if(!is_array($d) && is_array($d[0])){
             return false;
         }
 		$d=$d[0];
+
 		if(!is_array($d) || !isset($d['ses_id'])){
 		    return false;
 		}
@@ -98,7 +99,7 @@ class session{
 		$this->sid=$d['ses_sid'];
 		$this->length=$d['ses_length'];
 
-		if($this->sid===$sid&&$this->id===(int)$id){
+		if($this->sid===$sid){
             if($twofact){
                 if($d['ses_twofactor']=='1'){
                     return true;

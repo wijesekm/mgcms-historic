@@ -265,14 +265,16 @@ else{
 	/**
 	 * Impersonate Settings
 	 */
-    $GLOBALS['MG']['REAL_USER']=array();
-    if(!$GLOBALS['MG']['USER']['NOAUTH']){
-        if(isset($GLOBALS['MG']['SITE']['ALLOW_IMPERSONATE']) && isset($GLOBALS['MG']['COOKIE']['ALTERNATE_UID'])){
-            if($GLOBALS['MG']['SITE']['ALLOW_IMPERSONATE'] == '1' && $GLOBALS['MG']['COOKIE']['ALTERNATE_UID'] != '' && mg_checkACL('*','admin')){
-                if($act->act_isAccount($GLOBALS['MG']['COOKIE']['ALTERNATE_UID'])){
-                    $GLOBALS['MG']['REAL_USER'] = $GLOBALS['MG']['USER'];
-                    $GLOBALS['MG']['USER']=$act->act_load($GLOBALS['MG']['COOKIE']['ALTERNATE_UID']);
-                    $GLOBALS['MG']['USER']=$GLOBALS['MG']['USER'][$GLOBALS['MG']['COOKIE']['ALTERNATE_UID']];
+    if(!defined('CRON') && !defined('AJAX') && !defined('API')){
+        $GLOBALS['MG']['REAL_USER']=array();
+        if(!$GLOBALS['MG']['USER']['NOAUTH']){
+            if(isset($GLOBALS['MG']['SITE']['ALLOW_IMPERSONATE']) && isset($GLOBALS['MG']['COOKIE']['ALTERNATE_UID'])){
+                if($GLOBALS['MG']['SITE']['ALLOW_IMPERSONATE'] == '1' && $GLOBALS['MG']['COOKIE']['ALTERNATE_UID'] != '' && mg_checkACL('*','admin')){
+                    if($act->act_isAccount($GLOBALS['MG']['COOKIE']['ALTERNATE_UID'])){
+                        $GLOBALS['MG']['REAL_USER'] = $GLOBALS['MG']['USER'];
+                        $GLOBALS['MG']['USER']=$act->act_load($GLOBALS['MG']['COOKIE']['ALTERNATE_UID']);
+                        $GLOBALS['MG']['USER']=$GLOBALS['MG']['USER'][$GLOBALS['MG']['COOKIE']['ALTERNATE_UID']];
+                    }
                 }
             }
         }
@@ -290,7 +292,7 @@ $GLOBALS['MG']['USER']['TIME']=$t->time_client();
 /**
 * Check Session
 */
-if(!defined('CRON') && !defined('AJAX')){
+if(!defined('CRON') && !defined('AJAX') && !defined('API')){
     $cdta=array(
             'SECURE'=>(boolean)$GLOBALS['MG']['SITE']['COOKIE_SECURE'],
             'PATH'=>$GLOBALS['MG']['SITE']['COOKIE_PATH'],
@@ -312,7 +314,11 @@ $t=false;
 */
 if(defined('API')){
     $GLOBALS['MG']['PAGE']['PATH'] = '';
-    if(strpos($GLOBALS['MG']['GET']['PAGE'],'.') === false){
+    if(empty($GLOBALS['MG']['GET']['PAGE'])){
+        $GLOBALS['MG']['PAGE']['ACTION_HOOK'] = '';
+        $GLOBALS['MG']['PAGE']['PATH_ROOT'] = '';
+    }
+    else if(strpos($GLOBALS['MG']['GET']['PAGE'],'.') === false){
         //old API format
         $GLOBALS['MG']['PAGE']['ACTION_HOOK'] = $GLOBALS['MG']['GET']['ACTION'];
         $GLOBALS['MG']['PAGE']['PATH_ROOT'] = $GLOBALS['MG']['GET']['PAGE'];
@@ -407,7 +413,7 @@ $act=false;
 * Load Language Data
 */
 $lang=false;
-if($GLOBALS['MG']['SITE']['LANG_ALLOW_OVERRIDE']=='1'){
+if(!empty($GLOBALS['MG']['SITE']['LANG_ALLOW_OVERRIDE'])){
 	if(!empty($GLOBALS['MG']['COOKIE']['LANGUAGE'])){
 		$lang=$GLOBALS['MG']['COOKIE']['LANGUAGE'];
 	}
@@ -446,7 +452,9 @@ $GLOBALS['MG']['LANG']['NAME']=$lang[0]['lang_name'];
 $GLOBALS['MG']['LANG']['CONTENT_TYPE']='text/html';
 $lang=false;
 
-$GLOBALS['MG']['PAGE']['TPL']=$GLOBALS['MG']['CFG']['PATH']['TPL'].$GLOBALS['MG']['LANG']['NAME'].'/pages/'.implode('/',explode($GLOBALS['MG']['SITE']['URL_DELIM'],$GLOBALS['MG']['PAGE']['PATH'])).'.tpl';
+if(!defined('CRON')){
+    $GLOBALS['MG']['PAGE']['TPL']=$GLOBALS['MG']['CFG']['PATH']['TPL'].$GLOBALS['MG']['LANG']['NAME'].'/pages/'.implode('/',explode($GLOBALS['MG']['SITE']['URL_DELIM'],$GLOBALS['MG']['PAGE']['PATH'])).'.tpl';
+}
 
 /**
 * Load Packages
