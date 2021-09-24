@@ -239,16 +239,12 @@ else{
     }
     //session auth
     else{
-        $ses_data = array(1,"");
-        //cookie
-        if(strpos($GLOBALS['MG']['COOKIE']['USER_SESSION'],';') !== false){
-            $ses_data=explode(';',$GLOBALS['MG']['COOKIE']['USER_SESSION']);
-        }
+        $ses_data = $GLOBALS['MG']['COOKIE']['USER_SESSION'];
         //HTTP header
-        else if(!empty($GLOBALS['MG']['EAUTH']['SESSION'])){
-            $ses_data[1] = $GLOBALS['MG']['EAUTH']['SESSION'];
+        if(!empty($GLOBALS['MG']['EAUTH']['SESSION'])){
+            $ses_data = $GLOBALS['MG']['EAUTH']['SESSION'];
         }
-        if(strlen($ses_data[1]) > 10 && $ses->session_load($ses_data[0],$ses_data[1])){
+        if($ses->session_load($ses_data)){
             $GLOBALS['MG']['USER']=$act->act_load($ses->session_getUID());
             $GLOBALS['MG']['USER']=$GLOBALS['MG']['USER'][$ses->session_getUID()];
             $fail = false;
@@ -292,6 +288,7 @@ $GLOBALS['MG']['USER']['TIME']=$t->time_client();
 /**
 * Check Session
 */
+
 if(!defined('CRON') && !defined('AJAX') && !defined('API')){
     $cdta=array(
             'SECURE'=>(boolean)$GLOBALS['MG']['SITE']['COOKIE_SECURE'],

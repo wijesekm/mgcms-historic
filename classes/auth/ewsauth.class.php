@@ -53,6 +53,12 @@ class ewsauth extends auth{
 		if($info['http_code']=='200'){
 			return true;
 		}
+		else if($info['http_code'] == 0){
+		    trigger_error('(ewsauth): Could not connect to server: '.$GLOBALS['MG']['SITE']['EWS_SERVER'],E_USER_WARNING);
+		}
+		else if($info['http_code'] != 403){
+		    trigger_error('(ewsauth): Server unable to handle query: '.$info['http_code'].' '.$response,E_USER_WARNING);
+		}
 		return false;
 	}
 

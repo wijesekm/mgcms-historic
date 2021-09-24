@@ -75,8 +75,8 @@ class session{
 		}
 	}
 
-	public function session_load($id,$sid,$twofact=false){
-	    if(empty($id)||empty($sid)){
+	public function session_load($sid,$twofact=false){
+	    if(empty($sid)){
 			return false;
 		}
 		$this->session_dbSwitch(0);
@@ -142,7 +142,7 @@ class session{
 			$cdata['EXPIRES']+=$this->t;
 		}
 
-		if(!setcookie($GLOBALS['MG']['SITE']['COOKIE_PREFIX'].session::CSESSION,$this->id.';'.$this->sid,$cdata['EXPIRES'],$cdata['PATH'],$cdata['DOM'],$cdata['SECURE'],true)){
+		if(!setcookie($GLOBALS['MG']['SITE']['COOKIE_PREFIX'].session::CSESSION,$this->sid,$cdata['EXPIRES'],$cdata['PATH'],$cdata['DOM'],$cdata['SECURE'],true)){
 			trigger_error('(SESSION): Could not set session cookie',E_USER_WARNING);
 			return false;
 		}
