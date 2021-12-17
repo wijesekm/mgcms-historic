@@ -216,6 +216,10 @@ else{
     //HTTP basic auth
     if(!empty($GLOBALS['MG']['EAUTH']['USER']) && !empty($GLOBALS['MG']['EAUTH']['KEY'])){
         $GLOBALS['MG']['USER']=$act->act_load($GLOBALS['MG']['EAUTH']['USER']);
+        if(empty($GLOBALS['MG']['USER'])){
+            trigger_error('(INI): Basic authentication failed',E_USER_ERROR);
+            $GLOBALS['MG']['ERROR']['LOGGER']->el_checkFatal();
+        }
         $GLOBALS['MG']['USER']=$GLOBALS['MG']['USER'][$GLOBALS['MG']['EAUTH']['USER']];
 
         $load = array();
@@ -452,6 +456,9 @@ $lang=false;
 if(!defined('CRON')){
     $GLOBALS['MG']['PAGE']['TPL']=$GLOBALS['MG']['CFG']['PATH']['TPL'].$GLOBALS['MG']['LANG']['NAME'].'/pages/'.implode('/',explode($GLOBALS['MG']['SITE']['URL_DELIM'],$GLOBALS['MG']['PAGE']['PATH'])).'.tpl';
 }
+else{
+    $GLOBALS['MG']['PAGE']['TPL']=$GLOBALS['MG']['CFG']['PATH']['TPL'].$GLOBALS['MG']['LANG']['NAME'].'/pages/cron.tpl';
+}
 
 /**
 * Load Packages
@@ -490,10 +497,15 @@ function mginit_loadLang($lang_id){
 function mginit_loadPackage($data){
 	$soq=count($data);
 	for($i=0;$i<$soq;$i++){
-		$path=$data[$i][2].$data[$i][0].'.'.$data[$i][1].PHPEXT;
-		if(!include_once($GLOBALS['MG']['CFG']['PATH']['INC'].$path)){
-			trigger_error('(INI): Could not load package: '.$data[$i][0].'.'.$data[$i][1].PHPEXT,E_USER_ERROR);
-		}
+	    if(empty($data[$i][2])){
+	        trigger_error('(INI): Passed empty package for loading',E_USER_ERROR);
+	    }
+	    else{
+	        $path=$data[$i][2].$data[$i][0].'.'.$data[$i][1].PHPEXT;
+	        if(!include_once($GLOBALS['MG']['CFG']['PATH']['INC'].$path)){
+	            trigger_error('(INI): Could not load package: '.$data[$i][0].'.'.$data[$i][1].PHPEXT,E_USER_ERROR);
+	        }
+	    }
 	}
 }
 

@@ -119,11 +119,17 @@ function mginit_loadVars(){
                         if($_SERVER["CONTENT_TYPE"] == 'application/json'){
                             $data = file_get_contents('php://input');
                             $data = json_decode($data,TRUE);
-                            if(isset($data[$uname])){
-                                $data = $data[$uname];
+                            if($data == null){
+                                trigger_error('(vars): JSON Decode error: '. json_last_error_msg(), E_USER_WARNING);
+                                $data = '';
                             }
                             else{
-                                $data = '';
+                                if(isset($data[$uname])){
+                                    $data = $data[$uname];
+                                }
+                                else{
+                                    $data = '';
+                                }
                             }
                         }
                         else if(isset($_POST[$uname])){
