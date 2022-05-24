@@ -60,9 +60,23 @@ function mg_checkACL($page,$acl='read'){
 				$adm=true;
 			}
 		}
-		else if(preg_match('/\*/',$key)){
-			$search='/^'.substr($key,0,-1).'/';
-			if(preg_match($search,$page)){
+		else if($key[strlen($key)-1] == '*'){
+		    $len = strlen($key) - 1;
+		    $found = true;
+		    for($i = 0; $i < $len; $i++){
+		        if($key[$i] != $page[$i]){
+		            if($key[$i] == '-' || $key[$i] == '.'){
+		                if($page[$i] != '-' && $page[$i] != '.'){
+		                    $found = false;
+		                }
+		            }
+		            else{
+		                $found = false;
+		            }
+		        }
+		    }
+
+			if($found){
 				if((string)$val[$acl]==='deny'){
 					$deny=true;
 				}

@@ -520,6 +520,10 @@ class mysqlidb extends sql{
                     else if($data[$k][1]==='++'){
                         $query.=$this->sql_escape($data[$k][0],false,1).'='.$this->sql_escape($data[$k][0],false,1).'+1';
                     }
+                    else if($data[$k][1] == null){
+                        $query.=$this->sql_escape($data[$k][0],false,1).'=NULL';
+
+                    }
 					else{
 						$query.=$this->sql_escape($data[$k][0],false,1).'='.$this->sql_escape($data[$k][1],false,2);
 					}
