@@ -453,7 +453,10 @@ $GLOBALS['MG']['LANG']['NAME']=$lang[0]['lang_name'];
 $GLOBALS['MG']['LANG']['CONTENT_TYPE']='text/html';
 $lang=false;
 
-if(!defined('CRON')){
+if(defined('API')){
+    $GLOBALS['MG']['PAGE']['TPL']=$GLOBALS['MG']['CFG']['PATH']['TPL'].$GLOBALS['MG']['LANG']['NAME'].'/pages/'.implode('/',explode($GLOBALS['MG']['SITE']['URL_DELIM'],$GLOBALS['MG']['PAGE']['LINKED_PAGE'])).'.tpl';
+}
+else if(!defined('CRON')){
     $GLOBALS['MG']['PAGE']['TPL']=$GLOBALS['MG']['CFG']['PATH']['TPL'].$GLOBALS['MG']['LANG']['NAME'].'/pages/'.implode('/',explode($GLOBALS['MG']['SITE']['URL_DELIM'],$GLOBALS['MG']['PAGE']['PATH'])).'.tpl';
 }
 else{

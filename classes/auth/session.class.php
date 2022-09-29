@@ -141,8 +141,16 @@ class session{
 		if($cdata['EXPIRES']!=0){
 			$cdata['EXPIRES']+=$this->t;
 		}
+        $opts = array(
+            'path' => $cdata['PATH'],
+            'expires'=>$cdata['EXPIRES'],
+            'domain'=>$cdata['DOM'],
+            'secure'=>$cdata['SECURE'],
+            'httponly'=>true,
+            'SameSite'=>'Strict'
 
-		if(!setcookie($GLOBALS['MG']['SITE']['COOKIE_PREFIX'].session::CSESSION,$this->sid,$cdata['EXPIRES'],$cdata['PATH'],$cdata['DOM'],$cdata['SECURE'],true)){
+        );
+		if(!setcookie($GLOBALS['MG']['SITE']['COOKIE_PREFIX'].session::CSESSION,$this->sid,$opts)){
 			trigger_error('(SESSION): Could not set session cookie',E_USER_WARNING);
 			return false;
 		}

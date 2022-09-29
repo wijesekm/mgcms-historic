@@ -62,8 +62,13 @@ function mg_checkACL($page,$acl='read'){
 		}
 		else if($key[strlen($key)-1] == '*'){
 		    $len = strlen($key) - 1;
+		    $len2 = strlen($page) - 1;
 		    $found = true;
 		    for($i = 0; $i < $len; $i++){
+		        if($i >= $len2){
+		            $found = false;
+		            break;
+		        }
 		        if($key[$i] != $page[$i]){
 		            if($key[$i] == '-' || $key[$i] == '.'){
 		                if($page[$i] != '-' && $page[$i] != '.'){
