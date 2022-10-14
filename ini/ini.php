@@ -123,6 +123,10 @@ if(!$t){
 	$GLOBALS['MG']['ERROR']['LOGGER']->el_checkFatal();
 }
 
+if(!empty($GLOBALS['MG']['CFG']['SQL']['LOG'])){
+    $GLOBALS['MG']['SQL']->sql_logging(true);
+}
+
 /**
 * Load Site Data
 */

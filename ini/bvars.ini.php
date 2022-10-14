@@ -118,6 +118,7 @@ function mginit_loadVars(){
                         $data = '';
                         if($_SERVER["CONTENT_TYPE"] == 'application/json'){
                             $data = file_get_contents('php://input');
+                            $data = preg_replace('/[\x00-\x1F\x7F]/u', '', $data); //remve control code
                             $data = json_decode($data,TRUE);
                             if($data == null){
                                 trigger_error('(vars): JSON Decode error: '. json_last_error_msg(), E_USER_WARNING);

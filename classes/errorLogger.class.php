@@ -28,6 +28,8 @@ if(!defined('STARTED')){
 
 define('E_ACCESS',16384);
 define('E_ACCESS_ERR',16385);
+define('E_SQL',16386);
+
 class errorLogger{
 
 	/**
@@ -57,7 +59,8 @@ class errorLogger{
                 E_RECOVERABLE_ERROR  => 'Recoverable Error',
                 E_DEPRECATED         => 'Deprecated',
 		        E_ACCESS             => 'Access',
-		        E_ACCESS_ERR         => 'Access Error'
+		        E_ACCESS_ERR         => 'Access Error',
+		        E_SQL                => 'SQL Log'
                 );
         /*foreach($this->errorTypes as $key => $value){
 			if(!is_file($GLOBALS['MG']['CFG']['PATH']['LOG'].$value.'.log')){

@@ -59,7 +59,7 @@ abstract class sql{
 	protected $print;
 	protected $groupBy=false;
 	protected $log_mode = false;
-    protected $log;
+    protected $log = false;
     protected $admin = false;
     protected $stopCtr = 0;
 
@@ -69,7 +69,9 @@ abstract class sql{
 
 	abstract public function sql_checkConnection();
 
-    abstract public function sql_logging($log_table,$newMode=false);
+	final public function sql_logging($enable = true){
+	    $this->log = true;
+	}
 
     final public function sql_stopLogging($queryCount=1){
         $this->stopCtr = $queryCount;
