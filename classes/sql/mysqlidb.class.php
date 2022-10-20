@@ -1016,7 +1016,7 @@ class mysqlidb extends sql{
 				    $data = explode('.',$data);
 
 				    $data[0] = '`'.$data[0].'`';
-				    if($data[1]){
+				    if(!empty($data[1])){
 				        if($data[1] != '*'){
 				            $data[1] = '`'.$data[1].'`';
 				        }
