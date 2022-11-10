@@ -230,6 +230,14 @@ class errorLogger{
        }
     }
 
+    public function el_removeLog($errno){
+        //dont log if file is empty
+        if(empty($GLOBALS['MG']['CFG']['ERRORLOGGER']['FILES'][$errno])){
+            return;
+        }
+        unlink($GLOBALS['MG']['CFG']['PATH']['LOG'].$GLOBALS['MG']['CFG']['ERRORLOGGER']['FILES'][$errno]);
+    }
+
 	/**
 	* Private Functions
 	*/

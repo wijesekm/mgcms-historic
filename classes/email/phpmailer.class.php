@@ -1347,7 +1347,6 @@ class PHPMailer
             if (!$this->preSend()) {
                 return false;
             }
-
             return $this->postSend();
         } catch (Exception $exc) {
             $this->mailHeader = '';
@@ -1502,7 +1501,44 @@ class PHPMailer
      */
     public function postSend()
     {
-        try {
+        $env = new envelope();
+
+        $env->sender = $this->Sender;
+        $env->subject = $this->Subject;
+        $env->to = $this->to;
+        $env->bcc = $this->bcc;
+        $env->cc = $this->cc;
+        $env->body = $this->MIMEBody;
+        $env->header = $this->MIMEHeader;
+
+        $options = array(
+            'keepalive'=> $this->SMTPKeepAlive,
+            'timeout'=> $this->Timeout,
+            'debug'=> $this->SMTPDebug,
+            'debug_output'=> $this->Debugoutput,
+            'verp' => $this->do_verp,
+            'hosts' => $this->Host,
+            'secure' => $this->SMTPSecure,
+            'port' => $this->Port,
+            'hello' => $this->Helo,
+            'auto_tls' => $this->SMTPAutoTLS,
+            'username' => $this->Username,
+            'password' => $this->Password,
+            'auth_type' => $this->AuthType,
+            'qmail' => ('qmail' == $this->Mailer),
+            'path' => $this->Sendmail,
+            'options' => $this->SMTPOptions
+        );
+        if(class_exists($this->Mailer)){
+            $mail = new $this->Mailer($options);
+            return $mail->send($env);
+        }
+        else{
+            trigger_error('(phpmailer): Invalid mailer: '.$this->Mailer);
+            return false;
+        }
+
+        /*try {
             // Choose the mailer and send through it
             switch ($this->Mailer) {
                 case 'sendmail':
@@ -1528,7 +1564,7 @@ class PHPMailer
             }
         }
 
-        return false;
+        return false;*/
     }
 
     /**

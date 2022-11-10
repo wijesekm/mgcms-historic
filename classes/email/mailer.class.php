@@ -69,7 +69,7 @@ class mailer{
     				$this->mail->Encoding=$value;
     			break;
     			case 'mailer':
-    				$this->mail->Mailer=$value;
+    				$this->mail->Mailer=$value.'_transport';
     			break;
     			case 'sendmailpath':
     				$this->mail->Sendmail=$value;

@@ -83,14 +83,11 @@ class session{
 		$conds=array(array(false,false,'ses_sid','=',$sid));
 		$d=$GLOBALS['MG']['SQL']->sql_fetchArray($this->table,false,$conds);
 		$this->session_dbSwitch(1);
-        if(!is_array($d) && is_array($d[0])){
+		if(!is_array($d) || !isset($d[0]['ses_id'])){
             return false;
         }
 		$d=$d[0];
 
-		if(!is_array($d) || !isset($d['ses_id'])){
-		    return false;
-		}
         foreach($d as $key=>$val){
             $GLOBALS['MG']['SESSION'][strtoupper(substr($key,strpos($key,'_')+1))] = $val;
         }

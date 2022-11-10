@@ -71,6 +71,7 @@ abstract class sql{
 
 	final public function sql_logging($enable = true){
 	    $this->log = true;
+	    $GLOBALS['MG']['ERROR']['LOGGER']->el_removeLog(E_SQL);
 	}
 
     final public function sql_stopLogging($queryCount=1){

@@ -419,8 +419,11 @@ class mysqlidb extends sql{
 			if(is_array($distinct)){
 				$query=$this->sql_formatFields($distinct,'SELECT DISTINCT',' ');
 			}
+			else if($distinct){
+			    $query=$this->sql_formatFields(false,'SELECT DISTINCT',' ');
+			}
 			else{
-				$query=$this->sql_formatFields(false).' ';
+				$query=$this->sql_formatFields(false,'SELECT',' ');
 			}
 			$query.=$this->sql_formatTable($table).$join.' '.$this->sql_formatConds($params).';';
 			$result=$this->sql_query($query);
