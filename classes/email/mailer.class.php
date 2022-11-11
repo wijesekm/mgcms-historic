@@ -49,7 +49,7 @@ class mailer{
 		}
 		$this->mail = new phpmailer();
 		$this->msg = '';
-		$this->mail->Debugoutput = function($str, $level) {$this->msg .= $str;};
+		$this->mail->Debugoutput = function($str, $level) {$this->msg .= $str."\n";};
 		$this->mcfg=$cfg;
 		$this->logDb=false;
 		$this->logmsg='';

@@ -4,6 +4,13 @@ class smtp_transport extends mail_transport{
 
     private $obj;
 
+
+    public function __destruct()
+    {
+        //Close any open SMTP connection nicely
+        $this->smtpClose();
+    }
+
     public function send($envelope){
         if(!$this->smtpConnect()) {
             return false;
@@ -16,7 +23,7 @@ class smtp_transport extends mail_transport{
 
         // Attempt to send to all recipients
         $can_send = false;
-        foreach ([$this->to, $this->cc, $this->bcc] as $togroup) {
+        foreach ([$envelope->to, $envelope->cc, $envelope->bcc] as $togroup) {
             foreach ($togroup as $to) {
                 if ($this->obj->recipient($to[0])) {
                     $can_send = true;
@@ -64,7 +71,6 @@ class smtp_transport extends mail_transport{
         $this->obj->setDebugOutput($this->config['debug_output']);
         $this->obj->setVerp(!empty($this->config['verp']));
         $hosts = explode(';', $this->config['hosts']);
-
         foreach($hosts as $hostentry){
             $hostinfo = [];
             if(!preg_match('/^((ssl|tls):\/\/)*([a-zA-Z0-9\.-]*|\[[a-fA-F0-9:]+\]):?([0-9]*)$/', trim($hostentry),
@@ -118,7 +124,7 @@ class smtp_transport extends mail_transport{
                         $hello = $this->config['hello'];
                     }
                     else{
-                        $hello = $this->serverHostname();
+                        $hello = $this->config['hostname'];
                     }
                     $this->obj->hello($hello);
                     // Automatically enable TLS encryption if:
@@ -138,7 +144,7 @@ class smtp_transport extends mail_transport{
                         // We must resend EHLO after TLS negotiation
                         $this->obj->hello($hello);
                     }
-                    if($this->SMTPAuth){
+                    if($this->config['username']){
                         if(!$this->obj->authenticate($this->config['username'], $this->config['password'],
                             $this->config['auth_type'])){
                             trigger_error('(smtp_transport): Could not authenticate with server', E_USER_WARNING);
@@ -148,7 +154,7 @@ class smtp_transport extends mail_transport{
                     return true;
                 }
                 catch(Exception $exc){
-                    trigger_error('(smtp_transport): Exception occured: .$exc', E_USER_WARNING);
+                    trigger_error('(smtp_transport): Exception occured: '.$exc, E_USER_WARNING);
                     // We must have connected, but then failed TLS or Auth, so close connection nicely
                     $this->obj->quit();
                 }
@@ -156,6 +162,7 @@ class smtp_transport extends mail_transport{
         }
         // If we get here, all connection attempts have failed, so close connection hard
         $this->obj->close();
+        trigger_error('(smtp_transport): No host to connect to', E_USER_WARNING);
         return false;
     }
 
