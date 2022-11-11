@@ -199,9 +199,6 @@ class mailer{
 		if(!$email){
 			return false;
 		}
-		if(!$name){
-			$name=$email;
-		}
 		if($this->logDb){
 			$this->logmsg.=$type.': '.$name.'<'.$email.'>'."\n";
 		}

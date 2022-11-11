@@ -5,18 +5,18 @@
  * @author 		Kevin Wijesekera
  * @copyright 	2008
  * @edited		2-17-2009
- 
+
  ###################################
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
- 
+
  This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
- 
+
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see http://www.gnu.org/licenses/.
  ###################################
@@ -28,19 +28,19 @@ if(!defined('STARTED')){
 }
 
 class group{
-	
+
 	private $table;
     private $tableDesc;
-	
+
 	public function __construct(){
 		$this->table=(isset($GLOBALS['MG']['SITE']['GROUP_TBL']))?array($GLOBALS['MG']['SITE']['GROUP_TBL']):array(TABLE_PREFIX.'groups');
         $this->tableDesc=(isset($GLOBALS['MG']['SITE']['GROUP_TBL']))?array($GLOBALS['MG']['SITE']['GROUP_TBL'].'_description'):array(TABLE_PREFIX.'groups_description');
-	}	
-	
+	}
+
 	public function group_getMembership($uid){
 		if(isset($GLOBALS['MG']['SITE']['GROUP_TBL'])){
 			$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['SITE']['ACCOUNT_DB']);
-		}		
+		}
 		$groups=$GLOBALS['MG']['SQL']->sql_fetchArray($this->table,false,array(array(DB_LIKE,array(DB_OR),'group_members','%;'.$uid.';%'),array(DB_LIKE,false,'group_members','%;*;%')));
 		if(isset($GLOBALS['MG']['SITE']['GROUP_TBL'])){
 			$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['CFG']['SQL']['DB']);
@@ -52,18 +52,18 @@ class group{
 				$userGroups['COUNT']--;
 			}
 			else{
-				$userGroups[]=$groups[$i]['group_gid'];	
+				$userGroups[]=$groups[$i]['group_gid'];
 			}
 		}
 		$userGroups[]='*';
 		$userGroups['COUNT']++;
-		return $userGroups;			
+		return $userGroups;
 	}
-    
+
     public function group_getAdmin($uid){
 		if(isset($GLOBALS['MG']['SITE']['GROUP_TBL'])){
 			$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['SITE']['ACCOUNT_DB']);
-		}		
+		}
 		$groups=$GLOBALS['MG']['SQL']->sql_fetchArray($this->table,false,array(array(DB_LIKE,array(DB_OR),'group_admins','%;'.$uid.';%'),array(DB_LIKE,false,'group_admins','%;*;%')));
 		if(isset($GLOBALS['MG']['SITE']['GROUP_TBL'])){
 			$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['CFG']['SQL']['DB']);
@@ -75,14 +75,14 @@ class group{
 				$userGroups['COUNT']--;
 			}
 			else{
-				$userGroups[]=$groups[$i]['group_gid'];	
+				$userGroups[]=$groups[$i]['group_gid'];
 			}
 		}
 		$userGroups[]='*';
 		$userGroups['COUNT']++;
-		return $userGroups;		
+		return $userGroups;
     }
-	
+
 	public function group_isValid($group){
 		$conds=array(array(false,false,'group_gid','=',$group));
 		if(isset($GLOBALS['MG']['SITE']['GROUP_TBL'])){
@@ -101,7 +101,7 @@ class group{
 		}
 		return false;
 	}
-	
+
 	public function group_getGroup($start=0,$length=10,$search=false,$loadOnly=false,$searchadm=false,$anchorSearch=3){
 		if(!empty($loadOnly)){
 			$conds=array(array(false,false,'group_gid','=',$loadOnly));
@@ -118,18 +118,18 @@ class group{
             }
 			$output = array();
             $output['GID'] = $groups[0]['group_gid'];
-			$output['MEMBERS']=explode(';',$groups[0]['group_members']);
-            $output['ADMINS']=explode(';',$groups[0]['group_admins']);
+			$output['MEMBERS']=array_filter(explode(';',$groups[0]['group_members']));
+			$output['ADMINS']=array_filter(explode(';',$groups[0]['group_admins']));
 			return $output;
 		}
 		else{
 			$addit['orderby']=array(array('group_gid'),array('DESC'));
 			if($start && $length){
-				$addit['limit']=array($start,$length);	
+				$addit['limit']=array($start,$length);
 			}
 			$conds=false;
 			$totalLength=0;
-            
+
             $before='';
             $after='';
             if($anchorSearch ==1 || $anchorSearch==3){
@@ -137,7 +137,7 @@ class group{
             }
             if($anchorSearch ==2 || $anchorSearch==3){
                 $after='%';
-            }            
+            }
 			if($search){
 				$conds=array(array(DB_LIKE,false,'group_gid',$before.$search.$after));
 			}
@@ -148,7 +148,7 @@ class group{
 				else{
 					$conds=array(array(DB_LIKE,false,'group_admins',$before.$searchadm.$after));
 				}
-			}		
+			}
 			if(isset($GLOBALS['MG']['SITE']['GROUP_TBL'])){
 				$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['SITE']['ACCOUNT_DB']);
 			}
@@ -156,7 +156,7 @@ class group{
 			$groups=$GLOBALS['MG']['SQL']->sql_fetchArray($this->table,false,$conds,DB_ASSOC,DB_ALL_ROWS,$addit);
 			if(isset($GLOBALS['MG']['SITE']['GROUP_TBL'])){
 				$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['CFG']['SQL']['DB']);
-			}		
+			}
 			if(!$groups){
 				return false;
 			}
@@ -176,10 +176,10 @@ class group{
                 }
 			}
 			$ret['count']=count($ret);
-			return $ret;		
+			return $ret;
 		}
 	}
-    
+
     public function group_getAcl($gids){
         $ac = new acl();
         if(!is_array($gids)){
@@ -187,7 +187,7 @@ class group{
         }
         return $ac->acl_getAll($gids,true);
     }
-	
+
 	public function group_add($gid,$members,$admins,$desc=''){
 		if(!$gid){
 			return false;
@@ -197,7 +197,7 @@ class group{
         }
         if(is_array($admins)){
             $admins=implode(';',$admins);
-        }		
+        }
 		if(substr($members,0,1)!=';'){
 			$members=';'.$members;
 		}
@@ -228,7 +228,7 @@ class group{
 		}
 		if(isset($GLOBALS['MG']['SITE']['GROUP_TBL'])){
 			$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['CFG']['SQL']['DB']);
-		}		
+		}
 		return $r;
 	}
 	public function group_remove($gid){
@@ -264,7 +264,7 @@ class group{
 		$ac=false;
 		return true;
 	}
-	
+
 	public function group_addUser($gid,$uid){
 		$udata=$this->group_getGroup(false,false,false,$gid);
 		$udata=$udata['MEMBERS'];
@@ -280,7 +280,7 @@ class group{
 		$udata[]='';
 		return $this->group_modify($gid,$udata);
 	}
-	
+
 	public function group_removeUser($gid,$uid){
 		$udata=$this->group_getGroup(false,false,false,$gid);
 		$udata=$udata['MEMBERS'];
@@ -299,12 +299,12 @@ class group{
 			else{
 				$newarr[]=$udata[$i];
 			}
-			
+
 		}
 		$newarr[]='';
 		return $this->group_modify($gid,$newarr);
 	}
-	
+
 	public function group_isUserValid($uid){
 		if($uid=='*'){
 			return true;
@@ -317,7 +317,7 @@ class group{
 		$act=false;
 		return $r;
 	}
-    	
+
 	public function group_modify($gid,$newUsersList,$newAdminList=false,$newDesc=false){
 		if(!$gid){
 			return false;
@@ -345,9 +345,9 @@ class group{
     				$newAdminList.=';';
     			}
             }
-			$ud[]=array('group_admins',$newAdminList);	
+			$ud[]=array('group_admins',$newAdminList);
 		}
-		
+
 		if(isset($GLOBALS['MG']['SITE']['GROUP_TBL'])){
 			$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['SITE']['ACCOUNT_DB']);
 		}
