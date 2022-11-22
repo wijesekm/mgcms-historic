@@ -626,7 +626,7 @@ class mysqlidb extends sql{
 
 			break;
 		};
-		$this->sql_query($query);
+		return $this->sql_query($query);
 	}
 
   /**
@@ -648,7 +648,7 @@ class mysqlidb extends sql{
 
 			break;
 		};
-		$this->sql_query($query);
+		return $this->sql_query($query);
 	}
 
 	/**
