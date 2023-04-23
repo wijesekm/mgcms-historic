@@ -235,7 +235,7 @@ class errorLogger{
         if(empty($GLOBALS['MG']['CFG']['ERRORLOGGER']['FILES'][$errno])){
             return;
         }
-        unlink($GLOBALS['MG']['CFG']['PATH']['LOG'].$GLOBALS['MG']['CFG']['ERRORLOGGER']['FILES'][$errno]);
+        @unlink($GLOBALS['MG']['CFG']['PATH']['LOG'].$GLOBALS['MG']['CFG']['ERRORLOGGER']['FILES'][$errno]);
     }
 
 	/**

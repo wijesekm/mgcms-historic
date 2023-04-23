@@ -301,8 +301,14 @@ class mysqlidb extends sql{
 			$having=$additParams['having'];
 		}
 		if(isset($additParams['join'])){
-            $join=$this->sql_escape($additParams['join'][0],false,0).' '.$this->sql_escape($additParams['join'][1],false,1).' ON ';
-            $join.=$this->sql_escape($additParams['join'][2],false,1).'='.$this->sql_escape($additParams['join'][3],false,1);
+		    if(!is_array($additParams['join'][0])){
+		        $additParams['join'] = array($additParams['join']);
+		    }
+		    $join = '';
+		    foreach($additParams['join'] as $p){
+		        $join.=$this->sql_escape($p[0],false,0).' '.$this->sql_escape($p[1],false,1).' ON ';
+		        $join.=$this->sql_escape($p[2],false,1).'='.$this->sql_escape($p[3],false,1);
+		    }
 		}
 
 		if($distinct){
