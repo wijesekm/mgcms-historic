@@ -727,36 +727,46 @@ class mysqlidb extends sql{
 		if(!$fields){
 			return $prefix.' * '.$postfix;
 		}
-		$fsize=count($fields);
 		$str=$prefix.' ';
-		for($i=0;$i<$fsize;$i++){
+		$first = true;
+
+		foreach($fields as $ind=>$field){
+		    if(empty($field)){
+		        continue;
+		    }
 		    $s = '';
-			if(!empty($fields[$i][1])){
-			    $s.=$this->sql_escape($fields[$i][1]);
-			    $s.=$this->sql_escape($fields[$i][0],false,1);
-				$this->groupBy['allow']=true;
-			}
-			else{
-			    $s.=$this->sql_escape($fields[$i][0],false,1);
-			}
+		    if($ind === 'funct'){
+		        $field = array($field[1],false,$field[0]);
+		    }
+		    if(!empty($field[1])){
+		        $s.=$this->sql_escape($field[1]);
+		        $s.=$this->sql_escape($field[0],false,1);
+		        $this->groupBy['allow']=true;
+		    }
+		    else if(!empty($field[0])){
+		        $s.=$this->sql_escape($field[0],false,1);
+		    }
+		    else{
+		        continue;
+		    }
+		    if(!empty($field[2])){
+		        switch($field[2]){
+		            case 'MAX':
+		            case 'SUM':
+		            case 'COUNT':
+		                $s = $field[2].'('.$s.')';
+		                break;
+		            default:
+		                $this->groupBy['field']=$field[2];
+		                break;
+		        }
 
-			if(!empty($fields[$i][2])){
-			    switch($fields[$i][2]){
-			        case 'MAX':
-			        case 'SUM':
-			        case 'COUNT':
-			            $s = $fields[$i][2].'('.$s.')';
-			        break;
-			        default:
-			            $this->groupBy['field']=$fields[$i][2];
-			        break;
-			    }
-
-			}
-            $str .= $s;
-			if($i+1<$fsize){
-				$str.=', ';
-			}
+		    }
+		    if(!$first){
+		        $str .= ',';
+		    }
+		    $str .= $s;
+		    $first = false;
 		}
 		return $str.' '.$postfix;
 	}
