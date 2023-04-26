@@ -239,36 +239,57 @@ class mysqlidb extends sql{
    * @param integer $row
    * @return
    */
-	final public function sql_fetchResult($table,$fields,$params,$row=0){
-
-		/**
-		* Format:
-		* $table = array('table_one','table_two',...);
-		* $field = array(array(Field Name, Field Function,Group by field?),...);
-		* $params = array()
-		*
-		*/
-
-		if(!$this->db){
-			return false;
+	final public function sql_fetchResult($table,$fields,$params,$additParams=false,$row=0){
+		$distinct=false;
+		$orderby=false;
+		$having=false;
+		$join=false;
+		if(isset($additParams['distinct'])){
+		    $distinct=$additParams['distinct'];
 		}
-		$q='';
-		if(isset($fields['funct'])){
-			$q=$this->sql_formatFunctions($fields);
+		if(isset($additParams['orderby'])){
+		    $orderby=$additParams['orderby'];
+		}
+		if(isset($additParams['having'])){
+		    $having=$additParams['having'];
+		}
+		if(isset($additParams['join'])){
+		    if(!is_array($additParams['join'][0])){
+		        $additParams['join'] = array($additParams['join']);
+		    }
+		    $join = '';
+		    foreach($additParams['join'] as $p){
+		        $join.=$this->sql_escape($p[0],false,0).' '.$this->sql_escape($p[1],false,1).' ON ';
+		        $join.=$this->sql_escape($p[2],false,1).'='.$this->sql_escape($p[3],false,1);
+		    }
+		}
+
+		if($distinct){
+		    $query=$this->sql_formatFields($fields,'SELECT DISTINCT').' ';
 		}
 		else{
-			$q=$this->sql_formatFields($fields);
+		    $query=$this->sql_formatFields($fields).' ';
 		}
-		if(!$result=$this->sql_query($q.' '.$this->sql_formatTable($table).' '.$this->sql_formatConds($params).';')){
-			return false;
+		$query.=$this->sql_formatTable($table);
+		if($join){
+		    $query.=$join.' ';
 		}
-        if($row > $result->num_rows || $result->num_rows == 0){
-            return "";
-        }
-		$value=$result->fetch_all(MYSQLI_NUM);
-		$value = $value[$row][0];
-        $result->free();
-		return $value;
+		$query.=$this->sql_formatConds($params).' ';
+		if($orderby){
+		    $query.=$this->sql_formatOrderBy($orderby[0],$orderby[1]).' ';
+		}
+		if($this->groupBy && $this->groupBy['allow']){
+		    $query.=$this->sql_formatGroupBy($this->groupBy['field']).' ';
+		    $query.=$this->sql_formatHaving($having[0],$having[1],$having[2],$having[3]).' ';
+		}
+		$query.=';';
+		if(!$result=$this->sql_query($query)){
+		    return false;
+		}
+		$items=$result->fetch_all(MYSQLI_NUM);
+		$items = $items[$row][0];
+		$result->free();
+		return $items;
 	}
 
   /**
@@ -336,12 +357,8 @@ class mysqlidb extends sql{
 		if(!$result=$this->sql_query($query)){
 			return false;
 		}
-		if($rows==DB_ALL_ROWS){
-			$rows=$result->num_rows;
-		}
-		$tmp=array();
-        $items = $result->fetch_all($type);
-        $items['count']=$rows;
+		$items = $result->fetch_all($type);
+		$items['count']=$result->num_rows;
 		$result->free();
 		return $items;
 	}
@@ -713,18 +730,30 @@ class mysqlidb extends sql{
 		$fsize=count($fields);
 		$str=$prefix.' ';
 		for($i=0;$i<$fsize;$i++){
-			if(isset($fields[$i][1])){
-				$str.=$this->sql_escape($fields[$i][1]);
-				$str.=$this->sql_escape($fields[$i][0],false,1);
+		    $s = '';
+			if(!empty($fields[$i][1])){
+			    $s.=$this->sql_escape($fields[$i][1]);
+			    $s.=$this->sql_escape($fields[$i][0],false,1);
 				$this->groupBy['allow']=true;
 			}
 			else{
-				$str.=$this->sql_escape($fields[$i][0],false,1);
-			}
-			if(!empty($fields[$i][2])){
-				$this->groupBy['field']=$fields[$i][2];
+			    $s.=$this->sql_escape($fields[$i][0],false,1);
 			}
 
+			if(!empty($fields[$i][2])){
+			    switch($fields[$i][2]){
+			        case 'MAX':
+			        case 'SUM':
+			        case 'COUNT':
+			            $s = $fields[$i][2].'('.$s.')';
+			        break;
+			        default:
+			            $this->groupBy['field']=$fields[$i][2];
+			        break;
+			    }
+
+			}
+            $str .= $s;
 			if($i+1<$fsize){
 				$str.=', ';
 			}
@@ -740,24 +769,8 @@ class mysqlidb extends sql{
    * @param string $postfix
    * @return
    */
-	final protected function sql_formatFunctions($fields,$prefix='SELECT',$postfix=''){
-		if(!$fields){
-			return $prefix.' * '.$postfix;
-		}
-		$str=$prefix;
-		switch($fields['funct'][0]){
-			case 'MAX':
-				$str.=' MAX(`'.$this->sql_escape($fields['funct'][1]).'`)';
-			break;
-			case 'SUM':
-				$str.=' SUM(`'.$this->sql_escape($fields['funct'][1][0]).'`)';
-				if($fields[0][1]){
-					$str.=' AS \''.$fields['funct'][1][1].'\'';
-				}
-			break;
-		}
-		$str.=$postfix;
-		return $str;
+	final protected function sql_formatFunctions($type, $field){
+	    return false;
 	}
 
   /**
