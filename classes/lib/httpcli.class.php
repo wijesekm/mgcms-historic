@@ -54,7 +54,7 @@ class httpcli{
             CURLOPT_HTTP_VERSION    => CURL_HTTP_VERSION_1_1
         );
         if(empty($cert) || !is_file($cert)){
-            trigger_error('(httpcli): Blank or invalid root certificate: '.$cert,E_DEBUG);
+            trigger_error('(httpcli): Blank or invalid root certificate: '.$cert,E_USER_NOTICE);
         }
         else{
             $this->opts[CURLOPT_CAINFO] = $cert;

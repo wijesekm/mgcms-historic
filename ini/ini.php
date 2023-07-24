@@ -477,7 +477,7 @@ mginit_loadCustomPackages($GLOBALS['MG']['PAGE']['PACKAGES']);
 /*
  * Log access voilations
  */
-if(!defined('CRON')){
+if(!defined('CRON') && !defined('API')){
     if(isset($_GET['p'])){
         if($_GET['p'] != $GLOBALS['MG']['PAGE']['PATH']){
             mginit_errorHandler(E_ACCESS_ERR,'Resource Not Found 404 '.$GLOBALS['MG']['PAGE']['PATH'],'','','');
