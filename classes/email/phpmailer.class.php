@@ -106,6 +106,7 @@ class PHPMailer
      * @var string
      */
     public $Sender = '';
+    public $ReturnPath = '';
 
     /**
      * The Subject of the message.
@@ -1782,6 +1783,9 @@ class PHPMailer
         }
 
         $result .= $this->addrAppend('From', [[trim($this->From), $this->FromName]]);
+        if(!empty($this->ReturnPath)){
+            $result .= $this->headerLine('Return-Path',$this->ReturnPath);
+        }
 
         // sendmail and mail() extract Cc from the header before sending
         if (count($this->cc) > 0) {

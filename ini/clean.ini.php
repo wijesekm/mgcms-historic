@@ -114,7 +114,7 @@ function mginit_cleanVar($value,$clean){
 			return ( $value=="" || $value=="false" || $value == "0" )?false:true;
 		break;
 		case 'int':
-			return (preg_match("/^[0-9]+$/",$value))?$value:false;
+			return (preg_match("/^-?[0-9]+$/",$value))?$value:false;
 		break;
 		case 'float':
 			return (preg_match("/^(-|\+)?([0-9]+)?(\.[0-9]+)?$/",$value))?$value:false;

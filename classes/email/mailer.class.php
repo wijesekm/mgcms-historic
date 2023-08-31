@@ -93,6 +93,9 @@ class mailer{
     		 	case 'smtpsecure':
     		 		$this->mail->SMTPSecure=$value;
     		 	break;
+    		 	case 'returnpath':
+                    $this->mail->ReturnPath = $value;
+    		 	break;
     		 	case 'smtpauth':
     		 	    if(strpos($value,',') !== false){
     		 	        $value = explode(',',$value);
@@ -211,6 +214,9 @@ class mailer{
 			break;
 			case 'replyto':
 				$this->mail->AddReplyTo($email,$name);
+			break;
+			case 'returnpath':
+			     $this->main->ReturnPath = $email;
 			break;
 			case 'to':
 			default:

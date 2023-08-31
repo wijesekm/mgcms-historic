@@ -269,7 +269,7 @@ else{
 	/**
 	 * Impersonate Settings
 	 */
-    if(!defined('CRON') && !defined('AJAX') && !defined('API')){
+    if(!defined('CRON')){
         $GLOBALS['MG']['REAL_USER']=array();
         if(!$GLOBALS['MG']['USER']['NOAUTH']){
             if(isset($GLOBALS['MG']['SITE']['ALLOW_IMPERSONATE']) && isset($GLOBALS['MG']['COOKIE']['ALTERNATE_UID'])){
