@@ -181,8 +181,20 @@ class mysqlidb extends sql{
    */
 	final public function sql_listTables(){
 		$r=$this->sql_query('SHOW TABLES;');
-        $res = $r->fetch_all($res_type);
-		return $res[0];
+		if($r){
+		    $res = $r->fetch_all(DB_ASSOC);
+		    return $res;
+		}
+		return false;
+	}
+
+	public function sql_listFields($table){
+	    $r = $this->sql_query('SHOW COLUMNS '.$this->sql_formatTable(array($table)).';');
+	    if($r){
+	        $res = $r->fetch_all(DB_ASSOC);
+	        return $res;
+	    }
+        return false;
 	}
 
     final public function sql_getLastError(){
