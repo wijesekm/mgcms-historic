@@ -59,7 +59,7 @@ class cron{
 			$val['DAYS'] = explode('/',$val['DAYS']);
 			$val['TIMES'] = explode('/',$val['TIMES']);
 
-			if((in_array($cur_day,$val['DAYS']) && in_array($cur_time,$val['TIMES'])) || !empty($_GET['all'])){
+			if(((in_array($cur_day,$val['DAYS']) || in_array('*',$val['DAYS'])) && (in_array($cur_time,$val['TIMES']) || in_array('*',$val['TIMES']))) || !empty($_GET['all'])){
 				echo 'RUNNING: '.$val['HOOK']."\n";
 				if(!$this->cron_hookEval($val['HOOK'])){
 					echo 'Could not run hook';
