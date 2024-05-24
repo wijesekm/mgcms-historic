@@ -30,6 +30,7 @@ class page{
 
     private $content;
     private $error;
+    const ALLOW_VERBS = array('GET'=>true,'HEAD'=>true,'POST'=>true,'PUT'=>true,'DELETE'=>true);
 
     public function __construct(){
         if(!isset($_SERVER['SERVER_SIGNATURE'])){
@@ -106,6 +107,14 @@ class page{
             return false;
         }
         $GLOBALS['MG']['PAGE']['ACTION_HOOK'] = 'api_'.$GLOBALS['MG']['PAGE']['ACTION_HOOK'];
+
+        //try verb hook first
+        $v = $_SERVER['REQUEST_METHOD'];
+        if(!empty($v) && self::ALLOW_VERBS[$v]){
+            if(method_exists($obj,$GLOBALS['MG']['PAGE']['ACTION_HOOK'].'_'.$v)){
+                $GLOBALS['MG']['PAGE']['ACTION_HOOK'] .= '_'.$v;
+            }
+        }
 
         if(!method_exists($obj,$GLOBALS['MG']['PAGE']['ACTION_HOOK'])){
             trigger_error('(PAGE): No function in class found: '.$GLOBALS['MG']['PAGE']['ACTION_HOOK'],E_USER_ERROR);
