@@ -364,7 +364,7 @@ if(defined('API')){
 }
 else if(!defined('CRON')){
 	$tmp=$GLOBALS['MG']['SQL']->sql_fetcharray(array(TABLE_PREFIX.'pages'),false,array(array(false,false,'page_path','=',strtolower($GLOBALS['MG']['GET']['PAGE']))));
-	if(is_array($tmp[0])){
+	if(isset($tmp[0]) && is_array($tmp[0])){
 		foreach($tmp[0] as $key=>$val){
 		    $key=strtoupper(substr($key,strpos($key,'_')+1));
 			switch($key){
@@ -380,6 +380,9 @@ else if(!defined('CRON')){
 					break;
 			}
 		}
+	}
+	else{
+	    trigger_error('(INI): Could not load page data',E_USER_ERROR);
 	}
 	$tmp=false;
 	$GLOBALS['MG']['PAGE']['REDIRECT']=false;

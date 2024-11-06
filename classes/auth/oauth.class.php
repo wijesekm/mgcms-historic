@@ -51,13 +51,14 @@ class oauth extends auth{
         if(empty($data) || $data['status'] != 200 || $data['valid_token'] != '1'){
             return false;
         }
+
         return array(
-            'NAME'=>array('','',''),
+            'NAME'=>implode(';',explode(' ',$data['name'])),
             'EMAIL'=>$data['email'],
-            'COMPANY'=>'',
-            'ADDRESS'=>'',
-            'ABOUT'=>'',
-            'PHONE'=>'',
+            'COMPANY'=>'Muncie Power Products, Inc.',
+            'ADDRESS'=>$data['address'],
+            'ABOUT'=>$data['title'].' - '.$data['department'],
+            'PHONE'=>$data['phone'],
             'LOCATION'=>''
         );
     }

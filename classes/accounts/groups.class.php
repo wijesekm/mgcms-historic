@@ -153,7 +153,7 @@ class group{
 				$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['SITE']['ACCOUNT_DB']);
 			}
 			$totalLength=$GLOBALS['MG']['SQL']->sql_numRows($this->table,$conds);
-			$groups=$GLOBALS['MG']['SQL']->sql_fetchArray($this->table,false,$conds,DB_ASSOC,DB_ALL_ROWS,$addit);
+			$groups=$GLOBALS['MG']['SQL']->sql_fetchArray($this->table,array(array('group_gid'),array('group_members')),$conds,DB_ASSOC,DB_ALL_ROWS,$addit);
 			if(isset($GLOBALS['MG']['SITE']['GROUP_TBL'])){
 				$GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['CFG']['SQL']['DB']);
 			}

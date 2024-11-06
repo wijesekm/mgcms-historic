@@ -45,24 +45,28 @@ class cron{
 	}
 
 	public function cron_generate(){
-		$cur_time = date('G',$GLOBALS['MG']['SITE']['TIME']);
+		$cur_hour = date('G',$GLOBALS['MG']['SITE']['TIME']);
 		$cur_min = date('i',$GLOBALS['MG']['SITE']['TIME']);
 		$cur_day = date('N',$GLOBALS['MG']['SITE']['TIME']);
 
-		if($cur_min >= '30'){
-			$cur_time .=':30';
-		}
+		$cur_min = 5 * floor($cur_min/5);
+
 		foreach($GLOBALS['MG']['PAGE']['DATA'] as $val){
 			//HOOK
 			//DAYS
 			//TIMES
 			$val['DAYS'] = explode('/',$val['DAYS']);
-			$val['TIMES'] = explode('/',$val['TIMES']);
+			$val['HOURS'] = explode('/',$val['HOURS']);
+			$val['MINS'] = explode('/',$val['MINS']);
 
-			if(((in_array($cur_day,$val['DAYS']) || in_array('*',$val['DAYS'])) && (in_array($cur_time,$val['TIMES']) || in_array('*',$val['TIMES']))) || !empty($_GET['all'])){
-				echo 'RUNNING: '.$val['HOOK']."\n";
+			if((
+			    (in_array($cur_day,$val['DAYS']) || in_array('*',$val['DAYS'])) &&
+			    (in_array($cur_hour,$val['HOURS']) || in_array('*',$val['HOURS'])) &&
+			    (in_array($cur_min,$val['MINS']) || in_array('*',$val['MINS']))
+			    )  || !empty($_GET['all'])){
+			        trigger_error('(CRON): Running Hook: '. $val['HOOK'],E_USER_NOTICE);
 				if(!$this->cron_hookEval($val['HOOK'])){
-					echo 'Could not run hook';
+				    trigger_error('(CRON): Error Running Hook: '. $val['HOOK'],E_USER_ERROR);
 				}
 			}
 
@@ -84,18 +88,18 @@ class cron{
 			if(!is_object($this->obj[$hook[0]])){
 				eval('$this->obj[\''.$hook[0].'\']=new '.$hook[0].'();');
 				if(!is_object($this->obj[$hook[0]])){
-					trigger_error('(PAGE): Could not create page class: '.$hook[0],E_USER_WARNING);
+					trigger_error('(CRON): Could not create page class: '.$hook[0],E_USER_WARNING);
 				}
 			}
 			eval('$ret=$this->obj[\''.$hook[0].'\']->'.$hook[1].'();');
 			if(!$ret){
-				trigger_error('(PAGE): Could not evaluate hook: '.$hook[1],E_USER_WARNING);
+				trigger_error('(CRON): Could not evaluate hook: '.$hook[1],E_USER_WARNING);
 			}
 		}
 		else{
 			eval('$ret='.$hook.'();');
 			if(!$ret){
-				trigger_error('(PAGE): Could not evaluate hook: '.$hook,E_USER_WARNING);
+				trigger_error('(CRON): Could not evaluate hook: '.$hook,E_USER_WARNING);
 			}
 		}
 		return $ret;
