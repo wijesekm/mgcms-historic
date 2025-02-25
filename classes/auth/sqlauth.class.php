@@ -40,6 +40,10 @@ class sqlauth extends auth{
 		return $this->auth_passcomp($password,$GLOBALS['MG']['USER']['PASSWORD']);
 	}
 
+	final public function auth_canChangePass(){
+	    return true;
+	}
+
 	final public function auth_changePass($uid,$newPass){
 
 		$encPass=$this->act_encryptpasswd($newPass);

@@ -47,8 +47,8 @@ class httpcli{
             CURLOPT_FOLLOWLOCATION  => true,
             CURLOPT_HEADER          => 0,
             CURLOPT_IPRESOLVE       => CURL_IPRESOLVE_V4,
-            CURLOPT_SSL_VERIFYPEER  => true,
-            CURLOPT_SSL_VERIFYHOST  => 2,
+            CURLOPT_SSL_VERIFYPEER  => false,
+            CURLOPT_SSL_VERIFYHOST  => 0,
             CURLOPT_FRESH_CONNECT   => true,
             CURLOPT_USERAGENT       => 'MG CURL',
             CURLOPT_HTTP_VERSION    => CURL_HTTP_VERSION_1_1

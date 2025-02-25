@@ -46,6 +46,8 @@ abstract class auth{
 	    return $ses_tok;
 	}
 
+	abstract public function auth_canChangePass();
+
 	abstract public function auth_changePass($uid,$newPass);
 
 	abstract public function auth_getAutoReg($uid,$password);

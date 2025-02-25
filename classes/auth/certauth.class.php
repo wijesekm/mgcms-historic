@@ -44,6 +44,7 @@ class certauth extends auth{
         return true;
     }
 
+
     final public function auth_sessionStart($uid, $expires){
         $cdta=array(
                 'SECURE'=>false,
@@ -116,6 +117,10 @@ class certauth extends auth{
 
             return base64_encode($crypt);
         }
+        return false;
+    }
+
+    final public function auth_canChangePass(){
         return false;
     }
 

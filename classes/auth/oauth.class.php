@@ -32,6 +32,10 @@ class oauth extends auth{
         return false;
     }
 
+    final public function auth_canChangePass(){
+        return false;
+    }
+
     final public function auth_changePass($uid,$newPass){
         return false;
     }

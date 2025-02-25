@@ -77,6 +77,10 @@ class adauth extends auth{
 		return $ret;
 	}
 
+	final public function auth_canChangePass(){
+	    return false;
+	}
+
 	final public function auth_changePass($uid,$newPass){
 		return false;
 	}
