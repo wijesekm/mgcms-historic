@@ -58,12 +58,11 @@ class cron{
 			$val['DAYS'] = explode('/',$val['DAYS']);
 			$val['HOURS'] = explode('/',$val['HOURS']);
 			$val['MINS'] = explode('/',$val['MINS']);
-
 			if((
 			    (in_array($cur_day,$val['DAYS']) || in_array('*',$val['DAYS'])) &&
 			    (in_array($cur_hour,$val['HOURS']) || in_array('*',$val['HOURS'])) &&
 			    (in_array($cur_min,$val['MINS']) || in_array('*',$val['MINS']))
-			    )  || !empty($_GET['all'])){
+			    )  || !empty($_GET['hook'] == $val['HOOK'])){
 			        trigger_error('(CRON): Running Hook: '. $val['HOOK'],E_USER_NOTICE);
 				if(!$this->cron_hookEval($val['HOOK'])){
 				    trigger_error('(CRON): Error Running Hook: '. $val['HOOK'],E_USER_ERROR);

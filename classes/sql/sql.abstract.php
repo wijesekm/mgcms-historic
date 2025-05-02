@@ -95,6 +95,8 @@ abstract class sql{
 
 	abstract public function sql_fetchJSON($table,$field,$params,$type=DB_ASSOC,$rows=DB_ALL_ROWS,$additParams=false);
 
+	abstract public function sql_fetchRaw($table,$field,$params,$type=DB_ASSOC,$rows=DB_ALL_ROWS,$additParams=false);
+
 	abstract public function sql_numRows($table,$params,$result=false,$distinct=true,$addit=false);
 
 	abstract public function sql_numFields($table,$params,$result=false,$distinct=true);

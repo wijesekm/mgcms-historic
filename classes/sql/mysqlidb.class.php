@@ -316,59 +316,10 @@ class mysqlidb extends sql{
    * @return
    */
 	final public function sql_fetchArray($table,$fields,$params,$type=DB_ASSOC,$rows=DB_ALL_ROWS,$additParams=false){
-		$distinct=false;
-		$orderby=false;
-		$limit=false;
-		$having=false;
-		$join=false;
-		if(isset($additParams['distinct'])){
-			$distinct=$additParams['distinct'];
-		}
-		if(isset($additParams['orderby'])){
-			$orderby=$additParams['orderby'];
-		}
-		if(isset($additParams['limit'])){
-			$limit=$additParams['limit'];
-		}
-		if(isset($additParams['having'])){
-			$having=$additParams['having'];
-		}
-		if(isset($additParams['join'])){
-		    if(!is_array($additParams['join'][0])){
-		        $additParams['join'] = array($additParams['join']);
-		    }
-		    $join = '';
-		    foreach($additParams['join'] as $p){
-		        $join.=$this->sql_escape($p[0],false,0).' '.$this->sql_escape($p[1],false,1).' ON ';
-		        $join.=$this->sql_escape($p[2],false,1).'='.$this->sql_escape($p[3],false,1);
-		    }
-		}
-
-		if($distinct){
-			$query=$this->sql_formatFields($fields,'SELECT DISTINCT').' ';
-		}
-		else{
-			$query=$this->sql_formatFields($fields).' ';
-		}
-		$query.=$this->sql_formatTable($table);
-		if($join){
-			$query.=$join.' ';
-		}
-		$query.=$this->sql_formatConds($params).' ';
-		if($orderby){
-			$query.=$this->sql_formatOrderBy($orderby[0],$orderby[1]).' ';
-		}
-		if($this->groupBy && $this->groupBy['allow']){
-			$query.=$this->sql_formatGroupBy($this->groupBy['field']).' ';
-			$query.=$this->sql_formatHaving($having[0],$having[1],$having[2],$having[3]).' ';
-		}
-		if($limit){
-			$query.=$this->sql_formatLimit($limit[0],$limit[1]).' ';
-		}
-		$query.=';';
-		if(!$result=$this->sql_query($query)){
-			return false;
-		}
+	    $result = $this->sql_fetchRaw($table,$fields,$params,$type,$rows,$additParams);
+	    if(!$result){
+	        return false;
+	    }
 		$items = $result->fetch_all($type);
 		$items['count']=$result->num_rows;
 		$result->free();
@@ -376,6 +327,25 @@ class mysqlidb extends sql{
 	}
 
 	final public function sql_fetchJSON($table,$fields,$params,$type=DB_ASSOC,$rows=DB_ALL_ROWS,$additParams=false){
+	    $result = $this->sql_fetchRaw($table,$fields,$params,$type,$rows,$additParams);
+	    if(!$result){
+	        return false;
+	    }
+	    $ret = '[';
+	    while($row = $result->fetch_array($type)){
+            $ret .= mg_jsonEncode($row).',';
+	    }
+	    if($ret[strlen($ret)-1] != '['){
+	        $ret[strlen($ret)-1] = ']';
+	    }
+	    else{
+	        $ret .= ']';
+	    }
+	    $result->free();
+	    return $ret;
+	}
+
+	final public function sql_fetchRaw($table,$fields,$params,$type=DB_ASSOC,$rows=DB_ALL_ROWS,$additParams=false){
 	    $distinct=false;
 	    $orderby=false;
 	    $limit=false;
@@ -394,9 +364,16 @@ class mysqlidb extends sql{
 	        $having=$additParams['having'];
 	    }
 	    if(isset($additParams['join'])){
-	        $join=$this->sql_escape($additParams['join'][0],false,0).' '.$this->sql_escape($additParams['join'][1],false,1).' ON ';
-	        $join.=$this->sql_escape($additParams['join'][2],false,1).'='.$this->sql_escape($additParams['join'][3],false,1);
+	        if(!is_array($additParams['join'][0])){
+	            $additParams['join'] = array($additParams['join']);
+	        }
+	        $join = '';
+	        foreach($additParams['join'] as $p){
+	            $join.=$this->sql_escape($p[0],false,0).' '.$this->sql_escape($p[1],false,1).' ON ';
+	            $join.=$this->sql_escape($p[2],false,1).'='.$this->sql_escape($p[3],false,1);
+	        }
 	    }
+
 	    if($distinct){
 	        $query=$this->sql_formatFields($fields,'SELECT DISTINCT').' ';
 	    }
@@ -419,20 +396,7 @@ class mysqlidb extends sql{
 	        $query.=$this->sql_formatLimit($limit[0],$limit[1]).' ';
 	    }
 	    $query.=';';
-	    if(!$result=$this->sql_query($query)){
-	        return false;
-	    }
-	    $ret = '[';
-	    while($row = $result->fetch_array($type)){
-            $ret .= mg_jsonEncode($row).',';
-	    }
-	    if($ret[strlen($ret)-1] != '['){
-	        $ret[strlen($ret)-1] = ']';
-	    }
-	    else{
-	        $ret .= ']';
-	    }
-	    return $ret;
+	    return $this->sql_query($query);
 	}
 
   /**
@@ -576,18 +540,21 @@ class mysqlidb extends sql{
 			case DB_INSERT:
 				$query=$this->sql_formatTable($table,'INSERT INTO');
 				$query.='(`'.implode('`,`',$this->sql_escape($params,true)).'`) VALUES';
-				if(is_array($data[0])){
-					$soq=count($data);
-					for($i=0;$i<$soq;$i++){
-						$query.=' (\''.implode('\',\'',$this->sql_escape($data[$i],true)).'\')';
-						if($i+1<$soq){
-							$query.=',';
-						}
-					}
+				$first = true;
+				if(is_array($data[array_key_first($data)])){
+				    foreach($data as $v){
+				        if($first){
+				            $first = false;
+				        }
+				        else{
+				            $query .= ',';
+				        }
+				        $query.=' ('.$this->sql_dataFormat($v).')';
+				    }
 					$query.=';';
 				}
 				else{
-					$query.=' (\''.implode('\',\'',$this->sql_escape($data,true)).'\');';
+				    $query.=' ('.$this->sql_dataFormat($data).');';
 				}
 			break;
 			case DB_RESETAUTO:
@@ -1019,6 +986,36 @@ class mysqlidb extends sql{
 			break;
 		};
 		return $query;
+	}
+
+	final protected function sql_dataFormat($data){
+	    $r = '';
+	    if(is_array($data)){
+	        $first = true;
+	        foreach($data as $val){
+	            if($first){
+	                $first = false;
+	            }
+	            else{
+	                $r .= ',';
+	            }
+	            $r .= $this->sql_dataFormat($val);
+	        }
+	    }
+	    else{
+	        if(is_null($data)){
+	            $r .= 'NULL';
+	        }
+	        else if(is_numeric($data)){
+	            $r .= floatval($data);
+	        }
+	        else{
+	            $r .= '\'';
+	            $r .= $this->db->escape_string($data);
+	            $r .= '\'';
+	        }
+	    }
+	    return $r;
 	}
 
   /**

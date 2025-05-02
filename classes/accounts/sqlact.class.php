@@ -91,6 +91,9 @@ class sqlact extends accounts{
         }
         if(!$users=$GLOBALS['MG']['SQL']->sql_fetchArray($this->table,$fields,$query)){
             trigger_error('(SQLACT): Could not load user data',E_USER_WARNING);
+            if(isset($GLOBALS['MG']['SITE']['ACCOUNT_DB'])){
+                $GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['CFG']['SQL']['DB']);
+            }
             return false;
         }
         if(isset($GLOBALS['MG']['SITE']['ACCOUNT_DB'])){
