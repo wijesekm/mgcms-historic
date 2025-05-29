@@ -989,6 +989,7 @@ class mysqlidb extends sql{
 	}
 
 	final protected function sql_dataFormat($data){
+
 	    $r = '';
 	    if(is_array($data)){
 	        $first = true;
@@ -1003,11 +1004,8 @@ class mysqlidb extends sql{
 	        }
 	    }
 	    else{
-	        if(is_null($data)){
+	        if($data === null){
 	            $r .= 'NULL';
-	        }
-	        else if(is_numeric($data)){
-	            $r .= floatval($data);
 	        }
 	        else{
 	            $r .= '\'';
@@ -1015,6 +1013,7 @@ class mysqlidb extends sql{
 	            $r .= '\'';
 	        }
 	    }
+
 	    return $r;
 	}
 

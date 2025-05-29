@@ -70,7 +70,6 @@ class page{
                 'ACL_WRITE'=>(mg_checkACL($GLOBALS['MG']['PAGE']['PATH'],'write'))?'1':'0',
                 'ACL_READ'=>(mg_checkACL($GLOBALS['MG']['PAGE']['PATH'],'read'))?'1':'0'
         );
-
         $this->content='';
         $this->error=false;
     }
