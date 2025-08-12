@@ -506,7 +506,7 @@ class mysqlidb extends sql{
                     else if($data[$k][1]==='++'){
                         $query.=$this->sql_escape($data[$k][0],false,1).'='.$this->sql_escape($data[$k][0],false,1).'+1';
                     }
-                    else if($data[$k][1] == null){
+                    else if($data[$k][1] === null){
                         $query.=$this->sql_escape($data[$k][0],false,1).'=NULL';
 
                     }
@@ -1006,6 +1006,14 @@ class mysqlidb extends sql{
 	    else{
 	        if($data === null){
 	            $r .= 'NULL';
+	        }
+	        else if(is_int($data) || is_bool($data) || is_float($data) || is_double($data)){
+	            if(empty($data)){
+	                $data = '0';
+	            }
+	            $r .= '\'';
+	            $r .= $data;
+	            $r .= '\'';
 	        }
 	        else{
 	            $r .= '\'';
