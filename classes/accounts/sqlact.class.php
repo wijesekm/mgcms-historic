@@ -144,43 +144,42 @@ class sqlact extends accounts{
 
         $this->lastLength=$GLOBALS['MG']['SQL']->sql_numRows($this->table,$parms);
 
-        for($i=0;$i<$users['count'];$i++){
-            $dta=$users[$i];
-            if(is_array($dta)){
-            $keys=array_keys($dta);
-            $soq=count($dta);
-            }
-            else{
-                $soq = 0;
-            }
-
-            for($j=0;$j<$soq;$j++){
-                $nkey=strtoupper(substr($keys[$j],strpos($keys[$j],'_')+1));
-                switch($nkey){
-                    case 'IM':
-                        $tmp=explode(';',$dta[$keys[$j]]);
-                        $sot=count($tmp);
-                        for($k=0;$k<$sot;$k++){
-                            $curim=explode(':',$tmp[$k]);
-                            if(isset($curim[1])){
-                                $this->user[$dta['user_uid']]['IM'][$curim[0]]=$curim[1];
+        foreach($users as $val){
+            if(is_array($val)){
+                foreach($val as $key2=>$val2){
+                    $nkey=strtoupper(substr($key2,strpos($key2,'_')+1));
+                    switch($nkey){
+                        case 'IM':
+                            $tmp=explode(';',$val2);
+                            $sot=count($tmp);
+                            for($k=0;$k<$sot;$k++){
+                                $curim=explode(':',$tmp[$k]);
+                                if(isset($curim[1])){
+                                    $this->user[$val['user_uid']]['IM'][$curim[0]]=$curim[1];
+                                }
                             }
-                        }
-                    break;
-                    case 'BANNED':
-                        $this->user[$dta['user_uid']]['BANNED']=(boolean)$dta[$keys[$j]];
-                    break;
-                    case 'NAME':
-                    case 'FULLNAME':
-                        $this->user[$dta['user_uid']]['NAME']=explode(';',$dta[$keys[$j]]);
-                    break;
-                    default:
-                        $this->user[$dta['user_uid']][$nkey]=$dta[$keys[$j]];
-                    break;
+                            break;
+                        case 'BANNED':
+                            $this->user[$val['user_uid']]['BANNED']=(boolean)$val2;
+                            break;
+                        case 'NAME':
+                        case 'FULLNAME':
+                            if($val2){
+                                $this->user[$val['user_uid']]['NAME']=explode(';',$val2);
+                            }
+                            else{
+                                $this->user[$val['user_uid']]['NAME']=array('','');
+                            }
+                            break;
+                        default:
+                            $this->user[$val['user_uid']][$nkey]=$val2;
+                            break;
+                    }
                 }
+                $this->user[$val['user_uid']]['NOAUTH']=false;
             }
-            $this->user[$dta['user_uid']]['NOAUTH']=false;
         }
+
         if(isset($GLOBALS['MG']['SITE']['ACCOUNT_DB'])){
             $GLOBALS['MG']['SQL']->sql_switchDB($GLOBALS['MG']['CFG']['SQL']['DB']);
         }

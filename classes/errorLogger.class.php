@@ -62,14 +62,11 @@ class errorLogger{
 		        E_ACCESS_ERR         => 'Access Error',
 		        E_SQL                => 'SQL Log'
                 );
-        /*foreach($this->errorTypes as $key => $value){
-			if(!is_file($GLOBALS['MG']['CFG']['PATH']['LOG'].$value.'.log')){
-				@touch($GLOBALS['MG']['CFG']['PATH']['LOG'].$value.'.log');
-			}
-		}*/
+		if(empty($_SERVER['REMOTE_ADDR'])){
+		    $_SERVER['REMOTE_ADDR'] = '';
+		}
 	}
 	public function __destruct(){
-		$this->userErrors=false;
 		$this->errorTypes=false;
 	}
 

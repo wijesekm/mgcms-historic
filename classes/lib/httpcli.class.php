@@ -33,7 +33,7 @@ class httpcli{
      *
      * @param string $cert Path to SSL cert file or null to use pre-loaded certs
      */
-    public function __construct($cert = null){
+    public function __construct($cert = null, $noverif=false){
         if(!function_exists('curl_init')){
             trigger_error('(httpcli): CURL library not loaded',E_USER_ERROR);
             return;
@@ -47,18 +47,19 @@ class httpcli{
             CURLOPT_FOLLOWLOCATION  => true,
             CURLOPT_HEADER          => 0,
             CURLOPT_IPRESOLVE       => CURL_IPRESOLVE_V4,
-            CURLOPT_SSL_VERIFYPEER  => true,
-            CURLOPT_SSL_VERIFYHOST  => 2,
+            CURLOPT_SSL_VERIFYPEER  => $noverif?false:true,
+            CURLOPT_SSL_VERIFYHOST  => $noverif?0:2,
             CURLOPT_FRESH_CONNECT   => true,
             CURLOPT_USERAGENT       => 'MG CURL',
             CURLOPT_HTTP_VERSION    => CURL_HTTP_VERSION_1_1
         );
-        if(empty($cert) || !is_file($cert)){
-            trigger_error('(httpcli): Blank or invalid root certificate: '.$cert,E_USER_NOTICE);
-        }
-        else{
-            $this->opts[CURLOPT_CAINFO] = $cert;
-
+        if(!empty($cert)){
+            if(!is_file($cert)){
+                trigger_error('(httpcli): Invalid root certificate: '.$cert,E_USER_NOTICE);
+            }
+            else{
+                $this->opts[CURLOPT_CAINFO] = $cert;
+            }
         }
     }
 

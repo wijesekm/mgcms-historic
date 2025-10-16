@@ -373,7 +373,12 @@ else if(!defined('CRON')){
 				case 'CACHEHOOKS':
 				case 'AJAXHOOKS':
 				case 'EXTHOOKS':
-					$GLOBALS['MG']['PAGE'][$key]=explode(';',$val);
+				    if($val){
+				        $GLOBALS['MG']['PAGE'][$key]=explode(';',$val);
+				    }
+				    else{
+				        $GLOBALS['MG']['PAGE'][$key]=array();
+				    }
 					break;
 				default:
 					$GLOBALS['MG']['PAGE'][$key]=$val;
@@ -496,7 +501,7 @@ if(!defined('CRON') && !defined('API')){
 /**
 * MISC Functions
 */
-function mginit_errorHandler($errno, $errmsg, $filename, $linenum, $vars){
+function mginit_errorHandler($errno, $errmsg, $filename=false, $linenum=false, $vars=false){
 	$GLOBALS['MG']['ERROR']['LOGGER']->el_addError($errno, $errmsg, $filename, $linenum, $vars);
 }
 

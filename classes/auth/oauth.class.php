@@ -41,7 +41,7 @@ class oauth extends auth{
     }
 
     final public function auth_getAutoReg($uid,$password){
-        $cli = new httpcli();
+        $cli = new httpcli(false,true);
         $cli->set_headers(array(
             'Accept'=>'application/json',
             'Authorization'=>'Bearer '.$password
