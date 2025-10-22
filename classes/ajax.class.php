@@ -104,15 +104,19 @@ class page{
 		/**
 		* Get Global Page Vars/Cache Info
 		*/
-		$globalPageVars=explode(';',$gdd[0][($v)?'page_extHooks':'page_ajaxHooks']);
-		$soq=count($globalPageVars);
-		for($i=0;$i<$soq;$i++){
-            if(!$GLOBALS['MG']['PAGE']['STOPPARSERS']){
-    			$t=$this->page_hookEval($globalPageVars[$i]);
-    			if(!$this->page_error($t)){
-    				break 1;
-    			}
-            }
+		if(!empty($gdd[0][($v)?'page_extHooks':'page_ajaxHooks'])){
+		    $globalPageVars=explode(';',$gdd[0][($v)?'page_extHooks':'page_ajaxHooks']);
+		}
+		else{
+		    $globalPageVars = array();
+		}
+		foreach($globalPageVars as $var){
+		    if(!$GLOBALS['MG']['PAGE']['STOPPARSERS']){
+		        $t=$this->page_hookEval($var);
+		        if(!$this->page_error($t)){
+		            break 1;
+		        }
+		    }
 		}
         return $this->content;
 

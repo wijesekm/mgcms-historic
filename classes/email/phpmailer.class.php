@@ -1255,13 +1255,13 @@ class PHPMailer
      *
      * @return bool false on error - See the ErrorInfo property for details of the error
      */
-    public function send()
+    public function send($display = false)
     {
         try {
             if (!$this->preSend()) {
                 return false;
             }
-            return $this->postSend();
+            return $this->postSend($display);
         } catch (Exception $exc) {
             $this->mailHeader = '';
             $this->setError($exc->getMessage());
@@ -1413,7 +1413,7 @@ class PHPMailer
      *
      * @return bool
      */
-    public function postSend()
+    public function postSend($display = false)
     {
         $env = new envelope();
 
@@ -1445,14 +1445,21 @@ class PHPMailer
             'options' => $this->SMTPOptions,
             'hostname'=> $this->serverHostname()
         );
-        if(class_exists($this->Mailer)){
-            $mail = new $this->Mailer($options);
-            return $mail->send($env);
+
+        if($display){
+            print_r($this);
+            return true;
         }
         else{
-            trigger_error('(phpmailer): Invalid mailer: '.$this->Mailer);
-            return false;
+            if(class_exists($this->Mailer)){
+                $mail = new $this->Mailer($options);
+                return $mail->send($env);
+            }
+            else{
+                trigger_error('(phpmailer): Invalid mailer: '.$this->Mailer);
+            }
         }
+        return false;
     }
 
     /**

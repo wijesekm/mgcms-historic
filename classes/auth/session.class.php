@@ -40,6 +40,7 @@ class session{
 
 	public function __construct($time){
 		$this->t=$time;
+		$this->sid = '';
 		if(isset($GLOBALS['MG']['SITE']['ACCOUNTS_SESSION_TBL'])){
 			$this->table=array($GLOBALS['MG']['SITE']['ACCOUNTS_SESSION_TBL']);
 		}
@@ -109,7 +110,7 @@ class session{
 
 		$this->id=false;
 		$this->uid=false;
-		$this->sid=false;
+		$this->sid='';
 		return false;
 	}
 

@@ -234,19 +234,14 @@ class mailer{
 			$GLOBALS['MG']['SQL']->sql_dataCommands(DB_INSERT,array($this->logDb),$rows,$data);
 			$this->logmsg='';
 		}
-		if(!$dryRun){
-			$r = $this->mail->Send();
-			if(!empty($this->mail->ErrorInfo )){
-			    trigger_error($this->mail->ErrorInfo,E_USER_WARNING);
-			}
-			if(!$r || $this->show_trace){
-			    if(!empty($this->msg)){
-			        trigger_error($this->msg,E_USER_NOTICE);
-			    }
-			}
+		$r = $this->mail->Send($dryRun);
+		if(!empty($this->mail->ErrorInfo )){
+		    trigger_error($this->mail->ErrorInfo,E_USER_WARNING);
 		}
-		else{
-			print_r($this->mail);
+		if(!$r || $this->show_trace){
+		    if(!empty($this->msg)){
+		        trigger_error($this->msg,E_USER_NOTICE);
+		    }
 		}
 		return $r;
 	}
