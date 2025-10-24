@@ -50,7 +50,7 @@ class cron{
         $cur_day = date('N',$GLOBALS['MG']['SITE']['TIME']);
 
         $cur_min = 5 * floor($cur_min/5);
-
+        $have_run = '';
         foreach($GLOBALS['MG']['PAGE']['DATA'] as $val){
             //HOOK
             //DAYS
@@ -64,14 +64,15 @@ class cron{
                 (in_array($cur_hour,$val['HOURS']) || in_array('*',$val['HOURS'])) &&
                 (in_array($cur_min,$val['MINS']) || in_array('*',$val['MINS']))
                 )  || $hook == $val['HOOK']){
-                    trigger_error('(CRON): Running Hook: '. $val['HOOK'],E_USER_NOTICE);
                 if(!$this->cron_hookEval($val['HOOK'])){
                     trigger_error('(CRON): Error Running Hook: '. $val['HOOK'],E_USER_ERROR);
                 }
+                else{
+                    $have_run .= $val['HOOK'][0].'::'.$val['HOOK'][1].', ';
+                }
             }
-
         }
-
+        mginit_errorHandler(E_ACCESS,'Cron: '.$have_run,'','','');
     }
 
 
