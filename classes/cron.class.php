@@ -68,11 +68,13 @@ class cron{
                     trigger_error('(CRON): Error Running Hook: '. $val['HOOK'],E_USER_ERROR);
                 }
                 else{
-                    $have_run .= $val['HOOK'][0].'::'.$val['HOOK'][1].', ';
+                    $have_run .= $val['HOOK'].', ';
                 }
             }
         }
-        mginit_errorHandler(E_ACCESS,'Cron: '.$have_run,'','','');
+        if(!empty($have_run)){
+            mginit_errorHandler(E_ACCESS,'Cron: '.$have_run,'','','');
+        }
     }
 
 

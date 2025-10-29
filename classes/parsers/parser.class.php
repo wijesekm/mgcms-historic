@@ -33,7 +33,7 @@ class parser{
 
 	public function p_vparse($vars,$text){
 	    foreach($vars as $key=>$val){
-	        if(!$val){
+	        if($val === null){
 	            $val = '';
 	        }
 	        if(preg_match('/{'.$key.'}/',$text)){
@@ -45,7 +45,7 @@ class parser{
 
 	public function p_lparse($lang,$text){
 	    foreach($lang as $key=>$val){
-	        if(!$val){
+	        if($val === null){
 	            $val = '';
 	        }
 	        if(preg_match('/ACRO:/',$key)&&preg_match('/{'.$key.'}/',$text)){

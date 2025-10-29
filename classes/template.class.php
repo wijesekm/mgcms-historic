@@ -5,18 +5,18 @@
  * @author 		Kevin Wijesekera
  * @copyright 	2008
  * @edited		5-28-2008
- 
+
  ###################################
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
- 
+
  This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
- 
+
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see http://www.gnu.org/licenses/.
  ###################################
@@ -27,18 +27,18 @@ if(!defined('STARTED')){
 }
 
 class template{
-	
+
 	/**
 	* Constants
 	*/
-	
+
 	const TPL_START 		= '<!--TPL_START_';
 	const TPL_END			= '<!--TPL_END_';
 	const TPL_E				= '-->';
 	const TPL_ALL			= 'ALL';
 	/**
 	* Variables
-	*/	
+	*/
 	private $tpl;
 	private $filter;
 	private $keys;
@@ -46,15 +46,15 @@ class template{
 	private $parser;
 	private $adminTpl;
     private $tmp_str;
-	
+
 	/**
 	* Construct and Destruction functions
 	*/
-	
+
 	public function __construct(){
 		$this->tpl=array();
 		$this->parser=new parser();
-		
+
 	}
 	public function __destruct(){
 		$this->tpl=false;
@@ -64,26 +64,26 @@ class template{
 		$this->parser=false;
 		$this->adminTpl=false;
 	}
-	
+
 	/**
 	* Public Functions
 	*/
-	
+
 	/**
 	* tpl_load($input,$s_name,$file)
 	*
-	* Function to load a section into the template 
+	* Function to load a section into the template
 	*
 	* INPUTS:
 	* $input	-	Text or filename of section (string)
 	* $s_name	-	Section Name (string)
 	* $file		-	Is File? (bool)
 	* $fatal    -   Fatal error on failure?
-    * 
+    *
 	* OUTPUTS:
 	* true on success, false on fail (bool)
 	*/
-	public function tpl_load($input,$s_name,$file=true,$fatal=true){	
+	public function tpl_load($input,$s_name,$file=true,$fatal=true){
 		$str='';
 		if($file){
 			if(!$f=fopen($input,'r')){
@@ -106,7 +106,7 @@ class template{
 					return false;
 				}
 				$tmp_str=explode(template::TPL_START.$tmp.template::TPL_E,$str);
-				$this->tpl[(string)$tmp]=explode(template::TPL_END.$tmp.template::TPL_E,$tmp_str[1]);		
+				$this->tpl[(string)$tmp]=explode(template::TPL_END.$tmp.template::TPL_E,$tmp_str[1]);
 			}
 		}
 		else{
@@ -115,7 +115,7 @@ class template{
 				return false;
 			}
 			$str=explode(template::TPL_START.$s_name.template::TPL_E,$str);
-			$this->tpl[(string)$s_name]=explode(template::TPL_END.$s_name.template::TPL_E,$str[1]);	
+			$this->tpl[(string)$s_name]=explode(template::TPL_END.$s_name.template::TPL_E,$str[1]);
 		}
 		$this->keys=array_keys($this->tpl);
 		$this->size=count($this->keys);
@@ -127,7 +127,7 @@ class template{
         $str.='(.*?)'.preg_quote(template::TPL_END.$section.template::TPL_E,'/').'/mis';
         return preg_match($str,$data);
     }
-	
+
 	private function tpl_checkWrite($filename,$s_name){
 		$str='';
 		if(!$f=fopen($filename,'r')){
@@ -144,7 +144,7 @@ class template{
 		}
 		return true;
 	}
-	
+
 	public function tpl_write($content,$s_name,$filename){
         $str = '/'.preg_quote(template::TPL_START.$s_name.template::TPL_E,'/');
         $str.='(.*?)'.preg_quote(template::TPL_END.$s_name.template::TPL_E,'/').'/mis';
@@ -165,7 +165,7 @@ class template{
 		return true;
 	}
 
-	
+
 	/**
 	* tpl_return($s_name=template::TPL_ALL)
 	*
@@ -176,7 +176,7 @@ class template{
 	*
 	* OUTPUTS:
 	* the template section (string)
-	*/	
+	*/
 	public function tpl_return($s_name=template::TPL_ALL){
 		if($s_name==template::TPL_ALL){
 			$str='';
@@ -210,7 +210,7 @@ class template{
 	*
 	* OUTPUTS:
 	* true on success, false on fail
-	*/	
+	*/
 	public function tpl_parse($vars=array(),$s_name=template::TPL_ALL,$level=2,$rempty=false){
 
         /*
@@ -231,7 +231,7 @@ class template{
 				if(!$t){
 					return false;
 				}
-				$this->tpl[(string)$val][0]=$t;	
+				$this->tpl[(string)$val][0]=$t;
 			}
 		}
 		else{
@@ -243,7 +243,7 @@ class template{
 		}
 		return true;
 	}
-	
+
 	public function tpl_parseCustom($hooks,$s_name=template::TPL_ALL){
 		if($s_name==template::TPL_ALL){
 			for($i=0;$i<$this->size;$i++){
@@ -290,23 +290,23 @@ class template{
 	*
 	* OUTPUTS:
 	* The section or false on fail
-	*/	
+	*/
 	private function tpl_parseSection($vars,$section,$level,$rempty){
 		switch($level){
 			case 2:
-				$section=$this->parser->p_vparse($vars,$section);	
+				$section=$this->parser->p_vparse($vars,$section);
 				$section=$this->parser->p_lparse($GLOBALS['MG']['LANG'],$section);
 				$section=$this->parser->p_vparse($vars,$section);
 				$section=$this->parser->p_phpcompile($section);
 				$section=$this->parser->p_vparse($vars,$section);
 				$section=$this->parser->p_lparse($GLOBALS['MG']['LANG'],$section);
 			break;
-			case 1:	
+			case 1:
 				$section=$this->parser->p_vparse($vars,$section);
 				$section=$this->parser->p_lparse($GLOBALS['MG']['LANG'],$section);
 			break;
 			default:
-				
+
 			break;
 		};
 		if(!$section){
@@ -316,7 +316,7 @@ class template{
 			$section=preg_replace("/{[a-z0-9_-]+}/i","",$section);
 		}
 		return $section;
-		
+
 	}
 
 }
