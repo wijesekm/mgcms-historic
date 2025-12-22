@@ -667,11 +667,18 @@ class mysqlidb extends sql{
 		if($this->print){
 			echo $qstring.'<br/>';
 		}
-
-		if(!$res = $this->db->query($qstring)){
-			trigger_error('(MYSQL): Query failed or returned empty set! '.$qstring.': '.$this->sql_getLastError(),E_USER_WARNING);
-			return false;
+		$res = false;
+		try{
+		    if(!$res = $this->db->query($qstring)){
+		        trigger_error('(MYSQL): Query failed or returned empty set! '.$qstring.': '.$this->sql_getLastError(),E_USER_WARNING);
+		        return false;
+		    }
 		}
+		catch(Exception $e){
+		    trigger_error('(MYSQL): Query failed or returned empty set! '.$qstring.': '.$e->getMessage(),E_USER_WARNING);
+		    return false;
+		}
+
 		if($this->log){
 		    $this->sql_log($qstring);
 		}
@@ -718,6 +725,10 @@ class mysqlidb extends sql{
 		        $field = array($field[1],false,$field[0]);
 		    }
 		    if(!empty($field[1])){
+		        if(is_array($field[1])){
+		            trigger_error('Invalid field format: '.var_export($fields,true),E_USER_WARNING);
+		            return '';
+		        }
 		        $s.=$this->sql_escape($field[1]);
 		        $s.=$this->sql_escape($field[0],false,1);
 		        $this->groupBy['allow']=true;

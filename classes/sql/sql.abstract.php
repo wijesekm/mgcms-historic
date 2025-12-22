@@ -57,7 +57,7 @@ abstract class sql{
 	protected $db;
     protected $cur_db=false;
 	protected $print;
-	protected $groupBy=false;
+	protected $groupBy=array();
 	protected $log_mode = false;
     protected $log = false;
     protected $admin = false;

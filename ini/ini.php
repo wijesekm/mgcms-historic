@@ -62,7 +62,7 @@ if(!include_once($GLOBALS['MG']['CFG']['PATH']['INC'].'classes/errorLogger.class
 }
 $GLOBALS['MG']['ERROR']['LOGGER']=new errorLogger();
 set_error_handler('mginit_errorHandler');
-
+set_exception_handler('mginit_exceptionHandler');
 /**
 * Load some initial packages
 */
@@ -503,6 +503,11 @@ if(!defined('CRON') && !defined('API')){
 */
 function mginit_errorHandler($errno, $errmsg, $filename=false, $linenum=false, $vars=false){
 	$GLOBALS['MG']['ERROR']['LOGGER']->el_addError($errno, $errmsg, $filename, $linenum, $vars);
+}
+
+function mginit_exceptionHandler($exception){
+    $GLOBALS['MG']['ERROR']['LOGGER']->el_addError(E_USER_ERROR,$exception->getMessage(),$exception->getFile(),$exception->getLine(),false);
+
 }
 
 function mginit_loadLang($lang_id){
