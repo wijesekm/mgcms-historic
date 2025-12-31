@@ -256,6 +256,7 @@ class mysqlidb extends sql{
 		$orderby=false;
 		$having=false;
 		$join=false;
+		$this->groupBy = array();
 		if(isset($additParams['distinct'])){
 		    $distinct=$additParams['distinct'];
 		}
@@ -351,6 +352,8 @@ class mysqlidb extends sql{
 	    $limit=false;
 	    $having=false;
 	    $join=false;
+	    $this->groupBy = array();
+
 	    if(isset($additParams['distinct'])){
 	        $distinct=$additParams['distinct'];
 	    }
@@ -390,7 +393,9 @@ class mysqlidb extends sql{
 	    }
 	    if($this->groupBy && $this->groupBy['allow']){
 	        $query.=$this->sql_formatGroupBy($this->groupBy['field']).' ';
-	        $query.=$this->sql_formatHaving($having[0],$having[1],$having[2],$having[3]).' ';
+	        if(!empty($having)){
+	            $query.=$this->sql_formatHaving($having[0],$having[1],$having[2],$having[3]).' ';
+	        }
 	    }
 	    if($limit){
 	        $query.=$this->sql_formatLimit($limit[0],$limit[1]).' ';
@@ -747,6 +752,7 @@ class mysqlidb extends sql{
 		                $s = $field[2].'('.$s.')';
 		                break;
 		            default:
+		                $this->groupBy['allow']=true;
 		                $this->groupBy['field']=$field[2];
 		                break;
 		        }
