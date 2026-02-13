@@ -134,8 +134,12 @@ class page{
         if(!empty($content)){
             $this->content = $content;
         }
-        $ecode = substr($this->content,0,3);
-        switch((int)$ecode){
+
+        $ecode = 500;
+        if(strlen($this->content) > 3){
+            $ecode = (int)substr($this->content,0,3);
+        }
+        switch($ecode){
             case 200:
                 if(strlen($content) == 3){
                     $this->content .= ':success';
