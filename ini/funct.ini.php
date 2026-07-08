@@ -451,7 +451,7 @@ function mg_addPackageConfig($package_name,$key,$data,$pageSpecific=false){
 }
 
 function mg_getPackageData($package_name){
-	$c=array(array(false,array(DB_AND,1),'pkg_name','=',$package_name),array(false,array(DB_OR,2),'page_path','=',$GLOBALS['MG']['PAGE']['PATH']),array(false,array(false,2),'page_path','=','*'));
+	$c=array(array(false,array(DB_OR,1),'pkg_name','=',$package_name),array(false,array(DB_AND,1),'pkg_name','=','*'),array(false,array(DB_OR,2),'page_path','=',$GLOBALS['MG']['PAGE']['PATH']),array(false,array(false,2),'page_path','=','*'));
 	$dta=$GLOBALS['MG']['SQL']->sql_fetchArray(array(TABLE_PREFIX.'packageconf'),false,$c);
 	$cfg=array();
 	for($i=0;$i<$dta['count'];$i++){

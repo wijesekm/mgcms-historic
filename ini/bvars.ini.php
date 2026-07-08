@@ -59,6 +59,12 @@ function mginit_loadVars(){
 	    $url = $_GET;
 	}
 
+	if(!empty($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'PUT'){
+	    $raw = file_get_contents("php://input");
+	    $_POST = array();
+	    parse_str($raw, $_POST);
+	}
+
 	if(defined('EXT_AUTH')){
 	    if(isset($_SERVER['HTTP_MSESSION'])){
 	        $GLOBALS['MG']['EAUTH']['SESSION'] = mginit_cleanVar($_SERVER['HTTP_MSESSION'],array('id',1,0,1,0,0,0));

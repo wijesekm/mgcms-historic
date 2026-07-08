@@ -131,13 +131,16 @@ class page{
     }
 
     private function page_error($content = ''){
-        if(!empty($content)){
-            $this->content = $content;
+        if(empty($content)){
+            $content = '';
         }
-
+        $this->content = $content;
         $ecode = 500;
-        if(strlen($this->content) > 3){
+        if(strlen($this->content) >= 3){
             $ecode = (int)substr($this->content,0,3);
+        }
+        else{
+            $ecode = 200;
         }
         switch($ecode){
             case 200:

@@ -94,10 +94,7 @@ class httpcli{
         foreach($headers as $key=>$val){
             $insert[] = $key.': '.$val;
         }
-       if(isset($this->opts[CURLOPT_HTTPHEADER])){
-           $insert = array_merge($this->opts[CURLOPT_HTTPHEADER],$insert);
-       }
-       $this->opts[CURLOPT_HTTPHEADER] = $insert;
+        $this->opts[CURLOPT_HTTPHEADER] = $insert;
     }
 
     /**
@@ -136,15 +133,19 @@ class httpcli{
         $response['res'] = curl_exec($ch);
         $response['code'] = 0;
         $res = curl_getinfo( $ch );
+        if(empty($res)){
+            trigger_error('(httpcli): Server response is empty',E_USER_WARNING);
+            return false;
+        }
+        if(empty($res['http_code'])){
+            trigger_error('(httpicli): No response on query, likely SSL error: '.var_export($res,true),E_USER_WARNING);
+            return false;
+        }
         $response['content_type'] = empty($res['content_type'])?'':$res['content_type'];
         $response['code'] = $res['http_code'];
         $response['time'] = $res['total_time'];
         $response['ip'] = $res['primary_ip'];
         $response['url'] = $res['url'];
-        if(empty($res)){
-            trigger_error('(httpcli): Server response is empty',E_USER_WARNING);
-            return false;
-        }
 
         return $response;
     }
