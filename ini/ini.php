@@ -68,6 +68,7 @@ set_exception_handler('mginit_exceptionHandler');
 */
 $load=array(array('template','class','/classes/'),
 			array('parser','class','/classes/parsers/'),
+            array('secrets','class','/ini/'),
 			array('sql','abstract','/classes/sql/'),
 			array($GLOBALS['MG']['CFG']['SQL']['METHOD'],'class','/classes/sql/'),
 			array('mgtime','class','/classes/'),
@@ -115,8 +116,18 @@ if(!$GLOBALS['MG']['SQL']){
 	$GLOBALS['MG']['ERROR']['LOGGER']->el_checkFatal();
 }
 
-$t=$GLOBALS['MG']['SQL']->sql_connect($GLOBALS['MG']['CFG']['SQL']['HOST'],$GLOBALS['MG']['CFG']['SQL']['PORT_SOCKET']
-								  ,$GLOBALS['MG']['CFG']['SQL']['USERNAME'],$GLOBALS['MG']['CFG']['SQL']['PASSWORD']
+$GLOBALS['MG']['S'] = new secrets();
+
+
+$a = $GLOBALS['MG']['S']->get('DB_auth');
+if(empty($a) && !empty($GLOBALS['MG']['CFG']['SQL']['USERNAME'])){
+    $a = array($GLOBALS['MG']['CFG']['SQL']['USERNAME'],$GLOBALS['MG']['CFG']['SQL']['PASSWORD']);
+}
+if(empty($a) && !is_array($a)){
+    trigger_error('(INI): Empty database auth', E_USER_ERROR);
+    $GLOBALS['MG']['ERROR']['LOGGER']->el_checkFatal();
+}
+$t=$GLOBALS['MG']['SQL']->sql_connect($GLOBALS['MG']['CFG']['SQL']['HOST'],$GLOBALS['MG']['CFG']['SQL']['PORT_SOCKET'],$a[0],$a[1]
 								  ,$GLOBALS['MG']['CFG']['SQL']['DB'],$GLOBALS['MG']['CFG']['SQL']['PERSISTENT'],$GLOBALS['MG']['CFG']['SQL']['SSL']);
 if(!$t){
 	trigger_error('(INI): Could not connect to SQL database', E_USER_ERROR);
